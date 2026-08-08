@@ -18,9 +18,11 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install yfinance numpy scipy
+        run: pip install requests
 
       - name: Run daily update
+        env:
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: python scripts/daily_update.py
 
       - name: Commit updated report

@@ -2,60 +2,42 @@
 options_engine.py
 ------------------
 Max Pain + Gamma Exposure(GEX) 계산 엔진.
-Yahoo Finance(yfinance) 무료 옵션체인 데이터를 사용.
+Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플랜, 15분 지연).
 
-무료 소스 한계:
-  - 실시간이 아닌 15~20분 지연 데이터일 수 있음
-  - Greeks(gamma)를 직접 안 주는 경우가 많아 Black-Scholes로 자체 계산
-  - 장중 호출량이 많으면 Yahoo 측에서 일시 차단(rate limit)될 수 있음
-    -> 나중에 Polygon/Tradier 유료 API로 교체 시 이 파일의
-       fetch_option_chain() 함수만 바꿔주면 나머지 로직은 그대로 재사용 가능
+Massive API가 계약별 실측 Greeks(gamma 포함), IV, OI를 직접 제공하므로
+예전 야후 무료 버전처럼 Black-Scholes로 gamma를 자체 역산할 필요가 없음.
+-> 계산 정확도가 바챠트 같은 유료 소스와 훨씬 가까워짐.
+
+필요 환경변수:
+  MASSIVE_API_KEY  (Vercel Environment Variables에 등록)
 """
 
 from __future__ import annotations
-import math
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
 
-import numpy as np
-import yfinance as yf
-from scipy.stats import norm
+import requests
 
-RISK_FREE_RATE = 0.045  # 근사치, 필요시 실제 T-bill 금리로 교체 가능
-
-
-# ---------------------------------------------------------------------------
-# Black-Scholes Gamma (Yahoo가 gamma를 직접 안 줄 때 IV로부터 역산)
-# ---------------------------------------------------------------------------
-def bs_gamma(spot: float, strike: float, t_years: float, iv: float, r: float = RISK_FREE_RATE) -> float:
-    if t_years <= 0 or iv <= 0 or spot <= 0 or strike <= 0:
-        return 0.0
-    try:
-        d1 = (math.log(spot / strike) + (r + 0.5 * iv ** 2) * t_years) / (iv * math.sqrt(t_years))
-        gamma = norm.pdf(d1) / (spot * iv * math.sqrt(t_years))
-        return float(gamma)
-    except (ValueError, ZeroDivisionError):
-        return 0.0
+MASSIVE_API_BASE = "https://api.massive.com"
+MASSIVE_API_KEY = os.environ.get("MASSIVE_API_KEY")
 
 
-def years_to_expiry(expiry_str: str) -> float:
-    exp_date = datetime.strptime(expiry_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-    now = datetime.now(timezone.utc)
-    days = max((exp_date - now).total_seconds() / 86400.0, 0.25)  # 최소 6시간짜리로 바닥
-    return days / 365.0
+class MassiveAPIError(RuntimeError):
+    pass
 
 
 # ---------------------------------------------------------------------------
-# 데이터 가져오기
+# 데이터 가져오기 (Massive.com REST API)
 # ---------------------------------------------------------------------------
 @dataclass
 class OptionRow:
     strike: float
     call_oi: float
     put_oi: float
-    call_iv: float
-    put_iv: float
+    call_gamma: float
+    put_gamma: float
 
 
 @dataclass
@@ -66,38 +48,108 @@ class ChainSnapshot:
     rows: list[OptionRow] = field(default_factory=list)
 
 
+def _massive_get(url: str, params: Optional[dict] = None) -> dict:
+    if not MASSIVE_API_KEY:
+        raise MassiveAPIError(
+            "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. "
+            "Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        )
+    params = dict(params or {})
+    params["apiKey"] = MASSIVE_API_KEY
+    resp = requests.get(url, params=params, timeout=15)
+    if resp.status_code != 200:
+        raise MassiveAPIError(f"Massive API 오류 ({resp.status_code}): {resp.text[:300]}")
+    data = resp.json()
+    if data.get("status") not in ("OK", "DELAYED"):
+        raise MassiveAPIError(f"Massive API 응답 오류: {data}")
+    return data
+
+
+def _fetch_full_options_chain(ticker: str) -> list[dict]:
+    """
+    /v3/snapshot/options/{ticker} 전체 결과를 페이지네이션 따라가며 수집.
+    (모든 만기 + 모든 스트라이크가 한 번에 옴, 이후 만기별로 그룹핑)
+    """
+    url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
+    all_results: list[dict] = []
+    params = {"limit": 250}
+    next_url = None
+
+    while True:
+        data = _massive_get(next_url or url, params if not next_url else None)
+        all_results.extend(data.get("results", []))
+        next_url = data.get("next_url")
+        if not next_url:
+            break
+        # next_url에는 이미 apiKey 빼고 다른 쿼리들이 포함돼 있어서, apiKey만 다시 붙여준다
+        next_url = next_url + ("&" if "?" in next_url else "?") + f"apiKey={MASSIVE_API_KEY}"
+
+    if not all_results:
+        raise ValueError(f"{ticker}: 옵션체인이 없습니다 (옵션 미상장 종목이거나 티커 오류일 수 있음)")
+
+    return all_results
+
+
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
     """
-    가까운 만기(들)의 옵션체인을 가져온다.
-    expiry가 주어지면 그 만기 하나만, 아니면 앞에서 max_expiries개를 합쳐서
+    가까운 만기(들)의 옵션체인을 Massive.com에서 가져온다.
+    expiry가 주어지면 그 만기 하나만, 아니면 가장 가까운 max_expiries개를 합쳐서
     (GEX 표준 관례: 근접 만기 여러 개를 합산) 반환한다.
     """
-    tk = yf.Ticker(ticker)
-    spot = tk.fast_info.get("lastPrice") or tk.info.get("regularMarketPrice")
+    raw_results = _fetch_full_options_chain(ticker)
+
+    spot = None
+    by_expiry: dict[str, dict[float, dict]] = {}
+
+    for item in raw_results:
+        details = item.get("details", {})
+        exp = details.get("expiration_date")
+        strike = details.get("strike_price")
+        contract_type = details.get("contract_type")  # "call" | "put"
+        if not exp or strike is None or contract_type not in ("call", "put"):
+            continue
+
+        if spot is None:
+            underlying = item.get("underlying_asset", {})
+            spot = underlying.get("price")
+
+        greeks = item.get("greeks") or {}
+        gamma = greeks.get("gamma") or 0.0
+        oi = item.get("open_interest") or 0.0
+
+        strikes_dict = by_expiry.setdefault(exp, {})
+        row = strikes_dict.setdefault(
+            strike, {"call_oi": 0.0, "put_oi": 0.0, "call_gamma": 0.0, "put_gamma": 0.0}
+        )
+        if contract_type == "call":
+            row["call_oi"] = float(oi)
+            row["call_gamma"] = float(gamma)
+        else:
+            row["put_oi"] = float(oi)
+            row["put_gamma"] = float(gamma)
+
     if spot is None:
         raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
 
-    all_expiries = tk.options
+    all_expiries = sorted(by_expiry.keys())
     if not all_expiries:
-        raise ValueError(f"{ticker}: 옵션체인이 없습니다 (옵션 미상장 종목일 수 있음)")
+        raise ValueError(f"{ticker}: 옵션체인이 없습니다")
 
-    expiries = [expiry] if expiry else list(all_expiries[:max_expiries])
+    expiries = [expiry] if expiry else all_expiries[:max_expiries]
 
     snapshots = []
     for exp in expiries:
-        chain = tk.option_chain(exp)
-        calls = chain.calls.set_index("strike")
-        puts = chain.puts.set_index("strike")
-        strikes = sorted(set(calls.index) | set(puts.index))
-
-        rows = []
-        for k in strikes:
-            call_oi = float(calls.loc[k, "openInterest"]) if k in calls.index and not math.isnan(calls.loc[k, "openInterest"] or math.nan) else 0.0
-            put_oi = float(puts.loc[k, "openInterest"]) if k in puts.index and not math.isnan(puts.loc[k, "openInterest"] or math.nan) else 0.0
-            call_iv = float(calls.loc[k, "impliedVolatility"]) if k in calls.index else 0.0
-            put_iv = float(puts.loc[k, "impliedVolatility"]) if k in puts.index else 0.0
-            rows.append(OptionRow(strike=k, call_oi=call_oi, put_oi=put_oi, call_iv=call_iv, put_iv=put_iv))
-
+        strikes_dict = by_expiry.get(exp, {})
+        rows = [
+            OptionRow(
+                strike=k,
+                call_oi=v["call_oi"],
+                put_oi=v["put_oi"],
+                call_gamma=v["call_gamma"],
+                put_gamma=v["put_gamma"],
+            )
+            for k, v in sorted(strikes_dict.items())
+        ]
         snapshots.append(ChainSnapshot(ticker=ticker, spot=float(spot), expiry=exp, rows=rows))
 
     return snapshots
@@ -126,12 +178,16 @@ def compute_max_pain(rows: list[OptionRow]) -> dict:
 # GEX (Gamma Exposure)
 # ---------------------------------------------------------------------------
 def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
-    t = years_to_expiry(expiry)
+    """
+    Massive API가 계약별 실측 gamma를 직접 제공하므로 여기서는 그 값을
+    OI/스팟가격과 결합해 달러 기준 GEX로 환산하기만 하면 된다
+    (예전 야후 버전처럼 Black-Scholes로 gamma를 역산할 필요 없음).
+    """
     gex_by_strike = {}
 
     for r in rows:
-        call_gamma = bs_gamma(spot, r.strike, t, r.call_iv) if r.call_iv > 0 else 0.0
-        put_gamma = bs_gamma(spot, r.strike, t, r.put_iv) if r.put_iv > 0 else 0.0
+        call_gamma = r.call_gamma
+        put_gamma = r.put_gamma
 
         # 표준 컨벤션: 딜러는 콜 롱(양의 감마) / 풋 숏(음의 감마)로 모델링
         call_gex = call_gamma * r.call_oi * 100 * (spot ** 2) * 0.01
@@ -191,6 +247,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     max_pain = compute_max_pain(primary.rows)
 
     # 여러 만기 합산 GEX (strike 기준 병합)
+    # OI는 만기별로 합산하고, gamma는 만기마다 값이 달라서 근접 만기(첫 snapshot) 값을 우선 사용
     merged: dict[float, OptionRow] = {}
     for snap in snapshots:
         for r in snap.rows:
@@ -199,11 +256,10 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
             m = merged[r.strike]
             m.call_oi += r.call_oi
             m.put_oi += r.put_oi
-            # IV는 근접 만기(첫 snapshot) 값을 우선 사용
-            if m.call_iv == 0:
-                m.call_iv = r.call_iv
-            if m.put_iv == 0:
-                m.put_iv = r.put_iv
+            if m.call_gamma == 0:
+                m.call_gamma = r.call_gamma
+            if m.put_gamma == 0:
+                m.put_gamma = r.put_gamma
 
     gex = compute_gex(primary.spot, primary.expiry, list(merged.values()))
 

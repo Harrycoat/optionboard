@@ -40,7 +40,7 @@ def main():
         except Exception as e:
             errors.append({"ticker": t, "error": str(e)})
             print(f"FAIL {t}: {e}")
-        time.sleep(1.5)  # Yahoo rate limit 완화용 딜레이
+        time.sleep(0.3)  # Massive API 호출 간 최소 여유 (Starter 플랜은 무제한 호출이라 크게 필요 없음)
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

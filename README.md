@@ -3,7 +3,17 @@
 Max Pain + GEX(Gamma Exposure) 자동 계산 대시보드.
 - 검색창에 티커 입력 → 실시간 계산
 - 관심종목(watchlist.txt)은 매일 장마감 후 자동 갱신
-- 데이터 소스: Yahoo Finance(무료, 지연 가능) — 나중에 유료 API로 교체 가능한 구조
+- 데이터 소스: Massive.com(구 Polygon.io) Options Starter 플랜 — 15분 지연, 계약별 실측 Greeks/IV/OI 직접 제공
+
+## 0. Massive.com API 키 설정 (필수)
+
+이 프로젝트는 `MASSIVE_API_KEY` 환경변수가 있어야 동작합니다.
+
+1. massive.com 대시보드 → `Keys` 메뉴에서 API 키 복사
+2. **Vercel**: 프로젝트 → Settings → Environment Variables → `MASSIVE_API_KEY` 등록 (웹사이트 검색 API용)
+3. **GitHub**: 저장소 → Settings → Secrets and variables → Actions → `MASSIVE_API_KEY` 등록 (매일 자동 갱신용)
+
+두 군데 다 등록해야 합니다 (Vercel은 실시간 검색용, GitHub Secrets는 daily_update.py 자동 실행용).
 
 ---
 
@@ -31,10 +41,11 @@ optionboard/
 ```bash
 cd optionboard
 pip install -r requirements.txt
+export MASSIVE_API_KEY="여기에_본인_키"
 python api/options_engine.py AAPL      # 콘솔에 결과 출력되는지 확인
 python scripts/daily_update.py         # public/watchlist_report.json 채워짐
 ```
-> 지금 이 프로젝트를 만든 샌드박스 환경은 야후 파이낸스 도메인이 네트워크 차단되어 있어서 여기선 직접 검증 못했어요. 해리님 로컬 PC나 아래 배포 환경에서는 정상 작동해야 합니다. 혹시 에러 나면 `pip install --upgrade yfinance` 한 번 해보세요 (야후가 비공식 API라 가끔 스펙이 바뀝니다).
+> 이 프로젝트를 만든 샌드박스 환경은 massive.com 도메인이 네트워크 차단되어 있어서, 이 API 연동 코드는 문법 검사와 (키 없을 때) 에러 처리만 확인했고 실제 API 응답으로 검증은 못했습니다. 해리님 로컬 PC나 Vercel 배포 환경에서 첫 실행 시 응답 필드명이 문서와 다르게 오는 경우가 있을 수 있으니, `python api/options_engine.py AAPL` 결과를 한 번 확인해보고 이상하면 알려주세요.
 
 ## 3. 배포 (전부 무료 티어로 가능)
 
@@ -71,13 +82,12 @@ git push -u origin main
 2. 승인 나면 `public/index.html`의 `<head>` 안에 애드센스에서 주는 스크립트 태그만 붙이면 끝
 3. 심사 통과 팁: 기계적으로 숫자만 나열된 페이지보다, 위 note 영역처럼 **해설/맥락 텍스트가 있는 페이지**가 유리함 → 종목별 "왜 이 레벨이 중요한지" 짧은 설명 추가하면 승인 확률 올라갑니다
 
-## 5. 나중에 유료 데이터로 전환하려면
+## 5. 앞으로 더 개선하려면
 
-`api/options_engine.py`의 `fetch_option_chain()` 함수만 Polygon.io나 Tradier API 호출로 교체하면 됩니다. Max Pain/GEX 계산 로직(`compute_max_pain`, `compute_gex`)은 그대로 재사용 가능해요. 실시간 API로 바꾸면:
-- 검색 결과 지연 없음
-- GitHub Actions 크론 주기를 훨씬 촘촘하게(예: 30분마다) 돌려서 "준실시간 리포트"로 업그레이드 가능
+- 지금은 Options Starter($29/월, 15분 지연) 플랜이에요. 트래픽/매출이 늘면 Options Advanced($199/월, 실시간)로 업그레이드하면 검색 결과 지연이 없어지고, GitHub Actions 크론 주기도 더 촘촘하게(예: 30분마다) 돌려서 "준실시간 리포트"로 업그레이드 가능해요.
 
-## 6. 법적 문구 관련 주의
+## 6. 법적 문구 / 라이선스 관련 주의
 
 - 페이지 하단에 이미 "정보 제공 목적, 투자자문 아님" 문구를 넣어뒀어요. 유료 구독 모델로 확장 시 이용약관/면책조항을 좀 더 정식으로 갖추는 걸 권장합니다 (변호사 자문까지는 아니어도 템플릿 수준으로).
-- Barchart Premier 데이터는 개인 라이선스라 이 사이트에 직접 가져다 쓰면 안 됩니다 — 지금 구조는 Yahoo(무료) 기반이라 문제 없습니다.
+- **⚠️ 확인 필요**: 지금 가입한 Massive.com "Individual/Personal" 라이선스가, 이 데이터를 가공해서 회원제 웹사이트로 재배포(불특정 다수 회원에게 노출)하는 용도까지 허용하는지 아직 확인 전이에요. Massive 측에 "회원제 웹사이트에서 여러 사용자에게 데이터를 보여줄 예정인데, Individual 플랜으로 가능한지, Business/재배포 라이선스가 별도로 필요한지" 반드시 문의해서 답변 받은 뒤 정식 서비스를 오픈하세요. 확인 전까지는 베타/비공개 테스트 용도로만 쓰는 걸 권장합니다.
+- Barchart Premier 데이터는 개인 라이선스라 이 사이트에 직접 가져다 쓰면 안 됩니다.
