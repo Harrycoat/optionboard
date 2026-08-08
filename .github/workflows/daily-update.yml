@@ -1,0 +1,32 @@
+name: Daily Options Report Update
+
+on:
+  schedule:
+    - cron: "15 21 * * 1-5"
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install yfinance numpy scipy
+
+      - name: Run daily update
+        run: python scripts/daily_update.py
+
+      - name: Commit updated report
+        run: |
+          git config user.name "options-board-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add public/watchlist_report.json
+          git diff --cached --quiet || git commit -m "chore: daily options report update $(date -u +%Y-%m-%d)"
+          git push
