@@ -265,6 +265,81 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
         ],
     }
 
+# ---------------------------------------------------------------------------
+# 한국어 해설 문장 생성 (참고용 — 매수/매도 지시 아님)
+# ---------------------------------------------------------------------------
+def _fmt_strike(x) -> str:
+    if x is None:
+        return "-"
+    x = float(x)
+    return f"{x:.0f}" if x.is_integer() else f"{x:.1f}"
+
+
+def build_narrative(
+    spot: float,
+    max_pain: Optional[float],
+    call_wall: Optional[float],
+    put_wall: Optional[float],
+    gamma_flip: Optional[float],
+    regime: str,
+    expiry_used: str,
+) -> list[str]:
+    """
+    계산된 지표를 한국어 해설 문장으로 풀어준다.
+    - "사세요/파세요" 같은 직접적 매매 지시는 절대 하지 않는다.
+    - 항상 "가능성/경향/참고" 같은 완곡한 표현을 사용한다 (투자자문 아님).
+    """
+    lines: list[str] = []
+
+    if regime == "positive":
+        lines.append(
+            "현재 감마 레짐은 '양의 감마'예요. 이 구간에서는 딜러들이 변동성을 억제하는 "
+            "방향으로 헤지하는 경향이 있어, 급격한 등락보다는 상대적으로 좁은 박스권 흐름이 "
+            "나타날 가능성이 있어요."
+        )
+    else:
+        lines.append(
+            "현재 감마 레짐은 '음의 감마'예요. 이 구간에서는 딜러들이 가격 움직임을 증폭시키는 "
+            "방향으로 헤지하는 경향이 있어, 추세가 붙으면 변동성이 커질 가능성이 있어요."
+        )
+
+    if gamma_flip is not None:
+        direction = "위" if spot >= gamma_flip else "아래"
+        lines.append(f"현재가는 감마 플립 지점({_fmt_strike(gamma_flip)}) {direction}에 위치해 있어요.")
+
+    if put_wall is not None and spot:
+        put_pct = (spot - put_wall) / spot * 100
+        lines.append(
+            f"Put Wall({_fmt_strike(put_wall)})은 현재가 대비 {put_pct:.1f}% 아래 지점으로, "
+            "하방 지지력이 있을 수 있는 구간이에요. 이 근처에서 반등하는지, 지지선을 뚫고 "
+            "더 내려가는지 지켜보면 참고가 될 수 있어요."
+        )
+
+    if call_wall is not None and spot:
+        call_pct = (call_wall - spot) / spot * 100
+        lines.append(
+            f"Call Wall({_fmt_strike(call_wall)})은 현재가 대비 {call_pct:.1f}% 위 지점으로, "
+            "상방 저항으로 작용할 수 있는 구간이에요. 이 구간을 돌파하는지, 저항에 막혀 "
+            "눌리는지 지켜보면 참고가 될 수 있어요."
+        )
+
+    if max_pain is not None and spot:
+        day_text = ""
+        try:
+            exp_date = datetime.strptime(expiry_used, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            days_left = max((exp_date - datetime.now(timezone.utc)).days, 0)
+            day_text = f"(D-{days_left}) "
+        except (ValueError, TypeError):
+            pass
+        pain_pct = (max_pain - spot) / spot * 100
+        lines.append(
+            f"만기({expiry_used}) {day_text}가 다가올수록 'Max Pain 이론'에 따르면 주가가 "
+            f"{_fmt_strike(max_pain)} 근처로 수렴하는 경향이 있다는 가설이 있어요 "
+            f"(현재가 대비 {pain_pct:+.1f}%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 "
+            "거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요."
+        )
+
+    return lines
 
 # ---------------------------------------------------------------------------
 # 통합 분석
@@ -294,6 +369,16 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
 
     gex = compute_gex(primary.spot, primary.expiry, list(merged.values()))
 
+    narrative = build_narrative(
+        spot=primary.spot,
+        max_pain=max_pain["max_pain_strike"],
+        call_wall=gex["call_wall"],
+        put_wall=gex["put_wall"],
+        gamma_flip=gex["gamma_flip"],
+        regime=gex["regime"],
+        expiry_used=primary.expiry,
+    )
+
     return {
         "ticker": ticker,
         "spot": primary.spot,
@@ -308,6 +393,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "net_gex_total": gex["net_gex_total"],
         "regime": gex["regime"],
         "gex_by_strike": gex["by_strike"],
+        "narrative": narrative,
     }
 
 
