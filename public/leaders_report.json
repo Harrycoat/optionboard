@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08T23:29:14.508788+00:00",
+  "generated_at": "2026-08-08T23:37:12.354977+00:00",
   "categories": {
     "wave1": [
       {
@@ -13,7 +13,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: ANET: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "PLTR",
@@ -26,7 +26,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: PLTR: 현재가를 가져오지 못했습니다"
       }
     ],
     "wave2": [
@@ -41,7 +41,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: SNDK: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "MU",
@@ -54,7 +54,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: MU: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "WDC",
@@ -67,7 +67,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: WDC: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "STX",
@@ -80,7 +80,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: STX: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "TER",
@@ -93,7 +93,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: TER: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "LRCX",
@@ -106,7 +106,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: LRCX: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "MKSI",
@@ -119,7 +119,7 @@
         "gamma_regime": null,
         "price_change_pct": null,
         "volume": null,
-        "status": "error: MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+        "status": "error: MKSI: 현재가를 가져오지 못했습니다"
       }
     ],
     "speculative": []
