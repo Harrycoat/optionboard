@@ -8,12 +8,12 @@ public/leaders_report.json 으로 저장합니다.
 - GEX 배지: options_engine.analyze_ticker() 재사용 (Massive.com API, 실측 gamma)
 - 가격/등락률/거래량: Massive.com의 전일 일봉(prev bar) 엔드포인트 사용
 
-daily_update.py 바로 다음에 같은 크론 잡 안에서 실행되는데, 두 스크립트가
-연달아 Massive API를 많이 호출하다 보니 분당 호출 제한에 걸려 조용히
-실패하는 경우가 있었다. 이를 완화하기 위해:
-  1) 시작 전에 잠깐 대기해서 daily_update.py의 호출 버스트가 가라앉을 시간을 줌
-  2) 종목 사이사이 딜레이를 둬서 호출을 분산시킴
-  3) "현재가를 가져오지 못했습니다" 류의 일시적 실패는 한 번 재시도함
+daily_update.py 바로 다음에 같은 크론 잡 안에서 실행되며, Massive API
+호출이 몰려서 분당 호출 제한에 걸리는 경우가 있어 다음과 같이 대응한다:
+  1) 시작 전 대기 (daily_update.py의 호출 버스트가 가라앉을 시간)
+  2) 종목 사이사이 딜레이
+  3) GEX 계산 실패 시 최대 2회 재시도 (재시도마다 대기시간 증가)
+  4) 가격/거래량(일봉) 조회 실패 시에도 별도로 재시도
 
 daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
 이어서 호출하면 매일 자동 갱신됩니다.
@@ -27,7 +27,6 @@ from datetime import datetime, timezone
 
 import requests
 
-# api/ 폴더의 options_engine을 import하기 위한 경로 설정
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "api"))
 
 from options_engine import analyze_ticker, MASSIVE_API_BASE, MASSIVE_API_KEY
@@ -37,16 +36,13 @@ OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_r
 
 CATEGORY_KEYS = {"WAVE1": "wave1", "WAVE2": "wave2", "SPECULATIVE": "speculative"}
 
-# daily_update.py 직후 실행되므로, API 호출 버스트가 가라앉을 시간을 준다
-STARTUP_DELAY_SECONDS = 15
-# 종목과 종목 사이 대기 시간 (분당 호출 제한 완화용)
-PER_TICKER_DELAY_SECONDS = 3
-# 실패 시 재시도 전 대기 시간
-RETRY_DELAY_SECONDS = 8
+STARTUP_DELAY_SECONDS = 20
+PER_TICKER_DELAY_SECONDS = 4
+MAX_RETRIES = 2
+RETRY_BACKOFF_SECONDS = [8, 15]  # 재시도 1회차/2회차 대기시간
 
 
 def parse_watchlist(path):
-    """[WAVE1] 등 헤더로 구분된 watchlist 파일을 카테고리별 dict로 파싱"""
     categories = {"wave1": [], "wave2": [], "speculative": []}
     current = None
     with open(path, "r", encoding="utf-8") as f:
@@ -67,36 +63,48 @@ def parse_watchlist(path):
     return categories
 
 
-def fetch_daily_bar(ticker: str):
-    """Massive.com의 전일 일봉(prev bar)을 가져온다."""
+def fetch_daily_bar_once(ticker: str):
     if not MASSIVE_API_KEY:
         return None
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
-    try:
-        resp = requests.get(url, params={"apiKey": MASSIVE_API_KEY}, timeout=15)
-        if resp.status_code != 200:
-            return None
-        data = resp.json()
-        results = data.get("results") or []
-        if not results:
-            return None
-        r = results[0]
-        return {"open": r.get("o"), "close": r.get("c"), "volume": r.get("v")}
-    except Exception:
-        return None
+    resp = requests.get(url, params={"apiKey": MASSIVE_API_KEY}, timeout=15)
+    if resp.status_code != 200:
+        raise RuntimeError(f"HTTP {resp.status_code}")
+    data = resp.json()
+    results = data.get("results") or []
+    if not results:
+        raise RuntimeError("결과 없음")
+    r = results[0]
+    return {"open": r.get("o"), "close": r.get("c"), "volume": r.get("v")}
+
+
+def fetch_daily_bar(ticker: str):
+    """일봉 조회, 실패하면 재시도한다."""
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            return fetch_daily_bar_once(ticker)
+        except Exception as e:
+            if attempt < MAX_RETRIES:
+                wait = RETRY_BACKOFF_SECONDS[attempt]
+                print(f"    일봉 조회 실패 ({ticker}, {attempt+1}차): {e} → {wait}초 후 재시도")
+                time.sleep(wait)
+            else:
+                print(f"    일봉 조회 최종 실패 ({ticker}): {e}")
+                return None
 
 
 def try_analyze(ticker: str):
-    """analyze_ticker()를 시도하고, 실패하면 한 번 더 재시도한다."""
-    try:
-        return analyze_ticker(ticker), None
-    except Exception as e:
-        print(f"    1차 실패 ({ticker}): {e} → {RETRY_DELAY_SECONDS}초 후 재시도")
-        time.sleep(RETRY_DELAY_SECONDS)
+    """analyze_ticker()를 시도하고, 실패하면 최대 MAX_RETRIES회 재시도한다."""
+    for attempt in range(MAX_RETRIES + 1):
         try:
             return analyze_ticker(ticker), None
-        except Exception as e2:
-            return None, str(e2)
+        except Exception as e:
+            if attempt < MAX_RETRIES:
+                wait = RETRY_BACKOFF_SECONDS[attempt]
+                print(f"    GEX 계산 실패 ({ticker}, {attempt+1}차): {e} → {wait}초 후 재시도")
+                time.sleep(wait)
+            else:
+                return None, str(e)
 
 
 def build_badge(ticker: str, sector: str) -> dict:
@@ -130,7 +138,6 @@ def build_badge(ticker: str, sector: str) -> dict:
     else:
         badge["status"] = f"error: {err}"
 
-    # 가격/등락률/거래량은 GEX 계산이 실패해도 별도로 시도한다
     bar = fetch_daily_bar(ticker)
     if bar:
         badge["volume"] = bar.get("volume")
