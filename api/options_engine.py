@@ -224,8 +224,17 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     if not gex_by_strike:
         return {"call_wall": None, "put_wall": None, "gamma_flip": None, "net_gex_total": 0, "by_strike": []}
 
-    call_wall = max(gex_by_strike, key=lambda k: gex_by_strike[k]["call_gex"])
-    put_wall = min(gex_by_strike, key=lambda k: gex_by_strike[k]["put_gex"])  # 가장 음수인 지점
+    # 업계 표준 관례: Call Wall은 현재가 이상(저항선), Put Wall은 현재가 이하(지지선)
+    # 스트라이크 중에서만 찾는다. (제약 없이 전체에서 찾으면, 현재가 근처 한 스트라이크에
+    # 콜/풋 물량이 동시에 몰려있을 때 두 벽이 우연히 같은 지점으로 겹쳐버리는 문제가 생김)
+    strikes_at_or_above = {k: v for k, v in gex_by_strike.items() if k >= spot}
+    strikes_at_or_below = {k: v for k, v in gex_by_strike.items() if k <= spot}
+
+    call_candidates = strikes_at_or_above if strikes_at_or_above else gex_by_strike
+    put_candidates = strikes_at_or_below if strikes_at_or_below else gex_by_strike
+
+    call_wall = max(call_candidates, key=lambda k: call_candidates[k]["call_gex"])
+    put_wall = min(put_candidates, key=lambda k: put_candidates[k]["put_gex"])  # 가장 음수인 지점
 
     # Gamma flip: net GEX 누적합이 부호가 바뀌는 strike (낮은 strike부터 정렬 후 탐색)
     sorted_strikes = sorted(gex_by_strike.keys())
