@@ -90,6 +90,24 @@ def _fetch_full_options_chain(ticker: str) -> list[dict]:
     return all_results
 
 
+def _fetch_prev_close(ticker: str) -> Optional[float]:
+    """
+    옵션체인 스냅샷에 현재가(underlying_asset.price)가 안 들어있는 경우를 위한 대체 경로.
+    (해당 필드는 유료 Stocks 플랜에 종속될 수 있음 — 대신 기본 Stocks 플랜에서도
+    보통 제공되는 '전일 종가' 엔드포인트로 근사치를 가져온다.)
+    """
+    url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
+    try:
+        data = _massive_get(url)
+    except MassiveAPIError:
+        return None
+    results = data.get("results") or []
+    if not results:
+        return None
+    close = results[0].get("c")
+    return float(close) if close is not None else None
+
+
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
     """
     가까운 만기(들)의 옵션체인을 Massive.com에서 가져온다.
@@ -127,6 +145,10 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
         else:
             row["put_oi"] = float(oi)
             row["put_gamma"] = float(gamma)
+
+    if spot is None:
+        # 옵션체인 응답에 현재가가 없는 경우(Stocks 플랜 제약 등) 전일 종가로 대체
+        spot = _fetch_prev_close(ticker)
 
     if spot is None:
         raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
