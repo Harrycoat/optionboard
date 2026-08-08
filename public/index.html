@@ -15,8 +15,8 @@
     --line: #1f2530;
     --text: #e7e5df;
     --text-dim: #8b93a1;
-    --up: #e5484d;      /* 한국식: 상승 = 빨강 */
-    --down: #3d7fe0;    /* 한국식: 하락 = 파랑 */
+    --up: #e5484d;
+    --down: #3d7fe0;
     --gold: #e0a838;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -64,7 +64,6 @@
   }
   .section-title::before{ content:''; width:3px; height:12px; background: var(--gold); display:inline-block;}
 
-  /* 관심종목 카드 그리드 - HTS 호가판 스타일 */
   .watchlist-grid{
     display:grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap:10px;
   }
@@ -84,7 +83,36 @@
 
   .empty{ color: var(--text-dim); font-size:13px; padding: 20px; border:1px dashed var(--line); border-radius:8px; text-align:center;}
 
-  /* 상세 패널 */
+  .leaders-grid{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;
+  }
+  @media (max-width: 720px){
+    .leaders-grid{ grid-template-columns: 1fr; }
+  }
+  .leader-col{
+    background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px;
+  }
+  .leader-col-header{ font-size:14px; font-weight:700; margin-bottom:2px; }
+  .leader-col-header.wave1{ color: var(--up); }
+  .leader-col-header.wave2{ color: var(--down); }
+  .leader-col-header.speculative{ color: var(--gold); }
+  .leader-col-desc{ font-size:11px; color: var(--text-dim); margin-bottom:12px; }
+  .leader-card{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 9px 4px; border-bottom: 1px solid var(--line); cursor:pointer;
+  }
+  .leader-card:last-child{ border-bottom:none; }
+  .leader-card:hover{ opacity:0.8; }
+  .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); }
+  .leader-sector{ font-size:10px; color: var(--text-dim); margin-top:2px; }
+  .leader-badge{ font-family:'JetBrains Mono',monospace; font-size:11px; text-align:right; }
+  .badge-distance{ color: var(--text-dim); }
+  .badge-distance.near{ color: var(--up); }
+  .badge-regime{ display:inline-block; margin-top:3px; padding:1px 6px; border-radius:3px; font-size:9px; }
+  .badge-regime.positive{ background: rgba(61,127,224,0.15); color: var(--down); }
+  .badge-regime.negative{ background: rgba(229,72,77,0.15); color: var(--up); }
+  .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
+
   .detail{ background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:16px; }
   .detail-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
   .detail-head h2{ font-size:22px; font-family:'JetBrains Mono',monospace; }
@@ -127,6 +155,26 @@
 </header>
 
 <main>
+  <div class="section-title">오늘의 주도주 · 웨이브 로테이션 기준</div>
+  <div class="updated-note" id="leadersUpdatedNote">불러오는 중...</div>
+  <div class="leaders-grid">
+    <div class="leader-col">
+      <div class="leader-col-header wave1">Wave 1 · 리더</div>
+      <div class="leader-col-desc">신고가 갱신 중인 시장 주도주</div>
+      <div id="wave1-list"><div class="leader-empty">불러오는 중...</div></div>
+    </div>
+    <div class="leader-col">
+      <div class="leader-col-header wave2">Wave 2 · 로테이션 후보</div>
+      <div class="leader-col-desc">반도체/메모리 장비군</div>
+      <div id="wave2-list"><div class="leader-empty">불러오는 중...</div></div>
+    </div>
+    <div class="leader-col">
+      <div class="leader-col-header speculative">관심 관찰</div>
+      <div class="leader-col-desc">초기 모멘텀, 아직 미확인</div>
+      <div id="speculative-list"><div class="leader-empty">불러오는 중...</div></div>
+    </div>
+  </div>
+
   <div class="section-title">관심종목 · 매일 자동 갱신</div>
   <div class="updated-note" id="updatedNote">불러오는 중...</div>
   <div id="watchlistGrid" class="watchlist-grid"></div>
@@ -160,7 +208,62 @@ function fmtCompact(n){
   return n.toFixed(0);
 }
 
-// ---------- 관심종목 (정적 리포트, 매일 자동 갱신) ----------
+function leaderCardHTML(item){
+  const near = item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined && item.call_wall_distance_pct <= 2;
+  const distanceText = (item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined)
+    ? `Call Wall +${item.call_wall_distance_pct}%`
+    : '—';
+  const regimeHtml = item.gamma_regime
+    ? `<span class="badge-regime ${item.gamma_regime}">${item.gamma_regime === 'positive' ? '양감마' : '음감마'}</span>`
+    : '';
+
+  return `
+    <div class="leader-card" data-ticker="${item.ticker}">
+      <div>
+        <div class="leader-ticker">${item.ticker}</div>
+        <div class="leader-sector">${item.sector || ''}</div>
+      </div>
+      <div class="leader-badge">
+        <div class="badge-distance ${near ? 'near' : ''}">${distanceText}</div>
+        ${regimeHtml}
+      </div>
+    </div>
+  `;
+}
+
+function renderLeaderColumn(containerId, items){
+  const el = document.getElementById(containerId);
+  if(!items || items.length === 0){
+    el.innerHTML = '<div class="leader-empty">아직 등록된 종목이 없습니다</div>';
+    return;
+  }
+  el.innerHTML = items.map(leaderCardHTML).join('');
+  el.querySelectorAll('.leader-card').forEach(card=>{
+    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+  });
+}
+
+async function loadLeaders(){
+  const note = document.getElementById('leadersUpdatedNote');
+  try{
+    const res = await fetch('/leaders_report.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('리포트 없음');
+    const data = await res.json();
+    const dt = new Date(data.generated_at);
+    note.textContent = `마지막 갱신: ${dt.toLocaleString('ko-KR')} (매 거래일 자동 갱신)`;
+
+    const cats = data.categories || {};
+    renderLeaderColumn('wave1-list', cats.wave1);
+    renderLeaderColumn('wave2-list', cats.wave2);
+    renderLeaderColumn('speculative-list', cats.speculative);
+  }catch(e){
+    note.textContent = '';
+    ['wave1-list','wave2-list','speculative-list'].forEach(id=>{
+      document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다 (첫 자동 갱신 대기 중)</div>';
+    });
+  }
+}
+
 async function loadWatchlist(){
   const grid = document.getElementById('watchlistGrid');
   const note = document.getElementById('updatedNote');
@@ -202,7 +305,6 @@ function cardHTML(t){
   </div>`;
 }
 
-// ---------- 검색 (실시간 계산) ----------
 async function searchTicker(ticker){
   const input = document.getElementById('tickerInput');
   const btn = document.getElementById('searchBtn');
@@ -294,7 +396,6 @@ function drawGexChart(d){
     return;
   }
 
-  // spot 근처 strike만 표시 (너무 넓으면 압축돼서 안 보임)
   const spot = d.spot;
   const filtered = rows.filter(r => r.strike > spot*0.75 && r.strike < spot*1.25);
   const use = filtered.length >= 6 ? filtered : rows;
@@ -317,11 +418,9 @@ function drawGexChart(d){
     ctx.fillRect(x, zeroY, barW, Math.max(putH,0));
   });
 
-  // zero line
   ctx.strokeStyle = '#2a3140';
   ctx.beginPath(); ctx.moveTo(0,zeroY); ctx.lineTo(W,zeroY); ctx.stroke();
 
-  // spot line (근사 위치)
   const minK = use[0].strike, maxK = use[use.length-1].strike;
   const spotX = padding.left + ((spot-minK)/(maxK-minK || 1)) * (W-padding.left-padding.right);
   ctx.strokeStyle = GOLD;
@@ -329,7 +428,6 @@ function drawGexChart(d){
   ctx.beginPath(); ctx.moveTo(spotX,0); ctx.lineTo(spotX,H-padding.bottom); ctx.stroke();
   ctx.setLineDash([]);
 
-  // x축 strike 라벨 (몇 개만)
   ctx.fillStyle = '#8b93a1';
   ctx.font = '10px monospace';
   const step = Math.ceil(use.length/6);
@@ -345,6 +443,7 @@ document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
 
+loadLeaders();
 loadWatchlist();
 </script>
 
