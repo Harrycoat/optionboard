@@ -2,11 +2,12 @@
 scripts/generate_leaders_report.py
 
 leaders_watchlist.txt를 읽어서 카테고리별(WAVE1/WAVE2/SPECULATIVE) 종목의
-GEX 배지(Call Wall 근접도, Gamma Flip 레짐)를 계산하고
+GEX 배지(Call Wall 근접도, Gamma Flip 레짐) + 현재가/등락률/거래량을 계산하고
 public/leaders_report.json 으로 저장합니다.
 
-options_engine.analyze_ticker()를 그대로 재사용합니다
-(Massive.com API 기반, 실측 gamma 사용).
+- GEX 배지: options_engine.analyze_ticker() 재사용 (Massive.com API, 실측 gamma)
+- 가격/등락률/거래량: Massive.com의 전일 일봉(prev bar) 엔드포인트 사용
+  (options_engine._fetch_prev_close와 같은 엔드포인트, 여기서는 o/c/v를 전부 활용)
 
 daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
 이어서 호출하면 매일 자동 갱신됩니다.
@@ -17,10 +18,12 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import requests
+
 # api/ 폴더의 options_engine을 import하기 위한 경로 설정
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "api"))
 
-from options_engine import analyze_ticker
+from options_engine import analyze_ticker, MASSIVE_API_BASE, MASSIVE_API_KEY
 
 WATCHLIST_PATH = os.path.join(os.path.dirname(__file__), "leaders_watchlist.txt")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_report.json")
@@ -50,11 +53,34 @@ def parse_watchlist(path):
     return categories
 
 
+def fetch_daily_bar(ticker: str):
+    """
+    Massive.com의 전일 일봉(prev bar)을 가져온다.
+    매일 장마감 후 크론이 도는 구조라, 이 'prev' 바 자체가 그날의 완결된 세션이라
+    시가(o) 대비 종가(c)로 당일 등락률을 계산할 수 있다.
+    """
+    if not MASSIVE_API_KEY:
+        return None
+    url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
+    try:
+        resp = requests.get(url, params={"apiKey": MASSIVE_API_KEY}, timeout=15)
+        if resp.status_code != 200:
+            return None
+        data = resp.json()
+        results = data.get("results") or []
+        if not results:
+            return None
+        r = results[0]
+        return {"open": r.get("o"), "close": r.get("c"), "volume": r.get("v")}
+    except Exception:
+        return None
+
+
 def build_badge(ticker: str, sector: str) -> dict:
     """
-    티커 하나에 대해 analyze_ticker()를 호출하고,
+    티커 하나에 대해 GEX 배지 + 가격/등락률/거래량을 계산하고
     프론트엔드 카드가 바로 쓸 수 있는 형태로 정리한다.
-    실패해도 사이트가 안 깨지도록 status 필드로 감싼다.
+    개별 항목이 실패해도 사이트가 안 깨지도록 status 필드로 감싼다.
     """
     badge = {
         "ticker": ticker,
@@ -65,6 +91,8 @@ def build_badge(ticker: str, sector: str) -> dict:
         "call_wall_distance_pct": None,
         "gamma_flip": None,
         "gamma_regime": None,
+        "price_change_pct": None,
+        "volume": None,
         "status": "ok",
     }
 
@@ -84,6 +112,16 @@ def build_badge(ticker: str, sector: str) -> dict:
 
     except Exception as e:
         badge["status"] = f"error: {e}"
+
+    # 가격/등락률/거래량은 GEX 계산이 실패해도 별도로 시도한다
+    bar = fetch_daily_bar(ticker)
+    if bar:
+        badge["volume"] = bar.get("volume")
+        o, c = bar.get("open"), bar.get("close")
+        if o and c:
+            badge["price_change_pct"] = round((c - o) / o * 100, 2)
+        if badge["spot"] is None and c:
+            badge["spot"] = round(c, 2)
 
     return badge
 
