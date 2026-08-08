@@ -1,0 +1,20 @@
+# 옵션보드 - 주도주 워치리스트
+# 카테고리 헤더는 [WAVE1] / [WAVE2] / [SPECULATIVE] 로 시작
+# 종목당 한 줄: TICKER,섹터명
+# 순서가 곧 카드 표시 순서입니다 (위에서 아래로)
+
+[WAVE1]
+ANET,NETWORKING
+PLTR,SOFTWARE
+
+[WAVE2]
+SNDK,SEMIS
+MU,SEMIS
+WDC,SEMIS
+STX,SEMIS
+TER,SEMIS
+LRCX,SEMIS
+MKSI,SEMIS
+
+[SPECULATIVE]
+# 여기에 초기 모멘텀 관찰 종목 추가
