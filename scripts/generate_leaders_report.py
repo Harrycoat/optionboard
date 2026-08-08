@@ -7,7 +7,13 @@ public/leaders_report.json 으로 저장합니다.
 
 - GEX 배지: options_engine.analyze_ticker() 재사용 (Massive.com API, 실측 gamma)
 - 가격/등락률/거래량: Massive.com의 전일 일봉(prev bar) 엔드포인트 사용
-  (options_engine._fetch_prev_close와 같은 엔드포인트, 여기서는 o/c/v를 전부 활용)
+
+daily_update.py 바로 다음에 같은 크론 잡 안에서 실행되는데, 두 스크립트가
+연달아 Massive API를 많이 호출하다 보니 분당 호출 제한에 걸려 조용히
+실패하는 경우가 있었다. 이를 완화하기 위해:
+  1) 시작 전에 잠깐 대기해서 daily_update.py의 호출 버스트가 가라앉을 시간을 줌
+  2) 종목 사이사이 딜레이를 둬서 호출을 분산시킴
+  3) "현재가를 가져오지 못했습니다" 류의 일시적 실패는 한 번 재시도함
 
 daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
 이어서 호출하면 매일 자동 갱신됩니다.
@@ -16,6 +22,7 @@ daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
 import json
 import os
 import sys
+import time
 from datetime import datetime, timezone
 
 import requests
@@ -29,6 +36,13 @@ WATCHLIST_PATH = os.path.join(os.path.dirname(__file__), "leaders_watchlist.txt"
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_report.json")
 
 CATEGORY_KEYS = {"WAVE1": "wave1", "WAVE2": "wave2", "SPECULATIVE": "speculative"}
+
+# daily_update.py 직후 실행되므로, API 호출 버스트가 가라앉을 시간을 준다
+STARTUP_DELAY_SECONDS = 15
+# 종목과 종목 사이 대기 시간 (분당 호출 제한 완화용)
+PER_TICKER_DELAY_SECONDS = 3
+# 실패 시 재시도 전 대기 시간
+RETRY_DELAY_SECONDS = 8
 
 
 def parse_watchlist(path):
@@ -54,11 +68,7 @@ def parse_watchlist(path):
 
 
 def fetch_daily_bar(ticker: str):
-    """
-    Massive.com의 전일 일봉(prev bar)을 가져온다.
-    매일 장마감 후 크론이 도는 구조라, 이 'prev' 바 자체가 그날의 완결된 세션이라
-    시가(o) 대비 종가(c)로 당일 등락률을 계산할 수 있다.
-    """
+    """Massive.com의 전일 일봉(prev bar)을 가져온다."""
     if not MASSIVE_API_KEY:
         return None
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
@@ -76,12 +86,20 @@ def fetch_daily_bar(ticker: str):
         return None
 
 
+def try_analyze(ticker: str):
+    """analyze_ticker()를 시도하고, 실패하면 한 번 더 재시도한다."""
+    try:
+        return analyze_ticker(ticker), None
+    except Exception as e:
+        print(f"    1차 실패 ({ticker}): {e} → {RETRY_DELAY_SECONDS}초 후 재시도")
+        time.sleep(RETRY_DELAY_SECONDS)
+        try:
+            return analyze_ticker(ticker), None
+        except Exception as e2:
+            return None, str(e2)
+
+
 def build_badge(ticker: str, sector: str) -> dict:
-    """
-    티커 하나에 대해 GEX 배지 + 가격/등락률/거래량을 계산하고
-    프론트엔드 카드가 바로 쓸 수 있는 형태로 정리한다.
-    개별 항목이 실패해도 사이트가 안 깨지도록 status 필드로 감싼다.
-    """
     badge = {
         "ticker": ticker,
         "sector": sector,
@@ -96,8 +114,8 @@ def build_badge(ticker: str, sector: str) -> dict:
         "status": "ok",
     }
 
-    try:
-        result = analyze_ticker(ticker)
+    result, err = try_analyze(ticker)
+    if result:
         spot = result.get("spot")
         call_wall = result.get("call_wall")
 
@@ -109,9 +127,8 @@ def build_badge(ticker: str, sector: str) -> dict:
 
         if call_wall is not None and spot:
             badge["call_wall_distance_pct"] = round((call_wall - spot) / spot * 100, 2)
-
-    except Exception as e:
-        badge["status"] = f"error: {e}"
+    else:
+        badge["status"] = f"error: {err}"
 
     # 가격/등락률/거래량은 GEX 계산이 실패해도 별도로 시도한다
     bar = fetch_daily_bar(ticker)
@@ -127,6 +144,9 @@ def build_badge(ticker: str, sector: str) -> dict:
 
 
 def build_report():
+    print(f"daily_update.py 직후 실행이라 {STARTUP_DELAY_SECONDS}초 대기 후 시작합니다...")
+    time.sleep(STARTUP_DELAY_SECONDS)
+
     categories = parse_watchlist(WATCHLIST_PATH)
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -138,6 +158,7 @@ def build_report():
         for item in tickers:
             print(f"  분석 중: {item['ticker']} ({cat_key})")
             entries.append(build_badge(item["ticker"], item["sector"]))
+            time.sleep(PER_TICKER_DELAY_SECONDS)
         report["categories"][cat_key] = entries
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
