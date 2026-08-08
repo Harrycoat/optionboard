@@ -1,5 +1,46 @@
 {
-  "generated_at": null,
+  "generated_at": "2026-08-08T22:10:10.949085+00:00",
   "tickers": [],
-  "errors": []
+  "errors": [
+    {
+      "ticker": "SPY",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "QQQ",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "NET",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "MU",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "SNDK",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "WDC",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "TSLA",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "GOOGL",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "AMD",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    },
+    {
+      "ticker": "INTC",
+      "error": "MASSIVE_API_KEY 환경변수가 설정되지 않았습니다. Vercel 프로젝트 Settings > Environment Variables에 등록해주세요."
+    }
+  ]
 }
