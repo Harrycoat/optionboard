@@ -83,6 +83,7 @@
 
   .empty{ color: var(--text-dim); font-size:13px; padding: 20px; border:1px dashed var(--line); border-radius:8px; text-align:center;}
 
+  /* ---------- 오늘의 주도주 ---------- */
   .leaders-grid{
     display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;
   }
@@ -98,14 +99,20 @@
   .leader-col-header.speculative{ color: var(--gold); }
   .leader-col-desc{ font-size:11px; color: var(--text-dim); margin-bottom:12px; }
   .leader-card{
-    display:flex; justify-content:space-between; align-items:center;
-    padding: 9px 4px; border-bottom: 1px solid var(--line); cursor:pointer;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding: 10px 4px; border-bottom: 1px solid var(--line); cursor:pointer; gap:8px;
   }
   .leader-card:last-child{ border-bottom:none; }
   .leader-card:hover{ opacity:0.8; }
   .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); }
   .leader-sector{ font-size:10px; color: var(--text-dim); margin-top:2px; }
-  .leader-badge{ font-family:'JetBrains Mono',monospace; font-size:11px; text-align:right; }
+  .leader-vol{ font-size:10px; color: var(--text-dim); margin-top:1px; font-family:'JetBrains Mono',monospace; }
+  .leader-right{ text-align:right; }
+  .leader-price{ font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color: var(--text); white-space:nowrap; }
+  .leader-price .chg{ font-size:11px; font-weight:700; margin-left:4px; }
+  .leader-price .chg.up{ color: var(--up); }
+  .leader-price .chg.down{ color: var(--down); }
+  .leader-badge{ font-family:'JetBrains Mono',monospace; font-size:11px; text-align:right; margin-top:3px; }
   .badge-distance{ color: var(--text-dim); }
   .badge-distance.near{ color: var(--up); }
   .badge-regime{ display:inline-block; margin-top:3px; padding:1px 6px; border-radius:3px; font-size:9px; }
@@ -113,6 +120,7 @@
   .badge-regime.negative{ background: rgba(229,72,77,0.15); color: var(--up); }
   .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
 
+  /* 상세 패널 */
   .detail{ background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:16px; }
   .detail-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
   .detail-head h2{ font-size:22px; font-family:'JetBrains Mono',monospace; }
@@ -208,6 +216,15 @@ function fmtCompact(n){
   return n.toFixed(0);
 }
 
+function fmtVolume(n){
+  if(n===null || n===undefined || isNaN(n)) return '—';
+  const abs = Math.abs(n);
+  if(abs >= 1e6) return (n/1e6).toFixed(1)+'M';
+  if(abs >= 1e3) return (n/1e3).toFixed(0)+'K';
+  return String(n);
+}
+
+// ---------- 오늘의 주도주 ----------
 function leaderCardHTML(item){
   const near = item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined && item.call_wall_distance_pct <= 2;
   const distanceText = (item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined)
@@ -217,15 +234,27 @@ function leaderCardHTML(item){
     ? `<span class="badge-regime ${item.gamma_regime}">${item.gamma_regime === 'positive' ? '양감마' : '음감마'}</span>`
     : '';
 
+  const priceText = (item.spot !== null && item.spot !== undefined) ? `$${fmtNum(item.spot)}` : '—';
+  let chgHtml = '';
+  if(item.price_change_pct !== null && item.price_change_pct !== undefined){
+    const isUp = item.price_change_pct >= 0;
+    chgHtml = `<span class="chg ${isUp?'up':'down'}">${isUp?'+':''}${item.price_change_pct}%</span>`;
+  }
+  const volText = (item.volume !== null && item.volume !== undefined) ? `Vol ${fmtVolume(item.volume)}` : '';
+
   return `
     <div class="leader-card" data-ticker="${item.ticker}">
       <div>
         <div class="leader-ticker">${item.ticker}</div>
         <div class="leader-sector">${item.sector || ''}</div>
+        <div class="leader-vol">${volText}</div>
       </div>
-      <div class="leader-badge">
-        <div class="badge-distance ${near ? 'near' : ''}">${distanceText}</div>
-        ${regimeHtml}
+      <div class="leader-right">
+        <div class="leader-price">${priceText}${chgHtml}</div>
+        <div class="leader-badge">
+          <div class="badge-distance ${near ? 'near' : ''}">${distanceText}</div>
+          ${regimeHtml}
+        </div>
       </div>
     </div>
   `;
@@ -264,6 +293,7 @@ async function loadLeaders(){
   }
 }
 
+// ---------- 관심종목 (정적 리포트, 매일 자동 갱신) ----------
 async function loadWatchlist(){
   const grid = document.getElementById('watchlistGrid');
   const note = document.getElementById('updatedNote');
@@ -305,6 +335,7 @@ function cardHTML(t){
   </div>`;
 }
 
+// ---------- 검색 (실시간 계산) ----------
 async function searchTicker(ticker){
   const input = document.getElementById('tickerInput');
   const btn = document.getElementById('searchBtn');
