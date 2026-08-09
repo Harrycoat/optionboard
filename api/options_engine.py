@@ -448,7 +448,27 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "stage_n_closes": stage_info.get("n_closes"),
     }
 
+def quick_gamma_flip(ticker: str) -> dict:
+    """Top10 스캐너 전용 경량 분석.
 
+    analyze_ticker()와 달리 최근월물 옵션체인 1개만 조회하고,
+    Stage(420일 히스토리)/내러티브 계산을 생략해 API 호출을 최소화한다.
+    """
+    ticker = ticker.upper().strip()
+
+    snapshots = fetch_option_chain(ticker, max_expiries=1)
+    primary = snapshots[0]
+
+    gex = compute_gex(primary.spot, primary.expiry, primary.rows)
+
+    return {
+        "ticker": ticker,
+        "spot": primary.spot,
+        "expiry_used": primary.expiry,
+        "gamma_flip": gex["gamma_flip"],
+        "regime": gex["regime"],
+        "net_gex_total": gex["net_gex_total"],
+    }
 if __name__ == "__main__":
     import json
     import sys

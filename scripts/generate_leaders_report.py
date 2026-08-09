@@ -17,6 +17,16 @@ daily_update.py 바로 다음에 같은 크론 잡 안에서 실행되며, Massi
 
 daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
 이어서 호출하면 매일 자동 갱신됩니다.
+
+---
+[추가] Top10 Gamma Flip 스캐너
+S&P500 + 나스닥100 유니버스(sp500_nasdaq100_universe.txt)를 스캔해서,
+현재가가 Gamma Flip 라인에 가장 가까이 붙어있는 종목 Top10을 뽑아
+report["top10_gamma_flip"]에 저장한다. 감마 체제(양의감마<->음의감마) 전환이
+임박했을 가능성이 있는 = 변동성 확대 후보로 해석한다.
+analyze_ticker()는 만기 4개 옵션체인 + 420일 Stage 히스토리까지 조회하는
+무거운 함수라, 520종목 스캔에는 quick_gamma_flip()(최근월물 1개만 조회)을
+대신 사용해 API 호출을 최소화한다.
 """
 
 import json
@@ -29,10 +39,16 @@ import requests
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "api"))
 
-from options_engine import analyze_ticker, MASSIVE_API_BASE, MASSIVE_API_KEY
+from options_engine import (
+    analyze_ticker,
+    quick_gamma_flip,
+    MASSIVE_API_BASE,
+    MASSIVE_API_KEY,
+)
 
 WATCHLIST_PATH = os.path.join(os.path.dirname(__file__), "leaders_watchlist.txt")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_report.json")
+UNIVERSE_PATH = os.path.join(os.path.dirname(__file__), "sp500_nasdaq100_universe.txt")
 
 CATEGORY_KEYS = {"WAVE1": "wave1", "WAVE2": "wave2", "SPECULATIVE": "speculative"}
 
@@ -40,6 +56,13 @@ STARTUP_DELAY_SECONDS = 20
 PER_TICKER_DELAY_SECONDS = 4
 MAX_RETRIES = 2
 RETRY_BACKOFF_SECONDS = [8, 15]  # 재시도 1회차/2회차 대기시간
+
+# Top10 Gamma Flip 스캐너 전용 설정.
+# quick_gamma_flip()은 옵션체인 1개 만기만 조회하는 경량 호출이라
+# 기존 4초 딜레이보다 훨씬 짧게 잡아도 된다 (Options Starter 플랜은 호출 무제한).
+UNIVERSE_PER_TICKER_DELAY_SECONDS = 0.3
+UNIVERSE_MAX_RETRIES = 1  # 전체 스캔이라 재시도는 최소화 (실패 종목은 그냥 스킵)
+UNIVERSE_RETRY_BACKOFF_SECONDS = [5]
 
 
 def parse_watchlist(path):
@@ -150,6 +173,84 @@ def build_badge(ticker: str, sector: str) -> dict:
     return badge
 
 
+def load_universe(path: str) -> list:
+    """S&P500 + 나스닥100 유니버스 티커 리스트를 로드한다."""
+    tickers = []
+    with open(path, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            tickers.append(line)
+    return tickers
+
+
+def compute_flip_distance_pct(spot, gamma_flip):
+    """현재가가 Gamma Flip 라인에서 얼마나 떨어져 있는지 절대값 %로 계산한다."""
+    if spot is None or gamma_flip is None or spot == 0:
+        return None
+    return abs(spot - gamma_flip) / spot * 100
+
+
+def try_quick_flip(ticker: str):
+    """quick_gamma_flip()을 시도하고, 실패하면 최대 UNIVERSE_MAX_RETRIES회 재시도한다."""
+    for attempt in range(UNIVERSE_MAX_RETRIES + 1):
+        try:
+            return quick_gamma_flip(ticker), None
+        except Exception as e:
+            if attempt < UNIVERSE_MAX_RETRIES:
+                wait = UNIVERSE_RETRY_BACKOFF_SECONDS[attempt]
+                time.sleep(wait)
+            else:
+                return None, str(e)
+
+
+def build_top10_gamma_flip(universe_path: str = UNIVERSE_PATH, top_n: int = 10) -> list:
+    """유니버스 전체를 스캔해서 Gamma Flip 근접도(%) 기준 오름차순 Top N을 반환한다.
+
+    즉 '현재가가 Gamma Flip 라인에 가장 가까이 붙어있는' 종목이 1위가 된다.
+    이 구간은 감마 체제(양의 감마 <-> 음의 감마) 전환이 임박했을 가능성이 있어
+    변동성 확대 후보로 해석한다.
+    """
+    tickers = load_universe(universe_path)
+    print(f"\nGamma Flip 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
+
+    candidates = []
+    skipped = 0
+    for i, ticker in enumerate(tickers, 1):
+        if i % 50 == 0 or i == 1:
+            print(f"  진행: {i}/{len(tickers)} ({ticker})")
+
+        result, err = try_quick_flip(ticker)
+        if result:
+            spot = result.get("spot")
+            gamma_flip = result.get("gamma_flip")
+            dist_pct = compute_flip_distance_pct(spot, gamma_flip)
+            if dist_pct is not None:
+                candidates.append({
+                    "ticker": ticker,
+                    "spot": round(spot, 2) if spot is not None else None,
+                    "gamma_flip": gamma_flip,
+                    "gamma_regime": result.get("regime"),
+                    "flip_distance_pct": round(dist_pct, 2),
+                })
+            else:
+                skipped += 1
+        else:
+            skipped += 1
+
+        time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+
+    candidates.sort(key=lambda x: x["flip_distance_pct"])
+    top10 = candidates[:top_n]
+
+    print(
+        f"Gamma Flip 스캐너 완료: 유효 {len(candidates)}개 / "
+        f"스킵 {skipped}개 / Top {top_n} 추출"
+    )
+    return top10
+
+
 def build_report():
     print(f"daily_update.py 직후 실행이라 {STARTUP_DELAY_SECONDS}초 대기 후 시작합니다...")
     time.sleep(STARTUP_DELAY_SECONDS)
@@ -167,6 +268,8 @@ def build_report():
             entries.append(build_badge(item["ticker"], item["sector"]))
             time.sleep(PER_TICKER_DELAY_SECONDS)
         report["categories"][cat_key] = entries
+
+    report["top10_gamma_flip"] = build_top10_gamma_flip()
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
