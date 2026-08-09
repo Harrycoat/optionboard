@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08T23:59:34.876136+00:00",
+  "generated_at": "2026-08-09T06:12:41.788484+00:00",
   "categories": {
     "wave1": [
       {
@@ -24,8 +24,8 @@
         "call_wall_distance_pct": 4.65,
         "gamma_flip": 35,
         "gamma_regime": "positive",
-        "price_change_pct": 7.46,
-        "volume": 77579878.0,
+        "price_change_pct": null,
+        "volume": null,
         "status": "ok"
       }
     ],
@@ -52,8 +52,8 @@
         "call_wall_distance_pct": 2.56,
         "gamma_flip": 900,
         "gamma_regime": "positive",
-        "price_change_pct": -2.88,
-        "volume": 34568477.0,
+        "price_change_pct": null,
+        "volume": null,
         "status": "ok"
       },
       {
@@ -78,22 +78,22 @@
         "call_wall_distance_pct": 4.58,
         "gamma_flip": 990,
         "gamma_regime": "positive",
-        "price_change_pct": -5.79,
-        "volume": 5970682.0,
+        "price_change_pct": null,
+        "volume": null,
         "status": "ok"
       },
       {
         "ticker": "TER",
         "sector": "SEMIS",
         "spot": 379.31,
-        "call_wall": null,
-        "put_wall": null,
-        "call_wall_distance_pct": null,
-        "gamma_flip": null,
-        "gamma_regime": null,
+        "call_wall": 420,
+        "put_wall": 375,
+        "call_wall_distance_pct": 10.73,
+        "gamma_flip": 440,
+        "gamma_regime": "positive",
         "price_change_pct": -4.6,
         "volume": 3737946.0,
-        "status": "error: TER: 현재가를 가져오지 못했습니다"
+        "status": "ok"
       },
       {
         "ticker": "LRCX",
@@ -104,8 +104,8 @@
         "call_wall_distance_pct": 2.78,
         "gamma_flip": 330,
         "gamma_regime": "positive",
-        "price_change_pct": -0.17,
-        "volume": 6714117.0,
+        "price_change_pct": null,
+        "volume": null,
         "status": "ok"
       },
       {
@@ -122,6 +122,72 @@
         "status": "ok"
       }
     ],
-    "speculative": []
+    "speculative": [
+      {
+        "ticker": "UCTT",
+        "sector": "SEMIS",
+        "spot": 87.25,
+        "call_wall": 100,
+        "put_wall": 75,
+        "call_wall_distance_pct": 14.61,
+        "gamma_flip": 40,
+        "gamma_regime": "positive",
+        "price_change_pct": null,
+        "volume": null,
+        "status": "ok"
+      },
+      {
+        "ticker": "AEHR",
+        "sector": "SEMIS",
+        "spot": 103.07,
+        "call_wall": 110,
+        "put_wall": 100,
+        "call_wall_distance_pct": 6.72,
+        "gamma_flip": 43,
+        "gamma_regime": "negative",
+        "price_change_pct": 1.75,
+        "volume": 1577997.0,
+        "status": "ok"
+      },
+      {
+        "ticker": "ACMR",
+        "sector": "SEMIS",
+        "spot": 83.8,
+        "call_wall": 100,
+        "put_wall": 75,
+        "call_wall_distance_pct": 19.33,
+        "gamma_flip": 81,
+        "gamma_regime": "positive",
+        "price_change_pct": null,
+        "volume": null,
+        "status": "ok"
+      },
+      {
+        "ticker": "FORM",
+        "sector": "SEMIS",
+        "spot": 117.39,
+        "call_wall": 130,
+        "put_wall": 105,
+        "call_wall_distance_pct": 10.74,
+        "gamma_flip": 140,
+        "gamma_regime": "positive",
+        "price_change_pct": -2.09,
+        "volume": 651214,
+        "status": "ok"
+      },
+      {
+        "ticker": "LASR",
+        "sector": "SEMIS",
+        "spot": 56.16,
+        "call_wall": 75,
+        "put_wall": 55,
+        "call_wall_distance_pct": 33.56,
+        "gamma_flip": 80,
+        "gamma_regime": "positive",
+        "price_change_pct": null,
+        "volume": null,
+        "status": "ok"
+      }
+    ]
   }
 }
