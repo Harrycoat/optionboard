@@ -153,6 +153,9 @@
   .qf-item:last-child{ border-right:none; }
   .qf-label{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; }
   .qf-value{ font-family:'JetBrains Mono',monospace; font-size:14px; margin-top:3px; color:var(--text); }
+  .qf-value.stage2{ color: var(--up); }
+  .qf-value.stage4{ color: var(--down); }
+  .qf-value.stage1, .qf-value.stage3{ color: var(--gold); }
 
   footer{ text-align:center; color: var(--text-dim); font-size:11px; padding: 30px 20px; }
 
@@ -380,6 +383,14 @@ async function searchTicker(ticker){
   }
 }
 
+function stageValueHTML(d){
+  if(!d.stage){
+    return '<span style="color:var(--text-dim)">—</span>';
+  }
+  const labels = {1:'Stage 1 · 바닥다지기', 2:'Stage 2 · 상승국면', 3:'Stage 3 · 천정권', 4:'Stage 4 · 하락국면'};
+  return `<span class="qf-value stage${d.stage}">${labels[d.stage] || d.stage_label}</span>`;
+}
+
 function renderDetail(d){
   const detail = document.getElementById('detail');
   const regimePos = d.regime === 'positive';
@@ -396,6 +407,7 @@ function renderDetail(d){
       <summary>Max Pain · GEX가 뭔가요?</summary>
       <p><b>Max Pain</b>은 옵션 만기일에 옵션 매도자(주로 기관/마켓메이커)의 손실이 최소가 되는 가격이에요. 만기가 가까워질수록 주가가 이 가격 근처로 수렴하는 경향이 있다는 가설이 있습니다.</p>
       <p><b>GEX(Gamma Exposure)</b>는 마켓메이커가 옵션 포지션을 헤지하기 위해 사고파는 물량이 몰리는 가격대를 보여줘요. Call Wall은 상방 저항, Put Wall은 하방 지지로 작용하는 경향이 있고, Gamma Flip은 시장의 변동성 성격(양감마=안정적 박스권 / 음감마=변동성 확대)이 바뀌는 기준점이에요.</p>
+      <p><b>Stage(1~4)</b>는 30주 이동평균선(150거래일)의 위치·기울기로 본 큰 흐름 국면이에요. 2(상승)·4(하락)는 추세가 뚜렷한 구간, 1(바닥다지기)·3(천정권)은 방향 전환이 임박했을 수 있는 구간을 뜻해요.</p>
       <p style="color:var(--text-dim); font-size:11px;">⚠️ 참고 지표일 뿐 매수/매도 신호가 아니에요.</p>
     </details>
 
@@ -404,6 +416,7 @@ function renderDetail(d){
       <div class="qf-item"><div class="qf-label">만기</div><div class="qf-value">${d.expiry_used} ${dDayText}</div></div>
       <div class="qf-item"><div class="qf-label">Net GEX</div><div class="qf-value" style="color:${regimePos?UP:DOWN}">${fmtCompact(d.net_gex_total)}</div></div>
       <div class="qf-item"><div class="qf-label">감마 체제</div><div class="qf-value" style="color:${regimePos?UP:DOWN}">${regimePos?'양의 감마':'음의 감마'}</div></div>
+      <div class="qf-item"><div class="qf-label">Stage</div>${stageValueHTML(d)}</div>
     </div>
 
     <div class="detail-head">
