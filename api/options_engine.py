@@ -455,4 +455,4 @@ if __name__ == "__main__":
 
     t = sys.argv[1] if len(sys.argv) > 1 else "AAPL"
     result = analyze_ticker(t)
-    print(json.dumps({k: v for k, v in result.items() if k not in ("pain_curve", "gex_by_strike")}, indent=2))ㄹ
+    print(json.dumps({k: v for k, v in result.items() if k not in ("pain_curve", "gex_by_strike")}, indent=2))
