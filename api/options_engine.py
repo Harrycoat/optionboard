@@ -15,7 +15,7 @@ Massive API가 계약별 실측 Greeks(gamma 포함), IV, OI를 직접 제공하
 from __future__ import annotations
 import os
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 import requests
@@ -81,7 +81,6 @@ def _fetch_full_options_chain(ticker: str) -> list[dict]:
         next_url = data.get("next_url")
         if not next_url:
             break
-        # next_url에는 이미 apiKey 빼고 다른 쿼리들이 포함돼 있어서, apiKey만 다시 붙여준다
         next_url = next_url + ("&" if "?" in next_url else "?") + f"apiKey={MASSIVE_API_KEY}"
 
     if not all_results:
@@ -93,8 +92,6 @@ def _fetch_full_options_chain(ticker: str) -> list[dict]:
 def _fetch_prev_close(ticker: str) -> Optional[float]:
     """
     옵션체인 스냅샷에 현재가(underlying_asset.price)가 안 들어있는 경우를 위한 대체 경로.
-    (해당 필드는 유료 Stocks 플랜에 종속될 수 있음 — 대신 기본 Stocks 플랜에서도
-    보통 제공되는 '전일 종가' 엔드포인트로 근사치를 가져온다.)
     """
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
     try:
@@ -111,8 +108,6 @@ def _fetch_prev_close(ticker: str) -> Optional[float]:
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
     """
     가까운 만기(들)의 옵션체인을 Massive.com에서 가져온다.
-    expiry가 주어지면 그 만기 하나만, 아니면 가장 가까운 max_expiries개를 합쳐서
-    (GEX 표준 관례: 근접 만기 여러 개를 합산) 반환한다.
     """
     raw_results = _fetch_full_options_chain(ticker)
 
@@ -123,7 +118,7 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
         details = item.get("details", {})
         exp = details.get("expiration_date")
         strike = details.get("strike_price")
-        contract_type = details.get("contract_type")  # "call" | "put"
+        contract_type = details.get("contract_type")
         if not exp or strike is None or contract_type not in ("call", "put"):
             continue
 
@@ -147,7 +142,6 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
             row["put_gamma"] = float(gamma)
 
     if spot is None:
-        # 옵션체인 응답에 현재가가 없는 경우(Stocks 플랜 제약 등) 전일 종가로 대체
         spot = _fetch_prev_close(ticker)
 
     if spot is None:
@@ -187,7 +181,7 @@ def compute_max_pain(rows: list[OptionRow]) -> dict:
     for candidate in strikes:
         call_payout = sum((candidate - r.strike) * r.call_oi for r in rows if r.strike < candidate)
         put_payout = sum((r.strike - candidate) * r.put_oi for r in rows if r.strike > candidate)
-        pain_by_strike[candidate] = (call_payout + put_payout) * 100  # 계약당 100주
+        pain_by_strike[candidate] = (call_payout + put_payout) * 100
 
     max_pain_strike = min(pain_by_strike, key=pain_by_strike.get)
     return {
@@ -200,18 +194,12 @@ def compute_max_pain(rows: list[OptionRow]) -> dict:
 # GEX (Gamma Exposure)
 # ---------------------------------------------------------------------------
 def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
-    """
-    Massive API가 계약별 실측 gamma를 직접 제공하므로 여기서는 그 값을
-    OI/스팟가격과 결합해 달러 기준 GEX로 환산하기만 하면 된다
-    (예전 야후 버전처럼 Black-Scholes로 gamma를 역산할 필요 없음).
-    """
     gex_by_strike = {}
 
     for r in rows:
         call_gamma = r.call_gamma
         put_gamma = r.put_gamma
 
-        # 표준 컨벤션: 딜러는 콜 롱(양의 감마) / 풋 숏(음의 감마)로 모델링
         call_gex = call_gamma * r.call_oi * 100 * (spot ** 2) * 0.01
         put_gex = -1 * put_gamma * r.put_oi * 100 * (spot ** 2) * 0.01
 
@@ -224,9 +212,6 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     if not gex_by_strike:
         return {"call_wall": None, "put_wall": None, "gamma_flip": None, "net_gex_total": 0, "by_strike": []}
 
-    # 업계 표준 관례: Call Wall은 현재가 이상(저항선), Put Wall은 현재가 이하(지지선)
-    # 스트라이크 중에서만 찾는다. (제약 없이 전체에서 찾으면, 현재가 근처 한 스트라이크에
-    # 콜/풋 물량이 동시에 몰려있을 때 두 벽이 우연히 같은 지점으로 겹쳐버리는 문제가 생김)
     strikes_at_or_above = {k: v for k, v in gex_by_strike.items() if k >= spot}
     strikes_at_or_below = {k: v for k, v in gex_by_strike.items() if k <= spot}
 
@@ -234,9 +219,8 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     put_candidates = strikes_at_or_below if strikes_at_or_below else gex_by_strike
 
     call_wall = max(call_candidates, key=lambda k: call_candidates[k]["call_gex"])
-    put_wall = min(put_candidates, key=lambda k: put_candidates[k]["put_gex"])  # 가장 음수인 지점
+    put_wall = min(put_candidates, key=lambda k: put_candidates[k]["put_gex"])
 
-    # Gamma flip: net GEX 누적합이 부호가 바뀌는 strike (낮은 strike부터 정렬 후 탐색)
     sorted_strikes = sorted(gex_by_strike.keys())
     cumulative = 0.0
     gamma_flip = None
@@ -249,7 +233,6 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
             break
         prev_strike = k
     if gamma_flip is None and sorted_strikes:
-        # 못 찾으면 net_gex 절대값이 0에 가장 가까운 strike로 근사
         gamma_flip = min(sorted_strikes, key=lambda k: abs(gex_by_strike[k]["net_gex"]))
 
     net_gex_total = sum(v["net_gex"] for v in gex_by_strike.values())
@@ -264,6 +247,79 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
             {"strike": k, **v} for k, v in sorted(gex_by_strike.items())
         ],
     }
+
+# ---------------------------------------------------------------------------
+# Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
+# ---------------------------------------------------------------------------
+def fetch_daily_closes(ticker: str, lookback_days: int = 300) -> list[float]:
+    """
+    최근 lookback_days(달력일 기준)치 일봉 종가를 오래된 순으로 반환한다.
+    150거래일(30주) 이평선 + 그 기울기 계산에 쓰인다.
+    """
+    end = date.today()
+    start = end - timedelta(days=lookback_days)
+    url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
+    try:
+        data = _massive_get(url, {"adjusted": "true", "sort": "asc", "limit": 500})
+    except MassiveAPIError:
+        return []
+    results = data.get("results") or []
+    closes = [r.get("c") for r in results if r.get("c") is not None]
+    return closes
+
+
+def compute_stage(closes: list[float]) -> dict:
+    """
+    30주선(150거래일 이평선)의 위치/기울기로 Weinstein 4단계를 간단하게 판정한다.
+    - Stage 2 (상승국면): 가격이 상승 중인 30주선 위
+    - Stage 4 (하락국면): 가격이 하락 중인 30주선 아래
+    - Stage 1 (바닥다지기): 30주선이 평평해지는데, 그 직전이 하락 추세였던 경우
+    - Stage 3 (천정권): 30주선이 평평해지는데, 그 직전이 상승 추세였던 경우
+    데이터가 부족하면 stage=None 반환.
+    """
+    result = {"stage": None, "label": None, "sma150": None, "slope_pct": None}
+
+    if len(closes) < 190:
+        return result
+
+    def sma(vals: list[float]) -> float:
+        return sum(vals) / len(vals)
+
+    sma_series = [sma(closes[i - 149:i + 1]) for i in range(149, len(closes))]
+    if len(sma_series) < 80:
+        return result
+
+    sma_now = sma_series[-1]
+    sma_recent = sma_series[-40] if len(sma_series) >= 40 else sma_series[0]
+    sma_earlier = sma_series[-80] if len(sma_series) >= 80 else sma_series[0]
+
+    price_now = closes[-1]
+    slope_pct = (sma_now - sma_recent) / sma_recent * 100 if sma_recent else 0
+    prior_slope_pct = (sma_recent - sma_earlier) / sma_earlier * 100 if sma_earlier else 0
+    pos_pct = (price_now - sma_now) / sma_now * 100 if sma_now else 0
+
+    SLOPE_THRESH = 2.0
+    POS_THRESH = 2.0
+
+    if pos_pct > POS_THRESH and slope_pct > SLOPE_THRESH:
+        stage, label = 2, "상승국면"
+    elif pos_pct < -POS_THRESH and slope_pct < -SLOPE_THRESH:
+        stage, label = 4, "하락국면"
+    elif prior_slope_pct < -SLOPE_THRESH:
+        stage, label = 1, "바닥다지기"
+    elif prior_slope_pct > SLOPE_THRESH:
+        stage, label = 3, "천정권"
+    else:
+        stage, label = (2, "상승국면") if pos_pct >= 0 else (4, "하락국면")
+
+    result.update({
+        "stage": stage,
+        "label": label,
+        "sma150": round(sma_now, 2),
+        "slope_pct": round(slope_pct, 2),
+    })
+    return result
+
 
 # ---------------------------------------------------------------------------
 # 한국어 해설 문장 생성 (참고용 — 매수/매도 지시 아님)
@@ -284,17 +340,8 @@ def build_narrative(
     regime: str,
     expiry_used: str,
 ) -> list[str]:
-    """
-    계산된 지표를 한국어 해설로 풀어준다. 구조화된 포맷(굵은 소제목 + 핵심 라인
-    목록 + 한 줄 정리)으로 스캔하기 쉽게 구성한다.
-    - "사세요/파세요" 같은 직접적 매매 지시는 절대 하지 않는다.
-    - 항상 "가능성/경향/참고" 같은 완곡한 표현을 사용한다 (투자자문 아님).
-    - 반환값은 문자열 리스트이며, 각 항목은 프론트엔드에서 <p> 태그로 감싸져
-      그대로 렌더링된다. <b> 태그 등 간단한 인라인 HTML 사용 가능.
-    """
     lines: list[str] = []
 
-    # 1) 감마 레짐 요약 (굵은 소제목 + 짧은 설명)
     if regime == "positive":
         lines.append(
             "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, "
@@ -306,7 +353,6 @@ def build_narrative(
             "추세가 붙으면 변동성이 커질 가능성이 있어요."
         )
 
-    # 2) 핵심 라인 목록 (Put Wall / Call Wall / Gamma Flip)
     key_lines: list[str] = []
     if put_wall is not None and spot:
         put_pct = (put_wall - spot) / spot * 100
@@ -329,7 +375,6 @@ def build_narrative(
         for kl in key_lines:
             lines.append(f"&nbsp;&nbsp;• {kl}")
 
-    # 3) 만기일 전망 (Max Pain)
     if max_pain is not None and spot:
         day_text = ""
         try:
@@ -345,7 +390,6 @@ def build_narrative(
             "다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요."
         )
 
-    # 4) 한 줄 정리
     if put_wall is not None and call_wall is not None and spot:
         target = max_pain if max_pain is not None else call_wall
         target_label = "Max Pain" if max_pain is not None else "Call Wall"
@@ -365,12 +409,9 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     ticker = ticker.upper().strip()
     snapshots = fetch_option_chain(ticker, expiry=expiry)
 
-    # GEX는 근접 만기 합산 관례를 따르되, Max Pain은 가장 가까운 만기 기준으로 표시
     primary = snapshots[0]
     max_pain = compute_max_pain(primary.rows)
 
-    # 여러 만기 합산 GEX (strike 기준 병합)
-    # OI는 만기별로 합산하고, gamma는 만기마다 값이 달라서 근접 만기(첫 snapshot) 값을 우선 사용
     merged: dict[float, OptionRow] = {}
     for snap in snapshots:
         for r in snap.rows:
@@ -396,6 +437,12 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         expiry_used=primary.expiry,
     )
 
+    try:
+        closes = fetch_daily_closes(ticker)
+        stage_info = compute_stage(closes)
+    except Exception:
+        stage_info = {"stage": None, "label": None, "sma150": None, "slope_pct": None}
+
     return {
         "ticker": ticker,
         "spot": primary.spot,
@@ -411,6 +458,10 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "regime": gex["regime"],
         "gex_by_strike": gex["by_strike"],
         "narrative": narrative,
+        "stage": stage_info["stage"],
+        "stage_label": stage_info["label"],
+        "stage_sma150": stage_info["sma150"],
+        "stage_slope_pct": stage_info["slope_pct"],
     }
 
 
