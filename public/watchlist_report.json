@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T06:12:21.682249+00:00",
+  "generated_at": "2026-08-09T22:09:56.955713+00:00",
   "tickers": [
     {
       "ticker": "SPY",
@@ -11,12 +11,12 @@
         "2026-08-12",
         "2026-08-13"
       ],
-      "generated_at": "2026-08-09T06:11:14.568714+00:00",
+      "generated_at": "2026-08-09T22:08:29.398910+00:00",
       "max_pain": 765,
       "call_wall": 775,
       "put_wall": 770,
       "gamma_flip": 775,
-      "net_gex_total": 1136711263.5700676,
+      "net_gex_total": 1161087015.8131943,
       "regime": "positive",
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
@@ -44,12 +44,12 @@
         "2026-08-12",
         "2026-08-13"
       ],
-      "generated_at": "2026-08-09T06:11:29.025633+00:00",
+      "generated_at": "2026-08-09T22:08:46.342753+00:00",
       "max_pain": 708,
       "call_wall": 730,
       "put_wall": 720,
       "gamma_flip": 723,
-      "net_gex_total": 687127269.491005,
+      "net_gex_total": 689332848.895825,
       "regime": "positive",
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
@@ -77,12 +77,12 @@
         "2026-08-28",
         "2026-09-04"
       ],
-      "generated_at": "2026-08-09T06:11:31.227896+00:00",
+      "generated_at": "2026-08-09T22:08:49.134212+00:00",
       "max_pain": 280,
       "call_wall": 320,
       "put_wall": 280,
       "gamma_flip": 300,
-      "net_gex_total": 7425217.187184341,
+      "net_gex_total": 7442318.24980609,
       "regime": "positive",
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
@@ -97,12 +97,12 @@
       "stage_label": null,
       "stage_sma150": null,
       "stage_slope_pct": null,
-      "stage_debug": "API 오류: Massive API 오류 (429): {\"status\":\"ERROR\",\"request_id\":\"11e10be11789b6de418a8d66dec29443\",\"error\":\"You've exceeded the maximum requests per minute, please wait or upgrade your subscription to continue. https://massive.com/pricing\"}",
+      "stage_debug": "API 오류: Massive API 오류 (429): {\"status\":\"ERROR\",\"request_id\":\"c8dbf48e8cb82b0a0c0839bb44bb37ad\",\"error\":\"You've exceeded the maximum requests per minute, please wait or upgrade your subscription to continue. https://massive.com/pricing\"}",
       "stage_n_closes": 0
     },
     {
-      "ticker": "TSLA",
-      "spot": 328.58,
+      "ticker": "MU",
+      "spot": 877.57,
       "expiry_used": "2026-08-10",
       "expiries_included_in_gex": [
         "2026-08-10",
@@ -110,108 +110,108 @@
         "2026-08-14",
         "2026-08-17"
       ],
-      "generated_at": "2026-08-09T06:12:05.751131+00:00",
-      "max_pain": 317.5,
-      "call_wall": 330,
-      "put_wall": 325,
-      "gamma_flip": 320,
-      "net_gex_total": 199205878.05971497,
+      "generated_at": "2026-08-09T22:09:04.987806+00:00",
+      "max_pain": 860,
+      "call_wall": 900,
+      "put_wall": 870,
+      "gamma_flip": 900,
+      "net_gex_total": 84666191.24733533,
       "regime": "positive",
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 325 (-1.1%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 330 (+0.4%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 320 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-08-10, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 317.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -3.4%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 325~330 사이 박스권에서 움직이되, 옵션 만기 특성상 317.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
-      ],
-      "stage": 4,
-      "stage_label": "하락국면",
-      "stage_sma150": 396.69,
-      "stage_slope_pct": -4.53,
-      "stage_debug": "start=2025-06-15 end=2026-08-09 raw_results=288 closes=288 status=DELAYED",
-      "stage_n_closes": 288
-    },
-    {
-      "ticker": "GOOGL",
-      "spot": 354.3,
-      "expiry_used": "2026-08-10",
-      "expiries_included_in_gex": [
-        "2026-08-10",
-        "2026-08-12",
-        "2026-08-14",
-        "2026-08-17"
-      ],
-      "generated_at": "2026-08-09T06:12:11.202973+00:00",
-      "max_pain": 360,
-      "call_wall": 365,
-      "put_wall": 350,
-      "gamma_flip": 357.5,
-      "net_gex_total": 30638598.73212651,
-      "regime": "positive",
-      "narrative": [
-        "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
-        "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 350 (-1.2%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 365 (+3.0%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 357.5 — 추세 변화의 기점이 되는 위치 (현재는 아래에 위치)",
-        "<b>만기일 (2026-08-10, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 360 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +1.6%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 350~365 사이 박스권에서 움직이되, 옵션 만기 특성상 360(Max Pain) 쪽으로 수렴하며 끌려 올라갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 870 (-0.9%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 900 (+2.6%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 900 — 추세 변화의 기점이 되는 위치 (현재는 아래에 위치)",
+        "<b>만기일 (2026-08-10, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 860 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.0%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 870~900 사이 박스권에서 움직이되, 옵션 만기 특성상 860(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
-      "stage_sma150": 339.95,
-      "stage_slope_pct": 3.86,
+      "stage_sma150": 633.36,
+      "stage_slope_pct": 42.29,
       "stage_debug": "start=2025-06-15 end=2026-08-09 raw_results=288 closes=288 status=DELAYED",
       "stage_n_closes": 288
     },
     {
-      "ticker": "AMD",
-      "spot": 483.36,
-      "expiry_used": "2026-08-10",
+      "ticker": "SNDK",
+      "spot": 1212.21,
+      "expiry_used": "2026-08-14",
       "expiries_included_in_gex": [
-        "2026-08-10",
-        "2026-08-12",
         "2026-08-14",
-        "2026-08-17"
+        "2026-08-21",
+        "2026-08-28",
+        "2026-09-04"
       ],
-      "generated_at": "2026-08-09T06:12:18.224053+00:00",
-      "max_pain": 490,
-      "call_wall": 500,
-      "put_wall": 480,
-      "gamma_flip": 495,
-      "net_gex_total": 41996565.53388554,
-      "regime": "positive",
+      "generated_at": "2026-08-09T22:09:21.358050+00:00",
+      "max_pain": 1360,
+      "call_wall": 1300,
+      "put_wall": 1200,
+      "gamma_flip": 662.5,
+      "net_gex_total": -29204659.083906922,
+      "regime": "negative",
       "narrative": [
-        "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
+        "<b>음의 감마 (변동성 확대)</b>: 딜러들이 가격 움직임을 증폭시키는 방향으로 헤지하는 경향이 있어, 추세가 붙으면 변동성이 커질 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 480 (-0.7%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 500 (+3.4%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 495 — 추세 변화의 기점이 되는 위치 (현재는 아래에 위치)",
-        "<b>만기일 (2026-08-10, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 490 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +1.4%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 480~500 사이 박스권에서 움직이되, 옵션 만기 특성상 490(Max Pain) 쪽으로 수렴하며 끌려 올라갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 1200 (-1.0%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1300 (+7.2%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 662.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-08-14, D-4) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 1360 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +12.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 1200~1300 사이 박스권에서 움직이되, 옵션 만기 특성상 1360(Max Pain) 쪽으로 수렴하며 끌려 올라갈 가능성이 있는 상태\""
+      ],
+      "stage": 2,
+      "stage_label": "상승국면",
+      "stage_sma150": 1089.76,
+      "stage_slope_pct": 53.03,
+      "stage_debug": "start=2025-06-15 end=2026-08-09 raw_results=288 closes=288 status=DELAYED",
+      "stage_n_closes": 288
+    },
+    {
+      "ticker": "WDC",
+      "spot": 434.3,
+      "expiry_used": "2026-08-14",
+      "expiries_included_in_gex": [
+        "2026-08-14",
+        "2026-08-21",
+        "2026-08-28",
+        "2026-09-04"
+      ],
+      "generated_at": "2026-08-09T22:09:27.087343+00:00",
+      "max_pain": 500,
+      "call_wall": 460,
+      "put_wall": 400,
+      "gamma_flip": 315,
+      "net_gex_total": -21877596.097252876,
+      "regime": "negative",
+      "narrative": [
+        "<b>음의 감마 (변동성 확대)</b>: 딜러들이 가격 움직임을 증폭시키는 방향으로 헤지하는 경향이 있어, 추세가 붙으면 변동성이 커질 가능성이 있어요.",
+        "<b>주요 핵심 라인:</b>",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 400 (-7.9%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 460 (+5.9%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 315 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-08-14, D-4) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 500 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +15.1%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 400~460 사이 박스권에서 움직이되, 옵션 만기 특성상 500(Max Pain) 쪽으로 수렴하며 끌려 올라갈 가능성이 있는 상태\""
       ],
       "stage": null,
       "stage_label": null,
       "stage_sma150": null,
       "stage_slope_pct": null,
-      "stage_debug": "API 오류: Massive API 오류 (429): {\"status\":\"ERROR\",\"request_id\":\"e80ff354a7a373c7ee0c91dd2b8c91bb\",\"error\":\"You've exceeded the maximum requests per minute, please wait or upgrade your subscription to continue. https://massive.com/pricing\"}",
+      "stage_debug": "API 오류: Massive API 오류 (429): {\"status\":\"ERROR\",\"request_id\":\"61f1f4bd8cbe00d4714c5ca7cbbff0f5\",\"error\":\"You've exceeded the maximum requests per minute, please wait or upgrade your subscription to continue. https://massive.com/pricing\"}",
       "stage_n_closes": 0
     }
   ],
   "errors": [
     {
-      "ticker": "MU",
-      "error": "MU: 현재가를 가져오지 못했습니다"
+      "ticker": "TSLA",
+      "error": "TSLA: 현재가를 가져오지 못했습니다"
     },
     {
-      "ticker": "SNDK",
-      "error": "SNDK: 현재가를 가져오지 못했습니다"
+      "ticker": "GOOGL",
+      "error": "GOOGL: 현재가를 가져오지 못했습니다"
     },
     {
-      "ticker": "WDC",
-      "error": "WDC: 현재가를 가져오지 못했습니다"
+      "ticker": "AMD",
+      "error": "AMD: 현재가를 가져오지 못했습니다"
     },
     {
       "ticker": "INTC",
