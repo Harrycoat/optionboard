@@ -140,6 +140,25 @@
 
   .note{ font-size:12px; color: var(--text-dim); margin-top:14px; line-height:1.6; border-top:1px solid var(--line); padding-top:12px;}
 
+  .share-x-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--panel-2); color: var(--text); border:1px solid var(--line);
+    padding: 6px 10px; border-radius:6px; font-size:12px; cursor:pointer;
+    font-family:'Pretendard', sans-serif; white-space:nowrap;
+  }
+  .share-x-btn:hover{ border-color: var(--gold); color: var(--gold); }
+  .share-x-btn svg{ flex-shrink:0; }
+
+  .toast{
+    position: fixed; left:50%; bottom:28px; transform: translateX(-50%) translateY(20px);
+    background: var(--panel-2); border:1px solid var(--line); color: var(--text);
+    padding: 12px 18px; border-radius: 8px; font-size:13px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    opacity:0; pointer-events:none; transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
   /* 개념 설명 + 핵심 데이터 요약 */
   .concept-box{ background: var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:16px; font-size:12px; line-height:1.7; color:var(--text-dim);}
   .concept-box summary{ cursor:pointer; color:var(--text); font-weight:700; font-size:13px; list-style:none; display:flex; align-items:center; gap:6px;}
@@ -391,7 +410,10 @@ function stageValueHTML(d){
   return `<span class="qf-value stage${d.stage}">${labels[d.stage] || d.stage_label}</span>`;
 }
 
+let currentDetail = null;
+
 function renderDetail(d){
+  currentDetail = d;
   const detail = document.getElementById('detail');
   const regimePos = d.regime === 'positive';
 
@@ -421,7 +443,13 @@ function renderDetail(d){
 
     <div class="detail-head">
       <h2>${d.ticker}</h2>
-      <div class="spot-big">$${fmtNum(d.spot)}</div>
+      <div style="display:flex; align-items:baseline; gap:10px;">
+        <div class="spot-big">$${fmtNum(d.spot)}</div>
+        <button class="share-x-btn" onclick="shareToX(currentDetail)" title="X에 올릴 요약 텍스트 복사">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.65l7.73-8.84L1.24 2.25h6.83l4.72 6.24 5.45-6.24Zm-1.17 17.52h1.83L7.02 4.13H5.06l12.01 15.64Z"/></svg>
+          공유 텍스트 복사
+        </button>
+      </div>
     </div>
     <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">
       만기 ${d.expiry_used} 기준 Max Pain · 근접 만기 ${d.expiries_included_in_gex.length}개 합산 GEX
@@ -453,6 +481,72 @@ function renderDetail(d){
   `;
 
   drawGexChart(d);
+}
+
+function buildXShareText(d){
+  const regimePos = d.regime === 'positive';
+  const regimeLabel = regimePos ? '📊 양의 감마 — 박스권 흐름 가능성' : '📊 음의 감마 — 변동성 확대 가능성';
+
+  const lines = [`$${d.ticker} $${fmtNum(d.spot)}`, regimeLabel];
+
+  if(d.put_wall != null && d.spot){
+    const pct = ((d.put_wall - d.spot) / d.spot * 100).toFixed(1);
+    lines.push(`🔵 Put Wall $${fmtNum(d.put_wall,1)} (${pct>0?'+':''}${pct}%)`);
+  }
+  if(d.call_wall != null && d.spot){
+    const pct = ((d.call_wall - d.spot) / d.spot * 100).toFixed(1);
+    lines.push(`🔴 Call Wall $${fmtNum(d.call_wall,1)} (${pct>0?'+':''}${pct}%)`);
+  }
+  if(d.gamma_flip != null){
+    lines.push(`⚡ Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
+  }
+  if(d.max_pain != null){
+    lines.push(`🎯 Max Pain $${fmtNum(d.max_pain,1)} (${d.expiry_used})`);
+  }
+
+  lines.push('');
+  lines.push('옵션을 알면 주식 진입시점이 보인다');
+  lines.push('gexoption.com');
+
+  return lines.join('\n');
+}
+
+function showToast(msg){
+  let toast = document.getElementById('shareToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'shareToast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(()=>toast.classList.remove('show'), 2200);
+}
+
+async function shareToX(d){
+  if(!d){ showToast('먼저 종목을 조회해주세요'); return; }
+  const text = buildXShareText(d);
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast('복사 완료! X 앱/웹에 붙여넣기 하세요 ✅');
+  }catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{
+      document.execCommand('copy');
+      showToast('복사 완료! X 앱/웹에 붙여넣기 하세요 ✅');
+    }catch(e2){
+      showToast('복사 실패 — 직접 선택해서 복사해주세요');
+    }
+    document.body.removeChild(ta);
+  }
 }
 
 function drawGexChart(d){
