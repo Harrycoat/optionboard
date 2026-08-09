@@ -285,58 +285,75 @@ def build_narrative(
     expiry_used: str,
 ) -> list[str]:
     """
-    계산된 지표를 한국어 해설 문장으로 풀어준다.
+    계산된 지표를 한국어 해설로 풀어준다. 구조화된 포맷(굵은 소제목 + 핵심 라인
+    목록 + 한 줄 정리)으로 스캔하기 쉽게 구성한다.
     - "사세요/파세요" 같은 직접적 매매 지시는 절대 하지 않는다.
     - 항상 "가능성/경향/참고" 같은 완곡한 표현을 사용한다 (투자자문 아님).
+    - 반환값은 문자열 리스트이며, 각 항목은 프론트엔드에서 <p> 태그로 감싸져
+      그대로 렌더링된다. <b> 태그 등 간단한 인라인 HTML 사용 가능.
     """
     lines: list[str] = []
 
+    # 1) 감마 레짐 요약 (굵은 소제목 + 짧은 설명)
     if regime == "positive":
         lines.append(
-            "현재 감마 레짐은 '양의 감마'예요. 이 구간에서는 딜러들이 변동성을 억제하는 "
-            "방향으로 헤지하는 경향이 있어, 급격한 등락보다는 상대적으로 좁은 박스권 흐름이 "
-            "나타날 가능성이 있어요."
+            "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, "
+            "큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요."
         )
     else:
         lines.append(
-            "현재 감마 레짐은 '음의 감마'예요. 이 구간에서는 딜러들이 가격 움직임을 증폭시키는 "
-            "방향으로 헤지하는 경향이 있어, 추세가 붙으면 변동성이 커질 가능성이 있어요."
+            "<b>음의 감마 (변동성 확대)</b>: 딜러들이 가격 움직임을 증폭시키는 방향으로 헤지하는 경향이 있어, "
+            "추세가 붙으면 변동성이 커질 가능성이 있어요."
         )
 
-    if gamma_flip is not None:
-        direction = "위" if spot >= gamma_flip else "아래"
-        lines.append(f"현재가는 감마 플립 지점({_fmt_strike(gamma_flip)}) {direction}에 위치해 있어요.")
-
+    # 2) 핵심 라인 목록 (Put Wall / Call Wall / Gamma Flip)
+    key_lines: list[str] = []
     if put_wall is not None and spot:
-        put_pct = (spot - put_wall) / spot * 100
-        lines.append(
-            f"Put Wall({_fmt_strike(put_wall)})은 현재가 대비 {put_pct:.1f}% 아래 지점으로, "
-            "하방 지지력이 있을 수 있는 구간이에요. 이 근처에서 반등하는지, 지지선을 뚫고 "
-            "더 내려가는지 지켜보면 참고가 될 수 있어요."
+        put_pct = (put_wall - spot) / spot * 100
+        key_lines.append(
+            f"하방 지지 (Put Wall): {_fmt_strike(put_wall)} ({put_pct:+.1f}%) — 이 근처에서 반등할지 체크"
         )
-
     if call_wall is not None and spot:
         call_pct = (call_wall - spot) / spot * 100
-        lines.append(
-            f"Call Wall({_fmt_strike(call_wall)})은 현재가 대비 {call_pct:.1f}% 위 지점으로, "
-            "상방 저항으로 작용할 수 있는 구간이에요. 이 구간을 돌파하는지, 저항에 막혀 "
-            "눌리는지 지켜보면 참고가 될 수 있어요."
+        key_lines.append(
+            f"상방 저항 (Call Wall): {_fmt_strike(call_wall)} ({call_pct:+.1f}%) — 이 근처에서 막히는지 체크"
+        )
+    if gamma_flip is not None and spot:
+        direction = "위" if spot >= gamma_flip else "아래"
+        key_lines.append(
+            f"감마 플립: {_fmt_strike(gamma_flip)} — 추세 변화의 기점이 되는 위치 (현재는 {direction}에 위치)"
         )
 
+    if key_lines:
+        lines.append("<b>주요 핵심 라인:</b>")
+        for kl in key_lines:
+            lines.append(f"&nbsp;&nbsp;• {kl}")
+
+    # 3) 만기일 전망 (Max Pain)
     if max_pain is not None and spot:
         day_text = ""
         try:
             exp_date = datetime.strptime(expiry_used, "%Y-%m-%d").replace(tzinfo=timezone.utc)
             days_left = max((exp_date - datetime.now(timezone.utc)).days, 0)
-            day_text = f"(D-{days_left}) "
+            day_text = f", D-{days_left}"
         except (ValueError, TypeError):
             pass
         pain_pct = (max_pain - spot) / spot * 100
         lines.append(
-            f"만기({expiry_used}) {day_text}가 다가올수록 'Max Pain 이론'에 따르면 주가가 "
-            f"{_fmt_strike(max_pain)} 근처로 수렴하는 경향이 있다는 가설이 있어요 "
-            f"(현재가 대비 {pain_pct:+.1f}%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 "
-            "거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요."
+            f"<b>만기일 ({expiry_used}{day_text}) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 "
+            f"{_fmt_strike(max_pain)} 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 {pain_pct:+.1f}%). "
+            "다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요."
+        )
+
+    # 4) 한 줄 정리
+    if put_wall is not None and call_wall is not None and spot:
+        target = max_pain if max_pain is not None else call_wall
+        target_label = "Max Pain" if max_pain is not None else "Call Wall"
+        pull_word = "끌려 올라갈" if target >= spot else "끌려 내려갈"
+        lines.append(
+            f"💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 {_fmt_strike(put_wall)}~{_fmt_strike(call_wall)} "
+            f"사이 박스권에서 움직이되, 옵션 만기 특성상 {_fmt_strike(target)}({target_label}) 쪽으로 수렴하며 "
+            f"{pull_word} 가능성이 있는 상태\""
         )
 
     return lines
