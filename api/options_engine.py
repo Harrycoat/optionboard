@@ -4,10 +4,6 @@ options_engine.py
 Max Pain + Gamma Exposure(GEX) 계산 엔진.
 Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플랜, 15분 지연).
 
-Massive API가 계약별 실측 Greeks(gamma 포함), IV, OI를 직접 제공하므로
-예전 야후 무료 버전처럼 Black-Scholes로 gamma를 자체 역산할 필요가 없음.
--> 계산 정확도가 바챠트 같은 유료 소스와 훨씬 가까워짐.
-
 필요 환경변수:
   MASSIVE_API_KEY  (Vercel Environment Variables에 등록)
 """
@@ -66,10 +62,6 @@ def _massive_get(url: str, params: Optional[dict] = None) -> dict:
 
 
 def _fetch_full_options_chain(ticker: str) -> list[dict]:
-    """
-    /v3/snapshot/options/{ticker} 전체 결과를 페이지네이션 따라가며 수집.
-    (모든 만기 + 모든 스트라이크가 한 번에 옴, 이후 만기별로 그룹핑)
-    """
     url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
     all_results: list[dict] = []
     params = {"limit": 250}
@@ -90,9 +82,6 @@ def _fetch_full_options_chain(ticker: str) -> list[dict]:
 
 
 def _fetch_prev_close(ticker: str) -> Optional[float]:
-    """
-    옵션체인 스냅샷에 현재가(underlying_asset.price)가 안 들어있는 경우를 위한 대체 경로.
-    """
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
     try:
         data = _massive_get(url)
@@ -106,9 +95,6 @@ def _fetch_prev_close(ticker: str) -> Optional[float]:
 
 
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
-    """
-    가까운 만기(들)의 옵션체인을 Massive.com에서 가져온다.
-    """
     raw_results = _fetch_full_options_chain(ticker)
 
     spot = None
@@ -250,34 +236,28 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
 
 # ---------------------------------------------------------------------------
 # Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
+# 지금은 원인 파악을 위해 stage_debug 필드를 임시로 노출한다.
 # ---------------------------------------------------------------------------
-def fetch_daily_closes(ticker: str, lookback_days: int = 300) -> list[float]:
+def fetch_daily_closes(ticker: str, lookback_days: int = 300) -> tuple[list[float], str]:
     """
     최근 lookback_days(달력일 기준)치 일봉 종가를 오래된 순으로 반환한다.
-    150거래일(30주) 이평선 + 그 기울기 계산에 쓰인다.
+    (closes, debug_info) 튜플을 반환한다 — debug_info는 원인 파악용 임시 필드.
     """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
     try:
         data = _massive_get(url, {"adjusted": "true", "sort": "asc", "limit": 500})
-    except MassiveAPIError:
-        return []
+    except MassiveAPIError as e:
+        return [], f"API 오류: {e}"
     results = data.get("results") or []
     closes = [r.get("c") for r in results if r.get("c") is not None]
-    return closes
+    debug = f"start={start.isoformat()} end={end.isoformat()} raw_results={len(results)} closes={len(closes)} status={data.get('status')}"
+    return closes, debug
 
 
 def compute_stage(closes: list[float]) -> dict:
-    """
-    30주선(150거래일 이평선)의 위치/기울기로 Weinstein 4단계를 간단하게 판정한다.
-    - Stage 2 (상승국면): 가격이 상승 중인 30주선 위
-    - Stage 4 (하락국면): 가격이 하락 중인 30주선 아래
-    - Stage 1 (바닥다지기): 30주선이 평평해지는데, 그 직전이 하락 추세였던 경우
-    - Stage 3 (천정권): 30주선이 평평해지는데, 그 직전이 상승 추세였던 경우
-    데이터가 부족하면 stage=None 반환.
-    """
-    result = {"stage": None, "label": None, "sma150": None, "slope_pct": None}
+    result = {"stage": None, "label": None, "sma150": None, "slope_pct": None, "n_closes": len(closes)}
 
     if len(closes) < 190:
         return result
@@ -437,11 +417,13 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         expiry_used=primary.expiry,
     )
 
+    stage_debug = None
     try:
-        closes = fetch_daily_closes(ticker)
+        closes, stage_debug = fetch_daily_closes(ticker)
         stage_info = compute_stage(closes)
-    except Exception:
-        stage_info = {"stage": None, "label": None, "sma150": None, "slope_pct": None}
+    except Exception as e:
+        stage_info = {"stage": None, "label": None, "sma150": None, "slope_pct": None, "n_closes": 0}
+        stage_debug = f"예외 발생: {e}"
 
     return {
         "ticker": ticker,
@@ -462,6 +444,8 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "stage_label": stage_info["label"],
         "stage_sma150": stage_info["sma150"],
         "stage_slope_pct": stage_info["slope_pct"],
+        "stage_debug": stage_debug,
+        "stage_n_closes": stage_info.get("n_closes"),
     }
 
 
