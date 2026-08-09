@@ -140,6 +140,20 @@
 
   .note{ font-size:12px; color: var(--text-dim); margin-top:14px; line-height:1.6; border-top:1px solid var(--line); padding-top:12px;}
 
+  /* 개념 설명 + 핵심 데이터 요약 */
+  .concept-box{ background: var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:16px; font-size:12px; line-height:1.7; color:var(--text-dim);}
+  .concept-box summary{ cursor:pointer; color:var(--text); font-weight:700; font-size:13px; list-style:none; display:flex; align-items:center; gap:6px;}
+  .concept-box summary::-webkit-details-marker{ display:none; }
+  .concept-box summary::before{ content:'▶'; font-size:10px; color:var(--gold); }
+  .concept-box[open] summary::before{ content:'▼'; }
+  .concept-box p{ margin-top:10px; }
+
+  .quickfacts{ display:flex; flex-wrap:wrap; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin:14px 0; }
+  .qf-item{ flex:1; min-width:110px; padding:10px 14px; border-right:1px solid var(--line); background:var(--panel-2); }
+  .qf-item:last-child{ border-right:none; }
+  .qf-label{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; }
+  .qf-value{ font-family:'JetBrains Mono',monospace; font-size:14px; margin-top:3px; color:var(--text); }
+
   footer{ text-align:center; color: var(--text-dim); font-size:11px; padding: 30px 20px; }
 
   @media (max-width: 560px){
@@ -370,7 +384,28 @@ function renderDetail(d){
   const detail = document.getElementById('detail');
   const regimePos = d.regime === 'positive';
 
+  let dDayText = '';
+  try{
+    const expDate = new Date(d.expiry_used);
+    const days = Math.max(Math.ceil((expDate - new Date())/86400000), 0);
+    dDayText = `D-${days}`;
+  }catch(e){}
+
   detail.innerHTML = `
+    <details class="concept-box">
+      <summary>Max Pain · GEX가 뭔가요?</summary>
+      <p><b>Max Pain</b>은 옵션 만기일에 옵션 매도자(주로 기관/마켓메이커)의 손실이 최소가 되는 가격이에요. 만기가 가까워질수록 주가가 이 가격 근처로 수렴하는 경향이 있다는 가설이 있습니다.</p>
+      <p><b>GEX(Gamma Exposure)</b>는 마켓메이커가 옵션 포지션을 헤지하기 위해 사고파는 물량이 몰리는 가격대를 보여줘요. Call Wall은 상방 저항, Put Wall은 하방 지지로 작용하는 경향이 있고, Gamma Flip은 시장의 변동성 성격(양감마=안정적 박스권 / 음감마=변동성 확대)이 바뀌는 기준점이에요.</p>
+      <p style="color:var(--text-dim); font-size:11px;">⚠️ 참고 지표일 뿐 매수/매도 신호가 아니에요.</p>
+    </details>
+
+    <div class="quickfacts">
+      <div class="qf-item"><div class="qf-label">현재가</div><div class="qf-value">$${fmtNum(d.spot)}</div></div>
+      <div class="qf-item"><div class="qf-label">만기</div><div class="qf-value">${d.expiry_used} ${dDayText}</div></div>
+      <div class="qf-item"><div class="qf-label">Net GEX</div><div class="qf-value" style="color:${regimePos?UP:DOWN}">${fmtCompact(d.net_gex_total)}</div></div>
+      <div class="qf-item"><div class="qf-label">감마 체제</div><div class="qf-value" style="color:${regimePos?UP:DOWN}">${regimePos?'양의 감마':'음의 감마'}</div></div>
+    </div>
+
     <div class="detail-head">
       <h2>${d.ticker}</h2>
       <div class="spot-big">$${fmtNum(d.spot)}</div>
