@@ -238,7 +238,7 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
 # Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
 # 지금은 원인 파악을 위해 stage_debug 필드를 임시로 노출한다.
 # ---------------------------------------------------------------------------
-def fetch_daily_closes(ticker: str, lookback_days: int = 300) -> tuple[list[float], str]:
+def fetch_daily_closes(ticker: str, lookback_days: int = 420) -> tuple[list[float], str]:
     """
     최근 lookback_days(달력일 기준)치 일봉 종가를 오래된 순으로 반환한다.
     (closes, debug_info) 튜플을 반환한다 — debug_info는 원인 파악용 임시 필드.
@@ -455,4 +455,4 @@ if __name__ == "__main__":
 
     t = sys.argv[1] if len(sys.argv) > 1 else "AAPL"
     result = analyze_ticker(t)
-    print(json.dumps({k: v for k, v in result.items() if k not in ("pain_curve", "gex_by_strike")}, indent=2))
+    print(json.dumps({k: v for k, v in result.items() if k not in ("pain_curve", "gex_by_strike")}, indent=2))ㄹ
