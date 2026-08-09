@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08T23:47:32.634244+00:00",
+  "generated_at": "2026-08-08T23:59:34.876136+00:00",
   "categories": {
     "wave1": [
       {
@@ -18,15 +18,15 @@
       {
         "ticker": "PLTR",
         "sector": "SOFTWARE",
-        "spot": null,
-        "call_wall": null,
-        "put_wall": null,
-        "call_wall_distance_pct": null,
-        "gamma_flip": null,
-        "gamma_regime": null,
-        "price_change_pct": null,
-        "volume": null,
-        "status": "error: PLTR: 현재가를 가져오지 못했습니다"
+        "spot": 172.01,
+        "call_wall": 180,
+        "put_wall": 160,
+        "call_wall_distance_pct": 4.65,
+        "gamma_flip": 35,
+        "gamma_regime": "positive",
+        "price_change_pct": 7.46,
+        "volume": 77579878.0,
+        "status": "ok"
       }
     ],
     "wave2": [
@@ -65,8 +65,8 @@
         "call_wall_distance_pct": 5.92,
         "gamma_flip": 315,
         "gamma_regime": "negative",
-        "price_change_pct": null,
-        "volume": null,
+        "price_change_pct": -5.06,
+        "volume": 11820839.0,
         "status": "ok"
       },
       {
@@ -86,14 +86,14 @@
         "ticker": "TER",
         "sector": "SEMIS",
         "spot": 379.31,
-        "call_wall": 420,
-        "put_wall": 375,
-        "call_wall_distance_pct": 10.73,
-        "gamma_flip": 440,
-        "gamma_regime": "positive",
+        "call_wall": null,
+        "put_wall": null,
+        "call_wall_distance_pct": null,
+        "gamma_flip": null,
+        "gamma_regime": null,
         "price_change_pct": -4.6,
         "volume": 3737946.0,
-        "status": "ok"
+        "status": "error: TER: 현재가를 가져오지 못했습니다"
       },
       {
         "ticker": "LRCX",
@@ -104,22 +104,22 @@
         "call_wall_distance_pct": 2.78,
         "gamma_flip": 330,
         "gamma_regime": "positive",
-        "price_change_pct": null,
-        "volume": null,
+        "price_change_pct": -0.17,
+        "volume": 6714117.0,
         "status": "ok"
       },
       {
         "ticker": "MKSI",
         "sector": "SEMIS",
-        "spot": null,
-        "call_wall": null,
-        "put_wall": null,
-        "call_wall_distance_pct": null,
-        "gamma_flip": null,
-        "gamma_regime": null,
-        "price_change_pct": null,
-        "volume": null,
-        "status": "error: MKSI: 현재가를 가져오지 못했습니다"
+        "spot": 304.99,
+        "call_wall": 340,
+        "put_wall": 300,
+        "call_wall_distance_pct": 11.48,
+        "gamma_flip": 210,
+        "gamma_regime": "positive",
+        "price_change_pct": 1.27,
+        "volume": 1269658.0,
+        "status": "ok"
       }
     ],
     "speculative": []
