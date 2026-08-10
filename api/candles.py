@@ -31,7 +31,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         try:
-            bars = fetch_daily_ohlc(ticker)
+            bars, ohlc_debug = fetch_daily_ohlc(ticker)
 
             levels = {}
             try:
@@ -50,6 +50,7 @@ class handler(BaseHTTPRequestHandler):
                 "ticker": ticker,
                 "bars": bars,
                 "levels": levels,
+                "ohlc_debug": ohlc_debug,
             }, ensure_ascii=False).encode())
         except Exception as e:
             self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
