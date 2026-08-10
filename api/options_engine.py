@@ -573,6 +573,35 @@ def rank_by_liquidity(ticker: str) -> dict:
     return {"ticker": ticker, "total_oi": total_oi}
 
 
+def fetch_daily_ohlc(ticker: str, lookback_days: int = 180) -> list[dict]:
+    """캔들차트용 일봉 OHLC(+거래량)를 오래된 순으로 반환한다.
+
+    fetch_daily_closes()와 달리 종가뿐 아니라 시가/고가/저가/거래량까지 반환한다.
+    """
+    end = date.today()
+    start = end - timedelta(days=lookback_days)
+    url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
+    data = _massive_get(url, {"adjusted": "true", "sort": "asc", "limit": 500})
+    results = data.get("results") or []
+
+    bars = []
+    for r in results:
+        ts = r.get("t")
+        o, h, l, c, v = r.get("o"), r.get("h"), r.get("l"), r.get("c"), r.get("v")
+        if None in (ts, o, h, l, c):
+            continue
+        day_str = datetime.fromtimestamp(ts / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
+        bars.append({
+            "time": day_str,
+            "open": round(float(o), 4),
+            "high": round(float(h), 4),
+            "low": round(float(l), 4),
+            "close": round(float(c), 4),
+            "volume": v,
+        })
+    return bars
+
+
 if __name__ == "__main__":
     import json
     import sys
