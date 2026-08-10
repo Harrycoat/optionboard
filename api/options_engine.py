@@ -573,22 +573,28 @@ def rank_by_liquidity(ticker: str) -> dict:
     return {"ticker": ticker, "total_oi": total_oi}
 
 
-def fetch_daily_ohlc(ticker: str, lookback_days: int = 180) -> list[dict]:
+def fetch_daily_ohlc(ticker: str, lookback_days: int = 180) -> tuple[list[dict], str]:
     """캔들차트용 일봉 OHLC(+거래량)를 오래된 순으로 반환한다.
 
     fetch_daily_closes()와 달리 종가뿐 아니라 시가/고가/저가/거래량까지 반환한다.
+    (bars, debug_info) 튜플을 반환한다 — debug_info는 원인 파악용 임시 필드.
     """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
-    data = _massive_get(url, {"adjusted": "true", "sort": "asc", "limit": 500})
+    try:
+        data = _massive_get(url, {"adjusted": "true", "sort": "asc", "limit": 500})
+    except MassiveAPIError as e:
+        return [], f"API 오류: {e}"
     results = data.get("results") or []
 
     bars = []
+    skipped = 0
     for r in results:
         ts = r.get("t")
         o, h, l, c, v = r.get("o"), r.get("h"), r.get("l"), r.get("c"), r.get("v")
         if None in (ts, o, h, l, c):
+            skipped += 1
             continue
         day_str = datetime.fromtimestamp(ts / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
         bars.append({
@@ -599,7 +605,9 @@ def fetch_daily_ohlc(ticker: str, lookback_days: int = 180) -> list[dict]:
             "close": round(float(c), 4),
             "volume": v,
         })
-    return bars
+
+    debug = f"start={start.isoformat()} end={end.isoformat()} raw_results={len(results)} bars={len(bars)} skipped={skipped} status={data.get('status')}"
+    return bars, debug
 
 
 if __name__ == "__main__":
