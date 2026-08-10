@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T22:10:17.077575+00:00",
+  "generated_at": "2026-08-10T01:36:18.754902+00:00",
   "categories": {
     "wave1": [
       {
@@ -293,5 +293,77 @@
         "status": "ok"
       }
     ]
-  }
+  },
+  "top10_gamma_flip": [
+    {
+      "ticker": "CLX",
+      "spot": 105.15,
+      "gamma_flip": 105,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.14
+    },
+    {
+      "ticker": "TFC",
+      "spot": 52.35,
+      "gamma_flip": 52.5,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.29
+    },
+    {
+      "ticker": "INTC",
+      "spot": 101.65,
+      "gamma_flip": 101,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.64
+    },
+    {
+      "ticker": "JPM",
+      "spot": 357.52,
+      "gamma_flip": 360,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.69
+    },
+    {
+      "ticker": "GOOGL",
+      "spot": 354.3,
+      "gamma_flip": 357.5,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.9
+    },
+    {
+      "ticker": "COIN",
+      "spot": 153.6,
+      "gamma_flip": 155,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.91
+    },
+    {
+      "ticker": "IBM",
+      "spot": 237.28,
+      "gamma_flip": 235,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.96
+    },
+    {
+      "ticker": "MSTR",
+      "spot": 100.01,
+      "gamma_flip": 101,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.99
+    },
+    {
+      "ticker": "SATS",
+      "spot": 103.92,
+      "gamma_flip": 105,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 1.04
+    },
+    {
+      "ticker": "GLW",
+      "spot": 165.68,
+      "gamma_flip": 167.5,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 1.1
+    }
+  ]
 }
