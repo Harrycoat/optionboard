@@ -533,3 +533,42 @@ if __name__ == "__main__":
     t = sys.argv[1] if len(sys.argv) > 1 else "AAPL"
     result = analyze_ticker(t)
     print(json.dumps({k: v for k, v in result.items() if k not in ("pain_curve", "gex_by_strike")}, indent=2))
+    def rank_by_liquidity(ticker: str) -> dict:
+    """유동성 랭킹 전용 초경량 조회.
+
+    현재가(prev) 폴백을 전혀 하지 않는다 — 옵션 미결제약정(OI) 합계만
+    필요하므로 종목당 API 호출이 딱 1번으로 끝난다. quick_gamma_flip()보다
+    훨씬 가볍고 빠르며, 주간 전체 유니버스 스캔(429 회피)에 적합하다.
+    """
+    ticker = ticker.upper().strip()
+    today = date.today().isoformat()
+
+    url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
+    params = {
+        "expiration_date.gte": today,
+        "limit": 250,
+        "sort": "expiration_date",
+        "order": "asc",
+    }
+    data = _massive_get(url, params)
+    results = data.get("results", [])
+
+    if not results:
+        raise ValueError(f"{ticker}: 옵션체인이 없습니다")
+
+    nearest_expiry = None
+    total_oi = 0.0
+
+    for item in results:
+        details = item.get("details", {})
+        exp = details.get("expiration_date")
+        if not exp:
+            continue
+        if nearest_expiry is None:
+            nearest_expiry = exp
+        if exp != nearest_expiry:
+            continue
+        oi = item.get("open_interest") or 0.0
+        total_oi += float(oi)
+
+    return {"ticker": ticker, "total_oi": total_oi}

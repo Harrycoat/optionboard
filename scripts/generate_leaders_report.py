@@ -19,14 +19,18 @@ daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
 이어서 호출하면 매일 자동 갱신됩니다.
 
 ---
-[추가] Top10 Gamma Flip 스캐너
-S&P500 + 나스닥100 유니버스(sp500_nasdaq100_universe.txt)를 스캔해서,
-현재가가 Gamma Flip 라인에 가장 가까이 붙어있는 종목 Top10을 뽑아
-report["top10_gamma_flip"]에 저장한다. 감마 체제(양의감마<->음의감마) 전환이
-임박했을 가능성이 있는 = 변동성 확대 후보로 해석한다.
-analyze_ticker()는 만기 4개 옵션체인 + 420일 Stage 히스토리까지 조회하는
-무거운 함수라, 520종목 스캔에는 quick_gamma_flip()(최근월물 1개만 조회)을
-대신 사용해 API 호출을 최소화한다.
+[Top10 Gamma Flip 스캐너 — 2단계 구조]
+
+문제: S&P500+나스닥100 전체(520종목)를 매일 스캔하면 종목당 현재가(prev) 폴백
+호출까지 겹쳐서 1~2시간씩 걸린다.
+
+해결: 스캔을 2단계로 나눈다.
+  [주 1회, 월요일] 전체 520종목을 "유동성(옵션 미결제약정 OI 합계)" 기준으로만
+                   스캔한다. 현재가 조회가 필요 없어 종목당 API 호출이 1번뿐이라
+                   훨씬 빠르고 429 에러도 적다. 상위 100개를 추려서
+                   active_universe.txt에 저장한다.
+  [매일]           active_universe.txt(100종목)만 스캔해서 Top10 Gamma Flip을
+                   계산한다. 100종목이라 현재가 조회를 포함해도 훨씬 빠르다.
 """
 
 import json
@@ -42,6 +46,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "api"))
 from options_engine import (
     analyze_ticker,
     quick_gamma_flip,
+    rank_by_liquidity,
     MASSIVE_API_BASE,
     MASSIVE_API_KEY,
 )
@@ -49,20 +54,24 @@ from options_engine import (
 WATCHLIST_PATH = os.path.join(os.path.dirname(__file__), "leaders_watchlist.txt")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_report.json")
 UNIVERSE_PATH = os.path.join(os.path.dirname(__file__), "sp500_nasdaq100_universe.txt")
+ACTIVE_UNIVERSE_PATH = os.path.join(os.path.dirname(__file__), "active_universe.txt")
 
 CATEGORY_KEYS = {"WAVE1": "wave1", "WAVE2": "wave2", "SPECULATIVE": "speculative"}
 
 STARTUP_DELAY_SECONDS = 20
 PER_TICKER_DELAY_SECONDS = 4
 MAX_RETRIES = 2
-RETRY_BACKOFF_SECONDS = [8, 15]  # 재시도 1회차/2회차 대기시간
+RETRY_BACKOFF_SECONDS = [8, 15]
 
-# Top10 Gamma Flip 스캐너 전용 설정.
-# quick_gamma_flip()은 옵션체인 1개 만기만 조회하는 경량 호출이라
-# 기존 4초 딜레이보다 훨씬 짧게 잡아도 된다 (Options Starter 플랜은 호출 무제한).
-UNIVERSE_PER_TICKER_DELAY_SECONDS = 0.3
-UNIVERSE_MAX_RETRIES = 1  # 전체 스캔이라 재시도는 최소화 (실패 종목은 그냥 스킵)
+UNIVERSE_PER_TICKER_DELAY_SECONDS = 0.5
+UNIVERSE_MAX_RETRIES = 1
 UNIVERSE_RETRY_BACKOFF_SECONDS = [5]
+
+LIQUIDITY_SCAN_WEEKDAY = 0
+ACTIVE_UNIVERSE_TOP_N = 100
+LIQUIDITY_PER_TICKER_DELAY_SECONDS = 0.3
+LIQUIDITY_MAX_RETRIES = 1
+LIQUIDITY_RETRY_BACKOFF_SECONDS = [5]
 
 
 def parse_watchlist(path):
@@ -102,7 +111,6 @@ def fetch_daily_bar_once(ticker: str):
 
 
 def fetch_daily_bar(ticker: str):
-    """일봉 조회, 실패하면 재시도한다."""
     for attempt in range(MAX_RETRIES + 1):
         try:
             return fetch_daily_bar_once(ticker)
@@ -117,7 +125,6 @@ def fetch_daily_bar(ticker: str):
 
 
 def try_analyze(ticker: str):
-    """analyze_ticker()를 시도하고, 실패하면 최대 MAX_RETRIES회 재시도한다."""
     for attempt in range(MAX_RETRIES + 1):
         try:
             return analyze_ticker(ticker), None
@@ -171,10 +178,8 @@ def build_badge(ticker: str, sector: str) -> dict:
             badge["spot"] = round(c, 2)
 
     return badge
-
-
 def load_universe(path: str) -> list:
-    """S&P500 + 나스닥100 유니버스 티커 리스트를 로드한다."""
+    """티커 리스트 파일을 로드한다 (주석/빈 줄 제외, 한 줄에 티커 하나)."""
     tickers = []
     with open(path, "r", encoding="utf-8") as f:
         for raw_line in f:
@@ -205,20 +210,80 @@ def try_quick_flip(ticker: str):
                 return None, str(e)
 
 
-def build_top10_gamma_flip(universe_path: str = UNIVERSE_PATH, top_n: int = 10) -> list:
-    """유니버스 전체를 스캔해서 Gamma Flip 근접도(%) 기준 오름차순 Top N을 반환한다.
+def try_rank_liquidity(ticker: str):
+    """rank_by_liquidity()를 시도하고, 실패하면 최대 LIQUIDITY_MAX_RETRIES회 재시도한다."""
+    for attempt in range(LIQUIDITY_MAX_RETRIES + 1):
+        try:
+            return rank_by_liquidity(ticker), None
+        except Exception as e:
+            if attempt < LIQUIDITY_MAX_RETRIES:
+                wait = LIQUIDITY_RETRY_BACKOFF_SECONDS[attempt]
+                time.sleep(wait)
+            else:
+                return None, str(e)
 
-    즉 '현재가가 Gamma Flip 라인에 가장 가까이 붙어있는' 종목이 1위가 된다.
-    이 구간은 감마 체제(양의 감마 <-> 음의 감마) 전환이 임박했을 가능성이 있어
-    변동성 확대 후보로 해석한다.
+
+def build_active_universe(
+    universe_path: str = UNIVERSE_PATH,
+    output_path: str = ACTIVE_UNIVERSE_PATH,
+    top_n: int = ACTIVE_UNIVERSE_TOP_N,
+) -> list:
+    """전체 유니버스를 OI(유동성) 기준으로 스캔해서 상위 top_n개를 뽑아 저장한다.
+
+    현재가 폴백 호출이 없어 종목당 API 호출이 1번뿐이라 429 문제가 크게
+    줄어든다. 이 함수는 주 1회(월요일)만 실행된다.
     """
     tickers = load_universe(universe_path)
+    print(f"\n[주간] 유동성 스캔 시작: {len(tickers)}개 종목")
+
+    ranked = []
+    for i, ticker in enumerate(tickers, 1):
+        if i % 50 == 0 or i == 1:
+            print(f"  진행: {i}/{len(tickers)} ({ticker})")
+        result, err = try_rank_liquidity(ticker)
+        if result and result.get("total_oi", 0) > 0:
+            ranked.append(result)
+        time.sleep(LIQUIDITY_PER_TICKER_DELAY_SECONDS)
+
+    ranked.sort(key=lambda x: x["total_oi"], reverse=True)
+    top_tickers = [r["ticker"] for r in ranked[:top_n]]
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write("# scripts/active_universe.txt\n")
+        f.write(f"# 유동성(OI) 기준 상위 {top_n}개 — 매주 월요일 자동 갱신\n")
+        f.write(f"# 생성: {datetime.now(timezone.utc).isoformat()}\n")
+        for t in top_tickers:
+            f.write(f"{t}\n")
+
+    print(f"[주간] 유동성 스캔 완료: {len(ranked)}개 유효 / 상위 {len(top_tickers)}개 저장 → {output_path}")
+    return top_tickers
+
+
+def load_or_build_active_universe() -> list:
+    """오늘이 월요일이거나 active_universe.txt가 없으면 새로 스캔하고,
+    그 외에는 기존 파일을 그대로 읽는다."""
+    is_scan_day = datetime.now(timezone.utc).weekday() == LIQUIDITY_SCAN_WEEKDAY
+    file_exists = os.path.exists(ACTIVE_UNIVERSE_PATH)
+
+    if is_scan_day or not file_exists:
+        reason = "월요일" if is_scan_day else "active_universe.txt 없음"
+        print(f"\n유동성 재스캔 조건 충족 ({reason}) — 전체 유니버스 스캔 실행")
+        return build_active_universe()
+    else:
+        print(f"\n기존 active_universe.txt 재사용 (다음 갱신: 월요일)")
+        return load_universe(ACTIVE_UNIVERSE_PATH)
+
+
+def build_top10_gamma_flip(top_n: int = 10) -> list:
+    """유동성 상위 종목(active_universe)을 스캔해서 Gamma Flip 근접도(%) 기준
+    오름차순 Top N을 반환한다."""
+    tickers = load_or_build_active_universe()
     print(f"\nGamma Flip 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
 
     candidates = []
     skipped = 0
     for i, ticker in enumerate(tickers, 1):
-        if i % 50 == 0 or i == 1:
+        if i % 20 == 0 or i == 1:
             print(f"  진행: {i}/{len(tickers)} ({ticker})")
 
         result, err = try_quick_flip(ticker)
@@ -279,4 +344,4 @@ def build_report():
 
 
 if __name__ == "__main__":
-    build_report()
+    build_report()    
