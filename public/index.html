@@ -752,7 +752,11 @@ async function openCandleChart(d){
       sub.textContent = `오류: ${data.error}`;
       return;
     }
-    sub.textContent = `일봉 · 최근 ${data.bars.length}거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain 표시`;
+  if(!data.bars || data.bars.length === 0){
+  sub.textContent = '캔들 데이터를 가져오지 못했습니다 (일시적 API 오류일 수 있어요, 다시 시도해주세요)';
+  return;
+}
+sub.textContent = `일봉 · 최근 ${data.bars.length}거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain 표시`;
     renderCandleChart(data);
   }catch(e){
     sub.textContent = `요청 실패: ${e.message}`;
