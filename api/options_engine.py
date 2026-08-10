@@ -10,6 +10,7 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
 
 from __future__ import annotations
 import os
+import time
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
@@ -24,9 +25,6 @@ class MassiveAPIError(RuntimeError):
     pass
 
 
-# ---------------------------------------------------------------------------
-# 데이터 가져오기 (Massive.com REST API)
-# ---------------------------------------------------------------------------
 @dataclass
 class OptionRow:
     strike: float
@@ -128,6 +126,7 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
             row["put_gamma"] = float(gamma)
 
     if spot is None:
+        time.sleep(1)  # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔다
         spot = _fetch_prev_close(ticker)
 
     if spot is None:
@@ -157,9 +156,6 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
     return snapshots
 
 
-# ---------------------------------------------------------------------------
-# Max Pain
-# ---------------------------------------------------------------------------
 def compute_max_pain(rows: list[OptionRow]) -> dict:
     strikes = [r.strike for r in rows]
     pain_by_strike = {}
@@ -176,9 +172,6 @@ def compute_max_pain(rows: list[OptionRow]) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# GEX (Gamma Exposure)
-# ---------------------------------------------------------------------------
 def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     gex_by_strike = {}
 
@@ -233,7 +226,6 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
             {"strike": k, **v} for k, v in sorted(gex_by_strike.items())
         ],
     }
-
 # ---------------------------------------------------------------------------
 # Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
 # 지금은 원인 파악을 위해 stage_debug 필드를 임시로 노출한다.
@@ -301,9 +293,6 @@ def compute_stage(closes: list[float]) -> dict:
     return result
 
 
-# ---------------------------------------------------------------------------
-# 한국어 해설 문장 생성 (참고용 — 매수/매도 지시 아님)
-# ---------------------------------------------------------------------------
 def _fmt_strike(x) -> str:
     if x is None:
         return "-"
@@ -382,9 +371,7 @@ def build_narrative(
 
     return lines
 
-# ---------------------------------------------------------------------------
-# 통합 분석
-# ---------------------------------------------------------------------------
+
 def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     ticker = ticker.upper().strip()
     snapshots = fetch_option_chain(ticker, expiry=expiry)
@@ -449,16 +436,14 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Top10 Gamma Flip 스캐너 전용 초경량 분석
-# ---------------------------------------------------------------------------
 def quick_gamma_flip(ticker: str) -> dict:
     """Top10 스캐너 전용 초경량 분석.
 
-    analyze_ticker()와 달리, API 요청 자체에 expiration_date 필터를 걸어서
-    근월물 계약만 딱 1페이지(최대 250개) 받아온다. 페이지네이션을 하지 않으므로
-    종목당 API 호출이 1회로 끝난다 (기존 quick_gamma_flip v2는 필터 없이 전체
-    만기/strike를 다 받아온 뒤 걸러내는 구조라 종목당 수십 초~수 분이 걸렸음).
+    API 요청 자체에 expiration_date 필터를 걸어서 근월물 계약만 딱 1페이지
+    (최대 250개) 받아온다. 대부분의 경우 옵션체인 응답 자체에 현재가가
+    포함되어 있어 추가 호출이 필요 없지만, 간혹 없는 경우에만 전일 종가로
+    폴백한다. 이때 직전 호출과 시간차 없이 바로 이어서 요청하면 초당 요청
+    제한(429 Too Many Requests)에 걸리기 쉬우므로, 폴백 호출 전 짧게 대기한다.
     """
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
@@ -488,7 +473,6 @@ def quick_gamma_flip(ticker: str) -> dict:
         if not exp or strike is None or contract_type not in ("call", "put"):
             continue
 
-        # 첫 번째로 만나는(=가장 가까운, asc 정렬) 만기만 사용
         if nearest_expiry is None:
             nearest_expiry = exp
         if exp != nearest_expiry:
@@ -513,7 +497,9 @@ def quick_gamma_flip(ticker: str) -> dict:
             row["put_gamma"] = float(gamma)
 
     if spot is None:
+        time.sleep(1)
         spot = _fetch_prev_close(ticker)
+
     if spot is None or not strikes_dict:
         raise ValueError(f"{ticker}: 현재가 또는 옵션 데이터를 가져오지 못했습니다")
 
