@@ -120,6 +120,25 @@
   .badge-regime.negative{ background: rgba(229,72,77,0.15); color: var(--up); }
   .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
 
+  /* ---------- Gamma Flip Top10 스캐너 ---------- */
+  .top10-grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap:10px;
+  }
+  .top10-card{
+    background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px;
+    cursor:pointer; transition: border-color .15s; display:flex; align-items:center; gap:10px;
+  }
+  .top10-card:hover{ border-color: var(--gold); }
+  .top10-rank{
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color: var(--gold);
+    width:22px; text-align:center; flex-shrink:0;
+  }
+  .top10-body{ flex:1; min-width:0; }
+  .top10-ticker{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; }
+  .top10-sub{ font-size:11px; color:var(--text-dim); margin-top:3px; display:flex; justify-content:space-between; gap:6px; }
+  .top10-dist{ font-family:'JetBrains Mono',monospace; font-weight:700; }
+  .top10-dist.tight{ color: var(--up); }
+
   /* 상세 패널 */
   .detail{ background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:16px; }
   .detail-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
@@ -219,6 +238,10 @@
     </div>
   </div>
 
+  <div class="section-title">Gamma Flip 스캐너 · Top 10</div>
+  <div class="updated-note" id="top10Note">불러오는 중...</div>
+  <div id="top10-list" class="top10-grid"></div>
+
   <div class="section-title">관심종목 · 매일 자동 갱신</div>
   <div class="updated-note" id="updatedNote">불러오는 중...</div>
   <div id="watchlistGrid" class="watchlist-grid"></div>
@@ -308,8 +331,42 @@ function renderLeaderColumn(containerId, items){
   });
 }
 
+// ---------- Gamma Flip Top10 스캐너 ----------
+function top10CardHTML(item, rank){
+  const dist = item.flip_distance_pct;
+  const tight = dist !== null && dist !== undefined && dist <= 1;
+  const distText = (dist !== null && dist !== undefined) ? `${dist}%` : '—';
+  const regimeLabel = item.gamma_regime === 'positive' ? '양감마' : (item.gamma_regime === 'negative' ? '음감마' : '—');
+  return `
+    <div class="top10-card" data-ticker="${item.ticker}">
+      <div class="top10-rank">${rank}</div>
+      <div class="top10-body">
+        <div class="top10-ticker">${item.ticker}</div>
+        <div class="top10-sub">
+          <span>$${fmtNum(item.spot)}</span>
+          <span class="top10-dist ${tight ? 'tight' : ''}">Flip ${distText}</span>
+        </div>
+        <div class="top10-sub"><span>${regimeLabel}</span><span>${fmtNum(item.gamma_flip,1)}</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTop10(items){
+  const el = document.getElementById('top10-list');
+  if(!items || items.length === 0){
+    el.innerHTML = '<div class="empty">아직 Top10 데이터가 없습니다</div>';
+    return;
+  }
+  el.innerHTML = items.map((item, i) => top10CardHTML(item, i+1)).join('');
+  el.querySelectorAll('.top10-card').forEach(card=>{
+    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+  });
+}
+
 async function loadLeaders(){
   const note = document.getElementById('leadersUpdatedNote');
+  const top10Note = document.getElementById('top10Note');
   try{
     const res = await fetch('/leaders_report.json', {cache:'no-store'});
     if(!res.ok) throw new Error('리포트 없음');
@@ -321,11 +378,16 @@ async function loadLeaders(){
     renderLeaderColumn('wave1-list', cats.wave1);
     renderLeaderColumn('wave2-list', cats.wave2);
     renderLeaderColumn('speculative-list', cats.speculative);
+
+    top10Note.textContent = `Gamma Flip 근접도 기준 (유동성 상위 100종목 중, 매주 월요일 유니버스 재선정)`;
+    renderTop10(data.top10_gamma_flip);
   }catch(e){
     note.textContent = '';
+    top10Note.textContent = '';
     ['wave1-list','wave2-list','speculative-list'].forEach(id=>{
       document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다 (첫 자동 갱신 대기 중)</div>';
     });
+    document.getElementById('top10-list').innerHTML = '<div class="empty">아직 Top10 데이터가 없습니다</div>';
   }
 }
 
