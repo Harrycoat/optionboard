@@ -748,6 +748,7 @@ async function openCandleChart(d){
   try{
     const res = await fetch(`/api/candles?ticker=${encodeURIComponent(d.ticker)}`);
     const data = await res.json();
+    alert(JSON.stringify(Object.keys(data)));
     if(data.error){
       sub.textContent = `오류: ${data.error}`;
       return;
