@@ -25,6 +25,9 @@ class MassiveAPIError(RuntimeError):
     pass
 
 
+# ---------------------------------------------------------------------------
+# 데이터 가져오기 (Massive.com REST API)
+# ---------------------------------------------------------------------------
 @dataclass
 class OptionRow:
     strike: float
@@ -156,6 +159,9 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
     return snapshots
 
 
+# ---------------------------------------------------------------------------
+# Max Pain
+# ---------------------------------------------------------------------------
 def compute_max_pain(rows: list[OptionRow]) -> dict:
     strikes = [r.strike for r in rows]
     pain_by_strike = {}
@@ -172,6 +178,9 @@ def compute_max_pain(rows: list[OptionRow]) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# GEX (Gamma Exposure)
+# ---------------------------------------------------------------------------
 def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     gex_by_strike = {}
 
@@ -226,6 +235,7 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
             {"strike": k, **v} for k, v in sorted(gex_by_strike.items())
         ],
     }
+
 # ---------------------------------------------------------------------------
 # Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
 # 지금은 원인 파악을 위해 stage_debug 필드를 임시로 노출한다.
@@ -293,6 +303,9 @@ def compute_stage(closes: list[float]) -> dict:
     return result
 
 
+# ---------------------------------------------------------------------------
+# 한국어 해설 문장 생성 (참고용 — 매수/매도 지시 아님)
+# ---------------------------------------------------------------------------
 def _fmt_strike(x) -> str:
     if x is None:
         return "-"
@@ -371,7 +384,9 @@ def build_narrative(
 
     return lines
 
-
+# ---------------------------------------------------------------------------
+# 통합 분석
+# ---------------------------------------------------------------------------
 def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     ticker = ticker.upper().strip()
     snapshots = fetch_option_chain(ticker, expiry=expiry)
@@ -436,14 +451,18 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# Top10 Gamma Flip 스캐너 전용 초경량 분석
+# ---------------------------------------------------------------------------
 def quick_gamma_flip(ticker: str) -> dict:
     """Top10 스캐너 전용 초경량 분석.
 
     API 요청 자체에 expiration_date 필터를 걸어서 근월물 계약만 딱 1페이지
-    (최대 250개) 받아온다. 대부분의 경우 옵션체인 응답 자체에 현재가가
-    포함되어 있어 추가 호출이 필요 없지만, 간혹 없는 경우에만 전일 종가로
-    폴백한다. 이때 직전 호출과 시간차 없이 바로 이어서 요청하면 초당 요청
-    제한(429 Too Many Requests)에 걸리기 쉬우므로, 폴백 호출 전 짧게 대기한다.
+    (최대 250개) 받아온다. 대부분의 경우 옵션체인 응답 자체에 현재가
+    (underlying_asset.price)가 포함되어 있어 추가 호출이 필요 없지만,
+    간혹 없는 경우에만 전일 종가(prev close)로 폴백한다. 이때 직전 호출과
+    시간차 없이 바로 이어서 요청하면 초당 요청 제한(429 Too Many Requests)에
+    걸리기 쉬우므로, 폴백 호출 전 짧게 대기한다.
     """
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
@@ -473,6 +492,7 @@ def quick_gamma_flip(ticker: str) -> dict:
         if not exp or strike is None or contract_type not in ("call", "put"):
             continue
 
+        # 첫 번째로 만나는(=가장 가까운, asc 정렬) 만기만 사용
         if nearest_expiry is None:
             nearest_expiry = exp
         if exp != nearest_expiry:
@@ -497,6 +517,7 @@ def quick_gamma_flip(ticker: str) -> dict:
             row["put_gamma"] = float(gamma)
 
     if spot is None:
+        # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔 뒤에만 폴백 요청
         time.sleep(1)
         spot = _fetch_prev_close(ticker)
 
@@ -526,14 +547,7 @@ def quick_gamma_flip(ticker: str) -> dict:
     }
 
 
-if __name__ == "__main__":
-    import json
-    import sys
-
-    t = sys.argv[1] if len(sys.argv) > 1 else "AAPL"
-    result = analyze_ticker(t)
-    print(json.dumps({k: v for k, v in result.items() if k not in ("pain_curve", "gex_by_strike")}, indent=2))
-    def rank_by_liquidity(ticker: str) -> dict:
+def rank_by_liquidity(ticker: str) -> dict:
     """유동성 랭킹 전용 초경량 조회."""
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
@@ -557,3 +571,12 @@ if __name__ == "__main__":
         oi = item.get("open_interest") or 0.0
         total_oi += float(oi)
     return {"ticker": ticker, "total_oi": total_oi}
+
+
+if __name__ == "__main__":
+    import json
+    import sys
+
+    t = sys.argv[1] if len(sys.argv) > 1 else "AAPL"
+    result = analyze_ticker(t)
+    print(json.dumps({k: v for k, v in result.items() if k not in ("pain_curve", "gex_by_strike")}, indent=2))
