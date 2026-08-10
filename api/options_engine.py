@@ -448,27 +448,98 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "stage_n_closes": stage_info.get("n_closes"),
     }
 
-def quick_gamma_flip(ticker: str) -> dict:
-    """Top10 스캐너 전용 경량 분석.
 
-    analyze_ticker()와 달리 최근월물 옵션체인 1개만 조회하고,
-    Stage(420일 히스토리)/내러티브 계산을 생략해 API 호출을 최소화한다.
+# ---------------------------------------------------------------------------
+# Top10 Gamma Flip 스캐너 전용 초경량 분석
+# ---------------------------------------------------------------------------
+def quick_gamma_flip(ticker: str) -> dict:
+    """Top10 스캐너 전용 초경량 분석.
+
+    analyze_ticker()와 달리, API 요청 자체에 expiration_date 필터를 걸어서
+    근월물 계약만 딱 1페이지(최대 250개) 받아온다. 페이지네이션을 하지 않으므로
+    종목당 API 호출이 1회로 끝난다 (기존 quick_gamma_flip v2는 필터 없이 전체
+    만기/strike를 다 받아온 뒤 걸러내는 구조라 종목당 수십 초~수 분이 걸렸음).
     """
     ticker = ticker.upper().strip()
+    today = date.today().isoformat()
 
-    snapshots = fetch_option_chain(ticker, max_expiries=1)
-    primary = snapshots[0]
+    url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
+    params = {
+        "expiration_date.gte": today,
+        "limit": 250,
+        "sort": "expiration_date",
+        "order": "asc",
+    }
+    data = _massive_get(url, params)
+    results = data.get("results", [])
 
-    gex = compute_gex(primary.spot, primary.expiry, primary.rows)
+    if not results:
+        raise ValueError(f"{ticker}: 옵션체인이 없습니다")
+
+    spot = None
+    strikes_dict: dict[float, dict] = {}
+    nearest_expiry = None
+
+    for item in results:
+        details = item.get("details", {})
+        exp = details.get("expiration_date")
+        strike = details.get("strike_price")
+        contract_type = details.get("contract_type")
+        if not exp or strike is None or contract_type not in ("call", "put"):
+            continue
+
+        # 첫 번째로 만나는(=가장 가까운, asc 정렬) 만기만 사용
+        if nearest_expiry is None:
+            nearest_expiry = exp
+        if exp != nearest_expiry:
+            continue
+
+        if spot is None:
+            underlying = item.get("underlying_asset", {})
+            spot = underlying.get("price")
+
+        greeks = item.get("greeks") or {}
+        gamma = greeks.get("gamma") or 0.0
+        oi = item.get("open_interest") or 0.0
+
+        row = strikes_dict.setdefault(
+            strike, {"call_oi": 0.0, "put_oi": 0.0, "call_gamma": 0.0, "put_gamma": 0.0}
+        )
+        if contract_type == "call":
+            row["call_oi"] = float(oi)
+            row["call_gamma"] = float(gamma)
+        else:
+            row["put_oi"] = float(oi)
+            row["put_gamma"] = float(gamma)
+
+    if spot is None:
+        spot = _fetch_prev_close(ticker)
+    if spot is None or not strikes_dict:
+        raise ValueError(f"{ticker}: 현재가 또는 옵션 데이터를 가져오지 못했습니다")
+
+    rows = [
+        OptionRow(
+            strike=k,
+            call_oi=v["call_oi"],
+            put_oi=v["put_oi"],
+            call_gamma=v["call_gamma"],
+            put_gamma=v["put_gamma"],
+        )
+        for k, v in strikes_dict.items()
+    ]
+
+    gex = compute_gex(float(spot), nearest_expiry, rows)
 
     return {
         "ticker": ticker,
-        "spot": primary.spot,
-        "expiry_used": primary.expiry,
+        "spot": float(spot),
+        "expiry_used": nearest_expiry,
         "gamma_flip": gex["gamma_flip"],
         "regime": gex["regime"],
         "net_gex_total": gex["net_gex_total"],
     }
+
+
 if __name__ == "__main__":
     import json
     import sys
