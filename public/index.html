@@ -201,6 +201,13 @@
     header{ flex-direction:column; align-items:stretch; }
     .searchbar{ max-width:none; }
   }
+
+  .hero{ text-align:center; padding: 36px 20px 30px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .hero-brand{ font-family:'JetBrains Mono',monospace; font-size:13px; color: var(--gold); letter-spacing:0.06em; font-weight:700; }
+  .hero-brand .kr{ color: var(--text-dim); font-weight:400; }
+  .hero-tagline{ font-size:12px; color: var(--text-dim); margin-top:6px; }
+  .hero-title{ font-size: clamp(22px, 4vw, 32px); font-weight:800; margin-top:16px; letter-spacing:-0.01em; }
+  .hero-sub{ font-size:14px; color: var(--text-dim); margin-top:14px; line-height:1.7; max-width:560px; margin-left:auto; margin-right:auto; }
 </style>
 </head>
 <body>
@@ -218,6 +225,16 @@
 </header>
 
 <main>
+  <div class="hero">
+    <div class="hero-brand">GEX Option <span class="kr">(지엑스 옵션)</span></div>
+    <div class="hero-tagline">"옵션을 알면 진입 포인트가 보인다"</div>
+    <h1 class="hero-title">GEX(Gamma Exposure) 트레이딩 시스템</h1>
+    <p class="hero-sub">
+      마켓 메이커의 포지션과 변동성 전환점을 눈으로 직접 확인하세요.<br>
+      세력이 만드는 진짜 지지선과 저항선을 한눈에 보여드립니다.
+    </p>
+  </div>
+
   <div class="section-title">오늘의 주도주 · 웨이브 로테이션 기준</div>
   <div class="updated-note" id="leadersUpdatedNote">불러오는 중...</div>
   <div class="leaders-grid">
@@ -232,15 +249,11 @@
       <div id="wave2-list"><div class="leader-empty">불러오는 중...</div></div>
     </div>
     <div class="leader-col">
-      <div class="leader-col-header speculative">관심 관찰</div>
-      <div class="leader-col-desc">초기 모멘텀, 아직 미확인</div>
-      <div id="speculative-list"><div class="leader-empty">불러오는 중...</div></div>
+      <div class="leader-col-header speculative">Gamma Flip 스캐너</div>
+      <div class="leader-col-desc">근접도 기준 Top 10 (유동성 상위 100종목 중)</div>
+      <div id="top10-list"><div class="leader-empty">불러오는 중...</div></div>
     </div>
   </div>
-
-  <div class="section-title">Gamma Flip 스캐너 · Top 10</div>
-  <div class="updated-note" id="top10Note">불러오는 중...</div>
-  <div id="top10-list" class="top10-grid"></div>
 
   <div class="section-title">관심종목 · 매일 자동 갱신</div>
   <div class="updated-note" id="updatedNote">불러오는 중...</div>
@@ -331,22 +344,26 @@ function renderLeaderColumn(containerId, items){
   });
 }
 
-// ---------- Gamma Flip Top10 스캐너 ----------
-function top10CardHTML(item, rank){
+// ---------- Gamma Flip Top10 스캐너 (관심 관찰 칸 대체) ----------
+function top10RowHTML(item, rank){
   const dist = item.flip_distance_pct;
   const tight = dist !== null && dist !== undefined && dist <= 1;
-  const distText = (dist !== null && dist !== undefined) ? `${dist}%` : '—';
-  const regimeLabel = item.gamma_regime === 'positive' ? '양감마' : (item.gamma_regime === 'negative' ? '음감마' : '—');
+  const distText = (dist !== null && dist !== undefined) ? `Flip ${dist}%` : '—';
+  const regimeHtml = item.gamma_regime
+    ? `<span class="badge-regime ${item.gamma_regime}">${item.gamma_regime === 'positive' ? '양감마' : '음감마'}</span>`
+    : '';
   return `
-    <div class="top10-card" data-ticker="${item.ticker}">
-      <div class="top10-rank">${rank}</div>
-      <div class="top10-body">
-        <div class="top10-ticker">${item.ticker}</div>
-        <div class="top10-sub">
-          <span>$${fmtNum(item.spot)}</span>
-          <span class="top10-dist ${tight ? 'tight' : ''}">Flip ${distText}</span>
+    <div class="leader-card" data-ticker="${item.ticker}">
+      <div>
+        <div class="leader-ticker">${rank}. ${item.ticker}</div>
+        <div class="leader-vol">${fmtNum(item.gamma_flip,1)} 근처</div>
+      </div>
+      <div class="leader-right">
+        <div class="leader-price">$${fmtNum(item.spot)}</div>
+        <div class="leader-badge">
+          <div class="badge-distance ${tight ? 'near' : ''}">${distText}</div>
+          ${regimeHtml}
         </div>
-        <div class="top10-sub"><span>${regimeLabel}</span><span>${fmtNum(item.gamma_flip,1)}</span></div>
       </div>
     </div>
   `;
@@ -355,18 +372,17 @@ function top10CardHTML(item, rank){
 function renderTop10(items){
   const el = document.getElementById('top10-list');
   if(!items || items.length === 0){
-    el.innerHTML = '<div class="empty">아직 Top10 데이터가 없습니다</div>';
+    el.innerHTML = '<div class="leader-empty">아직 Top10 데이터가 없습니다</div>';
     return;
   }
-  el.innerHTML = items.map((item, i) => top10CardHTML(item, i+1)).join('');
-  el.querySelectorAll('.top10-card').forEach(card=>{
+  el.innerHTML = items.map((item, i) => top10RowHTML(item, i+1)).join('');
+  el.querySelectorAll('.leader-card').forEach(card=>{
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
 }
 
 async function loadLeaders(){
   const note = document.getElementById('leadersUpdatedNote');
-  const top10Note = document.getElementById('top10Note');
   try{
     const res = await fetch('/leaders_report.json', {cache:'no-store'});
     if(!res.ok) throw new Error('리포트 없음');
@@ -377,17 +393,13 @@ async function loadLeaders(){
     const cats = data.categories || {};
     renderLeaderColumn('wave1-list', cats.wave1);
     renderLeaderColumn('wave2-list', cats.wave2);
-    renderLeaderColumn('speculative-list', cats.speculative);
-
-    top10Note.textContent = `Gamma Flip 근접도 기준 (유동성 상위 100종목 중, 매주 월요일 유니버스 재선정)`;
     renderTop10(data.top10_gamma_flip);
   }catch(e){
     note.textContent = '';
-    top10Note.textContent = '';
-    ['wave1-list','wave2-list','speculative-list'].forEach(id=>{
+    ['wave1-list','wave2-list'].forEach(id=>{
       document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다 (첫 자동 갱신 대기 중)</div>';
     });
-    document.getElementById('top10-list').innerHTML = '<div class="empty">아직 Top10 데이터가 없습니다</div>';
+    document.getElementById('top10-list').innerHTML = '<div class="leader-empty">아직 데이터가 없습니다</div>';
   }
 }
 
