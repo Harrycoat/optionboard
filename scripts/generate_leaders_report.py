@@ -320,6 +320,38 @@ def build_top10_gamma_flip(top_n: int = 10) -> list:
     return top10
 
 
+def build_gamma_squeeze_candidates(categories_report: dict) -> list:
+    """이미 분석된 Wave1/Wave2/Speculative 종목들 중에서
+    'Negative Gamma 상태 + 당일 상승 전환'인 종목만 추려낸다.
+
+    추가 API 호출 없이 build_badge()가 이미 계산해둔
+    gamma_regime / price_change_pct 값만 재사용한다.
+    """
+    candidates = []
+    for cat_key, entries in categories_report.items():
+        for e in entries:
+            if e.get("status") != "ok":
+                continue
+            if e.get("gamma_regime") != "negative":
+                continue
+            pct = e.get("price_change_pct")
+            if pct is None or pct <= 0:
+                continue
+            candidates.append({
+                "ticker": e["ticker"],
+                "sector": e.get("sector"),
+                "category": cat_key,
+                "spot": e.get("spot"),
+                "price_change_pct": pct,
+                "gamma_flip": e.get("gamma_flip"),
+                "call_wall": e.get("call_wall"),
+                "call_wall_distance_pct": e.get("call_wall_distance_pct"),
+            })
+
+    candidates.sort(key=lambda x: x["price_change_pct"], reverse=True)
+    return candidates
+
+
 def build_report():
     print(f"daily_update.py 직후 실행이라 {STARTUP_DELAY_SECONDS}초 대기 후 시작합니다...")
     time.sleep(STARTUP_DELAY_SECONDS)
@@ -339,12 +371,14 @@ def build_report():
         report["categories"][cat_key] = entries
 
     report["top10_gamma_flip"] = build_top10_gamma_flip()
+    report["gamma_squeeze_candidates"] = build_gamma_squeeze_candidates(report["categories"])
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
 
     print(f"\nleaders_report.json 생성 완료: {OUTPUT_PATH}")
+    print(f"감마 스퀴즈 후보: {len(report['gamma_squeeze_candidates'])}개")
 
 
 if __name__ == "__main__":
