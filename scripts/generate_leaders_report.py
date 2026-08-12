@@ -149,6 +149,8 @@ def build_badge(ticker: str, sector: str) -> dict:
         "gamma_regime": None,
         "price_change_pct": None,
         "volume": None,
+        "stage": None,
+        "stage_label": None,
         "status": "ok",
     }
 
@@ -162,6 +164,8 @@ def build_badge(ticker: str, sector: str) -> dict:
         badge["put_wall"] = result.get("put_wall")
         badge["gamma_flip"] = result.get("gamma_flip")
         badge["gamma_regime"] = result.get("regime")
+        badge["stage"] = result.get("stage")
+        badge["stage_label"] = result.get("stage_label")
 
         if call_wall is not None and spot:
             badge["call_wall_distance_pct"] = round((call_wall - spot) / spot * 100, 2)
@@ -344,4 +348,4 @@ def build_report():
 
 
 if __name__ == "__main__":
-    build_report()    
+    build_report()
