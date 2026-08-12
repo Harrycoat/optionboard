@@ -284,6 +284,25 @@
     </div>
   </div>
 
+  <div class="section-title">스퀴즈 후보 · 딜러 헤지 흐름 기준</div>
+  <div class="leaders-grid">
+    <div class="leader-col">
+      <div class="leader-col-header" style="color:var(--up);">⚡ 감마 스퀴즈</div>
+      <div class="leader-col-desc">Negative Gamma + 당일 상승 전환</div>
+      <div id="gammaSqueeze-list"><div class="leader-empty">불러오는 중...</div></div>
+    </div>
+    <div class="leader-col">
+      <div class="leader-col-header" style="color:#3ddbc9;">🌊 바나 스퀴즈</div>
+      <div class="leader-col-desc">|VEX| 상위 + 당일 상승</div>
+      <div id="vannaSqueeze-list"><div class="leader-empty">불러오는 중...</div></div>
+    </div>
+    <div class="leader-col">
+      <div class="leader-col-header" style="color:var(--gold);">📌 차름 스퀴즈</div>
+      <div class="leader-col-desc">만기 5일 이내 + |CEX| 상위</div>
+      <div id="charmSqueeze-list"><div class="leader-empty">불러오는 중...</div></div>
+    </div>
+  </div>
+
   <div class="section-title">관심종목 · 매일 자동 갱신</div>
   <div class="updated-note" id="updatedNote">불러오는 중...</div>
   <div id="watchlistGrid" class="watchlist-grid"></div>
@@ -425,6 +444,76 @@ function renderTop10(items){
   });
 }
 
+// ---------- 스퀴즈 후보 (감마 / 바나 / 차름) ----------
+function gammaSqueezeRowHTML(item){
+  const cw = (item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined)
+    ? `Call Wall ${item.call_wall_distance_pct >= 0 ? '+' : ''}${fmtNum(item.call_wall_distance_pct,2)}%` : '—';
+  return `
+    <div class="leader-card" data-ticker="${item.ticker}">
+      <div>
+        <div class="leader-ticker">${item.ticker}</div>
+        <div class="leader-vol">${cw}</div>
+      </div>
+      <div class="leader-right">
+        <div class="leader-price">$${fmtNum(item.spot)}</div>
+        <div class="leader-badge">
+          <div class="badge-distance near">▲${fmtNum(item.price_change_pct,2)}%</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function vannaSqueezeRowHTML(item){
+  const vexAbs = Math.abs(item.vex_total);
+  const vexLabel = vexAbs >= 1e6 ? (item.vex_total/1e6).toFixed(1)+'M' : (item.vex_total/1e3).toFixed(0)+'K';
+  return `
+    <div class="leader-card" data-ticker="${item.ticker}">
+      <div>
+        <div class="leader-ticker">${item.ticker}</div>
+        <div class="leader-vol">VEX ${vexLabel}</div>
+      </div>
+      <div class="leader-right">
+        <div class="leader-price">$${fmtNum(item.spot)}</div>
+        <div class="leader-badge">
+          <div class="badge-distance near">▲${fmtNum(item.price_change_pct,2)}%</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function charmSqueezeRowHTML(item){
+  const cexAbs = Math.abs(item.cex_total);
+  const cexLabel = cexAbs >= 1e6 ? (item.cex_total/1e6).toFixed(1)+'M' : (item.cex_total/1e3).toFixed(0)+'K';
+  return `
+    <div class="leader-card" data-ticker="${item.ticker}">
+      <div>
+        <div class="leader-ticker">${item.ticker}</div>
+        <div class="leader-vol">CEX ${cexLabel}</div>
+      </div>
+      <div class="leader-right">
+        <div class="leader-price">$${fmtNum(item.spot)}</div>
+        <div class="leader-badge">
+          <div class="badge-distance">D-${item.days_to_expiry}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSqueezeList(elId, items, rowFn){
+  const el = document.getElementById(elId);
+  if(!items || items.length === 0){
+    el.innerHTML = '<div class="leader-empty">오늘은 조건에 맞는 후보가 없습니다</div>';
+    return;
+  }
+  el.innerHTML = items.map(rowFn).join('');
+  el.querySelectorAll('.leader-card').forEach(card=>{
+    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+  });
+}
+
 async function loadLeaders(){
   const note = document.getElementById('leadersUpdatedNote');
   try{
@@ -438,12 +527,19 @@ async function loadLeaders(){
     renderLeaderColumn('wave1-list', cats.wave1);
     renderLeaderColumn('wave2-list', cats.wave2);
     renderTop10(data.top10_gamma_flip);
+
+    renderSqueezeList('gammaSqueeze-list', data.gamma_squeeze_candidates, gammaSqueezeRowHTML);
+    renderSqueezeList('vannaSqueeze-list', data.vanna_squeeze_candidates, vannaSqueezeRowHTML);
+    renderSqueezeList('charmSqueeze-list', data.charm_squeeze_candidates, charmSqueezeRowHTML);
   }catch(e){
     note.textContent = '';
     ['wave1-list','wave2-list'].forEach(id=>{
       document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다 (첫 자동 갱신 대기 중)</div>';
     });
     document.getElementById('top10-list').innerHTML = '<div class="leader-empty">아직 데이터가 없습니다</div>';
+    ['gammaSqueeze-list','vannaSqueeze-list','charmSqueeze-list'].forEach(id=>{
+      document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다</div>';
+    });
   }
 }
 
