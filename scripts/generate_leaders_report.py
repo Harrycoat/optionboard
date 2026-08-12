@@ -151,6 +151,9 @@ def build_badge(ticker: str, sector: str) -> dict:
         "volume": None,
         "stage": None,
         "stage_label": None,
+        "vex_total": None,
+        "cex_total": None,
+        "vanna_charm_expiry_days": None,
         "status": "ok",
     }
 
@@ -166,6 +169,9 @@ def build_badge(ticker: str, sector: str) -> dict:
         badge["gamma_regime"] = result.get("regime")
         badge["stage"] = result.get("stage")
         badge["stage_label"] = result.get("stage_label")
+        badge["vex_total"] = result.get("vex_total")
+        badge["cex_total"] = result.get("cex_total")
+        badge["vanna_charm_expiry_days"] = result.get("vanna_charm_expiry_days")
 
         if call_wall is not None and spot:
             badge["call_wall_distance_pct"] = round((call_wall - spot) / spot * 100, 2)
@@ -352,6 +358,61 @@ def build_gamma_squeeze_candidates(categories_report: dict) -> list:
     return candidates
 
 
+def build_vanna_squeeze_candidates(categories_report: dict, top_n: int = 8) -> list:
+    """VEX(Vanna Exposure) 절대값이 크면서 당일 상승 중인 종목을 추려낸다.
+    ('바나 랠리' 구조 — IV 하락 시 딜러 추가 매수 압력이 커질 수 있는 종목)
+    """
+    candidates = []
+    for cat_key, entries in categories_report.items():
+        for e in entries:
+            if e.get("status") != "ok":
+                continue
+            vex = e.get("vex_total")
+            pct = e.get("price_change_pct")
+            if vex is None or pct is None or pct <= 0:
+                continue
+            candidates.append({
+                "ticker": e["ticker"],
+                "sector": e.get("sector"),
+                "category": cat_key,
+                "spot": e.get("spot"),
+                "price_change_pct": pct,
+                "vex_total": vex,
+            })
+
+    candidates.sort(key=lambda x: abs(x["vex_total"]), reverse=True)
+    return candidates[:top_n]
+
+
+def build_charm_squeeze_candidates(categories_report: dict, max_days: int = 5, top_n: int = 8) -> list:
+    """만기(OpEx)가 임박(기본 5일 이내)했으면서 CEX(Charm Exposure) 절대값이
+    큰 종목을 추려낸다. (만기 근처 '핀' 압력이 강하게 작용할 수 있는 종목)
+    """
+    candidates = []
+    for cat_key, entries in categories_report.items():
+        for e in entries:
+            if e.get("status") != "ok":
+                continue
+            cex = e.get("cex_total")
+            days = e.get("vanna_charm_expiry_days")
+            if cex is None or days is None:
+                continue
+            if days < 0 or days > max_days:
+                continue
+            candidates.append({
+                "ticker": e["ticker"],
+                "sector": e.get("sector"),
+                "category": cat_key,
+                "spot": e.get("spot"),
+                "days_to_expiry": days,
+                "cex_total": cex,
+                "gamma_flip": e.get("gamma_flip"),
+            })
+
+    candidates.sort(key=lambda x: abs(x["cex_total"]), reverse=True)
+    return candidates[:top_n]
+
+
 def build_report():
     print(f"daily_update.py 직후 실행이라 {STARTUP_DELAY_SECONDS}초 대기 후 시작합니다...")
     time.sleep(STARTUP_DELAY_SECONDS)
@@ -372,6 +433,8 @@ def build_report():
 
     report["top10_gamma_flip"] = build_top10_gamma_flip()
     report["gamma_squeeze_candidates"] = build_gamma_squeeze_candidates(report["categories"])
+    report["vanna_squeeze_candidates"] = build_vanna_squeeze_candidates(report["categories"])
+    report["charm_squeeze_candidates"] = build_charm_squeeze_candidates(report["categories"])
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
@@ -379,6 +442,8 @@ def build_report():
 
     print(f"\nleaders_report.json 생성 완료: {OUTPUT_PATH}")
     print(f"감마 스퀴즈 후보: {len(report['gamma_squeeze_candidates'])}개")
+    print(f"바나 스퀴즈 후보: {len(report['vanna_squeeze_candidates'])}개")
+    print(f"차름 스퀴즈 후보: {len(report['charm_squeeze_candidates'])}개")
 
 
 if __name__ == "__main__":
