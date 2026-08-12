@@ -6,6 +6,16 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
 
 필요 환경변수:
   MASSIVE_API_KEY  (Vercel Environment Variables에 등록)
+
+[2026-08-12 수정 내역]
+  - 현재가(spot) 조회 시 옵션체인 응답에 underlying_asset.price가 비어있으면
+    직전 거래일 종가(prev close)로 폴백하는데, 이 경우 결과가 최대 하루
+    지연될 수 있음(15분 지연이 아니라 최대 1거래일 지연). 이제 이 폴백이
+    사용됐는지를 is_stale_price 플래그로 결과에 포함해서, 프론트엔드에서
+    "이 가격은 직전 거래일 종가 기준입니다" 같은 경고를 보여줄 수 있게 함.
+  - 근본 원인(underlying_asset.price가 왜 자주 비어있는지)은 Massive API
+    응답 스키마 확인이 더 필요함 — 유료 스냅샷/실시간 엔드포인트 사용 여부는
+    비용 문제로 보류.
 """
 
 from __future__ import annotations
@@ -46,6 +56,7 @@ class ChainSnapshot:
     spot: float
     expiry: str
     rows: list[OptionRow] = field(default_factory=list)
+    is_stale_price: bool = False  # True면 spot이 prev_close 폴백에서 나온 값 (최대 1거래일 지연)
 
 
 def _massive_get(url: str, params: Optional[dict] = None) -> dict:
@@ -134,9 +145,11 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
             row["put_gamma"] = float(gamma)
             row["put_iv"] = float(iv)
 
+    is_stale_price = False
     if spot is None:
         time.sleep(1)  # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔다
         spot = _fetch_prev_close(ticker)
+        is_stale_price = spot is not None  # prev_close로 채워졌으면 "직전 거래일 종가 기준" 표시
 
     if spot is None:
         raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
@@ -162,7 +175,15 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
             )
             for k, v in sorted(strikes_dict.items())
         ]
-        snapshots.append(ChainSnapshot(ticker=ticker, spot=float(spot), expiry=exp, rows=rows))
+        snapshots.append(
+            ChainSnapshot(
+                ticker=ticker,
+                spot=float(spot),
+                expiry=exp,
+                rows=rows,
+                is_stale_price=is_stale_price,
+            )
+        )
 
     return snapshots
 
@@ -426,8 +447,16 @@ def build_narrative(
     gamma_flip: Optional[float],
     regime: str,
     expiry_used: str,
+    is_stale_price: bool = False,
 ) -> list[str]:
     lines: list[str] = []
+
+    if is_stale_price:
+        lines.append(
+            "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 옵션체인 응답에 실시간 현재가가 포함되어 있지 않아 "
+            "<b>직전 거래일 종가</b> 기준으로 계산됐어요. 오늘 큰 폭의 갭업/갭다운이 있었다면 "
+            "아래 레벨들이 실제 현재가와 크게 어긋날 수 있으니, 실전 매매 전 반드시 실시간 시세로 재확인하세요."
+        )
 
     if regime == "positive":
         lines.append(
@@ -523,6 +552,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         gamma_flip=gex["gamma_flip"],
         regime=gex["regime"],
         expiry_used=primary.expiry,
+        is_stale_price=primary.is_stale_price,
     )
 
     stage_debug = None
@@ -536,6 +566,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     return {
         "ticker": ticker,
         "spot": primary.spot,
+        "is_stale_price": primary.is_stale_price,
         "expiry_used": primary.expiry,
         "expiries_included_in_gex": [s.expiry for s in snapshots],
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -625,10 +656,12 @@ def quick_gamma_flip(ticker: str) -> dict:
             row["put_oi"] = float(oi)
             row["put_gamma"] = float(gamma)
 
+    is_stale_price = False
     if spot is None:
         # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔 뒤에만 폴백 요청
         time.sleep(1)
         spot = _fetch_prev_close(ticker)
+        is_stale_price = spot is not None
 
     if spot is None or not strikes_dict:
         raise ValueError(f"{ticker}: 현재가 또는 옵션 데이터를 가져오지 못했습니다")
@@ -649,6 +682,7 @@ def quick_gamma_flip(ticker: str) -> dict:
     return {
         "ticker": ticker,
         "spot": float(spot),
+        "is_stale_price": is_stale_price,
         "expiry_used": nearest_expiry,
         "gamma_flip": gex["gamma_flip"],
         "regime": gex["regime"],
