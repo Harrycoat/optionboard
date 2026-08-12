@@ -15,7 +15,8 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
     "이 가격은 직전 거래일 종가 기준입니다" 같은 경고를 보여줄 수 있게 함.
   - 근본 원인(underlying_asset.price가 왜 자주 비어있는지)은 Massive API
     응답 스키마 확인이 더 필요함 — 유료 스냅샷/실시간 엔드포인트 사용 여부는
-    비용 문제로 보류.
+    비용 문제로 보류. 원인 파악용 [DEBUG spot=None] 로그를 추가함(Vercel
+    Logs에서 확인 가능, 원인 파악 후 제거 가능).
 """
 
 from __future__ import annotations
@@ -147,9 +148,21 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
 
     is_stale_price = False
     if spot is None:
+        # [임시 디버그] underlying_asset.price가 왜 비었는지 원인 파악용 로그.
+        # Vercel 대시보드 > 프로젝트 > Logs에서 "[DEBUG spot=None]"으로 검색하면 보인다.
+        # 원인 파악 끝나면 이 블록은 지워도 된다.
+        sample = raw_results[0] if raw_results else None
+        print(
+            f"[DEBUG spot=None] ticker={ticker} "
+            f"raw_results_count={len(raw_results)} "
+            f"sample_has_underlying_asset_key={sample is not None and 'underlying_asset' in sample} "
+            f"sample_underlying_asset={sample.get('underlying_asset') if sample else 'N/A (raw_results 비어있음)'} "
+            f"sample_keys={list(sample.keys()) if sample else 'N/A'}"
+        )
         time.sleep(1)  # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔다
         spot = _fetch_prev_close(ticker)
         is_stale_price = spot is not None  # prev_close로 채워졌으면 "직전 거래일 종가 기준" 표시
+        print(f"[DEBUG spot=None] prev_close 폴백 결과: spot={spot}")
 
     if spot is None:
         raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
