@@ -9,6 +9,7 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
 """
 
 from __future__ import annotations
+import math
 import os
 import time
 from dataclasses import dataclass, field
@@ -35,6 +36,8 @@ class OptionRow:
     put_oi: float
     call_gamma: float
     put_gamma: float
+    call_iv: float = 0.0
+    put_iv: float = 0.0
 
 
 @dataclass
@@ -116,17 +119,20 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
         greeks = item.get("greeks") or {}
         gamma = greeks.get("gamma") or 0.0
         oi = item.get("open_interest") or 0.0
+        iv = item.get("implied_volatility") or 0.0
 
         strikes_dict = by_expiry.setdefault(exp, {})
         row = strikes_dict.setdefault(
-            strike, {"call_oi": 0.0, "put_oi": 0.0, "call_gamma": 0.0, "put_gamma": 0.0}
+            strike, {"call_oi": 0.0, "put_oi": 0.0, "call_gamma": 0.0, "put_gamma": 0.0, "call_iv": 0.0, "put_iv": 0.0}
         )
         if contract_type == "call":
             row["call_oi"] = float(oi)
             row["call_gamma"] = float(gamma)
+            row["call_iv"] = float(iv)
         else:
             row["put_oi"] = float(oi)
             row["put_gamma"] = float(gamma)
+            row["put_iv"] = float(iv)
 
     if spot is None:
         time.sleep(1)  # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔다
@@ -151,6 +157,8 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
                 put_oi=v["put_oi"],
                 call_gamma=v["call_gamma"],
                 put_gamma=v["put_gamma"],
+                call_iv=v.get("call_iv", 0.0),
+                put_iv=v.get("put_iv", 0.0),
             )
             for k, v in sorted(strikes_dict.items())
         ]
@@ -234,6 +242,103 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
         "by_strike": [
             {"strike": k, **v} for k, v in sorted(gex_by_strike.items())
         ],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Vanna / Charm Exposure (2차 그릭스, 딜러 헤지 흐름)
+# Black-Scholes 순정 파이썬 구현 (scipy 등 무거운 의존성 없음).
+# scipy 없이 표준정규분포 확률밀도함수(PDF)만 직접 구현해서 사용한다.
+#
+# Vanna: 변동성(IV) 변화에 따른 딜러 델타 헤지 흐름.
+#   콜/풋 동일 부호 → 종목별로 콜+풋 OI를 더해서(add) 노출도 계산.
+# Charm: 시간(잔존만기) 경과에 따른 딜러 델타 헤지 흐름 (특히 만기 임박 시 강함).
+#   콜/풋 반대 부호 → GEX처럼 콜-풋 OI 차이로 계산.
+#
+# 참고: 근월물(가장 가까운 만기) 1개 스냅샷 기준으로만 계산한다.
+# (여러 만기를 합치면 만기별로 다른 잔존기간 T를 반영할 수 없어서 부정확해짐)
+# ---------------------------------------------------------------------------
+RISK_FREE_RATE_DEFAULT = 0.045  # 무위험 이자율 근사치 (미 단기 국채 수준)
+
+
+def _norm_pdf(x: float) -> float:
+    """표준정규분포 확률밀도함수 φ(x). scipy 없이 math만으로 구현."""
+    return math.exp(-0.5 * x * x) / math.sqrt(2.0 * math.pi)
+
+
+def _bs_d1_d2(spot: float, strike: float, t_years: float, r: float, iv: float) -> tuple[float, float]:
+    d1 = (math.log(spot / strike) + (r + 0.5 * iv * iv) * t_years) / (iv * math.sqrt(t_years))
+    d2 = d1 - iv * math.sqrt(t_years)
+    return d1, d2
+
+
+def _bs_vanna(spot: float, strike: float, t_years: float, r: float, iv: float) -> float:
+    """콜/풋 공통 (put-call parity에 의해 동일값). 계약 1개(주식 1주) 기준."""
+    d1, d2 = _bs_d1_d2(spot, strike, t_years, r, iv)
+    return -math.exp(-r * t_years) * _norm_pdf(d1) * d2 / iv
+
+
+def _bs_charm_call(spot: float, strike: float, t_years: float, r: float, iv: float) -> float:
+    """콜옵션 기준 charm. 풋은 부호 반대(-charm_call)."""
+    d1, d2 = _bs_d1_d2(spot, strike, t_years, r, iv)
+    sqrt_t = math.sqrt(t_years)
+    return -_norm_pdf(d1) * (2 * r * t_years - d2 * iv * sqrt_t) / (2 * t_years * iv * sqrt_t)
+
+
+def compute_vanna_charm(
+    spot: float,
+    expiry: str,
+    rows: list[OptionRow],
+    risk_free_rate: float = RISK_FREE_RATE_DEFAULT,
+) -> dict:
+    """단일 만기 스냅샷 기준 Net Vanna Exposure(VEX) / Net Charm Exposure(CEX) 계산.
+
+    IV(implied_volatility)가 없거나(0) 잔존만기가 0 이하인 행(만기 당일 등)은
+    Black-Scholes 공식이 정의되지 않으므로 건너뛴다.
+    """
+    today = date.today()
+    try:
+        exp_date = datetime.strptime(expiry, "%Y-%m-%d").date()
+    except ValueError:
+        return {"vex_total": 0.0, "cex_total": 0.0, "days_to_expiry": None, "by_strike": []}
+
+    days_to_expiry = (exp_date - today).days
+    t_years = days_to_expiry / 365.0
+
+    by_strike = []
+    vex_total = 0.0
+    cex_total = 0.0
+
+    if t_years <= 0:
+        # 만기 당일/지난 만기는 Black-Scholes 공식 정의역 밖이라 스킵
+        return {"vex_total": 0.0, "cex_total": 0.0, "days_to_expiry": days_to_expiry, "by_strike": []}
+
+    for r in rows:
+        strike_vex = 0.0
+        strike_cex = 0.0
+
+        if r.call_iv and r.call_oi:
+            vanna_c = _bs_vanna(spot, r.strike, t_years, risk_free_rate, r.call_iv)
+            charm_c = _bs_charm_call(spot, r.strike, t_years, risk_free_rate, r.call_iv)
+            strike_vex += r.call_oi * vanna_c * 100 * spot
+            strike_cex += r.call_oi * charm_c * 100 * spot
+
+        if r.put_iv and r.put_oi:
+            vanna_p = _bs_vanna(spot, r.strike, t_years, risk_free_rate, r.put_iv)
+            charm_p = -_bs_charm_call(spot, r.strike, t_years, risk_free_rate, r.put_iv)
+            strike_vex += r.put_oi * vanna_p * 100 * spot
+            strike_cex += r.put_oi * charm_p * 100 * spot
+
+        if strike_vex or strike_cex:
+            by_strike.append({"strike": r.strike, "vex": strike_vex, "cex": strike_cex})
+        vex_total += strike_vex
+        cex_total += strike_cex
+
+    return {
+        "vex_total": vex_total,
+        "cex_total": cex_total,
+        "days_to_expiry": days_to_expiry,
+        "by_strike": by_strike,
     }
 
 # ---------------------------------------------------------------------------
@@ -408,6 +513,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
                 m.put_gamma = r.put_gamma
 
     gex = compute_gex(primary.spot, primary.expiry, list(merged.values()))
+    vanna_charm = compute_vanna_charm(primary.spot, primary.expiry, primary.rows)
 
     narrative = build_narrative(
         spot=primary.spot,
@@ -441,6 +547,9 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "net_gex_total": gex["net_gex_total"],
         "regime": gex["regime"],
         "gex_by_strike": gex["by_strike"],
+        "vex_total": vanna_charm["vex_total"],
+        "cex_total": vanna_charm["cex_total"],
+        "vanna_charm_expiry_days": vanna_charm["days_to_expiry"],
         "narrative": narrative,
         "stage": stage_info["stage"],
         "stage_label": stage_info["label"],
