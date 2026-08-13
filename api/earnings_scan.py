@@ -1,6 +1,6 @@
 """
 Vercel Python Serverless Function
-GET /api/earnings_scan?watchlist=AAPL,NVDA,ANET
+GET /api/earnings_scan?watchlist=AAPL,NVDA,ANET,PLTR,MSFT
 GET /api/earnings_scan  (watchlist 파라미터 없으면 오늘 전체 실적발표 종목 스캔 — 느림, 참고용)
 
 관심종목 리스트를 넘기면 leaders_watchlist.txt 같은 파일 없이도
@@ -30,7 +30,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "s-maxage=300, stale-while-revalidate=60")
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
 
         try:
