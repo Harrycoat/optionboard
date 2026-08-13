@@ -935,5 +935,203 @@ loadLeaders();
 loadWatchlist();
 </script>
 
+<!-- ============================================================ -->
+<!-- 오늘의 실적발표 스크리너 섹션 (Finnhub 무료 API 기반)          -->
+<!-- ============================================================ -->
+
+<style>
+  .earnings-scan-section {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  .earnings-scan-section h2 {
+    color: #e8e8e8;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .earnings-scan-section .subtitle {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .earnings-scan-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .earnings-scan-controls input {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #e8e8e8;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 90px;
+  }
+  .earnings-scan-controls label {
+    color: #aaa;
+    font-size: 13px;
+  }
+  .earnings-scan-controls button {
+    background: #f0b90b;
+    color: #111;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .earnings-scan-controls button:hover {
+    background: #ffc933;
+  }
+  .earnings-scan-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #161616;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .earnings-scan-table th {
+    background: #1e1e1e;
+    color: #999;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .earnings-scan-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid #222;
+    color: #ddd;
+  }
+  .earnings-scan-table tr:last-child td {
+    border-bottom: none;
+  }
+  .earnings-scan-table tr:hover td {
+    background: #1c1c1c;
+  }
+  .earnings-scan-ticker {
+    font-weight: 700;
+    color: #f0b90b;
+  }
+  .earnings-scan-gap-up { color: #4caf50; font-weight: 600; }
+  .earnings-scan-gap-down { color: #f44336; font-weight: 600; }
+  .earnings-scan-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .earnings-scan-badge.bmo { background: #1a3a1a; color: #7fd67f; }
+  .earnings-scan-badge.amc { background: #3a1a1a; color: #ff8a8a; }
+  .earnings-scan-badge.dmh { background: #3a2a1a; color: #ffcc7f; }
+  .earnings-scan-empty, .earnings-scan-loading, .earnings-scan-error {
+    color: #888;
+    text-align: center;
+    padding: 30px;
+    background: #161616;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .earnings-scan-error { color: #ff8a8a; }
+</style>
+
+<section class="earnings-scan-section">
+  <h2>📊 오늘의 실적발표 스크리너</h2>
+  <div class="subtitle">실적발표 + 갭/거래량 조건을 동시 만족하는 종목만 자동 필터링 (Finnhub 무료 API 기반)</div>
+
+  <div class="earnings-scan-controls">
+    <label>최소 갭%</label>
+    <input type="number" id="es-min-gap" value="3" step="0.5" />
+    <label>최소 RVOL</label>
+    <input type="number" id="es-min-rvol" value="2" step="0.5" />
+    <label>관심종목만 (쉼표구분, 비우면 전체)</label>
+    <input type="text" id="es-watchlist" placeholder="예: AAPL,NVDA,ANET" style="width: 220px;" />
+    <button onclick="runEarningsScan()">스캔 실행</button>
+  </div>
+
+  <div id="earnings-scan-result">
+    <div class="earnings-scan-empty">위 조건 설정 후 '스캔 실행'을 눌러주세요. (전체 스캔은 몇 초 걸릴 수 있어요)</div>
+  </div>
+</section>
+
+<script>
+async function runEarningsScan() {
+  const resultEl = document.getElementById('earnings-scan-result');
+  const minGap = document.getElementById('es-min-gap').value || '3';
+  const minRvol = document.getElementById('es-min-rvol').value || '2';
+  const watchlist = document.getElementById('es-watchlist').value.trim();
+
+  resultEl.innerHTML = '<div class="earnings-scan-loading">⏳ 스캔 중... (전체 스캔은 다소 시간이 걸릴 수 있어요)</div>';
+
+  let url = `/api/search?mode=earnings_scan&min_gap=${minGap}&min_rvol=${minRvol}`;
+  if (watchlist) {
+    url += `&watchlist=${encodeURIComponent(watchlist)}`;
+  }
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.error) {
+      resultEl.innerHTML = `<div class="earnings-scan-error">⚠️ 오류: ${data.error}</div>`;
+      return;
+    }
+
+    if (!data.movers || data.movers.length === 0) {
+      resultEl.innerHTML = '<div class="earnings-scan-empty">조건에 맞는 종목이 없습니다.</div>';
+      return;
+    }
+
+    const hourLabel = { bmo: '장전', amc: '장후', dmh: '장중', '': '미확인' };
+
+    let rows = data.movers.map(m => {
+      const gapClass = m.gap_pct >= 0 ? 'earnings-scan-gap-up' : 'earnings-scan-gap-down';
+      const gapSign = m.gap_pct >= 0 ? '+' : '';
+      const hourKey = m.earnings_hour || '';
+      const epsSurprise = m.eps_surprise_pct !== null && m.eps_surprise_pct !== undefined
+        ? `${m.eps_surprise_pct >= 0 ? '+' : ''}${m.eps_surprise_pct}%`
+        : '-';
+      return `
+        <tr>
+          <td class="earnings-scan-ticker">${m.ticker}</td>
+          <td><span class="earnings-scan-badge ${hourKey}">${hourLabel[hourKey] || hourKey}</span></td>
+          <td class="${gapClass}">${gapSign}${m.gap_pct}%</td>
+          <td>${m.rvol}x</td>
+          <td>${epsSurprise}</td>
+          <td>$${m.today_close}</td>
+        </tr>
+      `;
+    }).join('');
+
+    resultEl.innerHTML = `
+      <table class="earnings-scan-table">
+        <thead>
+          <tr>
+            <th>티커</th>
+            <th>발표시점</th>
+            <th>갭%</th>
+            <th>RVOL</th>
+            <th>EPS 서프라이즈</th>
+            <th>현재가</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="color:#666; font-size:11px; margin-top:8px;">총 ${data.count}개 종목 · 조건: 갭 ${data.min_gap_pct}% 이상, RVOL ${data.min_rvol}배 이상</div>
+    `;
+  } catch (err) {
+    resultEl.innerHTML = `<div class="earnings-scan-error">⚠️ 스캔 실패: ${err.message}</div>`;
+  }
+}
+</script>
+
 </body>
 </html>
