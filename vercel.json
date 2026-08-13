@@ -1,4 +1,15 @@
 {
+  "functions": {
+    "api/search.py": {
+      "runtime": "python3.12"
+    },
+    "api/candles.py": {
+      "runtime": "python3.12"
+    },
+    "api/earnings_scan.py": {
+      "runtime": "python3.12"
+    }
+  },
   "headers": [
     {
       "source": "/leaders_report.json",
