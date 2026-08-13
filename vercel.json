@@ -1,14 +1,8 @@
 {
   "functions": {
-    "api/search.py": {
-      "runtime": "python3.12"
-    },
-    "api/candles.py": {
-      "runtime": "python3.12"
-    },
-    "api/earnings_scan.py": {
-      "runtime": "python3.12"
-    }
+    "api/search.py": {},
+    "api/candles.py": {},
+    "api/earnings_scan.py": {}
   },
   "headers": [
     {
