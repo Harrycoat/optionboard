@@ -7,16 +7,21 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
 필요 환경변수:
   MASSIVE_API_KEY  (Vercel Environment Variables에 등록)
 
-[2026-08-12 수정 내역]
-  - 현재가(spot) 조회 시 옵션체인 응답에 underlying_asset.price가 비어있으면
-    직전 거래일 종가(prev close)로 폴백하는데, 이 경우 결과가 최대 하루
-    지연될 수 있음(15분 지연이 아니라 최대 1거래일 지연). 이제 이 폴백이
-    사용됐는지를 is_stale_price 플래그로 결과에 포함해서, 프론트엔드에서
-    "이 가격은 직전 거래일 종가 기준입니다" 같은 경고를 보여줄 수 있게 함.
-  - 근본 원인(underlying_asset.price가 왜 자주 비어있는지)은 Massive API
+[2026-08-13 수정 내역]
+  - 현재가(spot) 조회 순서를 바꿈. 기존에는 옵션체인 응답 안의
+    underlying_asset.price를 먼저 믿고 쓰다가, 이 필드가 자주 비어있어서
+    뒤늦게 /v2/aggs/ticker/{ticker}/prev(전일 종가) 로 폴백했음. 이 과정에서
+    "가격 데이터 주의" 경고가 매번 뜨는 문제가 있었음.
+    generate_leaders_report.py 쪽(fetch_daily_bar_once)은 애초에 이
+    /v2/aggs/.../prev 엔드포인트를 1차로 확실하게 호출해서 문제가 없었음.
+    → 이제 options_engine도 동일하게 /v2/aggs/.../prev를 1차 소스로 삼고,
+      옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
+    → 대부분의 경우 prev 호출이 정상 성공하므로 is_stale_price는 이제
+      "정말로 아무 가격도 못 가져온 예외적인 경우"에만 True가 된다.
+  - [2026-08-12 수정 내역 — 참고용, 아래는 이전 로직에 대한 원인 파악 로그였음]
+    근본 원인(underlying_asset.price가 왜 자주 비어있는지)은 Massive API
     응답 스키마 확인이 더 필요함 — 유료 스냅샷/실시간 엔드포인트 사용 여부는
-    비용 문제로 보류. 원인 파악용 [DEBUG spot=None] 로그를 추가함(Vercel
-    Logs에서 확인 가능, 원인 파악 후 제거 가능).
+    비용 문제로 보류. [DEBUG spot=None] 로그는 더 이상 필요 없어져서 제거함.
 """
 
 from __future__ import annotations
@@ -57,7 +62,7 @@ class ChainSnapshot:
     spot: float
     expiry: str
     rows: list[OptionRow] = field(default_factory=list)
-    is_stale_price: bool = False  # True면 spot이 prev_close 폴백에서 나온 값 (최대 1거래일 지연)
+    is_stale_price: bool = False  # True면 prev_close/옵션체인 둘 다에서 정상 가격을 못 가져온 예외 상황
 
 
 def _massive_get(url: str, params: Optional[dict] = None) -> dict:
@@ -110,10 +115,30 @@ def _fetch_prev_close(ticker: str) -> Optional[float]:
     return float(close) if close is not None else None
 
 
+def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, bool]:
+    """현재가(spot)를 결정한다.
+
+    1차: /v2/aggs/.../prev (전일 종가) — leaders report와 동일하게 확실히 성공하는 소스.
+    2차(보조): 옵션체인 응답에 이미 포함된 underlying_asset.price가 있고
+               1차가 실패했을 때만 사용.
+
+    반환: (spot, is_stale_price). is_stale_price는 두 소스 다 실패해서
+    정말로 아무 가격도 못 가져온 예외적인 경우에만 True.
+    """
+    prev_close = _fetch_prev_close(ticker)
+    if prev_close is not None:
+        return prev_close, False
+
+    if chain_price is not None:
+        return float(chain_price), False
+
+    return None, True  # 호출부에서 None 체크로 예외 처리
+
+
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
     raw_results = _fetch_full_options_chain(ticker)
 
-    spot = None
+    chain_price = None
     by_expiry: dict[str, dict[float, dict]] = {}
 
     for item in raw_results:
@@ -124,9 +149,9 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
         if not exp or strike is None or contract_type not in ("call", "put"):
             continue
 
-        if spot is None:
+        if chain_price is None:
             underlying = item.get("underlying_asset", {})
-            spot = underlying.get("price")
+            chain_price = underlying.get("price")
 
         greeks = item.get("greeks") or {}
         gamma = greeks.get("gamma") or 0.0
@@ -146,23 +171,7 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
             row["put_gamma"] = float(gamma)
             row["put_iv"] = float(iv)
 
-    is_stale_price = False
-    if spot is None:
-        # [임시 디버그] underlying_asset.price가 왜 비었는지 원인 파악용 로그.
-        # Vercel 대시보드 > 프로젝트 > Logs에서 "[DEBUG spot=None]"으로 검색하면 보인다.
-        # 원인 파악 끝나면 이 블록은 지워도 된다.
-        sample = raw_results[0] if raw_results else None
-        print(
-            f"[DEBUG spot=None] ticker={ticker} "
-            f"raw_results_count={len(raw_results)} "
-            f"sample_has_underlying_asset_key={sample is not None and 'underlying_asset' in sample} "
-            f"sample_underlying_asset={sample.get('underlying_asset') if sample else 'N/A (raw_results 비어있음)'} "
-            f"sample_keys={list(sample.keys()) if sample else 'N/A'}"
-        )
-        time.sleep(1)  # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔다
-        spot = _fetch_prev_close(ticker)
-        is_stale_price = spot is not None  # prev_close로 채워졌으면 "직전 거래일 종가 기준" 표시
-        print(f"[DEBUG spot=None] prev_close 폴백 결과: spot={spot}")
+    spot, is_stale_price = _resolve_spot(ticker, chain_price)
 
     if spot is None:
         raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
@@ -466,9 +475,9 @@ def build_narrative(
 
     if is_stale_price:
         lines.append(
-            "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 옵션체인 응답에 실시간 현재가가 포함되어 있지 않아 "
-            "<b>직전 거래일 종가</b> 기준으로 계산됐어요. 오늘 큰 폭의 갭업/갭다운이 있었다면 "
-            "아래 레벨들이 실제 현재가와 크게 어긋날 수 있으니, 실전 매매 전 반드시 실시간 시세로 재확인하세요."
+            "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 "
+            "계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 "
+            "실시간 시세로 재확인하세요."
         )
 
     if regime == "positive":
@@ -611,11 +620,8 @@ def quick_gamma_flip(ticker: str) -> dict:
     """Top10 스캐너 전용 초경량 분석.
 
     API 요청 자체에 expiration_date 필터를 걸어서 근월물 계약만 딱 1페이지
-    (최대 250개) 받아온다. 대부분의 경우 옵션체인 응답 자체에 현재가
-    (underlying_asset.price)가 포함되어 있어 추가 호출이 필요 없지만,
-    간혹 없는 경우에만 전일 종가(prev close)로 폴백한다. 이때 직전 호출과
-    시간차 없이 바로 이어서 요청하면 초당 요청 제한(429 Too Many Requests)에
-    걸리기 쉬우므로, 폴백 호출 전 짧게 대기한다.
+    (최대 250개) 받아온다. 현재가는 /v2/aggs/.../prev를 1차로 사용하고,
+    옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
     """
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
@@ -633,7 +639,7 @@ def quick_gamma_flip(ticker: str) -> dict:
     if not results:
         raise ValueError(f"{ticker}: 옵션체인이 없습니다")
 
-    spot = None
+    chain_price = None
     strikes_dict: dict[float, dict] = {}
     nearest_expiry = None
 
@@ -651,9 +657,9 @@ def quick_gamma_flip(ticker: str) -> dict:
         if exp != nearest_expiry:
             continue
 
-        if spot is None:
+        if chain_price is None:
             underlying = item.get("underlying_asset", {})
-            spot = underlying.get("price")
+            chain_price = underlying.get("price")
 
         greeks = item.get("greeks") or {}
         gamma = greeks.get("gamma") or 0.0
@@ -669,12 +675,7 @@ def quick_gamma_flip(ticker: str) -> dict:
             row["put_oi"] = float(oi)
             row["put_gamma"] = float(gamma)
 
-    is_stale_price = False
-    if spot is None:
-        # rate limit(429) 회피: 직전 옵션체인 호출과 시간차를 둔 뒤에만 폴백 요청
-        time.sleep(1)
-        spot = _fetch_prev_close(ticker)
-        is_stale_price = spot is not None
+    spot, is_stale_price = _resolve_spot(ticker, chain_price)
 
     if spot is None or not strikes_dict:
         raise ValueError(f"{ticker}: 현재가 또는 옵션 데이터를 가져오지 못했습니다")
