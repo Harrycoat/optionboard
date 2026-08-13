@@ -1,8 +1,8 @@
 {
   "functions": {
-    "api/search.py": {},
-    "api/candles.py": {},
-    "api/earnings_scan.py": {}
+    "api/search.py": { "maxDuration": 30 },
+    "api/candles.py": { "maxDuration": 30 },
+    "api/earnings_scan.py": { "maxDuration": 30 }
   },
   "headers": [
     {
