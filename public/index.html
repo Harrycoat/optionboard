@@ -349,14 +349,37 @@ async function fetchTickersFromSheet(csvUrl){
 
 function myBoardRowHTML(r){
   const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
+
+  const isFlipReliable = r.gamma_flip != null && r.spot &&
+    Math.abs(r.gamma_flip - r.spot) / r.spot <= 0.5;
+  const flipText = isFlipReliable ? fmtNum(r.gamma_flip,1) : '데이터 부족';
+  const flipColor = isFlipReliable ? GOLD : '#8b93a1';
+
+  let callWallHtml = `<span class="mono" style="font-size:11px; color:var(--text-dim);">Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b></span>`;
+  if(r.call_wall != null && r.spot){
+    const distPct = (r.call_wall - r.spot) / r.spot * 100;
+    const isNear = Math.abs(distPct) <= 2;
+    const distText = `${distPct >= 0 ? '+' : ''}${distPct.toFixed(1)}%`;
+    callWallHtml = `
+      <span class="mono" style="font-size:11px; ${isNear ? `background:${UP}22; color:${UP}; padding:2px 6px; border-radius:4px; font-weight:700;` : 'color:var(--text-dim);'}">
+        Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b> (${distText})${isNear ? ' ⚠️콜라검토' : ''}
+      </span>`;
+  }
+
+  const regimeHtml = r.regime
+    ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${r.regime === 'positive' ? DOWN : UP}22; color:${r.regime === 'positive' ? DOWN : UP};">${r.regime === 'positive' ? '양감마' : '음감마'}</span>`
+    : '';
+
   return `
     <div class="leader-card" data-ticker="${r.ticker}">
       <span class="leader-ticker">${r.ticker}</span>
       <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
       <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${sm.color}22; color:${sm.color};">STAGE ${r.stage ?? '—'} · ${sm.label}</span>
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">Gamma Flip <b style="color:${GOLD}">${fmtNum(r.gamma_flip,1)}</b></span>
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b></span>
+      ${regimeHtml}
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Gamma Flip <b style="color:${flipColor}">${flipText}</b></span>
+      ${callWallHtml}
       <span class="mono" style="font-size:11px; color:var(--text-dim);">Put Wall <b style="color:${DOWN}">${fmtNum(r.put_wall,1)}</b></span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Max Pain <b style="color:${GOLD}">${fmtNum(r.max_pain,1)}</b></span>
     </div>
   `;
 }
