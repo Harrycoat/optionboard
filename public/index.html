@@ -83,7 +83,17 @@
 
   .empty{ color: var(--text-dim); font-size:13px; padding: 20px; border:1px dashed var(--line); border-radius:8px; text-align:center;}
 
-  /* ---------- 오늘의 주도주 ---------- */
+  /* ---------- 오늘의 주도주 (구글시트 기반, 한 줄형) ---------- */
+  .leader-card{
+    display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap;
+    gap:16px; padding: 12px 6px; border-bottom: 1px solid var(--line); cursor:pointer;
+  }
+  .leader-card:last-child{ border-bottom:none; }
+  .leader-card:hover{ opacity:0.8; }
+  .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); min-width:56px; }
+  .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
+
+  /* ---------- 스퀴즈 후보 그리드 ---------- */
   .leaders-grid{
     display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;
   }
@@ -94,17 +104,7 @@
     background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px;
   }
   .leader-col-header{ font-size:14px; font-weight:700; margin-bottom:2px; }
-  .leader-col-header.wave1{ color: var(--up); }
-  .leader-col-header.wave2{ color: var(--down); }
-  .leader-col-header.speculative{ color: var(--gold); }
   .leader-col-desc{ font-size:11px; color: var(--text-dim); margin-bottom:12px; }
-  .leader-card{
-    display:flex; justify-content:space-between; align-items:flex-start;
-    padding: 10px 4px; border-bottom: 1px solid var(--line); cursor:pointer; gap:8px;
-  }
-  .leader-card:last-child{ border-bottom:none; }
-  .leader-card:hover{ opacity:0.8; }
-  .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); }
   .leader-sector{ font-size:10px; color: var(--text-dim); margin-top:2px; }
   .leader-vol{ font-size:10px; color: var(--text-dim); margin-top:1px; font-family:'JetBrains Mono',monospace; }
   .leader-right{ text-align:right; }
@@ -118,26 +118,6 @@
   .badge-regime{ display:inline-block; margin-top:3px; padding:1px 6px; border-radius:3px; font-size:9px; }
   .badge-regime.positive{ background: rgba(61,127,224,0.15); color: var(--down); }
   .badge-regime.negative{ background: rgba(229,72,77,0.15); color: var(--up); }
-  .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
-
-  /* ---------- Gamma Flip Top10 스캐너 ---------- */
-  .top10-grid{
-    display:grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap:10px;
-  }
-  .top10-card{
-    background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px;
-    cursor:pointer; transition: border-color .15s; display:flex; align-items:center; gap:10px;
-  }
-  .top10-card:hover{ border-color: var(--gold); }
-  .top10-rank{
-    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color: var(--gold);
-    width:22px; text-align:center; flex-shrink:0;
-  }
-  .top10-body{ flex:1; min-width:0; }
-  .top10-ticker{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; }
-  .top10-sub{ font-size:11px; color:var(--text-dim); margin-top:3px; display:flex; justify-content:space-between; gap:6px; }
-  .top10-dist{ font-family:'JetBrains Mono',monospace; font-weight:700; }
-  .top10-dist.tight{ color: var(--up); }
 
   /* 상세 패널 */
   .detail{ background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:16px; }
@@ -264,25 +244,9 @@
 </header>
 
 <main>
-  <div class="section-title">오늘의 주도주 · 웨이브 로테이션 기준</div>
-  <div class="updated-note" id="leadersUpdatedNote">불러오는 중...</div>
-  <div class="leaders-grid">
-    <div class="leader-col">
-      <div class="leader-col-header wave1">Wave 1 · 리더</div>
-      <div class="leader-col-desc">신고가 갱신 중인 시장 주도주</div>
-      <div id="wave1-list"><div class="leader-empty">불러오는 중...</div></div>
-    </div>
-    <div class="leader-col">
-      <div class="leader-col-header wave2">Wave 2 · 로테이션 후보</div>
-      <div class="leader-col-desc">반도체/메모리 장비군</div>
-      <div id="wave2-list"><div class="leader-empty">불러오는 중...</div></div>
-    </div>
-    <div class="leader-col">
-      <div class="leader-col-header speculative">Gamma Flip 스캐너</div>
-      <div class="leader-col-desc">근접도 기준 Top 10 (유동성 상위 100종목 중)</div>
-      <div id="top10-list"><div class="leader-empty">불러오는 중...</div></div>
-    </div>
-  </div>
+  <div class="section-title">오늘의 주도주</div>
+  <div class="updated-note" id="myBoardUpdatedNote">불러오는 중...</div>
+  <div id="myTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
 
   <div class="section-title">스퀴즈 후보 · 딜러 헤지 흐름 기준</div>
   <div class="leaders-grid">
@@ -359,89 +323,84 @@ function fmtVolume(n){
   return String(n);
 }
 
-// ---------- 오늘의 주도주 ----------
-function leaderCardHTML(item){
-  const near = item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined && item.call_wall_distance_pct <= 2;
-  const distanceText = (item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined)
-    ? `Call Wall +${item.call_wall_distance_pct}%`
-    : '—';
-  const regimeHtml = item.gamma_regime
-    ? `<span class="badge-regime ${item.gamma_regime}">${item.gamma_regime === 'positive' ? '양감마' : '음감마'}</span>`
-    : '';
+// ---------- 오늘의 주도주 (구글시트 티커 리스트 + 실시간 API 계산) ----------
 
-  const priceText = (item.spot !== null && item.spot !== undefined) ? `$${fmtNum(item.spot)}` : '—';
-  let chgHtml = '';
-  if(item.price_change_pct !== null && item.price_change_pct !== undefined){
-    const isUp = item.price_change_pct >= 0;
-    chgHtml = `<span class="chg ${isUp?'up':'down'}">${isUp?'+':''}${item.price_change_pct}%</span>`;
-  }
-  const volText = (item.volume !== null && item.volume !== undefined) ? `Vol ${fmtVolume(item.volume)}` : '';
+const TICKER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXwE0ik6itZFGTe6irbrniOtzQ1a3dXR-fg8hYdaiUotQRpzmseG5BdoHpU-w330-GzhttZXrDldVJ/pub?output=csv";
 
+const STAGE_META = {
+  1: { label: '바닥권', color: GOLD },
+  2: { label: '상승',   color: UP },
+  3: { label: '고점권', color: GOLD },
+  4: { label: '하락',   color: DOWN },
+};
+
+async function fetchTickersFromSheet(csvUrl){
+  const res = await fetch(csvUrl, { cache: 'no-store' });
+  if(!res.ok) throw new Error('구글시트 로드 실패');
+  const text = await res.text();
+
+  const tickers = text
+    .split(/\r?\n/)
+    .map(line => line.split(',')[0].trim().toUpperCase())
+    .filter(t => t && t !== 'TICKER');
+
+  return tickers.slice(0, 10);
+}
+
+function myBoardRowHTML(r){
+  const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
   return `
-    <div class="leader-card" data-ticker="${item.ticker}">
-      <div>
-        <div class="leader-ticker">${item.ticker}</div>
-        <div class="leader-sector">${item.sector || ''}</div>
-        <div class="leader-vol">${volText}</div>
-      </div>
-      <div class="leader-right">
-        <div class="leader-price">${priceText}${chgHtml}</div>
-        <div class="leader-badge">
-          <div class="badge-distance ${near ? 'near' : ''}">${distanceText}</div>
-          ${regimeHtml}
-        </div>
-      </div>
+    <div class="leader-card" data-ticker="${r.ticker}">
+      <span class="leader-ticker">${r.ticker}</span>
+      <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
+      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${sm.color}22; color:${sm.color};">STAGE ${r.stage ?? '—'} · ${sm.label}</span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Gamma Flip <b style="color:${GOLD}">${fmtNum(r.gamma_flip,1)}</b></span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b></span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Put Wall <b style="color:${DOWN}">${fmtNum(r.put_wall,1)}</b></span>
     </div>
   `;
 }
 
-function renderLeaderColumn(containerId, items){
-  const el = document.getElementById(containerId);
-  if(!items || items.length === 0){
-    el.innerHTML = '<div class="leader-empty">아직 등록된 종목이 없습니다</div>';
+async function loadMyBoard(){
+  const boardEl = document.getElementById('myTickerBoard');
+  const note = document.getElementById('myBoardUpdatedNote');
+  boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
+
+  let tickers;
+  try{
+    tickers = await fetchTickersFromSheet(TICKER_SHEET_CSV_URL);
+  }catch(e){
+    boardEl.innerHTML = '<div class="leader-empty">구글시트에서 티커 리스트를 불러오지 못했습니다</div>';
+    note.textContent = '';
     return;
   }
-  el.innerHTML = items.map(leaderCardHTML).join('');
-  el.querySelectorAll('.leader-card').forEach(card=>{
-    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
-  });
-}
 
-// ---------- Gamma Flip Top10 스캐너 (관심 관찰 칸 대체) ----------
-function top10RowHTML(item, rank){
-  const dist = item.flip_distance_pct;
-  const tight = dist !== null && dist !== undefined && dist <= 1;
-  const distText = (dist !== null && dist !== undefined) ? `Flip ${dist}%` : '—';
-  const regimeHtml = item.gamma_regime
-    ? `<span class="badge-regime ${item.gamma_regime}">${item.gamma_regime === 'positive' ? '양감마' : '음감마'}</span>`
-    : '';
-  return `
-    <div class="leader-card" data-ticker="${item.ticker}">
-      <div>
-        <div class="leader-ticker">${rank}. ${item.ticker}</div>
-        <div class="leader-vol">${fmtNum(item.gamma_flip,1)} 근처</div>
-      </div>
-      <div class="leader-right">
-        <div class="leader-price">$${fmtNum(item.spot)}</div>
-        <div class="leader-badge">
-          <div class="badge-distance ${tight ? 'near' : ''}">${distText}</div>
-          ${regimeHtml}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderTop10(items){
-  const el = document.getElementById('top10-list');
-  if(!items || items.length === 0){
-    el.innerHTML = '<div class="leader-empty">아직 Top10 데이터가 없습니다</div>';
+  if(!tickers.length){
+    boardEl.innerHTML = '<div class="leader-empty">구글시트에 티커가 없습니다</div>';
+    note.textContent = '';
     return;
   }
-  el.innerHTML = items.map((item, i) => top10RowHTML(item, i+1)).join('');
-  el.querySelectorAll('.leader-card').forEach(card=>{
+
+  const results = await Promise.all(
+    tickers.map(t =>
+      fetch(`/api/search?ticker=${encodeURIComponent(t)}`)
+        .then(res => res.ok ? res.json() : null)
+        .catch(() => null)
+    )
+  );
+
+  const rows = results.filter(r => r && !r.error);
+  if(!rows.length){
+    boardEl.innerHTML = '<div class="leader-empty">데이터를 불러오지 못했습니다</div>';
+    note.textContent = '';
+    return;
+  }
+
+  boardEl.innerHTML = rows.map(myBoardRowHTML).join('');
+  boardEl.querySelectorAll('.leader-card').forEach(card=>{
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
+  note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
 // ---------- 스퀴즈 후보 (감마 / 바나 / 차름) ----------
@@ -449,7 +408,7 @@ function gammaSqueezeRowHTML(item){
   const cw = (item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined)
     ? `Call Wall ${item.call_wall_distance_pct >= 0 ? '+' : ''}${fmtNum(item.call_wall_distance_pct,2)}%` : '—';
   return `
-    <div class="leader-card" data-ticker="${item.ticker}">
+    <div class="leader-card" data-ticker="${item.ticker}" style="justify-content:space-between;">
       <div>
         <div class="leader-ticker">${item.ticker}</div>
         <div class="leader-vol">${cw}</div>
@@ -468,7 +427,7 @@ function vannaSqueezeRowHTML(item){
   const vexAbs = Math.abs(item.vex_total);
   const vexLabel = vexAbs >= 1e6 ? (item.vex_total/1e6).toFixed(1)+'M' : (item.vex_total/1e3).toFixed(0)+'K';
   return `
-    <div class="leader-card" data-ticker="${item.ticker}">
+    <div class="leader-card" data-ticker="${item.ticker}" style="justify-content:space-between;">
       <div>
         <div class="leader-ticker">${item.ticker}</div>
         <div class="leader-vol">VEX ${vexLabel}</div>
@@ -487,7 +446,7 @@ function charmSqueezeRowHTML(item){
   const cexAbs = Math.abs(item.cex_total);
   const cexLabel = cexAbs >= 1e6 ? (item.cex_total/1e6).toFixed(1)+'M' : (item.cex_total/1e3).toFixed(0)+'K';
   return `
-    <div class="leader-card" data-ticker="${item.ticker}">
+    <div class="leader-card" data-ticker="${item.ticker}" style="justify-content:space-between;">
       <div>
         <div class="leader-ticker">${item.ticker}</div>
         <div class="leader-vol">CEX ${cexLabel}</div>
@@ -515,28 +474,15 @@ function renderSqueezeList(elId, items, rowFn){
 }
 
 async function loadLeaders(){
-  const note = document.getElementById('leadersUpdatedNote');
   try{
     const res = await fetch('/leaders_report.json', {cache:'no-store'});
     if(!res.ok) throw new Error('리포트 없음');
     const data = await res.json();
-    const dt = new Date(data.generated_at);
-    note.textContent = `마지막 갱신: ${dt.toLocaleString('ko-KR')} (매 거래일 자동 갱신)`;
-
-    const cats = data.categories || {};
-    renderLeaderColumn('wave1-list', cats.wave1);
-    renderLeaderColumn('wave2-list', cats.wave2);
-    renderTop10(data.top10_gamma_flip);
 
     renderSqueezeList('gammaSqueeze-list', data.gamma_squeeze_candidates, gammaSqueezeRowHTML);
     renderSqueezeList('vannaSqueeze-list', data.vanna_squeeze_candidates, vannaSqueezeRowHTML);
     renderSqueezeList('charmSqueeze-list', data.charm_squeeze_candidates, charmSqueezeRowHTML);
   }catch(e){
-    note.textContent = '';
-    ['wave1-list','wave2-list'].forEach(id=>{
-      document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다 (첫 자동 갱신 대기 중)</div>';
-    });
-    document.getElementById('top10-list').innerHTML = '<div class="leader-empty">아직 데이터가 없습니다</div>';
     ['gammaSqueeze-list','vannaSqueeze-list','charmSqueeze-list'].forEach(id=>{
       document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다</div>';
     });
@@ -844,16 +790,15 @@ async function openCandleChart(d){
   try{
     const res = await fetch(`/api/candles?ticker=${encodeURIComponent(d.ticker)}`);
     const data = await res.json();
-    alert(JSON.stringify(Object.keys(data)));
     if(data.error){
       sub.textContent = `오류: ${data.error}`;
       return;
     }
-  if(!data.bars || data.bars.length === 0){
-  sub.textContent = '캔들 데이터를 가져오지 못했습니다. [디버그: ' + (data.ohlc_debug || '정보없음') + ']';
-  return;
-}
-sub.textContent = `일봉 · 최근 ${data.bars.length}거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain 표시`;
+    if(!data.bars || data.bars.length === 0){
+      sub.textContent = '캔들 데이터를 가져오지 못했습니다. [디버그: ' + (data.ohlc_debug || '정보없음') + ']';
+      return;
+    }
+    sub.textContent = `일봉 · 최근 ${data.bars.length}거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain 표시`;
     renderCandleChart(data);
   }catch(e){
     sub.textContent = `요청 실패: ${e.message}`;
@@ -933,6 +878,7 @@ document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
 
 loadLeaders();
 loadWatchlist();
+loadMyBoard();
 </script>
 
 <!-- ============================================================ -->
