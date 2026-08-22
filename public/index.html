@@ -362,7 +362,7 @@ function myBoardRowHTML(r){
     const distText = `${distPct >= 0 ? '+' : ''}${distPct.toFixed(1)}%`;
     callWallHtml = `
       <span class="mono" style="font-size:11px; ${isNear ? `background:${UP}22; color:${UP}; padding:2px 6px; border-radius:4px; font-weight:700;` : 'color:var(--text-dim);'}">
-        Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b> (${distText})${isNear ? ' ⚠️콜라검토' : ''}
+        Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b> (${distText})${isNear ? ' ⚠️저항선근접(콜라타이밍)' : ''}
       </span>`;
   }
 
