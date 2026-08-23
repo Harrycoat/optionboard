@@ -625,6 +625,15 @@ function buildXShareText(d){
 
   return lines.join('\n');
 }
+  function showToast(msg){
+  let toast = document.getElementById('shareToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'shareToast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+}
   toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(toast._hideTimer);
