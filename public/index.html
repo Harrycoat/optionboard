@@ -85,7 +85,7 @@
 
   .empty{ color: var(--text-dim); font-size:13px; padding: 20px; border:1px dashed var(--line); border-radius:8px; text-align:center;}
 
-  /* ---------- 오늘의 주도주 (구글시트 기반, 한 줄형) ---------- */
+  /* ---------- 오늘의 주도주 / ETF 마켓 리더 (구글시트 기반, 한 줄형) ---------- */
   .leader-card{
     display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap;
     gap:16px; padding: 12px 6px; border-bottom: 1px solid var(--line); cursor:pointer;
@@ -94,32 +94,6 @@
   .leader-card:hover{ opacity:0.8; }
   .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); min-width:56px; }
   .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
-
-  /* ---------- 스퀴즈 후보 그리드 ---------- */
-  .leaders-grid{
-    display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;
-  }
-  @media (max-width: 720px){
-    .leaders-grid{ grid-template-columns: 1fr; }
-  }
-  .leader-col{
-    background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px;
-  }
-  .leader-col-header{ font-size:14px; font-weight:700; margin-bottom:2px; }
-  .leader-col-desc{ font-size:11px; color: var(--text-dim); margin-bottom:12px; }
-  .leader-sector{ font-size:10px; color: var(--text-dim); margin-top:2px; }
-  .leader-vol{ font-size:10px; color: var(--text-dim); margin-top:1px; font-family:'JetBrains Mono',monospace; }
-  .leader-right{ text-align:right; }
-  .leader-price{ font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color: var(--text); white-space:nowrap; }
-  .leader-price .chg{ font-size:11px; font-weight:700; margin-left:4px; }
-  .leader-price .chg.up{ color: var(--up); }
-  .leader-price .chg.down{ color: var(--down); }
-  .leader-badge{ font-family:'JetBrains Mono',monospace; font-size:11px; text-align:right; margin-top:3px; }
-  .badge-distance{ color: var(--text-dim); }
-  .badge-distance.near{ color: var(--up); }
-  .badge-regime{ display:inline-block; margin-top:3px; padding:1px 6px; border-radius:3px; font-size:9px; }
-  .badge-regime.positive{ background: rgba(61,127,224,0.15); color: var(--down); }
-  .badge-regime.negative{ background: rgba(229,72,77,0.15); color: var(--up); }
 
   /* 상세 패널 */
   .detail{ background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:16px; }
@@ -250,24 +224,9 @@
   <div class="updated-note" id="myBoardUpdatedNote">불러오는 중...</div>
   <div id="myTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
 
-  <div class="section-title">스퀴즈 후보 · 딜러 헤지 흐름 기준</div>
-  <div class="leaders-grid">
-    <div class="leader-col">
-      <div class="leader-col-header" style="color:var(--up);">⚡ 감마 스퀴즈</div>
-      <div class="leader-col-desc">Negative Gamma + 당일 상승 전환</div>
-      <div id="gammaSqueeze-list"><div class="leader-empty">불러오는 중...</div></div>
-    </div>
-    <div class="leader-col">
-      <div class="leader-col-header" style="color:#3ddbc9;">🌊 바나 스퀴즈</div>
-      <div class="leader-col-desc">|VEX| 상위 + 당일 상승</div>
-      <div id="vannaSqueeze-list"><div class="leader-empty">불러오는 중...</div></div>
-    </div>
-    <div class="leader-col">
-      <div class="leader-col-header" style="color:var(--gold);">📌 차름 스퀴즈</div>
-      <div class="leader-col-desc">만기 5일 이내 + |CEX| 상위</div>
-      <div id="charmSqueeze-list"><div class="leader-empty">불러오는 중...</div></div>
-    </div>
-  </div>
+  <div class="section-title">ETF 마켓 리더</div>
+  <div class="updated-note" id="etfBoardUpdatedNote">불러오는 중...</div>
+  <div id="etfTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
 
   <div class="section-title">관심종목 · 매일 자동 갱신</div>
   <div class="updated-note" id="updatedNote">불러오는 중...</div>
@@ -325,17 +284,7 @@ function fmtVolume(n){
   return String(n);
 }
 
-// ---------- 오늘의 주도주 (구글시트 티커 리스트 + 실시간 API 계산) ----------
-
-const TICKER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXwE0ik6itZFGTe6irbrniOtzQ1a3dXR-fg8hYdaiUotQRpzmseG5BdoHpU-w330-GzhttZXrDldVJ/pub?output=csv";
-
-const STAGE_META = {
-  1: { label: '바닥권', color: GOLD },
-  2: { label: '상승',   color: UP },
-  3: { label: '고점권', color: GOLD },
-  4: { label: '하락',   color: DOWN },
-};
-
+// ---------- 공통: 구글시트에서 티커 리스트 가져오기 ----------
 async function fetchTickersFromSheet(csvUrl){
   const res = await fetch(csvUrl, { cache: 'no-store' });
   if(!res.ok) throw new Error('구글시트 로드 실패');
@@ -344,10 +293,17 @@ async function fetchTickersFromSheet(csvUrl){
   const tickers = text
     .split(/\r?\n/)
     .map(line => line.split(',')[0].trim().toUpperCase())
-    .filter(t => t && t !== 'TICKER');
+    .filter(t => /^[A-Z]{1,6}$/.test(t) && t !== 'TICKER');
 
   return tickers.slice(0, 10);
 }
+
+const STAGE_META = {
+  1: { label: '바닥권', color: GOLD },
+  2: { label: '상승',   color: UP },
+  3: { label: '고점권', color: GOLD },
+  4: { label: '하락',   color: DOWN },
+};
 
 function myBoardRowHTML(r){
   const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
@@ -386,14 +342,14 @@ function myBoardRowHTML(r){
   `;
 }
 
-async function loadMyBoard(){
-  const boardEl = document.getElementById('myTickerBoard');
-  const note = document.getElementById('myBoardUpdatedNote');
+async function loadTickerBoard(csvUrl, boardElId, noteElId){
+  const boardEl = document.getElementById(boardElId);
+  const note = document.getElementById(noteElId);
   boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
 
   let tickers;
   try{
-    tickers = await fetchTickersFromSheet(TICKER_SHEET_CSV_URL);
+    tickers = await fetchTickersFromSheet(csvUrl);
   }catch(e){
     boardEl.innerHTML = '<div class="leader-empty">구글시트에서 티커 리스트를 불러오지 못했습니다</div>';
     note.textContent = '';
@@ -428,90 +384,16 @@ async function loadMyBoard(){
   note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
-// ---------- 스퀴즈 후보 (감마 / 바나 / 차름) ----------
-function gammaSqueezeRowHTML(item){
-  const cw = (item.call_wall_distance_pct !== null && item.call_wall_distance_pct !== undefined)
-    ? `Call Wall ${item.call_wall_distance_pct >= 0 ? '+' : ''}${fmtNum(item.call_wall_distance_pct,2)}%` : '—';
-  return `
-    <div class="leader-card" data-ticker="${item.ticker}" style="justify-content:space-between;">
-      <div>
-        <div class="leader-ticker">${item.ticker}</div>
-        <div class="leader-vol">${cw}</div>
-      </div>
-      <div class="leader-right">
-        <div class="leader-price">$${fmtNum(item.spot)}</div>
-        <div class="leader-badge">
-          <div class="badge-distance near">▲${fmtNum(item.price_change_pct,2)}%</div>
-        </div>
-      </div>
-    </div>
-  `;
+// ★ 여기 두 URL만 각각 구글시트 CSV 링크입니다 ★
+const TICKER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXwE0ik6itZFGTe6irbrniOtzQ1a3dXR-fg8hYdaiUotQRpzmseG5BdoHpU-w330-GzhttZXrDldVJ/pub?output=csv";
+const ETF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnoCuQ1-jpfy_LAqCiOBxruPHlX58jFWwB1shKgDICq8VNQhW-8b6FWyYwaHY_43b1Nzc0xtugbIrK/pub?output=csv";
+
+async function loadMyBoard(){
+  await loadTickerBoard(TICKER_SHEET_CSV_URL, 'myTickerBoard', 'myBoardUpdatedNote');
 }
 
-function vannaSqueezeRowHTML(item){
-  const vexAbs = Math.abs(item.vex_total);
-  const vexLabel = vexAbs >= 1e6 ? (item.vex_total/1e6).toFixed(1)+'M' : (item.vex_total/1e3).toFixed(0)+'K';
-  return `
-    <div class="leader-card" data-ticker="${item.ticker}" style="justify-content:space-between;">
-      <div>
-        <div class="leader-ticker">${item.ticker}</div>
-        <div class="leader-vol">VEX ${vexLabel}</div>
-      </div>
-      <div class="leader-right">
-        <div class="leader-price">$${fmtNum(item.spot)}</div>
-        <div class="leader-badge">
-          <div class="badge-distance near">▲${fmtNum(item.price_change_pct,2)}%</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function charmSqueezeRowHTML(item){
-  const cexAbs = Math.abs(item.cex_total);
-  const cexLabel = cexAbs >= 1e6 ? (item.cex_total/1e6).toFixed(1)+'M' : (item.cex_total/1e3).toFixed(0)+'K';
-  return `
-    <div class="leader-card" data-ticker="${item.ticker}" style="justify-content:space-between;">
-      <div>
-        <div class="leader-ticker">${item.ticker}</div>
-        <div class="leader-vol">CEX ${cexLabel}</div>
-      </div>
-      <div class="leader-right">
-        <div class="leader-price">$${fmtNum(item.spot)}</div>
-        <div class="leader-badge">
-          <div class="badge-distance">D-${item.days_to_expiry}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderSqueezeList(elId, items, rowFn){
-  const el = document.getElementById(elId);
-  if(!items || items.length === 0){
-    el.innerHTML = '<div class="leader-empty">오늘은 조건에 맞는 후보가 없습니다</div>';
-    return;
-  }
-  el.innerHTML = items.map(rowFn).join('');
-  el.querySelectorAll('.leader-card').forEach(card=>{
-    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
-  });
-}
-
-async function loadLeaders(){
-  try{
-    const res = await fetch('/leaders_report.json', {cache:'no-store'});
-    if(!res.ok) throw new Error('리포트 없음');
-    const data = await res.json();
-
-    renderSqueezeList('gammaSqueeze-list', data.gamma_squeeze_candidates, gammaSqueezeRowHTML);
-    renderSqueezeList('vannaSqueeze-list', data.vanna_squeeze_candidates, vannaSqueezeRowHTML);
-    renderSqueezeList('charmSqueeze-list', data.charm_squeeze_candidates, charmSqueezeRowHTML);
-  }catch(e){
-    ['gammaSqueeze-list','vannaSqueeze-list','charmSqueeze-list'].forEach(id=>{
-      document.getElementById(id).innerHTML = '<div class="leader-empty">아직 데이터가 없습니다</div>';
-    });
-  }
+async function loadEtfBoard(){
+  await loadTickerBoard(ETF_SHEET_CSV_URL, 'etfTickerBoard', 'etfBoardUpdatedNote');
 }
 
 // ---------- 관심종목 (정적 리포트, 매일 자동 갱신) ----------
@@ -694,7 +576,7 @@ function buildXShareText(d){
 
   lines.push('');
   lines.push('옵션을 알면 주식 진입시점이 보인다');
-  lines.push('gexoption.com');
+  lines.push('mijoostock.com');
 
   return lines.join('\n');
 }
@@ -901,9 +783,9 @@ document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
 
-loadLeaders();
 loadWatchlist();
 loadMyBoard();
+loadEtfBoard();
 </script>
 
 <!-- ============================================================ -->
