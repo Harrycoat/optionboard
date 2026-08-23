@@ -291,12 +291,19 @@ async function fetchTickersFromSheet(csvUrl){
   if(!res.ok) throw new Error('구글시트 로드 실패');
   const text = await res.text();
 
-  const tickers = text
-    .split(/\r?\n/)
-    .map(line => line.split(',')[0].trim().toUpperCase())
-    .filter(t => /^[A-Z]{1,6}$/.test(t) && t !== 'TICKER');
+  const nameMap = {};
+  const tickers = [];
 
-  return tickers.slice(0, 10);
+  text.split(/\r?\n/).forEach(line => {
+    const parts = line.split(',');
+    const t = (parts[0] || '').trim().toUpperCase();
+    if(!/^[A-Z]{1,6}$/.test(t) || t === 'TICKER') return;
+    tickers.push(t);
+    const name = (parts[1] || '').trim();
+    if(name) nameMap[t] = name;
+  });
+
+  return { tickers: tickers.slice(0, 10), nameMap };
 }
 
 const STAGE_META = {
@@ -306,7 +313,8 @@ const STAGE_META = {
   4: { label: '하락',   color: DOWN },
 };
 
-function myBoardRowHTML(r){
+function myBoardRowHTML(r, nameMap){
+  const etfName = nameMap && nameMap[r.ticker];
   const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
 
   const isFlipReliable = r.gamma_flip != null && r.spot &&
@@ -331,7 +339,7 @@ function myBoardRowHTML(r){
 
   return `
     <div class="leader-card" data-ticker="${r.ticker}">
-      <span class="leader-ticker">${r.ticker}</span>
+      <span class="leader-ticker">${r.ticker}${etfName ? ` <span style="font-size:11px; font-weight:400; color:var(--text-dim);">(${etfName})</span>` : ''}</span>
       <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
       <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${sm.color}22; color:${sm.color};">STAGE ${r.stage ?? '—'} · ${sm.label}</span>
       ${regimeHtml}
