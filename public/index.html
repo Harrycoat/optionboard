@@ -587,39 +587,44 @@ function renderDetail(d){
 function buildXShareText(d){
   const regimePos = d.regime === 'positive';
   const regimeLabel = regimePos ? '📊 양의 감마 — 박스권 흐름 가능성' : '📊 음의 감마 — 변동성 확대 가능성';
+  const regimeLabelEn = regimePos ? '📊 Positive Gamma — range-bound bias' : '📊 Negative Gamma — volatility expansion bias';
 
   const lines = [`$${d.ticker} $${fmtNum(d.spot)}`, regimeLabel];
+  const linesEn = [`$${d.ticker} $${fmtNum(d.spot)}`, regimeLabelEn];
 
   if(d.put_wall != null && d.spot){
     const pct = ((d.put_wall - d.spot) / d.spot * 100).toFixed(1);
     lines.push(`🔵 Put Wall $${fmtNum(d.put_wall,1)} (${pct>0?'+':''}${pct}%)`);
+    linesEn.push(`🔵 Put Wall $${fmtNum(d.put_wall,1)} (${pct>0?'+':''}${pct}%)`);
   }
   if(d.call_wall != null && d.spot){
     const pct = ((d.call_wall - d.spot) / d.spot * 100).toFixed(1);
     lines.push(`🔴 Call Wall $${fmtNum(d.call_wall,1)} (${pct>0?'+':''}${pct}%)`);
+    linesEn.push(`🔴 Call Wall $${fmtNum(d.call_wall,1)} (${pct>0?'+':''}${pct}%)`);
   }
   if(d.gamma_flip != null){
     lines.push(`⚡ Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
+    linesEn.push(`⚡ Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
   }
   if(d.max_pain != null){
     lines.push(`🎯 Max Pain $${fmtNum(d.max_pain,1)} (${d.expiry_used})`);
+    linesEn.push(`🎯 Max Pain $${fmtNum(d.max_pain,1)} (${d.expiry_used})`);
   }
 
   lines.push('');
   lines.push('옵션을 알면 주식 진입시점이 보인다');
   lines.push('mijoostock.com');
 
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push(...linesEn);
+  lines.push('');
+  lines.push('See where GEX shows resistance and support');
+  lines.push('gexoption.com');
+
   return lines.join('\n');
 }
-
-function showToast(msg){
-  let toast = document.getElementById('shareToast');
-  if(!toast){
-    toast = document.createElement('div');
-    toast.id = 'shareToast';
-    toast.className = 'toast';
-    document.body.appendChild(toast);
-  }
   toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(toast._hideTimer);
