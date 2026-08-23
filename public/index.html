@@ -356,9 +356,11 @@ async function loadTickerBoard(csvUrl, boardElId, noteElId){
   const note = document.getElementById(noteElId);
   boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
 
-  let tickers;
-  try{
-    tickers = await fetchTickersFromSheet(csvUrl);
+      let tickers, sheetNameMap;
+      try{
+        const result = await fetchTickersFromSheet(csvUrl);
+        tickers = result.tickers;
+        sheetNameMap = result.nameMap;
   }catch(e){
     boardEl.innerHTML = '<div class="leader-empty">구글시트에서 티커 리스트를 불러오지 못했습니다</div>';
     note.textContent = '';
@@ -386,7 +388,7 @@ async function loadTickerBoard(csvUrl, boardElId, noteElId){
     return;
   }
 
-  boardEl.innerHTML = rows.map(myBoardRowHTML).join('');
+  boardEl.innerHTML = rows.map(r => myBoardRowHTML(r, sheetNameMap)).join('');
   boardEl.querySelectorAll('.leader-card').forEach(card=>{
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
