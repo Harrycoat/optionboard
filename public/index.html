@@ -55,6 +55,25 @@
   }
   .searchbar button:hover{ filter: brightness(1.1); }
   .searchbar button:disabled{ opacity:0.5; cursor: default; }
+    .home-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--panel-2); color: var(--text); border:1px solid var(--line);
+    padding: 9px 16px; border-radius: 6px; font-size:13px; font-weight:600;
+    text-decoration:none; white-space:nowrap;
+  }
+  .home-btn:hover{ border-color: var(--gold); color: var(--gold); }
+
+  .scroll-top-btn{
+    position: fixed; right: 20px; bottom: 20px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--gold); color: #111; border: none;
+    font-size: 18px; font-weight: 700; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    z-index: 30;
+  }
+  .scroll-top-btn.show{ display: flex; }
+  .scroll-top-btn:hover{ filter: brightness(1.1); }
 
   main{ max-width: 1100px; margin: 0 auto; padding: 24px 20px 80px; }
 
