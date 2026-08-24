@@ -188,6 +188,80 @@ def build_badge(ticker: str, sector: str) -> dict:
             badge["spot"] = round(c, 2)
 
     return badge
+
+
+# ---------------------------------------------------------------------------
+# 급등주 스캔 대상 유니버스: 위키피디아 "S&P500 구성종목" / "나스닥100 구성종목"
+# 문서에서 매주 자동으로 긁어온다.
+#
+# 예전엔 로컬 파일(sp500_nasdaq100_universe.txt)에 티커를 하드코딩해뒀는데,
+# 지수 리밸런싱(편입/편출) 때마다 수동으로 갱신해야 했다. 위키피디아 문서는
+# 지수 변경사항이 반영될 때마다 커뮤니티가 갱신하므로, 이 페이지들에서 직접
+# 가져오면 Harry님이 손댈 일이 전혀 없다.
+# ---------------------------------------------------------------------------
+WIKI_SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+WIKI_NASDAQ100_URL = "https://en.wikipedia.org/wiki/Nasdaq-100"
+
+WIKI_REQUEST_HEADERS = {
+    # 위키피디아는 기본 User-Agent 없는 요청을 종종 차단한다.
+    "User-Agent": "Mozilla/5.0 (compatible; gexoption-universe-bot/1.0)"
+}
+
+
+def _clean_ticker(raw) -> str | None:
+    """위키피디아 표기(BRK.B 등)를 브로커/API 표준 표기(BRK-B)로 정규화한다."""
+    import re
+    t = str(raw).strip().upper().replace(".", "-")
+    return t if re.match(r"^[A-Z0-9\-]{1,6}$", t) else None
+
+
+def fetch_universe_from_wikipedia() -> list:
+    """위키피디아에서 S&P500 + 나스닥100 구성종목 티커를 실시간으로 가져온다.
+
+    pandas.read_html()은 표를 컬럼명 기준으로 파싱하므로, 컬럼 순서가 바뀌어도
+    안전하다. 나스닥100 페이지에는 "종목 변경 이력" 표도 같이 있어서, 반드시
+    {"Ticker", "Company"} 컬럼을 동시에 가진 표만 "현재 구성종목" 표로 취급한다.
+    """
+    import io
+    import pandas as pd
+
+    tickers: set = set()
+
+    resp = requests.get(WIKI_SP500_URL, headers=WIKI_REQUEST_HEADERS, timeout=20)
+    resp.raise_for_status()
+    sp500_tables = pd.read_html(io.StringIO(resp.text))
+    sp500_df = None
+    for tbl in sp500_tables:
+        cols = set(str(c) for c in tbl.columns)
+        if {"Symbol", "Security"}.issubset(cols):
+            sp500_df = tbl
+            break
+    if sp500_df is None:
+        raise ValueError("S&P500 위키피디아 표에서 Symbol/Security 컬럼을 찾지 못했습니다")
+    for t in sp500_df["Symbol"]:
+        cleaned = _clean_ticker(t)
+        if cleaned:
+            tickers.add(cleaned)
+
+    resp2 = requests.get(WIKI_NASDAQ100_URL, headers=WIKI_REQUEST_HEADERS, timeout=20)
+    resp2.raise_for_status()
+    ndx_tables = pd.read_html(io.StringIO(resp2.text))
+    ndx_df = None
+    for tbl in ndx_tables:
+        cols = set(str(c) for c in tbl.columns)
+        if {"Ticker", "Company"}.issubset(cols):
+            ndx_df = tbl
+            break
+    if ndx_df is None:
+        raise ValueError("나스닥100 위키피디아 표에서 Ticker/Company 컬럼을 찾지 못했습니다")
+    for t in ndx_df["Ticker"]:
+        cleaned = _clean_ticker(t)
+        if cleaned:
+            tickers.add(cleaned)
+
+    return sorted(tickers)
+
+
 def load_universe(path: str) -> list:
     """티커 리스트 파일을 로드한다 (주석/빈 줄 제외, 한 줄에 티커 하나)."""
     tickers = []
@@ -198,6 +272,20 @@ def load_universe(path: str) -> list:
                 continue
             tickers.append(line)
     return tickers
+
+
+def load_universe_preferring_wiki(fallback_path: str = UNIVERSE_PATH) -> list:
+    """위키피디아에서 최신 S&P500+나스닥100 리스트를 가져오고, 실패하면(네트워크
+    문제, 위키피디아 표 구조 변경 등) 기존 로컬 파일로 안전하게 폴백한다."""
+    try:
+        tickers = fetch_universe_from_wikipedia()
+        if tickers:
+            print(f"위키피디아에서 유니버스 로드 성공: {len(tickers)}개 종목")
+            return tickers
+        print("위키피디아 응답이 비어있어 로컬 파일로 폴백합니다.")
+    except Exception as e:
+        print(f"위키피디아 유니버스 로드 실패({e}), 로컬 파일로 폴백합니다.")
+    return load_universe(fallback_path)
 
 
 def compute_flip_distance_pct(spot, gamma_flip):
@@ -243,7 +331,7 @@ def build_active_universe(
     현재가 폴백 호출이 없어 종목당 API 호출이 1번뿐이라 429 문제가 크게
     줄어든다. 이 함수는 주 1회(월요일)만 실행된다.
     """
-    tickers = load_universe(universe_path)
+    tickers = load_universe_preferring_wiki(universe_path)
     print(f"\n[주간] 유동성 스캔 시작: {len(tickers)}개 종목")
 
     ranked = []
@@ -324,6 +412,82 @@ def build_top10_gamma_flip(top_n: int = 10) -> list:
         f"스킵 {skipped}개 / Top {top_n} 추출"
     )
     return top10
+
+
+def build_top_gainers(top_n: int = 10, min_price: float = 5.0, min_volume: int = 300_000) -> list:
+    """유동성 상위 종목(active_universe, 100개)을 스캔해서 오늘 등락률
+    (전일 시가 대비 종가, price_change_pct) 기준 내림차순 Top N을 반환한다.
+
+    2단계 구조 (Top10 Gamma Flip 스캐너와 동일한 패턴):
+      1) active_universe 100종목 전체를 가벼운 일봉(prev bar) 조회만으로 스캔
+         (종목당 API 호출 1번, GEX 계산 없음 → 빠름)
+      2) 등락률 상위 top_n개만 골라서 그때 GEX(Stage/Gamma Flip/Call Wall 등)를
+         추가로 계산 (analyze_ticker 호출은 top_n개만 → API 호출 최소화)
+
+    잡주/저유동성 종목 노이즈를 막기 위해 최소 가격(min_price)과
+    최소 거래량(min_volume) 필터를 적용한다.
+    """
+    tickers = load_or_build_active_universe()
+    print(f"\nTop Gainers 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
+
+    candidates = []
+    skipped = 0
+    for i, ticker in enumerate(tickers, 1):
+        if i % 20 == 0 or i == 1:
+            print(f"  진행: {i}/{len(tickers)} ({ticker})")
+
+        bar = fetch_daily_bar(ticker)
+        if not bar:
+            skipped += 1
+            time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+            continue
+
+        o, c, v = bar.get("open"), bar.get("close"), bar.get("volume")
+        if not o or not c:
+            skipped += 1
+            time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+            continue
+
+        if c < min_price or (v is not None and v < min_volume):
+            skipped += 1
+            time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+            continue
+
+        pct = round((c - o) / o * 100, 2)
+        candidates.append({
+            "ticker": ticker,
+            "spot": round(c, 2),
+            "price_change_pct": pct,
+            "volume": v,
+        })
+        time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+
+    candidates.sort(key=lambda x: x["price_change_pct"], reverse=True)
+    top = candidates[:top_n]
+
+    print(f"  1단계 완료: 유효 {len(candidates)}개 / 필터제외 {skipped}개")
+    print(f"  2단계: 상위 {len(top)}개 GEX 보강 계산 중...")
+
+    for entry in top:
+        result, err = try_analyze(entry["ticker"])
+        if result:
+            entry["gamma_flip"] = result.get("gamma_flip")
+            entry["gamma_regime"] = result.get("regime")
+            entry["call_wall"] = result.get("call_wall")
+            entry["put_wall"] = result.get("put_wall")
+            entry["stage"] = result.get("stage")
+            entry["stage_label"] = result.get("stage_label")
+        else:
+            entry["gamma_flip"] = None
+            entry["gamma_regime"] = None
+            entry["call_wall"] = None
+            entry["put_wall"] = None
+            entry["stage"] = None
+            entry["stage_label"] = None
+        time.sleep(PER_TICKER_DELAY_SECONDS)
+
+    print(f"Top Gainers 스캐너 완료: Top {len(top)} 추출")
+    return top
 
 
 def build_gamma_squeeze_candidates(categories_report: dict) -> list:
@@ -432,6 +596,7 @@ def build_report():
         report["categories"][cat_key] = entries
 
     report["top10_gamma_flip"] = build_top10_gamma_flip()
+    report["top_gainers"] = build_top_gainers()
     report["gamma_squeeze_candidates"] = build_gamma_squeeze_candidates(report["categories"])
     report["vanna_squeeze_candidates"] = build_vanna_squeeze_candidates(report["categories"])
     report["charm_squeeze_candidates"] = build_charm_squeeze_candidates(report["categories"])
@@ -441,6 +606,7 @@ def build_report():
         json.dump(report, f, ensure_ascii=False, indent=2)
 
     print(f"\nleaders_report.json 생성 완료: {OUTPUT_PATH}")
+    print(f"오늘의 급등주 Top: {len(report['top_gainers'])}개")
     print(f"감마 스퀴즈 후보: {len(report['gamma_squeeze_candidates'])}개")
     print(f"바나 스퀴즈 후보: {len(report['vanna_squeeze_candidates'])}개")
     print(f"차름 스퀴즈 후보: {len(report['charm_squeeze_candidates'])}개")
