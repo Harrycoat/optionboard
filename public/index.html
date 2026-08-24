@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>감마 익스포저 조회 — Max Pain · GEX 대시보드</title>
+<meta name="description" content="옵션 시장의 감마 포지셔닝(Call Wall, Put Wall, Gamma Flip, Max Pain)을 실시간으로 확인하세요. 딜러 헤지 물량이 몰리는 지지/저항선을 데이터로 보여드립니다.">
+<meta property="og:title" content="GEX Option — 감마 익스포저 실시간 조회">
+<meta property="og:description" content="옵션을 알면 진입 포인트가 보인다 — Call Wall, Put Wall, Gamma Flip, Max Pain을 실시간으로 확인하세요.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gexoption.com">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GEX Option — 감마 익스포저 실시간 조회">
+<meta name="twitter:description" content="옵션을 알면 진입 포인트가 보인다 — Call Wall, Put Wall, Gamma Flip, Max Pain을 실시간으로 확인하세요.">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4689151958671592"
      crossorigin="anonymous"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -211,9 +220,7 @@
   #candleChart{ width:100%; height:420px; }
   .chart-legend{ display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; font-size:11px; color:var(--text-dim); }
   .chart-legend .sw{ display:inline-block; width:14px; height:2px; margin-right:5px; vertical-align:middle; }
-</style>
-<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
-</head>
+</style></head>
 <body>
 
 <div class="hero">
@@ -272,12 +279,15 @@
     <button class="modal-close" onclick="closeCandleChart()">&times;</button>
     <div class="modal-title" id="chartModalTitle">캔들차트</div>
     <div class="modal-sub" id="chartModalSub">일봉 · 최근 6개월</div>
-    <div id="candleChart"></div>
+    <div id="candleChart" style="min-height:200px; display:flex; align-items:center; justify-content:center;">
+      <img id="candleChartImg" style="width:100%; height:auto; border-radius:6px; display:none;" alt="캔들차트">
+    </div>
     <div class="chart-legend">
       <span><span class="sw" style="background:#e5484d"></span>Call Wall (저항)</span>
       <span><span class="sw" style="background:#3d7fe0"></span>Put Wall (지지)</span>
       <span><span class="sw" style="background:#e0a838"></span>Gamma Flip</span>
       <span><span class="sw" style="background:#8b93a1"></span>Max Pain</span>
+      <span><span class="sw" style="background:#22c55e"></span>Max OI Wall</span>
     </div>
   </div>
 </div>
@@ -1028,7 +1038,7 @@ function buildXShareText(d){
 
   lines.push('');
   lines.push('옵션을 알면 주식 진입시점이 보인다');
-  lines.push('mijoostock.com');
+  lines.push('gexoption.com');
   lines.push('');
   const regimeTagKr = regimePos ? '#박스권' : '#변동성확대';
   lines.push(`#${d.ticker} #옵션 #미국주식 #GEX #감마익스포저 ${regimeTagKr}`);
@@ -1155,107 +1165,28 @@ async function openCandleChart(d){
   const overlay = document.getElementById('chartModal');
   const title = document.getElementById('chartModalTitle');
   const sub = document.getElementById('chartModalSub');
+  const img = document.getElementById('candleChartImg');
+
   title.textContent = `${d.ticker} 캔들차트`;
-  sub.textContent = '불러오는 중...';
+  sub.textContent = '차트 생성 중...';
+  img.style.display = 'none';
   overlay.classList.add('open');
 
-  try{
-    const res = await fetch(`/api/candles?ticker=${encodeURIComponent(d.ticker)}`);
-    const data = await res.json();
-    if(data.error){
-      sub.textContent = `오류: ${data.error}`;
-      return;
-    }
-    if(!data.bars || data.bars.length === 0){
-      sub.textContent = '캔들 데이터를 가져오지 못했습니다. [디버그: ' + (data.ohlc_debug || '정보없음') + ']';
-      return;
-    }
-    sub.textContent = `일봉 · 최근 ${data.bars.length}거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain/Max OI Wall/20일선 표시`;
-    renderCandleChart(data);
-  }catch(e){
-    sub.textContent = `요청 실패: ${e.message}`;
-  }
+  const src = `/api/candle_image?ticker=${encodeURIComponent(d.ticker)}&_=${Date.now()}`;
+
+  img.onload = () => {
+    img.style.display = 'block';
+    sub.textContent = `일봉 · Call Wall/Put Wall/Gamma Flip/Max Pain/Max OI Wall/20일선 표시`;
+  };
+  img.onerror = () => {
+    img.style.display = 'none';
+    sub.textContent = '차트 이미지를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+  };
+  img.src = src;
 }
 
 function closeCandleChart(){
   document.getElementById('chartModal').classList.remove('open');
-}
-
-function renderCandleChart(data){
-  const container = document.getElementById('candleChart');
-  container.innerHTML = '';
-
-  if(candleChartInstance){
-    try{ candleChartInstance.remove(); }catch(e){}
-    candleChartInstance = null;
-  }
-
-  if(!data.bars || data.bars.length === 0){
-    container.innerHTML = '<div class="empty">캔들 데이터가 없습니다</div>';
-    return;
-  }
-
-  const chart = LightweightCharts.createChart(container, {
-    width: container.clientWidth,
-    height: 420,
-    layout: { background: { color: '#151a22' }, textColor: '#8b93a1' },
-    grid: { vertLines: { color: '#1f2530' }, horzLines: { color: '#1f2530' } },
-    timeScale: { borderColor: '#1f2530' },
-    rightPriceScale: { borderColor: '#1f2530' },
-  });
-  candleChartInstance = chart;
-
-  const series = chart.addCandlestickSeries({
-    upColor: '#e5484d', downColor: '#3d7fe0',
-    borderUpColor: '#e5484d', borderDownColor: '#3d7fe0',
-    wickUpColor: '#e5484d', wickDownColor: '#3d7fe0',
-  });
-  series.setData(data.bars);
-
-  // ---------- 20일 이동평균선 ----------
-  if(data.bars.length >= 20){
-    const ma20Data = [];
-    for(let i = 19; i < data.bars.length; i++){
-      let sum = 0;
-      for(let j = i - 19; j <= i; j++) sum += data.bars[j].close;
-      ma20Data.push({ time: data.bars[i].time, value: +(sum / 20).toFixed(4) });
-    }
-    const ma20Series = chart.addLineSeries({
-      color: '#a855f7',
-      lineWidth: 2,
-      priceLineVisible: false,
-      lastValueVisible: true,
-      title: '20일선',
-    });
-    ma20Series.setData(ma20Data);
-  }
-
-  const levels = data.levels || {};
-  const levelDefs = [
-    { key: 'call_wall', color: '#e5484d', label: 'Call Wall' },
-    { key: 'put_wall', color: '#3d7fe0', label: 'Put Wall' },
-    { key: 'gamma_flip', color: '#e0a838', label: 'Gamma Flip' },
-    { key: 'max_pain', color: '#8b93a1', label: 'Max Pain' },
-    { key: 'max_oi_wall', color: '#22c55e', label: 'Max OI Wall' },
-  ];
-  levelDefs.forEach(({key, color, label})=>{
-    const val = levels[key];
-    if(val === null || val === undefined) return;
-    series.createPriceLine({
-      price: val,
-      color: color,
-      lineWidth: 1,
-      lineStyle: LightweightCharts.LineStyle.Dashed,
-      axisLabelVisible: true,
-      title: label,
-    });
-  });
-
-  chart.timeScale().fitContent();
-
-  window.addEventListener('resize', ()=>{
-    if(candleChartInstance) chart.applyOptions({ width: container.clientWidth });
-  });
 }
 
 document.getElementById('chartModal').addEventListener('click', (e)=>{
