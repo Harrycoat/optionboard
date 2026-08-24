@@ -490,6 +490,82 @@ def _bs_charm_call(spot: float, strike: float, t_years: float, r: float, iv: flo
     return -_norm_pdf(d1) * (2 * r * t_years - d2 * iv * sqrt_t) / (2 * t_years * iv * sqrt_t)
 
 
+def _bs_gamma(spot: float, strike: float, t_years: float, r: float, iv: float) -> float:
+    """블랙숄즈 감마 (콜/풋 공통값)."""
+    d1, _ = _bs_d1_d2(spot, strike, t_years, r, iv)
+    return _norm_pdf(d1) / (spot * iv * math.sqrt(t_years))
+
+
+def compute_gamma_flip_bs(
+    spot: float,
+    rows: list[OptionRow],
+    expiry: str,
+    risk_free_rate: float = RISK_FREE_RATE_DEFAULT,
+) -> Optional[float]:
+    """"진짜" 감마 플립 계산.
+
+    수정 이력: 예전 방식(compute_gex 안의 cumulative crossing)은 각 스트라이크의
+    OI×감마(현재 스팟 기준으로 계산된 값)를 낮은 스트라이크부터 그냥 누적 합산해서
+    처음 만나는 부호전환 지점을 찾았다. 이건 "스팟이 그 스트라이크에 있었다면
+    감마가 어땠을지"를 반영하지 못하는 방식이라, 스팟에서 한참 먼 스트라이크의
+    소량 잔여 OI 때문에 엉뚱한 값이 나오는 경우가 있었다 (예: SNDK 스팟 1596인데
+    flip이 615로 나옴).
+
+    이 함수는 실제 업계에서 쓰는 정의대로, 여러 가상의 스팟 가격에서 블랙숄즈
+    감마를 다시 계산해서(해당 가격을 스팟으로 가정했을 때의 감마), 딜러 전체
+    감마노출의 부호가 실제로 뒤집히는 지점을 찾는다 (Barchart 등에서 "1% move
+    기준"이라고 설명하는 방식과 같은 개념).
+
+    근월물(가장 가까운 만기) 1개 스냅샷 기준으로만 계산한다 — compute_vanna_charm과
+    동일한 이유로, 만기가 섞이면 잔존기간 T가 달라져서 부정확해진다.
+    """
+    today = date.today()
+    try:
+        exp_date = datetime.strptime(expiry, "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+    days_to_expiry = (exp_date - today).days
+    t_years = days_to_expiry / 365.0
+    if t_years <= 0:
+        return None
+
+    valid_rows = [r for r in rows if (r.call_oi and r.call_iv) or (r.put_oi and r.put_iv)]
+    if not valid_rows:
+        return None
+
+    def total_gamma_at(test_spot: float) -> float:
+        total = 0.0
+        for r in valid_rows:
+            if r.call_oi and r.call_iv:
+                g = _bs_gamma(test_spot, r.strike, t_years, risk_free_rate, r.call_iv)
+                total += g * r.call_oi * 100 * test_spot ** 2 * 0.01
+            if r.put_oi and r.put_iv:
+                g = _bs_gamma(test_spot, r.strike, t_years, risk_free_rate, r.put_iv)
+                total -= g * r.put_oi * 100 * test_spot ** 2 * 0.01
+        return total
+
+    # 스팟 근처 ±30% 범위를 촘촘히 스캔해서 부호전환 지점을 찾는다.
+    # 여러 지점에서 전환이 생길 수 있어 스팟에서 가장 가까운 것을 최종 채택한다.
+    lo, hi = spot * 0.7, spot * 1.3
+    n_steps = 200
+    step = (hi - lo) / n_steps
+    prev_price, prev_val = lo, total_gamma_at(lo)
+    best_crossing: Optional[float] = None
+    for i in range(1, n_steps + 1):
+        price = lo + step * i
+        val = total_gamma_at(price)
+        if (prev_val < 0 <= val) or (prev_val >= 0 > val):
+            denom = abs(prev_val) + abs(val)
+            frac = abs(prev_val) / denom if denom else 0.0
+            crossing_price = prev_price + frac * (price - prev_price)
+            if best_crossing is None or abs(crossing_price - spot) < abs(best_crossing - spot):
+                best_crossing = crossing_price
+        prev_price, prev_val = price, val
+
+    return round(best_crossing, 2) if best_crossing is not None else None
+
+
 def compute_vanna_charm(
     spot: float,
     expiry: str,
@@ -765,12 +841,17 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     max_oi_wall = compute_max_oi_wall(list(merged.values()))
     vanna_charm = compute_vanna_charm(primary.spot, primary.expiry, primary.rows)
 
+    # 진짜(블랙숄즈 재계산 방식) 감마 플립. IV 데이터가 부족해서 계산이
+    # 안 되는 예외적인 경우에만 예전 방식(cumulative crossing) 값으로 폴백한다.
+    gamma_flip_bs = compute_gamma_flip_bs(primary.spot, primary.rows, primary.expiry)
+    gamma_flip = gamma_flip_bs if gamma_flip_bs is not None else gex["gamma_flip"]
+
     narrative = build_narrative(
         spot=primary.spot,
         max_pain=max_pain["max_pain_strike"],
         call_wall=gex["call_wall"],
         put_wall=gex["put_wall"],
-        gamma_flip=gex["gamma_flip"],
+        gamma_flip=gamma_flip,
         regime=gex["regime"],
         expiry_used=primary.expiry,
         is_stale_price=primary.is_stale_price,
@@ -796,7 +877,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "pain_curve": max_pain["pain_curve"],
         "call_wall": gex["call_wall"],
         "put_wall": gex["put_wall"],
-        "gamma_flip": gex["gamma_flip"],
+        "gamma_flip": gamma_flip,
         "max_oi_wall": max_oi_wall["max_oi_wall"],
         "max_oi_wall_total_oi": max_oi_wall["max_oi_wall_total_oi"],
         "max_oi_wall_call_oi": max_oi_wall["max_oi_wall_call_oi"],
