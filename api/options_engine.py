@@ -6,6 +6,22 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
 
 필요 환경변수:
   MASSIVE_API_KEY  (Vercel Environment Variables에 등록)
+
+[2026-08-13 수정 내역]
+  - 현재가(spot) 조회 순서를 바꿈. 기존에는 옵션체인 응답 안의
+    underlying_asset.price를 먼저 믿고 쓰다가, 이 필드가 자주 비어있어서
+    뒤늦게 /v2/aggs/ticker/{ticker}/prev(전일 종가) 로 폴백했음. 이 과정에서
+    "가격 데이터 주의" 경고가 매번 뜨는 문제가 있었음.
+    generate_leaders_report.py 쪽(fetch_daily_bar_once)은 애초에 이
+    /v2/aggs/.../prev 엔드포인트를 1차로 확실하게 호출해서 문제가 없었음.
+    → 이제 options_engine도 동일하게 /v2/aggs/.../prev를 1차 소스로 삼고,
+      옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
+    → 대부분의 경우 prev 호출이 정상 성공하므로 is_stale_price는 이제
+      "정말로 아무 가격도 못 가져온 예외적인 경우"에만 True가 된다.
+  - [2026-08-12 수정 내역 — 참고용, 아래는 이전 로직에 대한 원인 파악 로그였음]
+    근본 원인(underlying_asset.price가 왜 자주 비어있는지)은 Massive API
+    응답 스키마 확인이 더 필요함 — 유료 스냅샷/실시간 엔드포인트 사용 여부는
+    비용 문제로 보류. [DEBUG spot=None] 로그는 더 이상 필요 없어져서 제거함.
 """
 
 from __future__ import annotations
@@ -26,6 +42,9 @@ class MassiveAPIError(RuntimeError):
     pass
 
 
+# ---------------------------------------------------------------------------
+# 데이터 가져오기 (Massive.com REST API)
+# ---------------------------------------------------------------------------
 @dataclass
 class OptionRow:
     strike: float
@@ -43,8 +62,8 @@ class ChainSnapshot:
     spot: float
     expiry: str
     rows: list[OptionRow] = field(default_factory=list)
-    is_stale_price: bool = False
-    prev_open: Optional[float] = None
+    is_stale_price: bool = False  # True면 prev_close/옵션체인 둘 다에서 정상 가격을 못 가져온 예외 상황
+    prev_open: Optional[float] = None  # 등락률(%) 계산용 (전일 시가) — 없으면 None
 
 
 def _massive_get(url: str, params: Optional[dict] = None) -> dict:
@@ -102,7 +121,16 @@ def _fetch_prev_bar(ticker: str) -> Optional[dict]:
 
 
 def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, bool, Optional[float]]:
-    """현재가(spot)를 결정한다."""
+    """현재가(spot)를 결정한다.
+
+    1차: /v2/aggs/.../prev (전일 종가) — leaders report와 동일하게 확실히 성공하는 소스.
+    2차(보조): 옵션체인 응답에 이미 포함된 underlying_asset.price가 있고
+               1차가 실패했을 때만 사용.
+
+    반환: (spot, is_stale_price, prev_open). is_stale_price는 두 소스 다 실패해서
+    정말로 아무 가격도 못 가져온 예외적인 경우에만 True. prev_open은 등락률(%)
+    계산용 — 1차 소스가 실패했으면 None.
+    """
     bar = _fetch_prev_bar(ticker)
     if bar is not None:
         return bar["close"], False, bar.get("open")
@@ -110,7 +138,7 @@ def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, boo
     if chain_price is not None:
         return float(chain_price), False, None
 
-    return None, True, None
+    return None, True, None  # 호출부에서 None 체크로 예외 처리
 
 
 def fetch_oi_volume_snapshot(ticker: str, max_expiries: int = 2) -> dict:
@@ -204,6 +232,7 @@ def compute_oi_rollover(prev_snapshot: dict, today_snapshot: dict, min_oi_change
         if abs(oi_change) < min_oi_change:
             continue
 
+        # 거래량이 OI 변화량의 절반 이상이면 "실제 체결로 확인된" 신호로 간주
         volume_confirmed = today_volume >= abs(oi_change) * 0.5
 
         if prev_oi < min_oi_change * 0.2 and today_oi >= min_oi_change:
@@ -306,6 +335,9 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
     return snapshots
 
 
+# ---------------------------------------------------------------------------
+# Max Pain
+# ---------------------------------------------------------------------------
 def compute_max_pain(rows: list[OptionRow]) -> dict:
     strikes = [r.strike for r in rows]
     pain_by_strike = {}
@@ -323,7 +355,11 @@ def compute_max_pain(rows: list[OptionRow]) -> dict:
 
 
 def compute_max_oi_wall(rows: list[OptionRow]) -> dict:
-    """감마 가중치와 무관하게, 콜+풋 순수 미결제약정(OI) 합산이 가장 큰 스트라이크."""
+    """감마 가중치와 무관하게, 콜+풋 순수 미결제약정(OI) 합산이 가장 큰 스트라이크.
+
+    Call Wall(감마 기준)과는 별개의 개념 — 이미 있는 call_oi/put_oi로 바로 계산 가능하며
+    추가 API 호출이 필요 없다.
+    """
     if not rows:
         return {"max_oi_wall": None, "max_oi_wall_total_oi": 0, "max_oi_wall_call_oi": 0, "max_oi_wall_put_oi": 0}
 
@@ -339,6 +375,9 @@ def compute_max_oi_wall(rows: list[OptionRow]) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# GEX (Gamma Exposure)
+# ---------------------------------------------------------------------------
 def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     gex_by_strike = {}
 
@@ -395,10 +434,24 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     }
 
 
-RISK_FREE_RATE_DEFAULT = 0.045
+# ---------------------------------------------------------------------------
+# Vanna / Charm Exposure (2차 그릭스, 딜러 헤지 흐름)
+# Black-Scholes 순정 파이썬 구현 (scipy 등 무거운 의존성 없음).
+# scipy 없이 표준정규분포 확률밀도함수(PDF)만 직접 구현해서 사용한다.
+#
+# Vanna: 변동성(IV) 변화에 따른 딜러 델타 헤지 흐름.
+#   콜/풋 동일 부호 → 종목별로 콜+풋 OI를 더해서(add) 노출도 계산.
+# Charm: 시간(잔존만기) 경과에 따른 딜러 델타 헤지 흐름 (특히 만기 임박 시 강함).
+#   콜/풋 반대 부호 → GEX처럼 콜-풋 OI 차이로 계산.
+#
+# 참고: 근월물(가장 가까운 만기) 1개 스냅샷 기준으로만 계산한다.
+# (여러 만기를 합치면 만기별로 다른 잔존기간 T를 반영할 수 없어서 부정확해짐)
+# ---------------------------------------------------------------------------
+RISK_FREE_RATE_DEFAULT = 0.045  # 무위험 이자율 근사치 (미 단기 국채 수준)
 
 
 def _norm_pdf(x: float) -> float:
+    """표준정규분포 확률밀도함수 φ(x). scipy 없이 math만으로 구현."""
     return math.exp(-0.5 * x * x) / math.sqrt(2.0 * math.pi)
 
 
@@ -409,11 +462,13 @@ def _bs_d1_d2(spot: float, strike: float, t_years: float, r: float, iv: float) -
 
 
 def _bs_vanna(spot: float, strike: float, t_years: float, r: float, iv: float) -> float:
+    """콜/풋 공통 (put-call parity에 의해 동일값). 계약 1개(주식 1주) 기준."""
     d1, d2 = _bs_d1_d2(spot, strike, t_years, r, iv)
     return -math.exp(-r * t_years) * _norm_pdf(d1) * d2 / iv
 
 
 def _bs_charm_call(spot: float, strike: float, t_years: float, r: float, iv: float) -> float:
+    """콜옵션 기준 charm. 풋은 부호 반대(-charm_call)."""
     d1, d2 = _bs_d1_d2(spot, strike, t_years, r, iv)
     sqrt_t = math.sqrt(t_years)
     return -_norm_pdf(d1) * (2 * r * t_years - d2 * iv * sqrt_t) / (2 * t_years * iv * sqrt_t)
@@ -425,6 +480,11 @@ def compute_vanna_charm(
     rows: list[OptionRow],
     risk_free_rate: float = RISK_FREE_RATE_DEFAULT,
 ) -> dict:
+    """단일 만기 스냅샷 기준 Net Vanna Exposure(VEX) / Net Charm Exposure(CEX) 계산.
+
+    IV(implied_volatility)가 없거나(0) 잔존만기가 0 이하인 행(만기 당일 등)은
+    Black-Scholes 공식이 정의되지 않으므로 건너뛴다.
+    """
     today = date.today()
     try:
         exp_date = datetime.strptime(expiry, "%Y-%m-%d").date()
@@ -439,6 +499,7 @@ def compute_vanna_charm(
     cex_total = 0.0
 
     if t_years <= 0:
+        # 만기 당일/지난 만기는 Black-Scholes 공식 정의역 밖이라 스킵
         return {"vex_total": 0.0, "cex_total": 0.0, "days_to_expiry": days_to_expiry, "by_strike": []}
 
     for r in rows:
@@ -469,8 +530,15 @@ def compute_vanna_charm(
         "by_strike": by_strike,
     }
 
-
+# ---------------------------------------------------------------------------
+# Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
+# 지금은 원인 파악을 위해 stage_debug 필드를 임시로 노출한다.
+# ---------------------------------------------------------------------------
 def fetch_daily_closes(ticker: str, lookback_days: int = 420) -> tuple[list[float], str]:
+    """
+    최근 lookback_days(달력일 기준)치 일봉 종가를 오래된 순으로 반환한다.
+    (closes, debug_info) 튜플을 반환한다 — debug_info는 원인 파악용 임시 필드.
+    """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
@@ -509,19 +577,41 @@ def compute_stage(closes: list[float]) -> dict:
     SLOPE_THRESH = 2.0
     POS_THRESH = 2.0
 
+    # ------------------------------------------------------------------
+    # 수정 이력: 예전 로직은 pos_pct/slope_pct 둘 다 뚜렷하지 않으면
+    # (예: 최근 눌림으로 pos_pct가 애매해진 상태) 곧바로 prior_slope_pct
+    # (80~40일 전, 즉 몇 달 전 낡은 구간)로 폴백해서 Stage를 확정해버렸다.
+    # 그 결과 "MA는 계속 오르는 중인데 가격이 이미 고점 찍고 눌리는" 전형적인
+    # 천정권(Stage 3) 패턴이, 몇 달 전 조정기의 낡은 기울기 때문에
+    # 바닥다지기(Stage 1)로 잘못 표시되는 사례가 있었다 (예: MSFT 8월).
+    #
+    # 고친 로직: prior_slope_pct는 "MA 기울기 자체가 애매한(거의 평평한)"
+    # 경우에만 타이브레이커로 쓰고, MA 기울기(slope_pct)가 뚜렷하면
+    # 항상 "현재 가격 위치 vs 현재 MA 기울기" 조합을 우선한다.
+    #   - MA 오름세(slope_pct 양수)인데 가격이 MA 위에서 못 버티면(pos_pct 낮음)
+    #     → 천정권(Stage 3): 추세는 아직 살아있지만 가격이 먼저 꺾인 상태
+    #   - MA 내림세(slope_pct 음수)인데 가격이 이미 MA 위로 올라오면(pos_pct 높음)
+    #     → 바닥다지기(Stage 1): MA는 아직 안 돌았지만 가격이 먼저 반등한 상태
+    # ------------------------------------------------------------------
     if pos_pct > POS_THRESH and slope_pct > SLOPE_THRESH:
         stage, label = 2, "상승국면"
     elif pos_pct < -POS_THRESH and slope_pct < -SLOPE_THRESH:
         stage, label = 4, "하락국면"
     elif slope_pct > SLOPE_THRESH:
+        # MA는 여전히 뚜렷하게 오르는 중인데 가격이 그 위에서 못 버팀 → 천정권
         stage, label = 3, "천정권"
     elif slope_pct < -SLOPE_THRESH:
+        # MA는 여전히 뚜렷하게 내리는 중인데 가격이 이미 위로 올라옴 → 바닥다지기
         stage, label = 1, "바닥다지기"
     elif pos_pct > POS_THRESH:
+        # MA 기울기는 애매(평평)하지만, 가격은 여전히 뚜렷하게 MA 위 → 아직 상승 흐름 유지로 판단
+        # (낡은 prior_slope_pct보다 "지금 가격이 MA 위에 있다"는 현재 신호를 우선)
         stage, label = 2, "상승국면"
     elif pos_pct < -POS_THRESH:
+        # 반대로 가격이 여전히 뚜렷하게 MA 아래 → 아직 하락 흐름 유지로 판단
         stage, label = 4, "하락국면"
     elif prior_slope_pct < -SLOPE_THRESH:
+        # MA 기울기·가격위치 둘 다 애매(평평)할 때만 낡은 흐름을 타이브레이커로 사용
         stage, label = 1, "바닥다지기"
     elif prior_slope_pct > SLOPE_THRESH:
         stage, label = 3, "천정권"
@@ -539,6 +629,9 @@ def compute_stage(closes: list[float]) -> dict:
     return result
 
 
+# ---------------------------------------------------------------------------
+# 한국어 해설 문장 생성 (참고용 — 매수/매도 지시 아님)
+# ---------------------------------------------------------------------------
 def _fmt_strike(x) -> str:
     if x is None:
         return "-"
@@ -625,7 +718,9 @@ def build_narrative(
 
     return lines
 
-
+# ---------------------------------------------------------------------------
+# 통합 분석
+# ---------------------------------------------------------------------------
 def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     ticker = ticker.upper().strip()
     snapshots = fetch_option_chain(ticker, expiry=expiry)
@@ -708,7 +803,52 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# 짧은 캐싱 레이어 (트래픽 급증 시 Massive API 요청량 방어용)
+#
+# Vercel 서버리스 함수는 인스턴스가 재사용될 때만 이 캐시가 유지된다
+# (완전히 새 인스턴스가 뜨면 캐시는 비어있는 상태로 시작함 — 이건 정상이고,
+#  그래도 같은 인스턴스가 짧은 시간 안에 여러 요청을 처리하는 경우
+#  — 예: 동시에 여러 명이 같은 종목 검색, 매크로/주도주 보드가
+#  겹치는 티커를 반복 조회하는 경우 — 에는 Massive API 호출을 줄여준다.
+#
+# 데이터 자체가 원래 "15분 지연"이라, 60~90초 정도 캐싱해도
+# 정확도 손실이 사실상 없다.
+# ---------------------------------------------------------------------------
+CACHE_TTL_SECONDS = 90
+_analysis_cache: dict[tuple, tuple[float, dict]] = {}
+
+
+def analyze_ticker_cached(ticker: str, expiry: Optional[str] = None, ttl: int = CACHE_TTL_SECONDS) -> dict:
+    """analyze_ticker()에 짧은 TTL 캐싱을 씌운 버전.
+
+    같은 (ticker, expiry) 조합이 ttl초 이내에 다시 요청되면 Massive API를
+    다시 호출하지 않고 캐시된 결과를 그대로 반환한다.
+    """
+    key = (ticker.upper().strip(), expiry)
+    now = time.time()
+
+    cached = _analysis_cache.get(key)
+    if cached is not None:
+        cached_at, cached_result = cached
+        if now - cached_at < ttl:
+            return cached_result
+
+    result = analyze_ticker(ticker, expiry=expiry)
+    _analysis_cache[key] = (now, result)
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Top10 Gamma Flip 스캐너 전용 초경량 분석
+# ---------------------------------------------------------------------------
 def quick_gamma_flip(ticker: str) -> dict:
+    """Top10 스캐너 전용 초경량 분석.
+
+    API 요청 자체에 expiration_date 필터를 걸어서 근월물 계약만 딱 1페이지
+    (최대 250개) 받아온다. 현재가는 /v2/aggs/.../prev를 1차로 사용하고,
+    옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
+    """
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
 
@@ -737,6 +877,7 @@ def quick_gamma_flip(ticker: str) -> dict:
         if not exp or strike is None or contract_type not in ("call", "put"):
             continue
 
+        # 첫 번째로 만나는(=가장 가까운, asc 정렬) 만기만 사용
         if nearest_expiry is None:
             nearest_expiry = exp
         if exp != nearest_expiry:
@@ -790,6 +931,7 @@ def quick_gamma_flip(ticker: str) -> dict:
 
 
 def rank_by_liquidity(ticker: str) -> dict:
+    """유동성 랭킹 전용 초경량 조회."""
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
     url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
@@ -815,6 +957,11 @@ def rank_by_liquidity(ticker: str) -> dict:
 
 
 def fetch_daily_ohlc(ticker: str, lookback_days: int = 180) -> tuple[list[dict], str]:
+    """캔들차트용 일봉 OHLC(+거래량)를 오래된 순으로 반환한다.
+
+    fetch_daily_closes()와 달리 종가뿐 아니라 시가/고가/저가/거래량까지 반환한다.
+    (bars, debug_info) 튜플을 반환한다 — debug_info는 원인 파악용 임시 필드.
+    """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
