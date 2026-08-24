@@ -406,19 +406,35 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     call_wall = max(call_candidates, key=lambda k: call_candidates[k]["call_gex"])
     put_wall = min(put_candidates, key=lambda k: put_candidates[k]["put_gex"])
 
+    # ------------------------------------------------------------------
+    # Gamma Flip 계산: 스트라이크를 오름차순으로 훑으면서 누적 net_gex의
+    # 부호가 바뀌는 지점(들)을 전부 찾은 뒤, 그중 "스팟 가격에 가장 가까운"
+    # 지점을 고른다.
+    #
+    # 수정 이력: 예전 로직은 "가장 낮은 스트라이크부터 훑다가 맨 처음
+    # 만나는 부호전환"에서 곧바로 멈췄다. SNDK처럼 주가가 비싸고 옵션
+    # 히스토리가 긴 종목은, 스팟에서 한참 먼 낮은 스트라이크에도 소량의
+    # 잔여 OI가 있어서 거기서 우연히 부호가 뒤집히는 경우가 있는데, 그러면
+    # 정작 스팟 근처의 "진짜" 전환점은 확인도 안 해보고 엉뚱하게 먼 값을
+    # gamma_flip으로 내보내는 문제가 있었다 (예: 스팟 1596인데 flip이 615).
+    # ------------------------------------------------------------------
     sorted_strikes = sorted(gex_by_strike.keys())
     cumulative = 0.0
-    gamma_flip = None
     prev_strike = None
+    crossings: list[float] = []
     for k in sorted_strikes:
         prev_cum = cumulative
         cumulative += gex_by_strike[k]["net_gex"]
         if prev_strike is not None and prev_cum < 0 <= cumulative:
-            gamma_flip = k
-            break
+            crossings.append(k)
         prev_strike = k
-    if gamma_flip is None and sorted_strikes:
+
+    if crossings:
+        gamma_flip = min(crossings, key=lambda k: abs(k - spot))
+    elif sorted_strikes:
         gamma_flip = min(sorted_strikes, key=lambda k: abs(gex_by_strike[k]["net_gex"]))
+    else:
+        gamma_flip = None
 
     net_gex_total = sum(v["net_gex"] for v in gex_by_strike.values())
 
