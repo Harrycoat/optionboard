@@ -240,6 +240,13 @@
 </header>
 
 <main>
+  <div id="marketStatusBanner" style="margin-bottom:20px;"></div>
+
+  <div class="section-title">🔥 오늘의 급등주 Top 10</div>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">유동성 상위 종목군에서 오늘 등락률이 가장 큰 종목들입니다 (전일 시가 대비, 15분 지연).</p>
+  <div class="updated-note" id="gainersUpdatedNote">불러오는 중...</div>
+  <div id="gainersBoard"><div class="leader-empty">불러오는 중...</div></div>
+
   <div class="section-title">오늘의 주도주</div>
   <div class="updated-note" id="myBoardUpdatedNote">불러오는 중...</div>
   <div id="myTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
@@ -282,6 +289,7 @@
 const UP = '#e5484d';
 const DOWN = '#3d7fe0';
 const GOLD = '#e0a838';
+const GREEN_OK = '#22c55e';
 
 function fmtNum(n, digits=2){
   if(n===null || n===undefined || isNaN(n)) return '—';
@@ -303,6 +311,227 @@ function fmtVolume(n){
   if(abs >= 1e6) return (n/1e6).toFixed(1)+'M';
   if(abs >= 1e3) return (n/1e3).toFixed(0)+'K';
   return String(n);
+}
+
+// ---------- 시장 상황 배너: SPY/QQQ Stage + FTD 상태를 조합한 전체 장 국면 ----------
+const STAGE_ACTION = {
+  1: '바닥권',
+  2: '상승국면',
+  3: '천정권',
+  4: '하락국면',
+};
+
+function marketVerdict(spyStage, qqqStage, ftdStatus){
+  // 아래는 시장 국면을 설명하는 참고 정보이며, 매매 추천이 아닙니다.
+  if(ftdStatus !== 'confirmed' || spyStage === 4 || qqqStage === 4){
+    return { level: 'HALT', color: DOWN, text: '하락 국면' };
+  }
+  if(spyStage === 3 || qqqStage === 3 || spyStage == null || qqqStage == null){
+    return { level: 'CAUTION', color: GOLD, text: '혼조 · 전환 구간' };
+  }
+  return { level: 'ACTIVE', color: GREEN_OK, text: '상승 국면' };
+}
+
+async function loadMarketStatusBanner(){
+  const el = document.getElementById('marketStatusBanner');
+  el.innerHTML = `<div class="leader-empty">시장 상황 확인 중...</div>`;
+
+  let spyData = null, qqqData = null, iwmData = null, marketStatus = null;
+  try{
+    [spyData, qqqData, iwmData, marketStatus] = await Promise.all([
+      fetch('/api/search?ticker=SPY').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/api/search?ticker=QQQ').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/api/search?ticker=IWM').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch('/market_status.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
+  }catch(e){
+    el.innerHTML = '';
+    return;
+  }
+
+  const spyStage = spyData && !spyData.error ? spyData.stage : null;
+  const qqqStage = qqqData && !qqqData.error ? qqqData.stage : null;
+  const iwmStage = iwmData && !iwmData.error ? iwmData.stage : null;
+  const ftdStatus = marketStatus ? marketStatus.ftd_status : null;
+  const ftdDate = marketStatus ? marketStatus.ftd_date : null;
+  const ftdNote = marketStatus ? marketStatus.note : '';
+
+  const verdict = marketVerdict(spyStage, qqqStage, ftdStatus);
+
+  function stageBadge(label, stage){
+    const meta = stage != null ? (STAGE_META[stage] || { label: '—', color: '#8b93a1' }) : { label: '데이터 부족', color: '#8b93a1' };
+    return `<span class="mono" style="font-size:12px; color:var(--text-dim);">${label} <b style="color:${meta.color}">STAGE ${stage ?? '—'} · ${meta.label}</b></span>`;
+  }
+
+  const ftdBadgeColor = ftdStatus === 'confirmed' ? GREEN_OK : DOWN;
+  const ftdBadgeText = ftdStatus === 'confirmed'
+    ? `FTD 확인됨${ftdDate ? ` (${ftdDate})` : ''}`
+    : (ftdStatus ? `FTD ${ftdStatus}` : 'FTD 상태 미확인');
+
+  el.innerHTML = `
+    <div style="border:1px solid ${verdict.color}55; background:${verdict.color}14; border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <span style="font-size:13px; font-weight:800; color:${verdict.color}; padding:4px 12px; border-radius:6px; background:${verdict.color}22; white-space:nowrap;">📍 시장 국면: ${verdict.text}</span>
+      ${stageBadge('SPY', spyStage)}
+      ${stageBadge('QQQ', qqqStage)}
+      ${stageBadge('IWM', iwmStage)}
+      <span class="mono" style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:${ftdBadgeColor}22; color:${ftdBadgeColor};">${ftdBadgeText}</span>
+    </div>
+    ${ftdNote ? `<div style="font-size:11.5px; color:var(--text-dim); margin-top:6px; padding-left:2px;">${ftdNote}</div>` : ''}
+    <div style="font-size:10.5px; color:var(--text-dim); opacity:0.7; margin-top:4px; padding-left:2px;">※ 위 국면 표시는 참고용 정보이며, 매수/매도를 권유하는 투자자문이 아닙니다.</div>
+    <div id="macroStrip" style="margin-top:10px;"></div>
+  `;
+
+  loadMacroStrip();
+}
+
+// ---------- 매크로 지표 (펀드매니저가 매일 보는 10개 ETF, 전일 종가 대비 등락률 기준 추세 판정) ----------
+const MACRO_TICKERS = [
+  { ticker: 'SPY', label: '대형주 지수' },
+  { ticker: 'QQQ', label: '성장주 지수' },
+  { ticker: 'IWM', label: '소형주 지수' },
+  { ticker: 'TLT', label: '장기 국채 (금리 역프록시)' },
+  { ticker: 'HYG', label: '하이일드 회사채 (신용스프레드)' },
+  { ticker: 'UUP', label: '달러 인덱스' },
+  { ticker: 'USO', label: '원유' },
+  { ticker: 'GLD', label: '금 (안전자산)' },
+  { ticker: 'VXX', label: '변동성 (VIX 프록시)' },
+  { ticker: 'CPER', label: '구리 (경기 선행지표)' },
+];
+
+const TREND_FLAT_THRESHOLD = 0.3; // 이 %p 이내면 횡보로 판정
+
+function classifyTrend(pct){
+  if(pct == null) return { label: '데이터 부족', color: '#8b93a1' };
+  if(pct > TREND_FLAT_THRESHOLD) return { label: '상승중', color: UP };
+  if(pct < -TREND_FLAT_THRESHOLD) return { label: '하락중', color: DOWN };
+  return { label: '횡보', color: GOLD };
+}
+
+async function loadMacroStrip(){
+  const el = document.getElementById('macroStrip');
+  if(!el) return;
+  el.innerHTML = `<div class="leader-empty" style="font-size:12px;">매크로 지표 확인 중...</div>`;
+
+  const results = await Promise.all(
+    MACRO_TICKERS.map(m =>
+      fetch(`/api/search?ticker=${encodeURIComponent(m.ticker)}`)
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+    )
+  );
+
+  let upCount = 0, downCount = 0, flatCount = 0, missingCount = 0;
+
+  const cards = MACRO_TICKERS.map((m, i) => {
+    const d = results[i];
+    if(!d || d.error){
+      missingCount++;
+      return `
+        <div class="wcard" style="cursor:default;">
+          <div class="t" style="font-size:13px;">${m.ticker}</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${m.label}</div>
+          <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">데이터 없음</div>
+        </div>`;
+    }
+
+    const pct = d.price_change_pct;
+    const trend = classifyTrend(pct);
+    if(trend.label === '상승중') upCount++;
+    else if(trend.label === '하락중') downCount++;
+    else if(trend.label === '횡보') flatCount++;
+    else missingCount++;
+
+    const pctText = (pct != null) ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%` : '—';
+
+    return `
+      <div class="wcard" data-ticker="${m.ticker}">
+        <div class="t">${m.ticker}</div>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">${m.label}</div>
+        <div class="spot" style="font-size:16px; margin-top:8px;">$${fmtNum(d.spot)}</div>
+        <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+          <span style="font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:4px; background:${trend.color}22; color:${trend.color};">${trend.label}</span>
+          <span class="mono" style="font-size:12px; color:${trend.color};">${pctText}</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  const totalKnown = upCount + downCount + flatCount;
+  const summaryLine = totalKnown > 0
+    ? `오늘 매크로 10개 중 <b style="color:${UP};">상승 ${upCount}개</b> · <b style="color:${DOWN};">하락 ${downCount}개</b> · <b style="color:${GOLD};">횡보 ${flatCount}개</b>${missingCount ? ` (데이터 부족 ${missingCount}개)` : ''}`
+    : '';
+
+  el.innerHTML = `
+    ${summaryLine ? `<div style="font-size:12px; color:var(--text-dim); margin-bottom:10px; padding-top:10px; border-top:1px dashed var(--line);">${summaryLine}</div>` : ''}
+    <div class="watchlist-grid">${cards}</div>
+  `;
+
+  el.querySelectorAll('.wcard[data-ticker]').forEach(card=>{
+    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+  });
+}
+
+// ---------- 오늘의 급등주 (leaders_report.json의 top_gainers, 서버 크론이 매일 계산) ----------
+function gainerRowHTML(r, rank){
+  const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
+  const isFlipReliable = r.gamma_flip != null && r.spot &&
+    Math.abs(r.gamma_flip - r.spot) / r.spot <= 0.5;
+  const flipText = isFlipReliable ? fmtNum(r.gamma_flip,1) : '데이터 부족';
+  const flipColor = isFlipReliable ? GOLD : '#8b93a1';
+  const pct = r.price_change_pct;
+  const pctColor = (pct != null && pct >= 0) ? UP : DOWN;
+  const pctText = (pct != null) ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%` : '—';
+
+  const regimeHtml = r.gamma_regime
+    ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${r.gamma_regime === 'positive' ? DOWN : UP}22; color:${r.gamma_regime === 'positive' ? DOWN : UP};">${r.gamma_regime === 'positive' ? '양감마' : '음감마'}</span>`
+    : '';
+
+  return `
+    <div class="leader-card" data-ticker="${r.ticker}">
+      <span style="font-size:12px; font-weight:700; color:${GOLD}; min-width:22px;">#${rank}</span>
+      <span class="leader-ticker">${r.ticker}</span>
+      <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
+      <span class="mono" style="font-size:13px; font-weight:800; padding:2px 8px; border-radius:4px; background:${pctColor}22; color:${pctColor};">${pctText}</span>
+      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${sm.color}22; color:${sm.color};">STAGE ${r.stage ?? '—'} · ${sm.label}</span>
+      ${regimeHtml}
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Gamma Flip <b style="color:${flipColor}">${flipText}</b></span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b></span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">거래량 ${fmtVolume(r.volume)}</span>
+    </div>
+  `;
+}
+
+async function loadGainersBoard(){
+  const boardEl = document.getElementById('gainersBoard');
+  const note = document.getElementById('gainersUpdatedNote');
+  boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
+
+  let report;
+  try{
+    const res = await fetch('/leaders_report.json', { cache: 'no-store' });
+    if(!res.ok) throw new Error('로드 실패');
+    report = await res.json();
+  }catch(e){
+    boardEl.innerHTML = '<div class="leader-empty">급등주 데이터를 불러오지 못했습니다</div>';
+    note.textContent = '';
+    return;
+  }
+
+  const gainers = report.top_gainers || [];
+  if(!gainers.length){
+    boardEl.innerHTML = '<div class="leader-empty">오늘 급등주 데이터가 없습니다</div>';
+    note.textContent = '';
+    return;
+  }
+
+  boardEl.innerHTML = gainers.map((r, i) => gainerRowHTML(r, i + 1)).join('');
+  boardEl.querySelectorAll('.leader-card').forEach(card=>{
+    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+  });
+
+  const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
+  note.textContent = generatedAt
+    ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
+    : '매일 장마감 후 자동 계산';
 }
 
 // ---------- 공통: 구글시트에서 티커 리스트 가져오기 ----------
@@ -415,7 +644,7 @@ async function loadTickerBoard(csvUrl, boardElId, noteElId){
   note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
-// ★ 여기 두 URL만 각각 구글시트 CSV 링크입니다 ★
+// ★ 이 두 URL은 각각 구글시트 CSV 링크입니다 ★
 const TICKER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXwE0ik6itZFGTe6irbrniOtzQ1a3dXR-fg8hYdaiUotQRpzmseG5BdoHpU-w330-GzhttZXrDldVJ/pub?output=csv";
 const ETF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnoCuQ1-jpfy_LAqCiOBxruPHlX58jFWwB1shKgDICq8VNQhW-8b6FWyYwaHY_43b1Nzc0xtugbIrK/pub?output=csv";
 
@@ -423,8 +652,127 @@ async function loadMyBoard(){
   await loadTickerBoard(TICKER_SHEET_CSV_URL, 'myTickerBoard', 'myBoardUpdatedNote');
 }
 
+// ---------- ETF 마켓 리더 전용: ETF + 섹터 주도주 함께 표시 ----------
+// 구글시트 형식: A열=ETF티커, B열=ETF이름, C열=관련 주도주 티커 목록 (파이프 | 로 구분)
+// 예: SMH,Semiconductor ETF,MU|CRDO|MRVL|STX
+async function fetchEtfRowsFromSheet(csvUrl){
+  const res = await fetch(csvUrl, { cache: 'no-store' });
+  if(!res.ok) throw new Error('구글시트 로드 실패');
+  const text = await res.text();
+
+  const etfRows = [];
+  text.split(/\r?\n/).forEach(line => {
+    const parts = line.split(',');
+    const t = (parts[0] || '').trim().toUpperCase();
+    if(!/^[A-Z]{1,6}$/.test(t) || t === 'TICKER') return;
+    const name = (parts[1] || '').trim();
+    const leaderStr = (parts[2] || '').trim();
+    const leaderTickers = leaderStr
+      ? leaderStr.split('|').map(s => s.trim().toUpperCase()).filter(s => /^[A-Z]{1,6}$/.test(s))
+      : [];
+    etfRows.push({ ticker: t, name, leaderTickers: leaderTickers.slice(0, 6) });
+  });
+
+  return etfRows.slice(0, 10);
+}
+
+function leaderMiniRowHTML(r){
+  const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
+  const isFlipReliable = r.gamma_flip != null && r.spot &&
+    Math.abs(r.gamma_flip - r.spot) / r.spot <= 0.5;
+  const flipText = isFlipReliable ? fmtNum(r.gamma_flip,1) : '데이터 부족';
+  const flipColor = isFlipReliable ? GOLD : '#8b93a1';
+
+  let callWallHtml = `<span class="mono" style="font-size:10.5px; color:var(--text-dim);">Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b></span>`;
+  if(r.call_wall != null && r.spot){
+    const distPct = (r.call_wall - r.spot) / r.spot * 100;
+    const isNear = Math.abs(distPct) <= 2;
+    const distText = `${distPct >= 0 ? '+' : ''}${distPct.toFixed(1)}%`;
+    callWallHtml = `
+      <span class="mono" style="font-size:10.5px; ${isNear ? `background:${UP}22; color:${UP}; padding:1px 5px; border-radius:4px; font-weight:700;` : 'color:var(--text-dim);'}">
+        Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b> (${distText})${isNear ? ' ⚠️' : ''}
+      </span>`;
+  }
+
+  return `
+    <div class="leader-card" data-ticker="${r.ticker}" style="padding-left:24px; font-size:12px; opacity:0.92;">
+      <span class="leader-ticker" style="font-size:13px;">↳ ${r.ticker}</span>
+      <span class="mono" style="color:var(--text-dim); min-width:60px;">$${fmtNum(r.spot)}</span>
+      <span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${sm.color}22; color:${sm.color};">STAGE ${r.stage ?? '—'} · ${sm.label}</span>
+      <span class="mono" style="font-size:10.5px; color:var(--text-dim);">Gamma Flip <b style="color:${flipColor}">${flipText}</b></span>
+      ${callWallHtml}
+      <span class="mono" style="font-size:10.5px; color:var(--text-dim);">Put Wall <b style="color:${DOWN}">${fmtNum(r.put_wall,1)}</b></span>
+    </div>
+  `;
+}
+
 async function loadEtfBoard(){
-  await loadTickerBoard(ETF_SHEET_CSV_URL, 'etfTickerBoard', 'etfBoardUpdatedNote');
+  const boardEl = document.getElementById('etfTickerBoard');
+  const note = document.getElementById('etfBoardUpdatedNote');
+  boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
+
+  let etfRows;
+  try{
+    etfRows = await fetchEtfRowsFromSheet(ETF_SHEET_CSV_URL);
+  }catch(e){
+    boardEl.innerHTML = '<div class="leader-empty">구글시트에서 티커 리스트를 불러오지 못했습니다</div>';
+    note.textContent = '';
+    return;
+  }
+
+  if(!etfRows.length){
+    boardEl.innerHTML = '<div class="leader-empty">구글시트에 티커가 없습니다</div>';
+    note.textContent = '';
+    return;
+  }
+
+  // ETF 자체 티커 + 관련 주도주 티커를 한 번에 모아서 중복 없이 조회
+  const etfNameMap = {};
+  const allTickers = new Set();
+  etfRows.forEach(row => {
+    etfNameMap[row.ticker] = row.name;
+    allTickers.add(row.ticker);
+    row.leaderTickers.forEach(t => allTickers.add(t));
+  });
+
+  const tickerList = Array.from(allTickers);
+  const results = await Promise.all(
+    tickerList.map(t =>
+      fetch(`/api/search?ticker=${encodeURIComponent(t)}`)
+        .then(res => res.ok ? res.json() : null)
+        .catch(() => null)
+    )
+  );
+
+  const dataByTicker = {};
+  tickerList.forEach((t, i) => {
+    const r = results[i];
+    if(r && !r.error) dataByTicker[t] = r;
+  });
+
+  if(!Object.keys(dataByTicker).length){
+    boardEl.innerHTML = '<div class="leader-empty">데이터를 불러오지 못했습니다</div>';
+    note.textContent = '';
+    return;
+  }
+
+  const html = etfRows.map(row => {
+    const etfData = dataByTicker[row.ticker];
+    if(!etfData) return '';
+    const etfHtml = myBoardRowHTML(etfData, etfNameMap);
+    const leaderHtml = row.leaderTickers
+      .map(t => dataByTicker[t])
+      .filter(Boolean)
+      .map(leaderMiniRowHTML)
+      .join('');
+    return etfHtml + leaderHtml;
+  }).join('');
+
+  boardEl.innerHTML = html || '<div class="leader-empty">데이터를 불러오지 못했습니다</div>';
+  boardEl.querySelectorAll('.leader-card').forEach(card=>{
+    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+  });
+  note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
 // ---------- 관심종목 (정적 리포트, 매일 자동 갱신) ----------
@@ -561,6 +909,7 @@ function renderDetail(d){
       <div class="kpi callwall"><div class="label">Call Wall (저항)</div><div class="value">${fmtNum(d.call_wall,1)}</div></div>
       <div class="kpi putwall"><div class="label">Put Wall (지지)</div><div class="value">${fmtNum(d.put_wall,1)}</div></div>
       <div class="kpi flip"><div class="label">Gamma Flip</div><div class="value">${fmtNum(d.gamma_flip,1)}</div></div>
+      <div class="kpi"><div class="label">Max OI Wall</div><div class="value" style="color:#22c55e">${fmtNum(d.max_oi_wall,1)}</div></div>
       <div class="kpi"><div class="label">Net GEX</div><div class="value" style="color:${regimePos?UP:DOWN}">${fmtCompact(d.net_gex_total)}</div></div>
       <div class="kpi"><div class="label">체제</div><div class="value" style="color:${regimePos?UP:DOWN}">${regimePos?'양의 감마':'음의 감마'}</div></div>
     </div>
@@ -749,7 +1098,7 @@ async function openCandleChart(d){
       sub.textContent = '캔들 데이터를 가져오지 못했습니다. [디버그: ' + (data.ohlc_debug || '정보없음') + ']';
       return;
     }
-    sub.textContent = `일봉 · 최근 ${data.bars.length}거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain 표시`;
+    sub.textContent = `일봉 · 최근 ${data.bars.length}거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain/Max OI Wall/20일선 표시`;
     renderCandleChart(data);
   }catch(e){
     sub.textContent = `요청 실패: ${e.message}`;
@@ -791,12 +1140,31 @@ function renderCandleChart(data){
   });
   series.setData(data.bars);
 
+  // ---------- 20일 이동평균선 ----------
+  if(data.bars.length >= 20){
+    const ma20Data = [];
+    for(let i = 19; i < data.bars.length; i++){
+      let sum = 0;
+      for(let j = i - 19; j <= i; j++) sum += data.bars[j].close;
+      ma20Data.push({ time: data.bars[i].time, value: +(sum / 20).toFixed(4) });
+    }
+    const ma20Series = chart.addLineSeries({
+      color: '#a855f7',
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: true,
+      title: '20일선',
+    });
+    ma20Series.setData(ma20Data);
+  }
+
   const levels = data.levels || {};
   const levelDefs = [
     { key: 'call_wall', color: '#e5484d', label: 'Call Wall' },
     { key: 'put_wall', color: '#3d7fe0', label: 'Put Wall' },
     { key: 'gamma_flip', color: '#e0a838', label: 'Gamma Flip' },
     { key: 'max_pain', color: '#8b93a1', label: 'Max Pain' },
+    { key: 'max_oi_wall', color: '#22c55e', label: 'Max OI Wall' },
   ];
   levelDefs.forEach(({key, color, label})=>{
     const val = levels[key];
@@ -828,6 +1196,8 @@ document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
 });
 
 loadWatchlist();
+loadMarketStatusBanner();
+loadGainersBoard();
 loadMyBoard();
 loadEtfBoard();
   const scrollTopBtn = document.getElementById('scrollTopBtn');

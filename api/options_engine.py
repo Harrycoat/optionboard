@@ -6,22 +6,6 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
 
 필요 환경변수:
   MASSIVE_API_KEY  (Vercel Environment Variables에 등록)
-
-[2026-08-13 수정 내역]
-  - 현재가(spot) 조회 순서를 바꿈. 기존에는 옵션체인 응답 안의
-    underlying_asset.price를 먼저 믿고 쓰다가, 이 필드가 자주 비어있어서
-    뒤늦게 /v2/aggs/ticker/{ticker}/prev(전일 종가) 로 폴백했음. 이 과정에서
-    "가격 데이터 주의" 경고가 매번 뜨는 문제가 있었음.
-    generate_leaders_report.py 쪽(fetch_daily_bar_once)은 애초에 이
-    /v2/aggs/.../prev 엔드포인트를 1차로 확실하게 호출해서 문제가 없었음.
-    → 이제 options_engine도 동일하게 /v2/aggs/.../prev를 1차 소스로 삼고,
-      옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
-    → 대부분의 경우 prev 호출이 정상 성공하므로 is_stale_price는 이제
-      "정말로 아무 가격도 못 가져온 예외적인 경우"에만 True가 된다.
-  - [2026-08-12 수정 내역 — 참고용, 아래는 이전 로직에 대한 원인 파악 로그였음]
-    근본 원인(underlying_asset.price가 왜 자주 비어있는지)은 Massive API
-    응답 스키마 확인이 더 필요함 — 유료 스냅샷/실시간 엔드포인트 사용 여부는
-    비용 문제로 보류. [DEBUG spot=None] 로그는 더 이상 필요 없어져서 제거함.
 """
 
 from __future__ import annotations
@@ -42,9 +26,6 @@ class MassiveAPIError(RuntimeError):
     pass
 
 
-# ---------------------------------------------------------------------------
-# 데이터 가져오기 (Massive.com REST API)
-# ---------------------------------------------------------------------------
 @dataclass
 class OptionRow:
     strike: float
@@ -62,7 +43,8 @@ class ChainSnapshot:
     spot: float
     expiry: str
     rows: list[OptionRow] = field(default_factory=list)
-    is_stale_price: bool = False  # True면 prev_close/옵션체인 둘 다에서 정상 가격을 못 가져온 예외 상황
+    is_stale_price: bool = False
+    prev_open: Optional[float] = None
 
 
 def _massive_get(url: str, params: Optional[dict] = None) -> dict:
@@ -102,7 +84,8 @@ def _fetch_full_options_chain(ticker: str) -> list[dict]:
     return all_results
 
 
-def _fetch_prev_close(ticker: str) -> Optional[float]:
+def _fetch_prev_bar(ticker: str) -> Optional[dict]:
+    """전일(가장 최근 완결된 거래일) 일봉의 시가/종가/거래량을 반환한다."""
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
     try:
         data = _massive_get(url)
@@ -111,28 +94,30 @@ def _fetch_prev_close(ticker: str) -> Optional[float]:
     results = data.get("results") or []
     if not results:
         return None
-    close = results[0].get("c")
-    return float(close) if close is not None else None
+    r = results[0]
+    o, c = r.get("o"), r.get("c")
+    if c is None:
+        return None
+    return {"open": o, "close": float(c), "volume": r.get("v")}
 
 
-def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, bool]:
+def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, bool, Optional[float]]:
     """현재가(spot)를 결정한다.
 
     1차: /v2/aggs/.../prev (전일 종가) — leaders report와 동일하게 확실히 성공하는 소스.
     2차(보조): 옵션체인 응답에 이미 포함된 underlying_asset.price가 있고
                1차가 실패했을 때만 사용.
 
-    반환: (spot, is_stale_price). is_stale_price는 두 소스 다 실패해서
-    정말로 아무 가격도 못 가져온 예외적인 경우에만 True.
+    반환: (spot, is_stale_price, prev_open).
     """
-    prev_close = _fetch_prev_close(ticker)
-    if prev_close is not None:
-        return prev_close, False
+    bar = _fetch_prev_bar(ticker)
+    if bar is not None:
+        return bar["close"], False, bar.get("open")
 
     if chain_price is not None:
-        return float(chain_price), False
+        return float(chain_price), False, None
 
-    return None, True  # 호출부에서 None 체크로 예외 처리
+    return None, True, None
 
 
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
@@ -171,7 +156,7 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
             row["put_gamma"] = float(gamma)
             row["put_iv"] = float(iv)
 
-    spot, is_stale_price = _resolve_spot(ticker, chain_price)
+    spot, is_stale_price, prev_open = _resolve_spot(ticker, chain_price)
 
     if spot is None:
         raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
@@ -204,15 +189,13 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
                 expiry=exp,
                 rows=rows,
                 is_stale_price=is_stale_price,
+                prev_open=prev_open,
             )
         )
 
     return snapshots
 
 
-# ---------------------------------------------------------------------------
-# Max Pain
-# ---------------------------------------------------------------------------
 def compute_max_pain(rows: list[OptionRow]) -> dict:
     strikes = [r.strike for r in rows]
     pain_by_strike = {}
@@ -229,9 +212,23 @@ def compute_max_pain(rows: list[OptionRow]) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# GEX (Gamma Exposure)
-# ---------------------------------------------------------------------------
+def compute_max_oi_wall(rows: list[OptionRow]) -> dict:
+    """감마 가중치와 무관하게, 콜+풋 순수 미결제약정(OI) 합산이 가장 큰 스트라이크."""
+    if not rows:
+        return {"max_oi_wall": None, "max_oi_wall_total_oi": 0, "max_oi_wall_call_oi": 0, "max_oi_wall_put_oi": 0}
+
+    total_oi_by_strike = {r.strike: (r.call_oi + r.put_oi) for r in rows}
+    best_strike = max(total_oi_by_strike, key=total_oi_by_strike.get)
+    best_row = next(r for r in rows if r.strike == best_strike)
+
+    return {
+        "max_oi_wall": best_strike,
+        "max_oi_wall_total_oi": total_oi_by_strike[best_strike],
+        "max_oi_wall_call_oi": best_row.call_oi,
+        "max_oi_wall_put_oi": best_row.put_oi,
+    }
+
+
 def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     gex_by_strike = {}
 
@@ -288,24 +285,10 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Vanna / Charm Exposure (2차 그릭스, 딜러 헤지 흐름)
-# Black-Scholes 순정 파이썬 구현 (scipy 등 무거운 의존성 없음).
-# scipy 없이 표준정규분포 확률밀도함수(PDF)만 직접 구현해서 사용한다.
-#
-# Vanna: 변동성(IV) 변화에 따른 딜러 델타 헤지 흐름.
-#   콜/풋 동일 부호 → 종목별로 콜+풋 OI를 더해서(add) 노출도 계산.
-# Charm: 시간(잔존만기) 경과에 따른 딜러 델타 헤지 흐름 (특히 만기 임박 시 강함).
-#   콜/풋 반대 부호 → GEX처럼 콜-풋 OI 차이로 계산.
-#
-# 참고: 근월물(가장 가까운 만기) 1개 스냅샷 기준으로만 계산한다.
-# (여러 만기를 합치면 만기별로 다른 잔존기간 T를 반영할 수 없어서 부정확해짐)
-# ---------------------------------------------------------------------------
-RISK_FREE_RATE_DEFAULT = 0.045  # 무위험 이자율 근사치 (미 단기 국채 수준)
+RISK_FREE_RATE_DEFAULT = 0.045
 
 
 def _norm_pdf(x: float) -> float:
-    """표준정규분포 확률밀도함수 φ(x). scipy 없이 math만으로 구현."""
     return math.exp(-0.5 * x * x) / math.sqrt(2.0 * math.pi)
 
 
@@ -316,13 +299,11 @@ def _bs_d1_d2(spot: float, strike: float, t_years: float, r: float, iv: float) -
 
 
 def _bs_vanna(spot: float, strike: float, t_years: float, r: float, iv: float) -> float:
-    """콜/풋 공통 (put-call parity에 의해 동일값). 계약 1개(주식 1주) 기준."""
     d1, d2 = _bs_d1_d2(spot, strike, t_years, r, iv)
     return -math.exp(-r * t_years) * _norm_pdf(d1) * d2 / iv
 
 
 def _bs_charm_call(spot: float, strike: float, t_years: float, r: float, iv: float) -> float:
-    """콜옵션 기준 charm. 풋은 부호 반대(-charm_call)."""
     d1, d2 = _bs_d1_d2(spot, strike, t_years, r, iv)
     sqrt_t = math.sqrt(t_years)
     return -_norm_pdf(d1) * (2 * r * t_years - d2 * iv * sqrt_t) / (2 * t_years * iv * sqrt_t)
@@ -334,11 +315,6 @@ def compute_vanna_charm(
     rows: list[OptionRow],
     risk_free_rate: float = RISK_FREE_RATE_DEFAULT,
 ) -> dict:
-    """단일 만기 스냅샷 기준 Net Vanna Exposure(VEX) / Net Charm Exposure(CEX) 계산.
-
-    IV(implied_volatility)가 없거나(0) 잔존만기가 0 이하인 행(만기 당일 등)은
-    Black-Scholes 공식이 정의되지 않으므로 건너뛴다.
-    """
     today = date.today()
     try:
         exp_date = datetime.strptime(expiry, "%Y-%m-%d").date()
@@ -353,7 +329,6 @@ def compute_vanna_charm(
     cex_total = 0.0
 
     if t_years <= 0:
-        # 만기 당일/지난 만기는 Black-Scholes 공식 정의역 밖이라 스킵
         return {"vex_total": 0.0, "cex_total": 0.0, "days_to_expiry": days_to_expiry, "by_strike": []}
 
     for r in rows:
@@ -384,15 +359,8 @@ def compute_vanna_charm(
         "by_strike": by_strike,
     }
 
-# ---------------------------------------------------------------------------
-# Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
-# 지금은 원인 파악을 위해 stage_debug 필드를 임시로 노출한다.
-# ---------------------------------------------------------------------------
+
 def fetch_daily_closes(ticker: str, lookback_days: int = 420) -> tuple[list[float], str]:
-    """
-    최근 lookback_days(달력일 기준)치 일봉 종가를 오래된 순으로 반환한다.
-    (closes, debug_info) 튜플을 반환한다 — debug_info는 원인 파악용 임시 필드.
-    """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
@@ -435,6 +403,14 @@ def compute_stage(closes: list[float]) -> dict:
         stage, label = 2, "상승국면"
     elif pos_pct < -POS_THRESH and slope_pct < -SLOPE_THRESH:
         stage, label = 4, "하락국면"
+    elif slope_pct > SLOPE_THRESH:
+        stage, label = 3, "천정권"
+    elif slope_pct < -SLOPE_THRESH:
+        stage, label = 1, "바닥다지기"
+    elif pos_pct > POS_THRESH:
+        stage, label = 2, "상승국면"
+    elif pos_pct < -POS_THRESH:
+        stage, label = 4, "하락국면"
     elif prior_slope_pct < -SLOPE_THRESH:
         stage, label = 1, "바닥다지기"
     elif prior_slope_pct > SLOPE_THRESH:
@@ -447,13 +423,12 @@ def compute_stage(closes: list[float]) -> dict:
         "label": label,
         "sma150": round(sma_now, 2),
         "slope_pct": round(slope_pct, 2),
+        "pos_pct": round(pos_pct, 2),
+        "prior_slope_pct": round(prior_slope_pct, 2),
     })
     return result
 
 
-# ---------------------------------------------------------------------------
-# 한국어 해설 문장 생성 (참고용 — 매수/매도 지시 아님)
-# ---------------------------------------------------------------------------
 def _fmt_strike(x) -> str:
     if x is None:
         return "-"
@@ -540,15 +515,17 @@ def build_narrative(
 
     return lines
 
-# ---------------------------------------------------------------------------
-# 통합 분석
-# ---------------------------------------------------------------------------
+
 def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     ticker = ticker.upper().strip()
     snapshots = fetch_option_chain(ticker, expiry=expiry)
 
     primary = snapshots[0]
     max_pain = compute_max_pain(primary.rows)
+
+    price_change_pct = None
+    if primary.prev_open:
+        price_change_pct = round((primary.spot - primary.prev_open) / primary.prev_open * 100, 2)
 
     merged: dict[float, OptionRow] = {}
     for snap in snapshots:
@@ -564,6 +541,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
                 m.put_gamma = r.put_gamma
 
     gex = compute_gex(primary.spot, primary.expiry, list(merged.values()))
+    max_oi_wall = compute_max_oi_wall(list(merged.values()))
     vanna_charm = compute_vanna_charm(primary.spot, primary.expiry, primary.rows)
 
     narrative = build_narrative(
@@ -582,13 +560,14 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         closes, stage_debug = fetch_daily_closes(ticker)
         stage_info = compute_stage(closes)
     except Exception as e:
-        stage_info = {"stage": None, "label": None, "sma150": None, "slope_pct": None, "n_closes": 0}
+        stage_info = {"stage": None, "label": None, "sma150": None, "slope_pct": None, "pos_pct": None, "prior_slope_pct": None, "n_closes": 0}
         stage_debug = f"예외 발생: {e}"
 
     return {
         "ticker": ticker,
         "spot": primary.spot,
         "is_stale_price": primary.is_stale_price,
+        "price_change_pct": price_change_pct,
         "expiry_used": primary.expiry,
         "expiries_included_in_gex": [s.expiry for s in snapshots],
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -597,6 +576,10 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "call_wall": gex["call_wall"],
         "put_wall": gex["put_wall"],
         "gamma_flip": gex["gamma_flip"],
+        "max_oi_wall": max_oi_wall["max_oi_wall"],
+        "max_oi_wall_total_oi": max_oi_wall["max_oi_wall_total_oi"],
+        "max_oi_wall_call_oi": max_oi_wall["max_oi_wall_call_oi"],
+        "max_oi_wall_put_oi": max_oi_wall["max_oi_wall_put_oi"],
         "net_gex_total": gex["net_gex_total"],
         "regime": gex["regime"],
         "gex_by_strike": gex["by_strike"],
@@ -608,21 +591,14 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         "stage_label": stage_info["label"],
         "stage_sma150": stage_info["sma150"],
         "stage_slope_pct": stage_info["slope_pct"],
+        "stage_pos_pct": stage_info.get("pos_pct"),
+        "stage_prior_slope_pct": stage_info.get("prior_slope_pct"),
         "stage_debug": stage_debug,
         "stage_n_closes": stage_info.get("n_closes"),
     }
 
 
-# ---------------------------------------------------------------------------
-# Top10 Gamma Flip 스캐너 전용 초경량 분석
-# ---------------------------------------------------------------------------
 def quick_gamma_flip(ticker: str) -> dict:
-    """Top10 스캐너 전용 초경량 분석.
-
-    API 요청 자체에 expiration_date 필터를 걸어서 근월물 계약만 딱 1페이지
-    (최대 250개) 받아온다. 현재가는 /v2/aggs/.../prev를 1차로 사용하고,
-    옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
-    """
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
 
@@ -651,7 +627,6 @@ def quick_gamma_flip(ticker: str) -> dict:
         if not exp or strike is None or contract_type not in ("call", "put"):
             continue
 
-        # 첫 번째로 만나는(=가장 가까운, asc 정렬) 만기만 사용
         if nearest_expiry is None:
             nearest_expiry = exp
         if exp != nearest_expiry:
@@ -675,7 +650,7 @@ def quick_gamma_flip(ticker: str) -> dict:
             row["put_oi"] = float(oi)
             row["put_gamma"] = float(gamma)
 
-    spot, is_stale_price = _resolve_spot(ticker, chain_price)
+    spot, is_stale_price, _prev_open = _resolve_spot(ticker, chain_price)
 
     if spot is None or not strikes_dict:
         raise ValueError(f"{ticker}: 현재가 또는 옵션 데이터를 가져오지 못했습니다")
@@ -705,7 +680,6 @@ def quick_gamma_flip(ticker: str) -> dict:
 
 
 def rank_by_liquidity(ticker: str) -> dict:
-    """유동성 랭킹 전용 초경량 조회."""
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
     url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
@@ -731,11 +705,6 @@ def rank_by_liquidity(ticker: str) -> dict:
 
 
 def fetch_daily_ohlc(ticker: str, lookback_days: int = 180) -> tuple[list[dict], str]:
-    """캔들차트용 일봉 OHLC(+거래량)를 오래된 순으로 반환한다.
-
-    fetch_daily_closes()와 달리 종가뿐 아니라 시가/고가/저가/거래량까지 반환한다.
-    (bars, debug_info) 튜플을 반환한다 — debug_info는 원인 파악용 임시 필드.
-    """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"

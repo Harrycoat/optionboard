@@ -42,6 +42,7 @@ class handler(BaseHTTPRequestHandler):
                     "call_wall": gex.get("call_wall"),
                     "put_wall": gex.get("put_wall"),
                     "gamma_flip": gex.get("gamma_flip"),
+                    "max_oi_wall": gex.get("max_oi_wall"),
                 }
             except Exception:
                 pass
