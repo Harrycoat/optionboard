@@ -258,6 +258,7 @@
 
   <div id="detailSection" style="display:none;">
     <div class="section-title">상세 분석</div>
+    <div id="searchAdSlot" style="margin-bottom:16px; min-height:1px;"></div>
     <div class="detail" id="detail"></div>
   </div>
 </main>
@@ -318,7 +319,6 @@ const STAGE_ACTION = {
 };
 
 function marketVerdict(spyStage, qqqStage, ftdStatus){
-  // 아래는 시장 국면을 설명하는 참고 정보이며, 매매 추천이 아닙니다.
   if(ftdStatus !== 'confirmed' || spyStage === 4 || qqqStage === 4){
     return { level: 'HALT', color: DOWN, text: '하락 국면' };
   }
@@ -394,7 +394,7 @@ const MACRO_TICKERS = [
   { ticker: 'CPER', label: '구리 (경기 선행지표)' },
 ];
 
-const TREND_FLAT_THRESHOLD = 0.3; // 이 %p 이내면 횡보로 판정
+const TREND_FLAT_THRESHOLD = 0.3;
 
 function classifyTrend(pct){
   if(pct == null) return { label: '데이터 부족', color: '#8b93a1' };
@@ -640,7 +640,6 @@ async function loadTickerBoard(csvUrl, boardElId, noteElId){
   note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
-// ★ 이 두 URL은 각각 구글시트 CSV 링크입니다 ★
 const TICKER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXwE0ik6itZFGTe6irbrniOtzQ1a3dXR-fg8hYdaiUotQRpzmseG5BdoHpU-w330-GzhttZXrDldVJ/pub?output=csv";
 const ETF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnoCuQ1-jpfy_LAqCiOBxruPHlX58jFWwB1shKgDICq8VNQhW-8b6FWyYwaHY_43b1Nzc0xtugbIrK/pub?output=csv";
 
@@ -649,8 +648,6 @@ async function loadMyBoard(){
 }
 
 // ---------- ETF 마켓 리더 전용: ETF + 섹터 주도주 함께 표시 ----------
-// 구글시트 형식: A열=ETF티커, B열=ETF이름, C열=관련 주도주 티커 목록 (파이프 | 로 구분)
-// 예: SMH,Semiconductor ETF,MU|CRDO|MRVL|STX
 async function fetchEtfRowsFromSheet(csvUrl){
   const res = await fetch(csvUrl, { cache: 'no-store' });
   if(!res.ok) throw new Error('구글시트 로드 실패');
@@ -722,7 +719,6 @@ async function loadEtfBoard(){
     return;
   }
 
-  // ETF 자체 티커 + 관련 주도주 티커를 한 번에 모아서 중복 없이 조회
   const etfNameMap = {};
   const allTickers = new Set();
   etfRows.forEach(row => {
@@ -771,6 +767,31 @@ async function loadEtfBoard(){
   note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
+// ---------- 검색할 때마다 광고 새로 로드 ----------
+const SEARCH_AD_SLOT_ID = '9835003235';
+
+function refreshSearchAd(){
+  const container = document.getElementById('searchAdSlot');
+  if(!container) return;
+
+  container.innerHTML = '';
+
+  const ins = document.createElement('ins');
+  ins.className = 'adsbygoogle';
+  ins.style.display = 'block';
+  ins.setAttribute('data-ad-client', 'ca-pub-4689151958671592');
+  ins.setAttribute('data-ad-slot', SEARCH_AD_SLOT_ID);
+  ins.setAttribute('data-ad-format', 'auto');
+  ins.setAttribute('data-full-width-responsive', 'true');
+  container.appendChild(ins);
+
+  try{
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  }catch(e){
+    console.error('AdSense 새로고침 실패:', e);
+  }
+}
+
 // ---------- 검색 (실시간 계산) ----------
 async function searchTicker(ticker){
   const input = document.getElementById('tickerInput');
@@ -795,6 +816,7 @@ async function searchTicker(ticker){
       return;
     }
     renderDetail(data);
+    refreshSearchAd();
   }catch(e){
     detail.innerHTML = `<div class="empty">요청 실패: ${e.message}</div>`;
   }finally{
@@ -890,7 +912,7 @@ function renderDetail(d){
   loadOiChange(d.ticker);
 }
 
-// ---------- OI 변화 추적 (전일 대비 스트라이크별 신규생성/청산) ----------
+// ---------- OI 변화 추적 ----------
 async function loadOiChange(ticker){
   const el = document.getElementById('oiChangeSection');
   if(!el) return;
@@ -920,9 +942,11 @@ async function loadOiChange(ticker){
 
   const rows = data.rollover || [];
   if(!rows.length){
+    const prevD = data.prev_date || '이전';
+    const todayD = data.today_date || '오늘';
     el.innerHTML = `
       <div class="section-title" style="margin-top:0;">⚡ OI 변화 추적 (전일 대비)</div>
-      <div class="leader-empty">${data.prev_date} → ${data.today_date} 사이 유의미한 OI 변화가 없었습니다.</div>
+      <div class="leader-empty">${prevD} → ${todayD} 사이 유의미한 OI 변화가 없었습니다.</div>
     `;
     return;
   }
@@ -1174,7 +1198,6 @@ function renderCandleChart(data){
   });
   series.setData(data.bars);
 
-  // ---------- 20일 이동평균선 ----------
   if(data.bars.length >= 20){
     const ma20Data = [];
     for(let i = 19; i < data.bars.length; i++){
