@@ -10,7 +10,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.dirname(__file__))
-from options_engine import analyze_ticker  # noqa: E402
+from options_engine import analyze_ticker_cached  # noqa: E402
 from earnings_engine import (  # noqa: E402
     scan_earnings_movers,
     scan_earnings_movers_from_watchlist,
@@ -39,7 +39,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         try:
-            result = analyze_ticker(ticker)
+            result = analyze_ticker_cached(ticker)
             self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
         except Exception as e:
             self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
