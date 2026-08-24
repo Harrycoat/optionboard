@@ -102,14 +102,7 @@ def _fetch_prev_bar(ticker: str) -> Optional[dict]:
 
 
 def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, bool, Optional[float]]:
-    """현재가(spot)를 결정한다.
-
-    1차: /v2/aggs/.../prev (전일 종가) — leaders report와 동일하게 확실히 성공하는 소스.
-    2차(보조): 옵션체인 응답에 이미 포함된 underlying_asset.price가 있고
-               1차가 실패했을 때만 사용.
-
-    반환: (spot, is_stale_price, prev_open).
-    """
+    """현재가(spot)를 결정한다."""
     bar = _fetch_prev_bar(ticker)
     if bar is not None:
         return bar["close"], False, bar.get("open")
@@ -118,6 +111,123 @@ def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, boo
         return float(chain_price), False, None
 
     return None, True, None
+
+
+def fetch_oi_volume_snapshot(ticker: str, max_expiries: int = 2) -> dict:
+    """OI 변화 추적(롤오버 감지)용 경량 스냅샷.
+
+    스트라이크별 call_oi/put_oi에 더해 당일 거래량(day.volume)까지 함께 담는다.
+    거래량은 fetch_option_chain()이 쓰는 GEX용 데이터에는 없어서 별도로 추출한다.
+    가까운 만기 max_expiries개를 합산한 값을 기준으로 한다.
+    """
+    ticker = ticker.upper().strip()
+    raw_results = _fetch_full_options_chain(ticker)
+
+    chain_price = None
+    by_expiry: dict[str, dict[float, dict]] = {}
+
+    for item in raw_results:
+        details = item.get("details", {})
+        exp = details.get("expiration_date")
+        strike = details.get("strike_price")
+        contract_type = details.get("contract_type")
+        if not exp or strike is None or contract_type not in ("call", "put"):
+            continue
+
+        if chain_price is None:
+            underlying = item.get("underlying_asset", {})
+            chain_price = underlying.get("price")
+
+        oi = item.get("open_interest") or 0.0
+        day = item.get("day") or {}
+        volume = day.get("volume") or 0.0
+
+        strikes_dict = by_expiry.setdefault(exp, {})
+        row = strikes_dict.setdefault(
+            strike, {"call_oi": 0.0, "put_oi": 0.0, "call_volume": 0.0, "put_volume": 0.0}
+        )
+        if contract_type == "call":
+            row["call_oi"] = float(oi)
+            row["call_volume"] = float(volume)
+        else:
+            row["put_oi"] = float(oi)
+            row["put_volume"] = float(volume)
+
+    spot, is_stale_price, _prev_open = _resolve_spot(ticker, chain_price)
+
+    all_expiries = sorted(by_expiry.keys())
+    use_expiries = all_expiries[:max_expiries]
+
+    merged: dict[float, dict] = {}
+    for exp in use_expiries:
+        for strike, row in by_expiry.get(exp, {}).items():
+            m = merged.setdefault(strike, {"call_oi": 0.0, "put_oi": 0.0, "call_volume": 0.0, "put_volume": 0.0})
+            m["call_oi"] += row["call_oi"]
+            m["put_oi"] += row["put_oi"]
+            m["call_volume"] += row["call_volume"]
+            m["put_volume"] += row["put_volume"]
+
+    return {
+        "ticker": ticker,
+        "date": date.today().isoformat(),
+        "spot": spot,
+        "expiries_used": use_expiries,
+        "strikes": [
+            {"strike": k, **v} for k, v in sorted(merged.items())
+        ],
+    }
+
+
+def compute_oi_rollover(prev_snapshot: dict, today_snapshot: dict, min_oi_change: float = 500) -> list[dict]:
+    """전일 스냅샷과 오늘 스냅샷을 스트라이크별로 비교해서 신규/청산 자리를 찾는다.
+
+    거래량이 OI 변화량과 비슷하게 맞아떨어지는 경우("실제로 그날 그 물량이 손바뀜했다")를
+    우선적으로 신뢰도 높은 신호로 표시한다.
+    """
+    if not prev_snapshot or not today_snapshot:
+        return []
+
+    prev_map = {(s["strike"], side): s for s in prev_snapshot.get("strikes", []) for side in ("call", "put")}
+    today_map = {(s["strike"], side): s for s in today_snapshot.get("strikes", []) for side in ("call", "put")}
+
+    all_keys = set(prev_map.keys()) | set(today_map.keys())
+    results = []
+
+    for strike, side in all_keys:
+        prev_row = prev_map.get((strike, side), {})
+        today_row = today_map.get((strike, side), {})
+        prev_oi = prev_row.get(f"{side}_oi", 0.0)
+        today_oi = today_row.get(f"{side}_oi", 0.0)
+        today_volume = today_row.get(f"{side}_volume", 0.0)
+
+        oi_change = today_oi - prev_oi
+        if abs(oi_change) < min_oi_change:
+            continue
+
+        volume_confirmed = today_volume >= abs(oi_change) * 0.5
+
+        if prev_oi < min_oi_change * 0.2 and today_oi >= min_oi_change:
+            classification = "신규생성"
+        elif today_oi < prev_oi * 0.15 and prev_oi >= min_oi_change:
+            classification = "청산"
+        elif oi_change > 0:
+            classification = "증가"
+        else:
+            classification = "감소"
+
+        results.append({
+            "strike": strike,
+            "side": side,
+            "prev_oi": round(prev_oi),
+            "today_oi": round(today_oi),
+            "oi_change": round(oi_change),
+            "today_volume": round(today_volume),
+            "volume_confirmed": volume_confirmed,
+            "classification": classification,
+        })
+
+    results.sort(key=lambda r: abs(r["oi_change"]), reverse=True)
+    return results
 
 
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
