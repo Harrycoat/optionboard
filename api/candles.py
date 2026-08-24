@@ -12,7 +12,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.dirname(__file__))
-from options_engine import analyze_ticker, fetch_daily_ohlc  # noqa: E402
+from options_engine import analyze_ticker_cached, fetch_daily_ohlc  # noqa: E402
 
 
 class handler(BaseHTTPRequestHandler):
@@ -35,7 +35,7 @@ class handler(BaseHTTPRequestHandler):
 
             levels = {}
             try:
-                gex = analyze_ticker(ticker)
+                gex = analyze_ticker_cached(ticker)
                 levels = {
                     "spot": gex.get("spot"),
                     "max_pain": gex.get("max_pain"),
