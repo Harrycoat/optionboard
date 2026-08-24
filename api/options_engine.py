@@ -394,6 +394,43 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
             "net_gex": call_gex + put_gex,
         }
 
+    return _summarize_gex_by_strike(spot, gex_by_strike)
+
+
+def compute_gex_multi_expiry(spot: float, snapshots: list["ChainSnapshot"]) -> dict:
+    """여러 만기(snapshot)의 GEX를 올바르게 합산한다.
+
+    수정 이력: 예전에는 analyze_ticker()에서 만기별 OptionRow를 먼저
+    "병합"(OI는 더하고 감마는 처음 만난 값만 사용)한 뒤 compute_gex()에
+    넘겼다. 그런데 감마는 만기마다 다른 값인데 그중 하나만 갖다 쓰고
+    OI는 전체를 더해버리면, 실제로는 다른 만기에 몰려있는 큰 물량이
+    엉뚱한 감마값으로 계산돼서 Call Wall/Put Wall이 틀어지는 문제가 있었다
+    (예: BE의 실제 Call Wall은 250인데 210으로 잘못 계산됨).
+
+    올바른 방법: 만기별로 각자의 감마+OI로 GEX(달러 노출)를 먼저 계산하고,
+    그 "이미 계산 완료된 GEX 금액"을 스트라이크별로 합산한다. 원본 감마
+    수치 자체는 만기가 다르면 그냥 더할 수 없지만, GEX 금액(감마×OI×...)은
+    둘 다 달러 단위라 만기가 달라도 합산 가능하다.
+    """
+    combined: dict[float, dict] = {}
+    for snap in snapshots:
+        for r in snap.rows:
+            call_gex = r.call_gamma * r.call_oi * 100 * (spot ** 2) * 0.01
+            put_gex = -1 * r.put_gamma * r.put_oi * 100 * (spot ** 2) * 0.01
+            entry = combined.setdefault(r.strike, {"call_gex": 0.0, "put_gex": 0.0, "net_gex": 0.0})
+            entry["call_gex"] += call_gex
+            entry["put_gex"] += put_gex
+            entry["net_gex"] += call_gex + put_gex
+
+    return _summarize_gex_by_strike(spot, combined)
+
+
+def _summarize_gex_by_strike(spot: float, gex_by_strike: dict[float, dict]) -> dict:
+    """이미 계산된 스트라이크별 GEX 딕셔너리에서 Call Wall/Put Wall/Gamma Flip
+    (cumulative 방식, 폴백용)/Net GEX/체제를 뽑아낸다.
+
+    compute_gex()와 compute_gex_multi_expiry() 둘 다 이 함수를 공유한다.
+    """
     if not gex_by_strike:
         return {"call_wall": None, "put_wall": None, "gamma_flip": None, "net_gex_total": 0, "by_strike": []}
 
@@ -407,16 +444,10 @@ def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     put_wall = min(put_candidates, key=lambda k: put_candidates[k]["put_gex"])
 
     # ------------------------------------------------------------------
-    # Gamma Flip 계산: 스트라이크를 오름차순으로 훑으면서 누적 net_gex의
-    # 부호가 바뀌는 지점(들)을 전부 찾은 뒤, 그중 "스팟 가격에 가장 가까운"
-    # 지점을 고른다.
-    #
-    # 수정 이력: 예전 로직은 "가장 낮은 스트라이크부터 훑다가 맨 처음
-    # 만나는 부호전환"에서 곧바로 멈췄다. SNDK처럼 주가가 비싸고 옵션
-    # 히스토리가 긴 종목은, 스팟에서 한참 먼 낮은 스트라이크에도 소량의
-    # 잔여 OI가 있어서 거기서 우연히 부호가 뒤집히는 경우가 있는데, 그러면
-    # 정작 스팟 근처의 "진짜" 전환점은 확인도 안 해보고 엉뚱하게 먼 값을
-    # gamma_flip으로 내보내는 문제가 있었다 (예: 스팟 1596인데 flip이 615).
+    # Gamma Flip 계산(cumulative crossing 방식) — 지금은 compute_gamma_flip_bs()의
+    # 블랙숄즈 재계산 방식이 우선 사용되고, 이건 그게 실패했을 때만 쓰는 폴백이다.
+    # 스트라이크를 오름차순으로 훑으면서 누적 net_gex의 부호가 바뀌는 지점(들)을
+    # 전부 찾은 뒤, 그중 "스팟 가격에 가장 가까운" 지점을 고른다.
     # ------------------------------------------------------------------
     sorted_strikes = sorted(gex_by_strike.keys())
     cumulative = 0.0
@@ -837,7 +868,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
             if m.put_gamma == 0:
                 m.put_gamma = r.put_gamma
 
-    gex = compute_gex(primary.spot, primary.expiry, list(merged.values()))
+    gex = compute_gex_multi_expiry(primary.spot, snapshots)
     max_oi_wall = compute_max_oi_wall(list(merged.values()))
     vanna_charm = compute_vanna_charm(primary.spot, primary.expiry, primary.rows)
 
