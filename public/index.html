@@ -256,10 +256,6 @@
   <div class="updated-note" id="etfBoardUpdatedNote">불러오는 중...</div>
   <div id="etfTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
 
-  <div class="section-title">관심종목 · 매일 자동 갱신</div>
-  <div class="updated-note" id="updatedNote">불러오는 중...</div>
-  <div id="watchlistGrid" class="watchlist-grid"></div>
-
   <div id="detailSection" style="display:none;">
     <div class="section-title">상세 분석</div>
     <div class="detail" id="detail"></div>
@@ -775,48 +771,6 @@ async function loadEtfBoard(){
   note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
-// ---------- 관심종목 (정적 리포트, 매일 자동 갱신) ----------
-async function loadWatchlist(){
-  const grid = document.getElementById('watchlistGrid');
-  const note = document.getElementById('updatedNote');
-  try{
-    const res = await fetch('/watchlist_report.json', {cache:'no-store'});
-    if(!res.ok) throw new Error('리포트 없음');
-    const data = await res.json();
-    const dt = new Date(data.generated_at);
-    note.textContent = `마지막 갱신: ${dt.toLocaleString('ko-KR')} (매 거래일 장마감 후 자동 갱신)`;
-
-    if(!data.tickers || data.tickers.length === 0){
-      grid.innerHTML = '<div class="empty">아직 생성된 리포트가 없습니다. GitHub Actions가 처음 실행되면 표시됩니다.</div>';
-      return;
-    }
-
-    grid.innerHTML = data.tickers.map(t => cardHTML(t)).join('');
-    grid.querySelectorAll('.wcard').forEach(el=>{
-      el.addEventListener('click', ()=> searchTicker(el.dataset.ticker));
-    });
-  }catch(e){
-    note.textContent = '';
-    grid.innerHTML = '<div class="empty">관심종목 리포트를 아직 불러올 수 없습니다. (첫 배포 직후이거나 GitHub Actions 실행 전일 수 있어요)</div>';
-  }
-}
-
-function cardHTML(t){
-  const regimePos = t.regime === 'positive';
-  return `
-  <div class="wcard" data-ticker="${t.ticker}">
-    <div class="t">${t.ticker}</div>
-    <div class="spot mono">$${fmtNum(t.spot)}</div>
-    <div class="rows">
-      <div class="r"><span>Max Pain</span><b>${fmtNum(t.max_pain,1)}</b></div>
-      <div class="r"><span>Call Wall</span><b style="color:${UP}">${fmtNum(t.call_wall,1)}</b></div>
-      <div class="r"><span>Put Wall</span><b style="color:${DOWN}">${fmtNum(t.put_wall,1)}</b></div>
-      <div class="r"><span>Gamma Flip</span><b style="color:${GOLD}">${fmtNum(t.gamma_flip,1)}</b></div>
-    </div>
-    <div class="badge ${regimePos?'pos':'neg'}">${regimePos?'POSITIVE GAMMA':'NEGATIVE GAMMA'}</div>
-  </div>`;
-}
-
 // ---------- 검색 (실시간 계산) ----------
 async function searchTicker(ticker){
   const input = document.getElementById('tickerInput');
@@ -1195,7 +1149,6 @@ document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
 
-loadWatchlist();
 loadMarketStatusBanner();
 loadGainersBoard();
 loadMyBoard();
