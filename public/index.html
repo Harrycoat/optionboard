@@ -514,6 +514,7 @@ async function loadMacroStrip(){
         <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
           <span style="font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:4px; background:${trend.color}22; color:${trend.color};">${trend.label}</span>
           <span class="mono" style="font-size:12px; color:${trend.color};">${pctText}</span>
+          <span style="display:inline-flex;">${trendIconSVGColored(pct, trend.color)}</span>   
         </div>
       </div>`;
   }).join('');
@@ -1270,7 +1271,13 @@ function trendIconSVG(pct){
     : 'M2 4 C 5 3, 6 6, 8 5 C 10 4, 11 8, 13 7 C 15 6, 16 10, 20 12';
   return `<svg class="market-float-icon" viewBox="0 0 22 14"><path d="${path}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
-
+function trendIconSVGColored(pct, color){
+  const up = pct != null && pct >= 0;
+  const path = up
+    ? 'M2 10 C 5 11, 6 8, 8 9 C 10 10, 11 6, 13 7 C 15 8, 16 4, 20 2'
+    : 'M2 4 C 5 3, 6 6, 8 5 C 10 4, 11 8, 13 7 C 15 6, 16 10, 20 12';
+  return `<svg style="width:20px; height:14px; flex-shrink:0;" viewBox="0 0 22 14"><path d="${path}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}        
 async function loadMarketFloat(){
   const listEl = document.getElementById('marketFloatList');
   const subEl = document.getElementById('marketFloatSub');
