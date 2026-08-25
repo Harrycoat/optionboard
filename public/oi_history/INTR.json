@@ -1,0 +1,62 @@
+[
+  {
+    "ticker": "INTR",
+    "date": "2026-08-25",
+    "spot": 5.56,
+    "expiries_used": [
+      "2026-09-18",
+      "2026-10-16"
+    ],
+    "strikes": [
+      {
+        "strike": 2.5,
+        "call_oi": 55.0,
+        "put_oi": 1.0,
+        "call_volume": 5.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 5,
+        "call_oi": 1435.0,
+        "put_oi": 1155.0,
+        "call_volume": 62.0,
+        "put_volume": 4.0
+      },
+      {
+        "strike": 7.5,
+        "call_oi": 1046.0,
+        "put_oi": 78.0,
+        "call_volume": 2.0,
+        "put_volume": 20.0
+      },
+      {
+        "strike": 10,
+        "call_oi": 4116.0,
+        "put_oi": 0.0,
+        "call_volume": 20.0,
+        "put_volume": 5.0
+      },
+      {
+        "strike": 12.5,
+        "call_oi": 50.0,
+        "put_oi": 0.0,
+        "call_volume": 2.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 15,
+        "call_oi": 500.0,
+        "put_oi": 0.0,
+        "call_volume": 100.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 17.5,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 2.0
+      }
+    ]
+  }
+]
