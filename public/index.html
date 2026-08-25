@@ -222,6 +222,40 @@
   #candleChart{ width:100%; height:420px; }
   .chart-legend{ display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; font-size:11px; color:var(--text-dim); }
   .chart-legend .sw{ display:inline-block; width:14px; height:2px; margin-right:5px; vertical-align:middle; }
+    .market-float{
+    position: fixed;
+    right: 20px;
+    top: 90px;
+    width: 220px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+    z-index: 15;
+  }
+  @media (max-width: 1420px){
+    .market-float{ display: none; }
+  }
+  .market-float-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding: 10px 14px; border-bottom:1px solid var(--line);
+    font-size: 12px; font-weight:700; color: var(--text);
+  }
+  .market-float-sub{ font-size:10px; color: var(--text-dim); font-weight:400; font-family:'JetBrains Mono',monospace; }
+  .market-float-row{
+    display:flex; align-items:center; gap:7px;
+    padding: 8px 14px; border-bottom:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace; font-size:11.5px;
+    cursor:pointer;
+  }
+  .market-float-row:last-child{ border-bottom:none; }
+  .market-float-row:hover{ background: var(--panel-2); }
+  .market-float-icon{ width:20px; height:14px; flex-shrink:0; }
+  .market-float-ticker{ font-weight:700; min-width:32px; color: var(--text); }
+  .market-float-name{ flex:1; color: var(--text-dim); font-size:9.5px; font-family:'Pretendard',sans-serif; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .market-float-price{ color: var(--text-dim); }
+  .market-float-pct{ min-width:50px; text-align:right; font-weight:700; }
 </style></head>
 <body>
 
@@ -247,7 +281,15 @@
   </div>
     <a class="home-btn" href="https://mijoostock.com" target="_blank" rel="noopener">🏠 홈으로</a>
 </header>
-
+<div class="market-float" id="marketFloat">
+  <div class="market-float-head">
+    <span>📍 시장</span>
+    <span class="market-float-sub" id="marketFloatSub">불러오는 중</span>
+  </div>
+  <div id="marketFloatList">
+    <div style="padding:16px; font-size:11px; color:var(--text-dim); text-align:center;">불러오는 중...</div>
+  </div>
+</div>
 <main>
   <div id="marketStatusBanner" style="margin-bottom:20px;"></div>
 
@@ -1211,7 +1253,63 @@ document.getElementById('searchBtn').addEventListener('click', ()=>searchTicker(
 document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
+const MARKET_FLOAT_TICKERS = [
+  { ticker: 'SPY', label: 'S&P500' },
+  { ticker: 'QQQ', label: '나스닥100' },
+  { ticker: 'IWM', label: '러셀2000' },
+  { ticker: 'DIA', label: '다우존스' },
+  { ticker: 'GLD', label: '금' },
+  { ticker: 'VXX', label: '변동성' },
+];
 
+function trendIconSVG(pct){
+  const up = pct != null && pct >= 0;
+  const color = pct == null ? '#8b93a1' : (up ? UP : DOWN);
+  const path = up
+    ? 'M2 10 C 5 11, 6 8, 8 9 C 10 10, 11 6, 13 7 C 15 8, 16 4, 20 2'
+    : 'M2 4 C 5 3, 6 6, 8 5 C 10 4, 11 8, 13 7 C 15 6, 16 10, 20 12';
+  return `<svg class="market-float-icon" viewBox="0 0 22 14"><path d="${path}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+async function loadMarketFloat(){
+  const listEl = document.getElementById('marketFloatList');
+  const subEl = document.getElementById('marketFloatSub');
+  if(!listEl) return;
+
+  const results = await Promise.all(
+    MARKET_FLOAT_TICKERS.map(m =>
+      fetch(`/api/search?ticker=${encodeURIComponent(m.ticker)}`)
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+    )
+  );
+
+  listEl.innerHTML = MARKET_FLOAT_TICKERS.map((m, i) => {
+    const d = results[i];
+    if(!d || d.error){
+      return `<div class="market-float-row"><span class="market-float-ticker">${m.ticker}</span><span class="market-float-name">데이터 없음</span></div>`;
+    }
+    const pct = d.price_change_pct;
+    const pctColor = pct == null ? 'var(--text-dim)' : (pct >= 0 ? UP : DOWN);
+    const pctText = pct != null ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%` : '—';
+    return `
+      <div class="market-float-row" data-ticker="${m.ticker}">
+        ${trendIconSVG(pct)}
+        <span class="market-float-ticker">${m.ticker}</span>
+        <span class="market-float-name">${m.label}</span>
+        <span class="market-float-price">$${fmtNum(d.spot)}</span>
+        <span class="market-float-pct" style="color:${pctColor};">${pctText}</span>
+      </div>`;
+  }).join('');
+
+  listEl.querySelectorAll('.market-float-row[data-ticker]').forEach(row=>{
+    row.addEventListener('click', ()=> searchTicker(row.dataset.ticker));
+  });
+  if(subEl) subEl.textContent = new Date().toLocaleTimeString('ko-KR');
+}
+
+loadMarketFloat();
+setInterval(loadMarketFloat, 60000);
 loadMarketStatusBanner();
 loadGainersBoard();
 loadMyBoard();
