@@ -37,6 +37,23 @@
   .gex-item .value{ font-family:'JetBrains Mono',monospace; font-size:15px; margin-top:3px; }
   .empty{ color:var(--text-dim); font-size:13px; padding:40px 20px; text-align:center; }
   .disclaimer{ font-size:10.5px; color:var(--text-dim); opacity:0.7; line-height:1.6; border-top:1px solid var(--line); padding-top:12px; margin-top:8px; }
+  .share-x-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--panel-2); color: var(--text); border:1px solid var(--line);
+    padding: 6px 10px; border-radius:6px; font-size:12px; cursor:pointer;
+    font-family:'Pretendard', sans-serif; white-space:nowrap;
+  }
+  .share-x-btn:hover{ border-color: var(--gold); color: var(--gold); }
+  .share-x-btn svg{ flex-shrink:0; }
+  .toast{
+    position: fixed; left:50%; bottom:28px; transform: translateX(-50%) translateY(20px);
+    background: var(--panel-2); border:1px solid var(--line); color: var(--text);
+    padding: 12px 18px; border-radius: 8px; font-size:13px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    opacity:0; pointer-events:none; transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -47,6 +64,8 @@
 
 <script>
 const UP = '#e5484d', DOWN = '#3d7fe0', GOLD = '#e0a838', GREEN_OK = '#22c55e';
+let currentHotpickRow = null;
+let currentHotpickGex = null;
 
 const HOTPICK_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTt_ZzCVGwhoZv_-_ntsqW_6wJ-iMakD5v5LOxtr8tDgxBKGgOl8e_tI-x_oyPKNEMWx1Nc-Uh_gnUs/pub?output=csv";
 
@@ -143,6 +162,9 @@ async function loadDetail(){
     if(gex.error) gex = null;
   }catch(e){ gex = null; }
 
+  currentHotpickRow = row;
+  currentHotpickGex = gex;
+
   const priceText = row['진입가'] ? row['진입가'].replace(/^\$/, '') : (gex ? fmtNum(gex.spot) : '—');
 
   const gexHtml = gex ? `
@@ -161,7 +183,13 @@ async function loadDetail(){
       <div>
         <h1>${row['티커']} <span style="font-size:14px; color:var(--text-dim); font-weight:400;">${row['회사명'] || ''}</span></h1>
       </div>
-      <div class="price">$${priceText}</div>
+      <div style="display:flex; align-items:baseline; gap:10px;">
+        <div class="price">$${priceText}</div>
+        <button class="share-x-btn" onclick="shareHotpickToX()" title="X에 올릴 요약 텍스트 복사">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.65l7.73-8.84L1.24 2.25h6.83l4.72 6.24 5.45-6.24Zm-1.17 17.52h1.83L7.02 4.13H5.06l12.01 15.64Z"/></svg>
+          공유 텍스트 복사
+        </button>
+      </div>
     </div>
     <div class="desc">${row['회사설명(한줄)'] || ''}</div>
 
@@ -195,6 +223,83 @@ async function loadDetail(){
     (window.adsbygoogle = window.adsbygoogle || []).push({});
   }catch(e){
     console.error('AdSense 로드 실패:', e);
+  }
+}
+
+function scoreDots(row, letter){
+  const s = row[`${letter}_점수`];
+  if(s === '2') return '●●';
+  if(s === '1') return '●○';
+  if(s === '0') return '○○';
+  return '—';
+}
+
+function buildHotpickShareText(row, gex){
+  const lines = [
+    "Today's Hot Pick — CANSLIM screened",
+    '오늘의 핫픽 — CANSLIM 스크리닝',
+    '',
+    `$${row['티커']} $${row['진입가'] ? row['진입가'].replace(/^\$/, '') : (gex ? fmtNum(gex.spot) : '—')}`,
+    row['회사명'] || '',
+  ];
+  if(row['시그널종류']){
+    lines.push(`📌 ${row['시그널종류']}${row['시그널일자'] ? ` (${row['시그널일자']})` : ''}`);
+  }
+  lines.push('');
+  lines.push(
+    `C ${scoreDots(row,'C')}  A ${scoreDots(row,'A')}  N ${scoreDots(row,'N')}  S ${scoreDots(row,'S')}  L ${scoreDots(row,'L')}  I ${scoreDots(row,'I')}  M ${scoreDots(row,'M')}`
+  );
+  lines.push('(●●=우수 ●○=보통 ○○=주의)');
+  lines.push('');
+  if(gex){
+    lines.push(`🔴 Call Wall $${fmtNum(gex.call_wall,1)} · 🔵 Put Wall $${fmtNum(gex.put_wall,1)} · ⚡ Gamma Flip $${fmtNum(gex.gamma_flip,1)}`);
+    lines.push('');
+  }
+  lines.push("Based on William O'Neil's CANSLIM method.");
+  lines.push('윌리엄 오닐의 CANSLIM 분석법에 의한 데이터입니다.');
+  lines.push('');
+  lines.push('gexoption.com/hotpick.html');
+  lines.push('⚠️ For reference only. Not a buy recommendation. Decide for yourself.');
+  lines.push('이 추천은 참고용 데이터이며 매수를 권하는 데이터가 아닙니다.');
+  lines.push('#CANSLIM #StockPick #Options #GEX #오늘의핫픽');
+  return lines.join('\n');
+}
+
+function showToast(msg){
+  let toast = document.getElementById('shareToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'shareToast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(()=>toast.classList.remove('show'), 2200);
+}
+
+async function shareHotpickToX(){
+  if(!currentHotpickRow){ showToast('데이터를 아직 불러오는 중입니다'); return; }
+  const text = buildHotpickShareText(currentHotpickRow, currentHotpickGex);
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast('복사 완료! X 앱/웹에 붙여넣기 하세요 ✅');
+  }catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{
+      document.execCommand('copy');
+      showToast('복사 완료! X 앱/웹에 붙여넣기 하세요 ✅');
+    }catch(e2){
+      showToast('복사 실패 — 직접 선택해서 복사해주세요');
+    }
+    document.body.removeChild(ta);
   }
 }
 
