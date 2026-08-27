@@ -30,5 +30,37 @@
         "put_volume": 0.0
       }
     ]
+  },
+  {
+    "ticker": "IRD",
+    "date": "2026-08-27",
+    "spot": 3.8,
+    "expiries_used": [
+      "2026-09-18",
+      "2026-10-16"
+    ],
+    "strikes": [
+      {
+        "strike": 2.5,
+        "call_oi": 10834.0,
+        "put_oi": 20.0,
+        "call_volume": 159.0,
+        "put_volume": 6.0
+      },
+      {
+        "strike": 5,
+        "call_oi": 6577.0,
+        "put_oi": 50.0,
+        "call_volume": 28.0,
+        "put_volume": 121.0
+      },
+      {
+        "strike": 7.5,
+        "call_oi": 10074.0,
+        "put_oi": 0.0,
+        "call_volume": 8.0,
+        "put_volume": 0.0
+      }
+    ]
   }
 ]
