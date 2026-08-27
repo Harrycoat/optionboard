@@ -606,6 +606,10 @@ const CANSLIM_LABELS = {
   C: '당분기 EPS 성장률', A: '연간 EPS 성장률', N: '신제품/신고가',
   S: '수급 (유통물량)', L: '업종 내 리더십', I: '기관 수급', M: '시장 방향성',
 };
+const CANSLIM_EN = {
+  C: 'Current Earnings', A: 'Annual Earnings', N: 'New Product/High',
+  S: 'Supply/Demand', L: 'Leader/Laggard', I: 'Institutional', M: 'Market Direction',
+};
 const CANSLIM_ORDER = ['C','A','N','S','L','I','M'];
 
 function parseCsvLine(line){
@@ -680,6 +684,7 @@ async function loadHotpickCard(){
     const color = !hasScore ? '#8b93a1' : (s === '2' ? '#22c55e' : s === '1' ? '#e0a838' : '#e5484d');
     return `<div style="text-align:center; background:var(--panel-2); border-radius:6px; padding:8px 2px;">
       <div class="mono" style="font-weight:700; font-size:13px; color:${color};">${l}</div>
+      <div style="font-size:8.5px; color:var(--text-dim); margin-top:2px; line-height:1.2;">${CANSLIM_EN[l]}</div>
     </div>`;
   }).join('');
 
@@ -697,10 +702,14 @@ async function loadHotpickCard(){
         <span class="mono" style="font-size:16px; color:${GOLD}; margin-left:auto;">$${priceText}</span>
       </div>
       <div style="font-size:11.5px; color:var(--text-dim); margin-bottom:14px;">${row['회사설명(한줄)'] || ''}</div>
-      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:14px;">${scoreCells}</div>
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:8px;">${scoreCells}</div>
+      <div style="font-size:10px; color:var(--text-dim); opacity:0.75; margin-bottom:14px;">윌리엄 오닐(William O'Neil)의 CANSLIM 분석법에 의한 데이터입니다.</div>
       <div style="display:flex; gap:16px; font-size:11px; color:var(--text-dim); border-top:1px solid var(--line); padding-top:10px; flex-wrap:wrap;">
         <span class="mono">${gexLine}</span>
         <span style="margin-left:auto; color:${GOLD};">자세히 보기 →</span>
+      </div>
+      <div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:10px; border-top:1px solid var(--line); padding-top:8px;">
+        ⚠️ 이 추천은 참고용 데이터이며 매수를 권하는 데이터가 아닙니다. 매수 판단은 본인이 결정하시기 바랍니다. 본 분석은 투자자문이 아니며, GEX 레벨은 Massive.com(15분 지연) 옵션 데이터 기반으로 실시간 계산됩니다.
       </div>
     </div>`;
 
