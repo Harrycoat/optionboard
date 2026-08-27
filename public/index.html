@@ -290,6 +290,10 @@
 <main>
   <div id="marketStatusBanner" style="margin-bottom:20px;"></div>
 
+  <div class="section-title">🔥 오늘의 핫픽</div>
+  <div class="updated-note" id="hotpickUpdatedNote">불러오는 중...</div>
+  <div id="hotpickCard"><div class="leader-empty">불러오는 중...</div></div>
+
   <div class="section-title">🔥 오늘의 급등주 Top 10</div>
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">유동성 상위 종목군에서 오늘 등락률이 가장 큰 종목들입니다 (전일 시가 대비, 15분 지연).</p>
   <div class="updated-note" id="gainersUpdatedNote">불러오는 중...</div>
@@ -593,6 +597,114 @@ async function loadGainersBoard(){
   note.textContent = generatedAt
     ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
     : '매일 장마감 후 자동 계산';
+}
+
+// ---------- 오늘의 핫픽 (Google Sheets 편집 콘텐츠 + CANSLIM 분석) ----------
+const HOTPICK_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTt_ZzCVGwhoZv_-_ntsqW_6wJ-iMakD5v5LOxtr8tDgxBKGgOl8e_tI-x_oyPKNEMWx1Nc-Uh_gnUs/pub?output=csv";
+
+const CANSLIM_LABELS = {
+  C: '당분기 EPS 성장률', A: '연간 EPS 성장률', N: '신제품/신고가',
+  S: '수급 (유통물량)', L: '업종 내 리더십', I: '기관 수급', M: '시장 방향성',
+};
+const CANSLIM_ORDER = ['C','A','N','S','L','I','M'];
+
+function parseCsvLine(line){
+  const out = [];
+  let cur = '', inQ = false;
+  for(let i=0;i<line.length;i++){
+    const ch = line[i];
+    if(ch === '"'){
+      if(inQ && line[i+1] === '"'){ cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if(ch === ',' && !inQ){
+      out.push(cur); cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  out.push(cur);
+  return out;
+}
+
+async function fetchLatestHotpickRow(){
+  const res = await fetch(HOTPICK_SHEET_CSV_URL, { cache: 'no-store' });
+  if(!res.ok) throw new Error('시트 로드 실패');
+  const text = await res.text();
+  const rawLines = text.split(/\r?\n/);
+
+  let headerIdx = -1;
+  for(let i=0;i<rawLines.length;i++){
+    const cells = parseCsvLine(rawLines[i]);
+    if(cells[0] === '날짜'){ headerIdx = i; break; }
+  }
+  if(headerIdx === -1) throw new Error('헤더 행을 찾지 못했습니다');
+
+  const headers = parseCsvLine(rawLines[headerIdx]);
+  const rows = [];
+  for(let i = headerIdx + 1; i < rawLines.length; i++){
+    const cells = parseCsvLine(rawLines[i]);
+    const ticker = (cells[1] || '').trim().toUpperCase();
+    if(!/^[A-Z]{1,6}$/.test(ticker)) continue;
+    const row = {};
+    headers.forEach((h, idx) => { row[h] = (cells[idx] || '').trim(); });
+    rows.push(row);
+  }
+  if(!rows.length) throw new Error('유효한 핫픽 데이터가 없습니다');
+  return rows[rows.length - 1];
+}
+
+async function loadHotpickCard(){
+  const cardEl = document.getElementById('hotpickCard');
+  const note = document.getElementById('hotpickUpdatedNote');
+  cardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
+
+  let row;
+  try{
+    row = await fetchLatestHotpickRow();
+  }catch(e){
+    cardEl.innerHTML = '<div class="leader-empty">오늘의 핫픽 데이터를 불러오지 못했습니다</div>';
+    note.textContent = '';
+    return;
+  }
+
+  let gex = null;
+  try{
+    const gexRes = await fetch(`/api/search?ticker=${encodeURIComponent(row['티커'])}`);
+    gex = await gexRes.json();
+    if(gex.error) gex = null;
+  }catch(e){ gex = null; }
+
+  const scoreCells = CANSLIM_ORDER.map(l => {
+    const s = row[`${l}_점수`];
+    const hasScore = s === '0' || s === '1' || s === '2';
+    const color = !hasScore ? '#8b93a1' : (s === '2' ? '#22c55e' : s === '1' ? '#e0a838' : '#e5484d');
+    return `<div style="text-align:center; background:var(--panel-2); border-radius:6px; padding:8px 2px;">
+      <div class="mono" style="font-weight:700; font-size:13px; color:${color};">${l}</div>
+    </div>`;
+  }).join('');
+
+  const priceText = row['진입가'] ? row['진입가'].replace(/^\$/, '') : (gex ? fmtNum(gex.spot) : '—');
+  const gexLine = gex
+    ? `Call Wall <b style="color:${UP}">${fmtNum(gex.call_wall,1)}</b> · Put Wall <b style="color:${DOWN}">${fmtNum(gex.put_wall,1)}</b> · Gamma Flip <b style="color:${GOLD}">${fmtNum(gex.gamma_flip,1)}</b>`
+    : 'GEX 데이터 로딩 중';
+
+  cardEl.innerHTML = `
+    <div style="background:var(--panel); border:1px solid ${GOLD}55; border-radius:10px; padding:18px 20px; cursor:pointer; position:relative;" onclick="location.href='/hotpick.html'">
+      <div style="position:absolute; top:-1px; right:16px; background:${GOLD}; color:#111; font-size:10px; font-weight:700; padding:3px 10px; border-radius:0 0 6px 6px;">${row['시그널종류'] || 'NEW PICK'}</div>
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:4px;">
+        <span class="mono" style="font-size:20px; font-weight:700;">${row['티커']}</span>
+        <span style="font-size:13px; color:var(--text-dim);">${row['회사명'] || ''}</span>
+        <span class="mono" style="font-size:16px; color:${GOLD}; margin-left:auto;">$${priceText}</span>
+      </div>
+      <div style="font-size:11.5px; color:var(--text-dim); margin-bottom:14px;">${row['회사설명(한줄)'] || ''}</div>
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:14px;">${scoreCells}</div>
+      <div style="display:flex; gap:16px; font-size:11px; color:var(--text-dim); border-top:1px solid var(--line); padding-top:10px; flex-wrap:wrap;">
+        <span class="mono">${gexLine}</span>
+        <span style="margin-left:auto; color:${GOLD};">자세히 보기 →</span>
+      </div>
+    </div>`;
+
+  note.textContent = row['날짜'] ? `${row['날짜']} 선정 · CANSLIM 편집 분석` : '';
 }
 
 async function fetchTickersFromSheet(csvUrl){
@@ -1292,6 +1404,7 @@ async function loadMarketFloat(){
 loadMarketFloat();
 setInterval(loadMarketFloat, 60000);
 loadMarketStatusBanner();
+loadHotpickCard();
 loadGainersBoard();
 loadMyBoard();
 loadEtfBoard();
