@@ -115,7 +115,6 @@
 
   .empty{ color: var(--text-dim); font-size:13px; padding: 20px; border:1px dashed var(--line); border-radius:8px; text-align:center;}
 
-  /* ---------- 오늘의 주도주 / ETF 마켓 리더 (구글시트 기반, 한 줄형) ---------- */
   .leader-card{
     display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap;
     gap:16px; padding: 12px 6px; border-bottom: 1px solid var(--line); cursor:pointer;
@@ -125,7 +124,6 @@
   .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); min-width:56px; }
   .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
 
-  /* 상세 패널 */
   .detail{ background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:16px; }
   .detail-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
   .detail-head h2{ font-size:22px; font-family:'JetBrains Mono',monospace; }
@@ -164,7 +162,6 @@
   }
   .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
 
-  /* 개념 설명 + 핵심 데이터 요약 */
   .concept-box{ background: var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:16px; font-size:12px; line-height:1.7; color:var(--text-dim);}
   .concept-box summary{ cursor:pointer; color:var(--text); font-weight:700; font-size:13px; list-style:none; display:flex; align-items:center; gap:6px;}
   .concept-box summary::-webkit-details-marker{ display:none; }
@@ -380,7 +377,6 @@ function fmtVolume(n){
   return String(n);
 }
 
-// ---------- 시장 상황 배너: SPY/QQQ Stage + FTD 상태를 조합한 전체 장 국면 ----------
 const STAGE_ACTION = {
   1: '바닥권',
   2: '상승국면',
@@ -389,7 +385,6 @@ const STAGE_ACTION = {
 };
 
 function marketVerdict(spyStage, qqqStage, ftdStatus){
-  // 아래는 시장 국면을 설명하는 참고 정보이며, 매매 추천이 아닙니다.
   if(ftdStatus !== 'confirmed' || spyStage === 4 || qqqStage === 4){
     return { level: 'HALT', color: DOWN, text: '하락 국면' };
   }
@@ -451,7 +446,6 @@ async function loadMarketStatusBanner(){
   loadMacroStrip();
 }
 
-// ---------- 매크로 지표 (펀드매니저가 매일 보는 10개 ETF, 전일 종가 대비 등락률 기준 추세 판정) ----------
 const MACRO_TICKERS = [
   { ticker: 'SPY', label: '대형주 지수' },
   { ticker: 'QQQ', label: '성장주 지수' },
@@ -465,7 +459,7 @@ const MACRO_TICKERS = [
   { ticker: 'CPER', label: '구리 (경기 선행지표)' },
 ];
 
-const TREND_FLAT_THRESHOLD = 0.3; // 이 %p 이내면 횡보로 판정
+const TREND_FLAT_THRESHOLD = 0.3;
 
 function classifyTrend(pct){
   if(pct == null) return { label: '데이터 부족', color: '#8b93a1' };
@@ -538,7 +532,6 @@ async function loadMacroStrip(){
   });
 }
 
-// ---------- 오늘의 급등주 (leaders_report.json의 top_gainers, 서버 크론이 매일 계산) ----------
 function gainerRowHTML(r, rank){
   const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
   const isFlipReliable = r.gamma_flip != null && r.spot &&
@@ -602,7 +595,6 @@ async function loadGainersBoard(){
     : '매일 장마감 후 자동 계산';
 }
 
-// ---------- 공통: 구글시트에서 티커 리스트 가져오기 ----------
 async function fetchTickersFromSheet(csvUrl){
   const res = await fetch(csvUrl, { cache: 'no-store' });
   if(!res.ok) throw new Error('구글시트 로드 실패');
@@ -712,7 +704,6 @@ async function loadTickerBoard(csvUrl, boardElId, noteElId){
   note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
-// ★ 이 두 URL은 각각 구글시트 CSV 링크입니다 ★
 const TICKER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXwE0ik6itZFGTe6irbrniOtzQ1a3dXR-fg8hYdaiUotQRpzmseG5BdoHpU-w330-GzhttZXrDldVJ/pub?output=csv";
 const ETF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnoCuQ1-jpfy_LAqCiOBxruPHlX58jFWwB1shKgDICq8VNQhW-8b6FWyYwaHY_43b1Nzc0xtugbIrK/pub?output=csv";
 
@@ -720,9 +711,6 @@ async function loadMyBoard(){
   await loadTickerBoard(TICKER_SHEET_CSV_URL, 'myTickerBoard', 'myBoardUpdatedNote');
 }
 
-// ---------- ETF 마켓 리더 전용: ETF + 섹터 주도주 함께 표시 ----------
-// 구글시트 형식: A열=ETF티커, B열=ETF이름, C열=관련 주도주 티커 목록 (파이프 | 로 구분)
-// 예: SMH,Semiconductor ETF,MU|CRDO|MRVL|STX
 async function fetchEtfRowsFromSheet(csvUrl){
   const res = await fetch(csvUrl, { cache: 'no-store' });
   if(!res.ok) throw new Error('구글시트 로드 실패');
@@ -794,7 +782,6 @@ async function loadEtfBoard(){
     return;
   }
 
-  // ETF 자체 티커 + 관련 주도주 티커를 한 번에 모아서 중복 없이 조회
   const etfNameMap = {};
   const allTickers = new Set();
   etfRows.forEach(row => {
@@ -843,16 +830,12 @@ async function loadEtfBoard(){
   note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
 }
 
-// ---------- 검색할 때마다 광고 새로 로드 (AdSense는 자동 새로고침 금지, 사용자가 직접 "조회"를 누른 경우만 허용) ----------
-// ★ data-ad-slot 값은 애드센스 대시보드에서 새 "디스플레이 광고" 유닛을 만든 뒤 나오는 슬롯 ID로 바꿔주세요 ★
 const SEARCH_AD_SLOT_ID = '9835003235';
 
 function refreshSearchAd(){
   const container = document.getElementById('searchAdSlot');
   if(!container) return;
 
-  // 기존 광고 요소를 완전히 지우고 새 <ins>를 새로 만들어서 붙임
-  // (adsbygoogle에는 공식 "새로고침" API가 없어서, 요소 자체를 새로 생성해 push하는 방식으로 처리)
   container.innerHTML = '';
 
   const ins = document.createElement('ins');
@@ -871,7 +854,6 @@ function refreshSearchAd(){
   }
 }
 
-// ---------- 검색 (실시간 계산) ----------
 async function searchTicker(ticker){
   const input = document.getElementById('tickerInput');
   const btn = document.getElementById('searchBtn');
@@ -991,7 +973,6 @@ function renderDetail(d){
   loadOiChange(d.ticker);
 }
 
-// ---------- OI 변화 추적 (전일 대비 스트라이크별 신규생성/청산) ----------
 async function loadOiChange(ticker){
   const el = document.getElementById('oiChangeSection');
   if(!el) return;
@@ -1072,48 +1053,38 @@ async function loadOiChange(ticker){
 
 function buildXShareText(d){
   const regimePos = d.regime === 'positive';
-  const regimeLabel = regimePos ? '📊 양의 감마 — 박스권 흐름 가능성' : '📊 음의 감마 — 변동성 확대 가능성';
-  const regimeLabelEn = regimePos ? '📊 Positive Gamma — range-bound bias' : '📊 Negative Gamma — volatility expansion bias';
+  const regimeLine = regimePos ? '📊 Positive Gamma — range-bound bias' : '📊 Negative Gamma — volatility expansion bias';
+  const regimeTag = regimePos ? '#RangeBound' : '#VolatilityExpansion';
 
-  const lines = [`$${d.ticker} $${fmtNum(d.spot)}`, regimeLabel];
-  const linesEn = [`$${d.ticker} $${fmtNum(d.spot)}`, regimeLabelEn];
+  const lines = [
+    'See where GEX shows resistance and support',
+    '옵션을 알면 주식 진입시점이 보인다',
+    '',
+    `$${d.ticker} $${fmtNum(d.spot)}`,
+    regimeLine,
+  ];
 
   if(d.put_wall != null && d.spot){
     const pct = ((d.put_wall - d.spot) / d.spot * 100).toFixed(1);
     lines.push(`🔵 Put Wall $${fmtNum(d.put_wall,1)} (${pct>0?'+':''}${pct}%)`);
-    linesEn.push(`🔵 Put Wall $${fmtNum(d.put_wall,1)} (${pct>0?'+':''}${pct}%)`);
   }
   if(d.call_wall != null && d.spot){
     const pct = ((d.call_wall - d.spot) / d.spot * 100).toFixed(1);
     lines.push(`🔴 Call Wall $${fmtNum(d.call_wall,1)} (${pct>0?'+':''}${pct}%)`);
-    linesEn.push(`🔴 Call Wall $${fmtNum(d.call_wall,1)} (${pct>0?'+':''}${pct}%)`);
   }
   if(d.gamma_flip != null){
     lines.push(`⚡ Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
-    linesEn.push(`⚡ Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
   }
   if(d.max_pain != null){
     lines.push(`🎯 Max Pain $${fmtNum(d.max_pain,1)} (${d.expiry_used})`);
-    linesEn.push(`🎯 Max Pain $${fmtNum(d.max_pain,1)} (${d.expiry_used})`);
   }
 
   lines.push('');
-  lines.push('옵션을 알면 주식 진입시점이 보인다');
+  lines.push('These are the levels market makers actually hedge around.');
+  lines.push('기관·마켓메이커가 실제로 헤지하는 지지선·저항선입니다.');
   lines.push('gexoption.com');
-  lines.push('');
-  const regimeTagKr = regimePos ? '#박스권' : '#변동성확대';
-  lines.push(`#${d.ticker} #옵션 #미국주식 #GEX #감마익스포저 ${regimeTagKr}`);
-
-  lines.push('');
-  lines.push('---');
-  lines.push('');
-  lines.push(...linesEn);
-  lines.push('');
-  lines.push('See where GEX shows resistance and support');
-  lines.push('gexoption.com');
-  lines.push('');
-  const regimeTagEn = regimePos ? '#RangeBound' : '#VolatilityExpansion';
-  lines.push(`#${d.ticker} #Options #Stocks #GEX #Gamma ${regimeTagEn}`);
+  lines.push('⚠️ For informational purposes only. Not investment advice.');
+  lines.push(`#${d.ticker} #Options #Stocks #GEX #Gamma ${regimeTag}`);
 
   return lines.join('\n');
 }
@@ -1217,7 +1188,6 @@ function drawGexChart(d){
   });
 }
 
-// ---------- 캔들차트 모달 ----------
 let candleChartInstance = null;
 
 async function openCandleChart(d){
