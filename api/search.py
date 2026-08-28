@@ -9,8 +9,7 @@ from urllib.parse import urlparse, parse_qs
 import json
 import sys
 import os
-import urllib.request
-import urllib.error
+import requests
 
 sys.path.insert(0, os.path.dirname(__file__))
 from options_engine import analyze_ticker_cached  # noqa: E402
@@ -20,11 +19,8 @@ from earnings_engine import (  # noqa: E402
     _mover_to_dict,
 )
 
-# ★ 기존 earnings_engine.py에서 쓰시는 것과 같은 환경변수 이름을 쓰셔야 합니다.
-# 만약 다른 이름(예: FINNHUB_KEY, FINNHUB_TOKEN 등)을 쓰고 계시면 이 줄만 바꿔주세요.
 FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY", "")
 
-# 미국 주요 거래소만 필터링 (US 상장 종목 위주로 노이즈 제거)
 ALLOWED_EXCHANGES = {"US"}
 
 
@@ -33,15 +29,16 @@ def _finnhub_symbol_search(query):
     if not FINNHUB_API_KEY:
         return {"error": "FINNHUB_API_KEY가 설정되지 않았습니다."}
 
-    url = (
-        f"https://finnhub.io/api/v1/search?q={urllib.request.quote(query)}"
-        f"&token={FINNHUB_API_KEY}"
-    )
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "gexoption/1.0"})
-        with urllib.request.urlopen(req, timeout=5) as res:
-            data = json.loads(res.read().decode("utf-8"))
-    except urllib.error.URLError as e:
+        resp = requests.get(
+            "https://finnhub.io/api/v1/search",
+            params={"q": query, "token": FINNHUB_API_KEY},
+            timeout=5,
+        )
+        if resp.status_code != 200:
+            return {"error": f"Finnhub API 오류 ({resp.status_code}): {resp.text[:200]}"}
+        data = resp.json()
+    except requests.RequestException as e:
         return {"error": f"Finnhub 요청 실패: {e}"}
     except Exception as e:
         return {"error": f"검색 실패: {e}"}
@@ -53,7 +50,6 @@ def _finnhub_symbol_search(query):
         symbol = item.get("symbol", "")
         desc = item.get("description", "")
         item_type = item.get("type", "")
-        # 미국 주식/ETF 위주로 필터링, 점(.)이나 콜론(:)이 포함된 해외/파생 티커는 제외
         if not symbol or "." in symbol or ":" in symbol:
             continue
         if item_type not in ("Common Stock", "ETF", ""):
