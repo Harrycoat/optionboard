@@ -1374,6 +1374,7 @@ async function openCandleChart(d){
   sub.textContent = '차트 생성 중...';
   img.style.display = 'none';
   document.getElementById('candleChart').style.minHeight = '';
+  document.getElementById('candleChart').style.height = '';
   overlay.classList.add('open');
 
   const callWallLabel = document.getElementById('modalCallWallLabel');
@@ -1386,11 +1387,13 @@ async function openCandleChart(d){
   img.onload = () => {
     img.style.display = 'block';
     document.getElementById('candleChart').style.minHeight = '';
+    document.getElementById('candleChart').style.height = '';
     sub.textContent = `일봉 · Call Wall/Put Wall/Gamma Flip/Max Pain/Max OI Wall/20일선 표시`;
   };
   img.onerror = () => {
     img.style.display = 'none';
     document.getElementById('candleChart').style.minHeight = '0';
+    document.getElementById('candleChart').style.height = '0';
     sub.textContent = '';
   };
   img.src = src;
