@@ -1373,6 +1373,7 @@ async function openCandleChart(d){
   title.textContent = `${d.ticker} 캔들차트`;
   sub.textContent = '차트 생성 중...';
   img.style.display = 'none';
+  document.getElementById('candleChart').style.minHeight = '';
   overlay.classList.add('open');
 
   const callWallLabel = document.getElementById('modalCallWallLabel');
@@ -1384,11 +1385,13 @@ async function openCandleChart(d){
 
   img.onload = () => {
     img.style.display = 'block';
+    document.getElementById('candleChart').style.minHeight = '';
     sub.textContent = `일봉 · Call Wall/Put Wall/Gamma Flip/Max Pain/Max OI Wall/20일선 표시`;
   };
   img.onerror = () => {
     img.style.display = 'none';
-    sub.textContent = '차트 이미지를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+    document.getElementById('candleChart').style.minHeight = '0';
+    sub.textContent = '';
   };
   img.src = src;
 }
