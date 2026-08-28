@@ -8,14 +8,17 @@
 <meta name="keywords" content="GEX, gamma exposure, options flow, call wall, put wall, gamma flip, max pain, dealer positioning, 감마 익스포저, 옵션, 콜월, 풋월, 맥스페인">
 <meta property="og:title" content="GEX Option — Real-Time Gamma Exposure Dashboard | 감마 익스포저 실시간 조회">
 <meta property="og:description" content="See where options dealers hedge — Call Wall, Put Wall, Gamma Flip & Max Pain for 5,000+ US stocks, updated daily. 옵션을 알면 진입 포인트가 보인다.">
+<meta property="og:image" content="https://gexoption.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gexoption.com">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:locale:alternate" content="en_US">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="GEX Option — Real-Time Gamma Exposure Dashboard">
 <meta name="twitter:description" content="Call Wall, Put Wall, Gamma Flip, Max Pain — real-time options gamma data for US stocks. 감마 익스포저 실시간 조회.">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4689151958671592"
+<meta name="twitter:image" content="https://gexoption.com/og-image.png">  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4689151958671592"
      crossorigin="anonymous"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0XWFHDNJG"></script>
 <script>
@@ -281,9 +284,10 @@
     <b>감마 익스포저 조회</b>
     <span>Max Pain · GEX Terminal</span>
   </div>
-  <div class="searchbar">
+  <div class="searchbar" style="position:relative;">
     <input id="tickerInput" class="mono" placeholder="티커 입력 (예: AAPL, NET, SNDK)" autocomplete="off">
     <button id="searchBtn">조회</button>
+    <div id="tickerSuggest" style="display:none; position:absolute; top:100%; left:0; right:64px; margin-top:4px; background:var(--panel); border:1px solid var(--line); border-radius:6px; z-index:20; max-height:280px; overflow-y:auto;"></div>
   </div>
     <a class="home-btn" href="https://mijoostock.com" target="_blank" rel="noopener">🏠 홈으로</a>
 </header>
@@ -1411,6 +1415,60 @@ document.getElementById('searchBtn').addEventListener('click', ()=>searchTicker(
 document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
+
+// ---------- 티커 자동완성 ----------
+let tickerSuggestTimer = null;
+const tickerSuggestBox = document.getElementById('tickerSuggest');
+
+function hideTickerSuggest(){
+  tickerSuggestBox.style.display = 'none';
+  tickerSuggestBox.innerHTML = '';
+}
+
+function renderTickerSuggest(results){
+  if(!results || !results.length){ hideTickerSuggest(); return; }
+  tickerSuggestBox.innerHTML = results.map(r => `
+    <div class="ticker-suggest-item" data-ticker="${r.ticker}" style="padding:9px 12px; cursor:pointer; display:flex; gap:10px; align-items:baseline; border-bottom:1px solid var(--line);">
+      <span class="mono" style="font-weight:700; min-width:56px;">${r.ticker}</span>
+      <span style="font-size:12px; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.name || ''}</span>
+    </div>
+  `).join('');
+  tickerSuggestBox.style.display = 'block';
+
+  tickerSuggestBox.querySelectorAll('.ticker-suggest-item').forEach(item => {
+    item.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const t = item.dataset.ticker;
+      document.getElementById('tickerInput').value = t;
+      hideTickerSuggest();
+      searchTicker(t);
+    });
+    item.addEventListener('mouseenter', () => { item.style.background = 'var(--panel-2)'; });
+    item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
+  });
+}
+
+document.getElementById('tickerInput').addEventListener('input', (e) => {
+  const q = e.target.value.trim();
+  clearTimeout(tickerSuggestTimer);
+  if(q.length < 1){ hideTickerSuggest(); return; }
+
+  tickerSuggestTimer = setTimeout(async () => {
+    try{
+      const res = await fetch(`/api/search?mode=symbol_search&q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      if(data.error){ hideTickerSuggest(); return; }
+      renderTickerSuggest(data.results);
+    }catch(e){
+      hideTickerSuggest();
+    }
+  }, 250);
+});
+
+document.getElementById('tickerInput').addEventListener('blur', () => {
+  setTimeout(hideTickerSuggest, 150);
+});
+
 const MARKET_FLOAT_TICKERS = [
   { ticker: 'SPY', label: 'S&P500' },
   { ticker: 'QQQ', label: '나스닥100' },
