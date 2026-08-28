@@ -1051,6 +1051,12 @@ async function searchTicker(ticker){
     }
     renderDetail(data);
     refreshSearchAd();
+
+    // Google Analytics 이벤트 전송 (SPA라 자동 페이지뷰로는 안 잡혀서 수동으로 기록)
+    if(typeof gtag === 'function'){
+      gtag('event', 'ticker_search', { ticker: ticker, page_title: `${ticker} 검색` });
+      gtag('event', 'page_view', { page_title: `${ticker} - GEX Option`, page_path: `/?ticker=${ticker}` });
+    }
   }catch(e){
     detail.innerHTML = `<div class="empty">요청 실패: ${e.message}</div>`;
   }finally{
