@@ -17,6 +17,13 @@
 <meta name="twitter:description" content="Call Wall, Put Wall, Gamma Flip, Max Pain — real-time options gamma data for US stocks. 감마 익스포저 실시간 조회.">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4689151958671592"
      crossorigin="anonymous"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0XWFHDNJG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Y0XWFHDNJG');
+</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
@@ -290,7 +297,13 @@
 <main>
   <div id="marketStatusBanner" style="margin-bottom:20px;"></div>
 
-  <div class="section-title">🔥 오늘의 핫픽 Today's Hot Pick</div>
+  <div id="detailSection" style="display:none;">
+    <div class="section-title">상세 분석</div>
+    <div id="searchAdSlot" style="margin-bottom:16px; min-height:1px;"></div>
+    <div class="detail" id="detail"></div>
+  </div>
+
+  <div class="section-title">🔥 오늘의 핫픽</div>
   <div class="updated-note" id="hotpickUpdatedNote">불러오는 중...</div>
   <div id="hotpickCard"><div class="leader-empty">불러오는 중...</div></div>
 
@@ -307,12 +320,6 @@
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">먼저 상승하는 섹터(ETF)를 찾고, 그 안에서 가장 강하게 오르는 종목을 골라 거래하세요 — 흐름을 타는 것이 핵심입니다.</p>
   <div class="updated-note" id="etfBoardUpdatedNote">불러오는 중...</div>
   <div id="etfTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
-
-  <div id="detailSection" style="display:none;">
-    <div class="section-title">상세 분석</div>
-    <div id="searchAdSlot" style="margin-bottom:16px; min-height:1px;"></div>
-    <div class="detail" id="detail"></div>
-  </div>
 </main>
 
 <div style="max-width:1100px; margin:20px auto 0; padding:0 20px;">
@@ -599,7 +606,7 @@ async function loadGainersBoard(){
     : '매일 장마감 후 자동 계산';
 }
 
-// ---------- 오늘의 핫픽  (Google Sheets 편집 콘텐츠 + CANSLIM 분석) ----------
+// ---------- 오늘의 핫픽 (Google Sheets 편집 콘텐츠 + CANSLIM 분석) ----------
 const HOTPICK_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTt_ZzCVGwhoZv_-_ntsqW_6wJ-iMakD5v5LOxtr8tDgxBKGgOl8e_tI-x_oyPKNEMWx1Nc-Uh_gnUs/pub?output=csv";
 
 const CANSLIM_LABELS = {
@@ -1056,6 +1063,9 @@ function renderDetail(d){
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.65l7.73-8.84L1.24 2.25h6.83l4.72 6.24 5.45-6.24Zm-1.17 17.52h1.83L7.02 4.13H5.06l12.01 15.64Z"/></svg>
           공유 텍스트 복사
         </button>
+        <a class="chart-btn" href="/ftd-strategy.html" style="text-decoration:none;" title="FTD 확인 후 순차 매수 전략 알아보기">
+          📈 FTD 매수전략 →
+        </a>
       </div>
     </div>
     <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">
