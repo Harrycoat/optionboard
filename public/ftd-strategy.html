@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FTD 확인 후 순차 매수 전략 | GEX Option</title>
+<meta name="description" content="FTD(Follow-Through Day) 개념과, FTD 확인 후 리스크를 관리하며 단계적으로 비중을 늘리는 순차 매수(피라미딩) 전략을 설명합니다.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4689151958671592"
+     crossorigin="anonymous"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0XWFHDNJG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Y0XWFHDNJG');
+</script>
+<style>
+  :root{
+    --bg:#0a0d12; --panel:#10141b; --panel-2:#151a22; --line:#1f2530;
+    --text:#e7e5df; --text-dim:#8b93a1; --up:#e5484d; --down:#3d7fe0; --gold:#e0a838; --green:#22c55e;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--text); font-family:'Pretendard',-apple-system,sans-serif; line-height:1.7; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+  a.home{ display:inline-block; color:var(--gold); text-decoration:none; font-size:14px; padding:20px; }
+  main{ max-width:820px; margin:0 auto; padding:0 20px 80px; }
+
+  .hero{ padding:8px 0 28px; border-bottom:1px solid var(--line); margin-bottom:24px; }
+  .hero .kicker{ font-size:12px; color:var(--gold); text-transform:uppercase; letter-spacing:0.1em; font-weight:700; }
+  .hero h1{ font-size: clamp(22px,4vw,30px); margin-top:8px; }
+  .hero p{ color:var(--text-dim); font-size:14px; margin-top:10px; }
+
+  h2{ font-size:18px; margin:32px 0 12px; display:flex; align-items:center; gap:8px; }
+  h2::before{ content:''; width:3px; height:14px; background:var(--gold); display:inline-block; }
+  p{ font-size:14px; margin-bottom:10px; }
+
+  .box{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin:14px 0; }
+  .box-warn{ background:#241a12; border:1px solid #4a3418; border-radius:10px; padding:16px 18px; margin:14px 0; font-size:13px; color:#e0b878; }
+
+  table.steps{ width:100%; border-collapse:collapse; margin:14px 0; font-size:13px; }
+  table.steps th{ background:var(--panel-2); color:var(--text-dim); text-align:left; padding:10px 12px; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid var(--line); }
+  table.steps td{ padding:12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.steps tr:last-child td{ border-bottom:none; }
+  table.steps .stage-num{ font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--gold); }
+
+  ul.checklist{ list-style:none; padding:0; }
+  ul.checklist li{ padding:8px 0 8px 26px; position:relative; font-size:13.5px; color:var(--text-dim); border-bottom:1px solid var(--line); }
+  ul.checklist li:last-child{ border-bottom:none; }
+  ul.checklist li::before{ content:'✓'; position:absolute; left:0; color:var(--green); font-weight:700; }
+
+  .gex-tip{ background:var(--panel-2); border-left:3px solid var(--gold); border-radius:6px; padding:12px 16px; margin:14px 0; font-size:13px; }
+
+  .disclaimer{ font-size:10.5px; color:var(--text-dim); opacity:0.7; line-height:1.6; border-top:1px solid var(--line); padding-top:14px; margin-top:28px; }
+  .cta{ display:inline-block; margin-top:20px; background:var(--gold); color:#111; font-weight:700; padding:10px 18px; border-radius:6px; text-decoration:none; font-size:13px; }
+</style>
+</head>
+<body>
+<a class="home" href="/">&larr; GEX Option 홈으로</a>
+<main>
+
+  <div class="hero">
+    <div class="kicker">Trading Framework</div>
+    <h1>FTD 확인 후, 어떻게 순차적으로 매수해야 할까</h1>
+    <p>Follow-Through Day(FTD) 개념과, 확인 이후 리스크를 관리하며 단계적으로 비중을 늘려가는 순차 매수(피라미딩) 방법을 정리했습니다.</p>
+  </div>
+
+  <h2>FTD(Follow-Through Day)란?</h2>
+  <div class="box">
+    <p>시장이 조정을 받다가, 조정 저점 이후 보통 <b style="color:var(--gold)">4~10거래일 사이</b>에 주요 지수(S&P500, 나스닥)가 <b style="color:var(--gold)">거래량이 실린 강한 상승(대략 1.5% 이상)</b>을 보이는 날을 말합니다.</p>
+    <p>윌리엄 오닐의 CANSLIM 방법론에서 나온 개념으로, "매도세가 잦아들고 기관 자금이 재유입되기 시작했다"는 신호로 해석합니다. 하락장에서 상승장으로의 전환점을 확인하는 핵심 도구입니다.</p>
+  </div>
+
+  <div class="box-warn">
+    ⚠️ FTD가 나왔다고 항상 상승이 이어지는 건 아닙니다. <b>가짜 FTD(Failed FTD)</b>도 종종 나오기 때문에, 한 번에 전액 매수하지 않고 <b>단계적으로 확인하며 늘려가는 방식</b>이 안전합니다.
+  </div>
+
+  <h2>왜 "한 번에"가 아니라 "순차적으로"인가</h2>
+  <p>FTD 하나만 보고 전 재산을 넣으면, 만약 그 FTD가 실패로 끝날 경우 손실이 큽니다. 대신 시장이 실제로 상승을 이어가는지 매 단계 확인하면서 비중을 늘리면, 판단이 틀렸을 때의 손실은 작게, 맞았을 때의 수익은 충분히 키울 수 있습니다.</p>
+
+  <h2>순차 매수(피라미딩) 단계 예시</h2>
+  <table class="steps">
+    <thead>
+      <tr><th>단계</th><th>시점</th><th>비중</th><th>판단 기준</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="stage-num">1차</td>
+        <td>FTD 확인 당일~익일</td>
+        <td>계획 물량의 25~30%</td>
+        <td>FTD 성립 확인, 주도주 후보군 압축</td>
+      </tr>
+      <tr>
+        <td class="stage-num">2차</td>
+        <td>FTD 이후 1주일 내</td>
+        <td>25~30% 추가</td>
+        <td>20일 이동평균선 위에서 안착, 거래량 동반 상승 확인</td>
+      </tr>
+      <tr>
+        <td class="stage-num">3차</td>
+        <td>신고가 돌파 또는 눌림목 재상승</td>
+        <td>20~25% 추가</td>
+        <td>Stage 2 진입 재확인, 섹터 주도주 여부 확인</td>
+      </tr>
+      <tr>
+        <td class="stage-num">4차 (선택)</td>
+        <td>뚜렷한 추세 지속 확인 후</td>
+        <td>나머지</td>
+        <td>조정 없이 상승이 이어질 때만 추가</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>핵심 원칙</h2>
+  <ul class="checklist">
+    <li>추가 매수는 항상 <b style="color:var(--text)">이전 매수가보다 높은 가격</b>에서만 진행 (물타기 금지 — 리버모어식 피라미딩)</li>
+    <li>단계가 올라갈수록 <b style="color:var(--text)">매수 사이즈는 줄이는 방향</b>으로 (첫 단계가 가장 크게, 뒤로 갈수록 작게)</li>
+    <li>각 단계 사이 <b style="color:var(--text)">20일 이동평균선 이탈</b>을 손절 기준으로 설정</li>
+    <li>짧은 기간 내 <b style="color:var(--text)">Distribution Day(거래량 실린 하락일)</b>가 여러 번 나오면 추가 매수 중단, 기존 물량도 비중 축소 검토</li>
+  </ul>
+
+  <h2>GEX와 함께 확인하면 좋은 점</h2>
+  <div class="gex-tip">
+    순차 매수 단계마다 종목의 <b style="color:var(--up)">Call Wall</b> 근접 여부를 같이 체크하세요. Call Wall 바로 아래에서 추가 매수하면 저항에 막혀 눌릴 위험이 있습니다. 반대로 <b style="color:var(--down)">Put Wall</b> 근처에서 눌림목이 나오면 추가 매수 자리로 참고할 수 있습니다.
+  </div>
+
+  <a class="cta" href="/">← 지금 종목 GEX 레벨 확인하러 가기</a>
+
+  <div style="margin:28px 0;">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-4689151958671592"
+         data-ad-slot="FTD_AD_SLOT_ID"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </div>
+
+  <div class="disclaimer">
+    ⚠️ 본 콘텐츠는 투자 교육 목적의 참고용 정보이며, 특정 종목의 매수/매도를 권유하는 투자자문이 아닙니다. FTD 판단, 매수 시점, 비중 결정은 전적으로 본인의 판단과 책임 하에 이루어져야 합니다. 과거 패턴이 미래 수익을 보장하지 않습니다.
+  </div>
+
+</main>
+<script>
+  try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
+</script>
+</body>
+</html>
