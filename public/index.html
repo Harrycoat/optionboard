@@ -357,6 +357,43 @@
       <span><span class="sw" style="background:#8b93a1"></span>Max Pain</span>
       <span><span class="sw" style="background:#22c55e"></span>Max OI Wall</span>
     </div>
+
+    <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:16px;">
+      <div style="font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">이 레벨을 이렇게 활용하세요</div>
+      <svg width="100%" viewBox="0 0 680 440" style="display:block;">
+        <line x1="60" y1="170" x2="620" y2="170" stroke="#e5484d" stroke-width="1" stroke-dasharray="6 4"/>
+        <text id="modalCallWallLabel" x="64" y="158" font-size="12" fill="var(--text-dim)">Call Wall (저항)</text>
+
+        <line x1="60" y1="340" x2="620" y2="340" stroke="#3d7fe0" stroke-width="1" stroke-dasharray="6 4"/>
+        <text id="modalPutWallLabel" x="64" y="356" font-size="12" fill="var(--text-dim)">Put Wall (지지)</text>
+
+        <path d="M60,260 Q110,300 150,325 Q190,280 230,220 Q250,190 262,178 Q280,200 320,260 Q360,300 385,322 Q430,270 480,190 Q520,130 560,95 Q585,80 610,68"
+          fill="none" stroke="var(--text-dim)" stroke-width="2"/>
+
+        <circle cx="150" cy="325" r="7" fill="#22c55e"/>
+        <circle cx="262" cy="178" r="7" fill="#e0a838"/>
+        <circle cx="385" cy="322" r="7" fill="#22c55e"/>
+        <circle cx="560" cy="95" r="7" fill="#22c55e"/>
+
+        <line x1="150" y1="325" x2="150" y2="390" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <text x="150" y="402" font-size="12" fill="var(--text-dim)" text-anchor="middle">지지선 바운스 매수</text>
+
+        <line x1="262" y1="178" x2="262" y2="55" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <text x="262" y="45" font-size="12" fill="var(--text-dim)" text-anchor="middle">저항 확인, 관망</text>
+
+        <line x1="385" y1="322" x2="385" y2="390" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <text x="385" y="402" font-size="12" fill="var(--text-dim)" text-anchor="middle">지지선 바운스 매수</text>
+
+        <line x1="560" y1="95" x2="560" y2="55" stroke="var(--line)" stroke-dasharray="3 3"/>
+        <text x="560" y="45" font-size="12" fill="var(--text-dim)" text-anchor="middle">돌파 매수</text>
+      </svg>
+      <p style="font-size:11.5px; color:var(--text-dim); line-height:1.6; margin-top:10px;">
+        가격이 Put Wall(지지선) 근처에서 바운스되면 매수 후보, Call Wall(저항선)에 처음 닿았을 땐 바로 진입하지 말고 관망, 이후 거래량을 동반해 Call Wall을 확실히 돌파하면 그때 돌파매수를 고려하는 흐름입니다.
+      </p>
+      <p style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:6px;">
+        ※ 위 그림은 개념 설명을 위한 예시이며, 실제 종목의 움직임과 다를 수 있습니다. 매수/매도를 권유하는 투자자문이 아닙니다.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -1333,6 +1370,11 @@ async function openCandleChart(d){
   sub.textContent = '차트 생성 중...';
   img.style.display = 'none';
   overlay.classList.add('open');
+
+  const callWallLabel = document.getElementById('modalCallWallLabel');
+  const putWallLabel = document.getElementById('modalPutWallLabel');
+  if(callWallLabel) callWallLabel.textContent = `Call Wall (저항) ${fmtNum(d.call_wall,1)}`;
+  if(putWallLabel) putWallLabel.textContent = `Put Wall (지지) ${fmtNum(d.put_wall,1)}`;
 
   const src = `/api/candle_image?ticker=${encodeURIComponent(d.ticker)}&_=${Date.now()}`;
 
