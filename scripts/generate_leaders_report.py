@@ -31,6 +31,14 @@ daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
                    active_universe.txt에 저장한다.
   [매일]           active_universe.txt(100종목)만 스캔해서 Top10 Gamma Flip을
                    계산한다. 100종목이라 현재가 조회를 포함해도 훨씬 빠르다.
+
+---
+[Dev% 재진입 스캐너 — "오늘의 매수 신호"]
+
+active_universe.txt(100종목)를 그대로 재사용해서, Hull21 이동평균 + Dev%
+괴리율 기반 재진입 신호(TOS ThinkScript Hull_Deviation_Reentry_v3와 동일 로직)를
+계산한다. dev_reentry_scanner.py에 로직이 분리되어 있고, 여기서는 결과만
+받아서 리포트에 합친다.
 """
 
 import json
@@ -50,6 +58,7 @@ from options_engine import (
     MASSIVE_API_BASE,
     MASSIVE_API_KEY,
 )
+from dev_reentry_scanner import build_dev_reentry_signals  # noqa: E402
 
 WATCHLIST_PATH = os.path.join(os.path.dirname(__file__), "leaders_watchlist.txt")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_report.json")
@@ -193,17 +202,11 @@ def build_badge(ticker: str, sector: str) -> dict:
 # ---------------------------------------------------------------------------
 # 급등주 스캔 대상 유니버스: 위키피디아 "S&P500 구성종목" / "나스닥100 구성종목"
 # 문서에서 매주 자동으로 긁어온다.
-#
-# 예전엔 로컬 파일(sp500_nasdaq100_universe.txt)에 티커를 하드코딩해뒀는데,
-# 지수 리밸런싱(편입/편출) 때마다 수동으로 갱신해야 했다. 위키피디아 문서는
-# 지수 변경사항이 반영될 때마다 커뮤니티가 갱신하므로, 이 페이지들에서 직접
-# 가져오면 Harry님이 손댈 일이 전혀 없다.
 # ---------------------------------------------------------------------------
 WIKI_SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 WIKI_NASDAQ100_URL = "https://en.wikipedia.org/wiki/Nasdaq-100"
 
 WIKI_REQUEST_HEADERS = {
-    # 위키피디아는 기본 User-Agent 없는 요청을 종종 차단한다.
     "User-Agent": "Mozilla/5.0 (compatible; gexoption-universe-bot/1.0)"
 }
 
@@ -216,12 +219,7 @@ def _clean_ticker(raw) -> str | None:
 
 
 def fetch_universe_from_wikipedia() -> list:
-    """위키피디아에서 S&P500 + 나스닥100 구성종목 티커를 실시간으로 가져온다.
-
-    pandas.read_html()은 표를 컬럼명 기준으로 파싱하므로, 컬럼 순서가 바뀌어도
-    안전하다. 나스닥100 페이지에는 "종목 변경 이력" 표도 같이 있어서, 반드시
-    {"Ticker", "Company"} 컬럼을 동시에 가진 표만 "현재 구성종목" 표로 취급한다.
-    """
+    """위키피디아에서 S&P500 + 나스닥100 구성종목 티커를 실시간으로 가져온다."""
     import io
     import pandas as pd
 
@@ -263,7 +261,6 @@ def fetch_universe_from_wikipedia() -> list:
 
 
 def load_universe(path: str) -> list:
-    """티커 리스트 파일을 로드한다 (주석/빈 줄 제외, 한 줄에 티커 하나)."""
     tickers = []
     with open(path, "r", encoding="utf-8") as f:
         for raw_line in f:
@@ -275,8 +272,6 @@ def load_universe(path: str) -> list:
 
 
 def load_universe_preferring_wiki(fallback_path: str = UNIVERSE_PATH) -> list:
-    """위키피디아에서 최신 S&P500+나스닥100 리스트를 가져오고, 실패하면(네트워크
-    문제, 위키피디아 표 구조 변경 등) 기존 로컬 파일로 안전하게 폴백한다."""
     try:
         tickers = fetch_universe_from_wikipedia()
         if tickers:
@@ -289,14 +284,12 @@ def load_universe_preferring_wiki(fallback_path: str = UNIVERSE_PATH) -> list:
 
 
 def compute_flip_distance_pct(spot, gamma_flip):
-    """현재가가 Gamma Flip 라인에서 얼마나 떨어져 있는지 절대값 %로 계산한다."""
     if spot is None or gamma_flip is None or spot == 0:
         return None
     return abs(spot - gamma_flip) / spot * 100
 
 
 def try_quick_flip(ticker: str):
-    """quick_gamma_flip()을 시도하고, 실패하면 최대 UNIVERSE_MAX_RETRIES회 재시도한다."""
     for attempt in range(UNIVERSE_MAX_RETRIES + 1):
         try:
             return quick_gamma_flip(ticker), None
@@ -309,7 +302,6 @@ def try_quick_flip(ticker: str):
 
 
 def try_rank_liquidity(ticker: str):
-    """rank_by_liquidity()를 시도하고, 실패하면 최대 LIQUIDITY_MAX_RETRIES회 재시도한다."""
     for attempt in range(LIQUIDITY_MAX_RETRIES + 1):
         try:
             return rank_by_liquidity(ticker), None
@@ -326,11 +318,6 @@ def build_active_universe(
     output_path: str = ACTIVE_UNIVERSE_PATH,
     top_n: int = ACTIVE_UNIVERSE_TOP_N,
 ) -> list:
-    """전체 유니버스를 OI(유동성) 기준으로 스캔해서 상위 top_n개를 뽑아 저장한다.
-
-    현재가 폴백 호출이 없어 종목당 API 호출이 1번뿐이라 429 문제가 크게
-    줄어든다. 이 함수는 주 1회(월요일)만 실행된다.
-    """
     tickers = load_universe_preferring_wiki(universe_path)
     print(f"\n[주간] 유동성 스캔 시작: {len(tickers)}개 종목")
 
@@ -358,8 +345,6 @@ def build_active_universe(
 
 
 def load_or_build_active_universe() -> list:
-    """오늘이 월요일이거나 active_universe.txt가 없으면 새로 스캔하고,
-    그 외에는 기존 파일을 그대로 읽는다."""
     is_scan_day = datetime.now(timezone.utc).weekday() == LIQUIDITY_SCAN_WEEKDAY
     file_exists = os.path.exists(ACTIVE_UNIVERSE_PATH)
 
@@ -373,8 +358,6 @@ def load_or_build_active_universe() -> list:
 
 
 def build_top10_gamma_flip(top_n: int = 10) -> list:
-    """유동성 상위 종목(active_universe)을 스캔해서 Gamma Flip 근접도(%) 기준
-    오름차순 Top N을 반환한다."""
     tickers = load_or_build_active_universe()
     print(f"\nGamma Flip 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
 
@@ -415,18 +398,6 @@ def build_top10_gamma_flip(top_n: int = 10) -> list:
 
 
 def build_top_gainers(top_n: int = 10, min_price: float = 5.0, min_volume: int = 300_000) -> list:
-    """유동성 상위 종목(active_universe, 100개)을 스캔해서 오늘 등락률
-    (전일 시가 대비 종가, price_change_pct) 기준 내림차순 Top N을 반환한다.
-
-    2단계 구조 (Top10 Gamma Flip 스캐너와 동일한 패턴):
-      1) active_universe 100종목 전체를 가벼운 일봉(prev bar) 조회만으로 스캔
-         (종목당 API 호출 1번, GEX 계산 없음 → 빠름)
-      2) 등락률 상위 top_n개만 골라서 그때 GEX(Stage/Gamma Flip/Call Wall 등)를
-         추가로 계산 (analyze_ticker 호출은 top_n개만 → API 호출 최소화)
-
-    잡주/저유동성 종목 노이즈를 막기 위해 최소 가격(min_price)과
-    최소 거래량(min_volume) 필터를 적용한다.
-    """
     tickers = load_or_build_active_universe()
     print(f"\nTop Gainers 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
 
@@ -491,12 +462,6 @@ def build_top_gainers(top_n: int = 10, min_price: float = 5.0, min_volume: int =
 
 
 def build_gamma_squeeze_candidates(categories_report: dict) -> list:
-    """이미 분석된 Wave1/Wave2/Speculative 종목들 중에서
-    'Negative Gamma 상태 + 당일 상승 전환'인 종목만 추려낸다.
-
-    추가 API 호출 없이 build_badge()가 이미 계산해둔
-    gamma_regime / price_change_pct 값만 재사용한다.
-    """
     candidates = []
     for cat_key, entries in categories_report.items():
         for e in entries:
@@ -523,9 +488,6 @@ def build_gamma_squeeze_candidates(categories_report: dict) -> list:
 
 
 def build_vanna_squeeze_candidates(categories_report: dict, top_n: int = 8) -> list:
-    """VEX(Vanna Exposure) 절대값이 크면서 당일 상승 중인 종목을 추려낸다.
-    ('바나 랠리' 구조 — IV 하락 시 딜러 추가 매수 압력이 커질 수 있는 종목)
-    """
     candidates = []
     for cat_key, entries in categories_report.items():
         for e in entries:
@@ -549,9 +511,6 @@ def build_vanna_squeeze_candidates(categories_report: dict, top_n: int = 8) -> l
 
 
 def build_charm_squeeze_candidates(categories_report: dict, max_days: int = 5, top_n: int = 8) -> list:
-    """만기(OpEx)가 임박(기본 5일 이내)했으면서 CEX(Charm Exposure) 절대값이
-    큰 종목을 추려낸다. (만기 근처 '핀' 압력이 강하게 작용할 수 있는 종목)
-    """
     candidates = []
     for cat_key, entries in categories_report.items():
         for e in entries:
@@ -601,6 +560,13 @@ def build_report():
     report["vanna_squeeze_candidates"] = build_vanna_squeeze_candidates(report["categories"])
     report["charm_squeeze_candidates"] = build_charm_squeeze_candidates(report["categories"])
 
+    # ---- Dev% 재진입 스캐너 ("오늘의 매수 신호") ----
+    # active_universe(100종목)를 재사용해서 추가 API 호출 부담 없이 이어서 스캔한다.
+    active_universe_tickers = load_or_build_active_universe()
+    dev_signals = build_dev_reentry_signals(active_universe_tickers)
+    report["dev_reentry_long"] = dev_signals["long_reentry"]
+    report["dev_reentry_short_exit"] = dev_signals["short_exit"]
+
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
@@ -610,6 +576,8 @@ def build_report():
     print(f"감마 스퀴즈 후보: {len(report['gamma_squeeze_candidates'])}개")
     print(f"바나 스퀴즈 후보: {len(report['vanna_squeeze_candidates'])}개")
     print(f"차름 스퀴즈 후보: {len(report['charm_squeeze_candidates'])}개")
+    print(f"Dev 롱 재진입: {len(report['dev_reentry_long'])}개")
+    print(f"Dev 숏·청산: {len(report['dev_reentry_short_exit'])}개")
 
 
 if __name__ == "__main__":
