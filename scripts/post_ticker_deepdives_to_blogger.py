@@ -29,10 +29,15 @@ gexoption.com의 옵션 분석 엔진(options_engine.analyze_ticker)을 그대�
 import json
 import os
 import sys
+import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import requests
+
+# Blogger API가 짧은 시간에 연속으로 글을 만들면 429(Too Many Requests)를 반환한다.
+# 종목 사이에 이 시간(초)만큼 쉬어서 API 호출 속도를 늦춘다.
+SECONDS_BETWEEN_TICKERS = 8
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(ROOT, "api"))
@@ -203,19 +208,29 @@ def already_posted_today(access_token, blog_id, title):
         return False
 
 
-def publish_draft(access_token, blog_id, title, body):
-    resp = requests.post(
-        f"{BLOGGER_API}/{blog_id}/posts/",
-        headers={
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-        },
-        params={"isDraft": "true"},
-        json={"kind": "blogger#post", "title": title, "content": body},
-        timeout=30,
-    )
-    resp.raise_for_status()
-    return resp.json()
+def publish_draft(access_token, blog_id, title, body, max_retries=3):
+    """429(Too Many Requests)를 만나면 잠깐 기다렸다가 재시도한다."""
+    for attempt in range(1, max_retries + 1):
+        resp = requests.post(
+            f"{BLOGGER_API}/{blog_id}/posts/",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            params={"isDraft": "true"},
+            json={"kind": "blogger#post", "title": title, "content": body},
+            timeout=30,
+        )
+        if resp.status_code == 429 and attempt < max_retries:
+            wait_s = 20 * attempt
+            print(
+                f"[post_ticker_deepdives] 429(속도 제한) — {wait_s}초 대기 후 재시도 "
+                f"({attempt}/{max_retries})"
+            )
+            time.sleep(wait_s)
+            continue
+        resp.raise_for_status()
+        return resp.json()
 
 
 def main():
@@ -237,7 +252,10 @@ def main():
         print(f"[post_ticker_deepdives] 토큰 발급 실패, 전체 건너뜀: {e}")
         return
 
-    for ticker in tickers:
+    for i, ticker in enumerate(tickers):
+        if i > 0:
+            # Blogger API 속도 제한(429)을 피하기 위해 종목 사이에 잠깐 쉰다.
+            time.sleep(SECONDS_BETWEEN_TICKERS)
         try:
             data = analyze_ticker(ticker)
             title, body = build_post(ticker, data, date_str)
