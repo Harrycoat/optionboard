@@ -220,19 +220,7 @@
   .chart-legend{ display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; font-size:11px; color:var(--text-dim); }
   .chart-legend .sw{ display:inline-block; width:14px; height:2px; margin-right:5px; vertical-align:middle; }
     .market-float{
-    position: fixed;
-    right: 20px;
-    top: 90px;
-    width: 220px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-    z-index: 15;
-  }
-  @media (max-width: 1420px){
-    .market-float{ display: none; }
+    display: none;
   }
   .market-float-head{
     display:flex; justify-content:space-between; align-items:baseline;
