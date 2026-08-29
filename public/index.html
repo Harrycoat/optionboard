@@ -300,7 +300,7 @@
   <div id="gainersBoard"><div class="leader-empty">불러오는 중...</div></div>
 
   <div class="section-title">🎯 오늘의 매수 신호</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아오는 매수 재진입 후보와, 상단 스트레치에서 되돌아오는 익절·방어(콜라 타이밍) 후보를 나눠서 보여드립니다.</p>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아왔는지(HULL 스테이지1 관찰타이밍), 상승 전환과 모멘텀까지 확인됐는지(HULL 스테이지2 진입타이밍)를 보여드립니다.</p>
   <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
   <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
 
@@ -604,51 +604,24 @@ async function loadGainersBoard(){
     : '매일 장마감 후 자동 계산';
 }
 
-// ---------- 오늘의 매수 신호 (Hull21 Dev% 재진입 스캐너) ----------
-const STAGE_COLORS = { 1: GOLD, 2: UP, 3: '#22c55e' };
+// ---------- 오늘의 매수 신호 (Hull21 Dev% 재진입 스캐너 — HULL 스테이지1~2) ----------
+const STAGE_COLORS = { 1: GOLD, 2: UP };
 
 function reentrySignalRowHTML(r){
   const devColor = r.dev_pct >= 0 ? UP : DOWN;
   const devText = `${r.dev_pct >= 0 ? '+' : ''}${fmtNum(r.dev_pct,2)}%`;
+  const stageColor = STAGE_COLORS[r.stage] || GOLD;
 
-  if(r.stage){
-    // 롱 사이드 — 진입준비 / 1차진입 / 2차진입 3단계
-    const stageColor = STAGE_COLORS[r.stage] || GOLD;
-    return `
-      <div class="leader-card" data-ticker="${r.ticker}">
-        <span class="leader-ticker">${r.ticker}</span>
-        <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
-        <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${stageColor}22; color:${stageColor};">${r.stage_label}</span>
-        <span class="mono" style="font-size:11px; color:var(--text-dim);">Hull21 <b style="color:${GOLD}">${fmtNum(r.hull21,2)}</b></span>
-        <span class="mono" style="font-size:11px; color:${devColor};">Dev% <b>${devText}</b></span>
-        ${r.volume_confirmed ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GREEN_OK}22; color:${GREEN_OK};">거래량 확인</span>` : ''}
-      </div>
-    `;
-  }
-
-  // 숏/청산(익절·방어) — 기존 로직 그대로
-  const contLabel = r.is_continuation ? 'CONTINUATION' : 'REVERSION';
-  const contColor = r.is_continuation ? GREEN_OK : GOLD;
   return `
     <div class="leader-card" data-ticker="${r.ticker}">
       <span class="leader-ticker">${r.ticker}</span>
       <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
-      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${DOWN}22; color:${DOWN};">익절·방어</span>
+      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${stageColor}22; color:${stageColor};">${r.stage_label}</span>
       <span class="mono" style="font-size:11px; color:var(--text-dim);">Hull21 <b style="color:${GOLD}">${fmtNum(r.hull21,2)}</b></span>
       <span class="mono" style="font-size:11px; color:${devColor};">Dev% <b>${devText}</b></span>
-      <span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${contColor}22; color:${contColor};">${contLabel}</span>
       ${r.volume_confirmed ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GREEN_OK}22; color:${GREEN_OK};">거래량 확인</span>` : ''}
+      ${r.slope_accelerating ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GOLD}22; color:${GOLD};">기울기 가속</span>` : ''}
     </div>
-  `;
-}
-
-function reentrySubsectionHTML(title, color, list){
-  if(!list.length){
-    return `<div class="leader-empty" style="padding:6px 0; font-size:11.5px;">${title}: 오늘 해당 없음</div>`;
-  }
-  return `
-    <div style="font-size:11px; font-weight:700; color:${color}; margin:12px 0 4px; padding-left:2px;">${title} (${list.length})</div>
-    ${list.map(reentrySignalRowHTML).join('')}
   `;
 }
 
@@ -669,19 +642,17 @@ async function loadReentrySignals(){
   }
 
   const longList = report.dev_reentry_long || [];
-  const shortList = report.dev_reentry_short_exit || [];
 
-  if(!longList.length && !shortList.length){
-    boardEl.innerHTML = '<div class="leader-empty">오늘 매수·방어 신호가 없습니다</div>';
+  if(!longList.length){
+    boardEl.innerHTML = '<div class="leader-empty">오늘 매수 신호가 없습니다</div>';
     note.textContent = '';
     return;
   }
 
   boardEl.innerHTML =
-    reentrySubsectionHTML('🟢 매수 재진입 후보', UP, longList) +
-    reentrySubsectionHTML('🔵 익절·방어 신호', DOWN, shortList) +
+    longList.map(reentrySignalRowHTML).join('') +
     `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">
-      ⚠️ Hull21 이동평균 기반 되돌림 신호이며 매수/매도를 권유하는 투자자문이 아닙니다. 매매 판단은 본인이 결정하시기 바랍니다.
+      ⚠️ Hull21 이동평균 기반 되돌림 신호이며 매수를 권유하는 투자자문이 아닙니다. 매매 판단은 본인이 결정하시기 바랍니다.
     </div>`;
 
   boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
