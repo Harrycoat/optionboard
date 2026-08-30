@@ -1108,6 +1108,13 @@ function renderDetail(d){
         <span class="oigex-legend-item"><i class="dot put"></i> Put OI</span>
         <span class="oigex-legend-item"><i class="line"></i> 현재가 / Call·Put Wall</span>
       </div>
+      <details class="concept-box" style="margin-top:10px; margin-bottom:0;">
+        <summary>이 차트 어떻게 보나요?</summary>
+        <p>노란 점선이 <b>현재가</b>예요. 오른쪽(빨강)이 두꺼울수록 그 가격대에 <b>콜옵션</b> 매도자(주로 기관)들이 많이 몰려있다는 뜻인데, 주가가 그 근처까지 오르면 이 매도자들이 손실을 방어하려고 주식을 파는 경향이 있어서 <b>상승을 막는 저항선(Call Wall)</b> 역할을 해요.</p>
+        <p>왼쪽(파랑)이 두꺼울수록 <b>풋옵션</b> 매도자들이 몰려있는 자리인데, 주가가 그 근처까지 내려가면 이들이 방어 매수에 나서는 경향이 있어서 <b>하락을 막는 지지선(Put Wall)</b> 역할을 해요.</p>
+        <p>즉 현재가가 두 벽 사이 박스권에 있다면 그 범위 안에서 움직일 가능성이 있고, 어느 한쪽 벽에 가까워질수록 거기서 반등하는지 혹은 뚫고 나가는지를 지켜보면 돼요. 막대가 길고 두꺼운 스트라이크일수록 "더 두꺼운 벽"이라고 볼 수 있어요.</p>
+        <p style="color:var(--text-dim); font-size:11px;">⚠️ 참고 지표일 뿐 매수/매도 신호가 아니에요.</p>
+      </details>
     </div>
     <div id="oiChangeSection" style="margin-top:18px;"></div>
     <div class="note">
@@ -1241,7 +1248,10 @@ function renderOiGexChart(containerId, d){
     }
     svg += `<rect x="${centerX - putLen}" y="${y + 3}" width="${putLen}" height="${rowH - 6}" fill="var(--down)" rx="2"/>`;
     svg += `<rect x="${centerX}" y="${y + 3}" width="${callLen}" height="${rowH - 6}" fill="var(--up)" rx="2"/>`;
-    svg += `<text x="${centerX}" y="${cy + 4}" text-anchor="middle" class="oigex-strike-label">${fmtStrikeOiGex(r.strike)}</text>`;
+    const label = fmtStrikeOiGex(r.strike);
+    const labelW = label.length * 6 + 10;
+    svg += `<rect x="${centerX - labelW/2}" y="${cy - 7}" width="${labelW}" height="14" rx="3" fill="var(--panel)" stroke="var(--line)" stroke-width="0.5"/>`;
+    svg += `<text x="${centerX}" y="${cy + 4}" text-anchor="middle" class="oigex-strike-label" fill="var(--text)" font-weight="700">${label}</text>`;
     if (i === spotIdx){
       svg += `<line x1="0" y1="${y}" x2="${width}" y2="${y}" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
       svg += `<text x="8" y="${y - 3}" class="oigex-marker-label" fill="var(--gold)">현재가 ${spot.toFixed(2)}</text>`;
