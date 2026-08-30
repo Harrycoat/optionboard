@@ -39,8 +39,16 @@ active_universe.txt(100종목)를 그대로 재사용해서, Hull21 이동평균
 괴리율 기반 재진입 신호(TOS ThinkScript Hull_Deviation_Reentry_v3와 동일 로직)를
 계산한다. dev_reentry_scanner.py에 로직이 분리되어 있고, 여기서는 결과만
 받아서 리포트에 합친다.
-"""
 
+---
+[Unusual Options Activity 스캐너 — "이상 옵션 거래"]
+
+active_universe.txt(100종목)를 그대로 재사용해서(추가 유니버스 재계산 없음),
+options_engine.fetch_oi_volume_snapshot()(이미 OI 변화 추적 기능에서 쓰던
+경량 스냅샷 — 스트라이크별 call/put OI + 당일 거래량 포함)를 종목당 1번씩만
+호출해서, 거래량이 기존 OI 대비 유난히 큰 계약(barchart.com의 "Unusual
+Options Activity" 스크리너와 같은 개념)들을 Vol/OI 비율 내림차순으로 뽑아낸다.
+"""
 import json
 import os
 import sys
@@ -50,11 +58,11 @@ from datetime import datetime, timezone
 import requests
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "api"))
-
 from options_engine import (
     analyze_ticker,
     quick_gamma_flip,
     rank_by_liquidity,
+    fetch_oi_volume_snapshot,
     MASSIVE_API_BASE,
     MASSIVE_API_KEY,
 )
@@ -81,6 +89,10 @@ ACTIVE_UNIVERSE_TOP_N = 100
 LIQUIDITY_PER_TICKER_DELAY_SECONDS = 0.3
 LIQUIDITY_MAX_RETRIES = 1
 LIQUIDITY_RETRY_BACKOFF_SECONDS = [5]
+
+UNUSUAL_OPTIONS_MIN_VOLUME = 300
+UNUSUAL_OPTIONS_MIN_RATIO = 1.0
+UNUSUAL_OPTIONS_TOP_N = 15
 
 
 def parse_watchlist(path):
@@ -165,12 +177,10 @@ def build_badge(ticker: str, sector: str) -> dict:
         "vanna_charm_expiry_days": None,
         "status": "ok",
     }
-
     result, err = try_analyze(ticker)
     if result:
         spot = result.get("spot")
         call_wall = result.get("call_wall")
-
         badge["spot"] = round(spot, 2) if spot is not None else None
         badge["call_wall"] = call_wall
         badge["put_wall"] = result.get("put_wall")
@@ -181,12 +191,10 @@ def build_badge(ticker: str, sector: str) -> dict:
         badge["vex_total"] = result.get("vex_total")
         badge["cex_total"] = result.get("cex_total")
         badge["vanna_charm_expiry_days"] = result.get("vanna_charm_expiry_days")
-
         if call_wall is not None and spot:
             badge["call_wall_distance_pct"] = round((call_wall - spot) / spot * 100, 2)
     else:
         badge["status"] = f"error: {err}"
-
     bar = fetch_daily_bar(ticker)
     if bar:
         badge["volume"] = bar.get("volume")
@@ -195,7 +203,6 @@ def build_badge(ticker: str, sector: str) -> dict:
             badge["price_change_pct"] = round((c - o) / o * 100, 2)
         if badge["spot"] is None and c:
             badge["spot"] = round(c, 2)
-
     return badge
 
 
@@ -205,7 +212,6 @@ def build_badge(ticker: str, sector: str) -> dict:
 # ---------------------------------------------------------------------------
 WIKI_SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 WIKI_NASDAQ100_URL = "https://en.wikipedia.org/wiki/Nasdaq-100"
-
 WIKI_REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; gexoption-universe-bot/1.0)"
 }
@@ -313,6 +319,18 @@ def try_rank_liquidity(ticker: str):
                 return None, str(e)
 
 
+def try_oi_volume_snapshot(ticker: str):
+    for attempt in range(UNIVERSE_MAX_RETRIES + 1):
+        try:
+            return fetch_oi_volume_snapshot(ticker, max_expiries=2), None
+        except Exception as e:
+            if attempt < UNIVERSE_MAX_RETRIES:
+                wait = UNIVERSE_RETRY_BACKOFF_SECONDS[attempt]
+                time.sleep(wait)
+            else:
+                return None, str(e)
+
+
 def build_active_universe(
     universe_path: str = UNIVERSE_PATH,
     output_path: str = ACTIVE_UNIVERSE_PATH,
@@ -320,7 +338,6 @@ def build_active_universe(
 ) -> list:
     tickers = load_universe_preferring_wiki(universe_path)
     print(f"\n[주간] 유동성 스캔 시작: {len(tickers)}개 종목")
-
     ranked = []
     for i, ticker in enumerate(tickers, 1):
         if i % 50 == 0 or i == 1:
@@ -329,17 +346,14 @@ def build_active_universe(
         if result and result.get("total_oi", 0) > 0:
             ranked.append(result)
         time.sleep(LIQUIDITY_PER_TICKER_DELAY_SECONDS)
-
     ranked.sort(key=lambda x: x["total_oi"], reverse=True)
     top_tickers = [r["ticker"] for r in ranked[:top_n]]
-
     with open(output_path, "w", encoding="utf-8") as f:
         f.write("# scripts/active_universe.txt\n")
         f.write(f"# 유동성(OI) 기준 상위 {top_n}개 — 매주 월요일 자동 갱신\n")
         f.write(f"# 생성: {datetime.now(timezone.utc).isoformat()}\n")
         for t in top_tickers:
             f.write(f"{t}\n")
-
     print(f"[주간] 유동성 스캔 완료: {len(ranked)}개 유효 / 상위 {len(top_tickers)}개 저장 → {output_path}")
     return top_tickers
 
@@ -347,7 +361,6 @@ def build_active_universe(
 def load_or_build_active_universe() -> list:
     is_scan_day = datetime.now(timezone.utc).weekday() == LIQUIDITY_SCAN_WEEKDAY
     file_exists = os.path.exists(ACTIVE_UNIVERSE_PATH)
-
     if is_scan_day or not file_exists:
         reason = "월요일" if is_scan_day else "active_universe.txt 없음"
         print(f"\n유동성 재스캔 조건 충족 ({reason}) — 전체 유니버스 스캔 실행")
@@ -360,13 +373,11 @@ def load_or_build_active_universe() -> list:
 def build_top10_gamma_flip(top_n: int = 10) -> list:
     tickers = load_or_build_active_universe()
     print(f"\nGamma Flip 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
-
     candidates = []
     skipped = 0
     for i, ticker in enumerate(tickers, 1):
         if i % 20 == 0 or i == 1:
             print(f"  진행: {i}/{len(tickers)} ({ticker})")
-
         result, err = try_quick_flip(ticker)
         if result:
             spot = result.get("spot")
@@ -384,12 +395,9 @@ def build_top10_gamma_flip(top_n: int = 10) -> list:
                 skipped += 1
         else:
             skipped += 1
-
         time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
-
     candidates.sort(key=lambda x: x["flip_distance_pct"])
     top10 = candidates[:top_n]
-
     print(
         f"Gamma Flip 스캐너 완료: 유효 {len(candidates)}개 / "
         f"스킵 {skipped}개 / Top {top_n} 추출"
@@ -400,30 +408,25 @@ def build_top10_gamma_flip(top_n: int = 10) -> list:
 def build_top_gainers(top_n: int = 10, min_price: float = 5.0, min_volume: int = 300_000) -> list:
     tickers = load_or_build_active_universe()
     print(f"\nTop Gainers 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
-
     candidates = []
     skipped = 0
     for i, ticker in enumerate(tickers, 1):
         if i % 20 == 0 or i == 1:
             print(f"  진행: {i}/{len(tickers)} ({ticker})")
-
         bar = fetch_daily_bar(ticker)
         if not bar:
             skipped += 1
             time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
             continue
-
         o, c, v = bar.get("open"), bar.get("close"), bar.get("volume")
         if not o or not c:
             skipped += 1
             time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
             continue
-
         if c < min_price or (v is not None and v < min_volume):
             skipped += 1
             time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
             continue
-
         pct = round((c - o) / o * 100, 2)
         candidates.append({
             "ticker": ticker,
@@ -432,13 +435,10 @@ def build_top_gainers(top_n: int = 10, min_price: float = 5.0, min_volume: int =
             "volume": v,
         })
         time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
-
     candidates.sort(key=lambda x: x["price_change_pct"], reverse=True)
     top = candidates[:top_n]
-
     print(f"  1단계 완료: 유효 {len(candidates)}개 / 필터제외 {skipped}개")
     print(f"  2단계: 상위 {len(top)}개 GEX 보강 계산 중...")
-
     for entry in top:
         result, err = try_analyze(entry["ticker"])
         if result:
@@ -456,8 +456,69 @@ def build_top_gainers(top_n: int = 10, min_price: float = 5.0, min_volume: int =
             entry["stage"] = None
             entry["stage_label"] = None
         time.sleep(PER_TICKER_DELAY_SECONDS)
-
     print(f"Top Gainers 스캐너 완료: Top {len(top)} 추출")
+    return top
+
+
+def build_unusual_options_activity(
+    tickers: list,
+    top_n: int = UNUSUAL_OPTIONS_TOP_N,
+    min_volume: int = UNUSUAL_OPTIONS_MIN_VOLUME,
+    min_ratio: float = UNUSUAL_OPTIONS_MIN_RATIO,
+) -> list:
+    """스트라이크별 Vol/OI(거래량 대비 미결제약정 비율)이 가장 높은 계약들을 뽑아낸다.
+
+    barchart.com의 "Unusual Options Activity" 스크리너와 같은 개념 — 오늘 거래량이
+    기존 OI 대비 유난히 크게 튄 계약은 "새로운 대규모 포지션이 오늘 생겼을 가능성"을
+    시사한다. active_universe(유동성 상위 종목군, dev_reentry 스캐너와 동일 리스트)를
+    그대로 재사용해서 추가 유니버스 재계산 없이 이어서 스캔한다.
+    """
+    print(f"\nUnusual Options Activity 스캐너: {len(tickers)}개 종목 스캔 시작 (경량 모드)")
+    candidates = []
+    skipped = 0
+    for i, ticker in enumerate(tickers, 1):
+        if i % 20 == 0 or i == 1:
+            print(f"  진행: {i}/{len(tickers)} ({ticker})")
+        snap, err = try_oi_volume_snapshot(ticker)
+        if not snap:
+            skipped += 1
+            time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+            continue
+        spot = snap.get("spot")
+        for row in snap.get("strikes", []):
+            strike = row.get("strike")
+            for side, oi_key, vol_key in (("call", "call_oi", "call_volume"), ("put", "put_oi", "put_volume")):
+                oi = row.get(oi_key) or 0
+                vol = row.get(vol_key) or 0
+                if vol < min_volume:
+                    continue
+                if oi > 0:
+                    ratio = vol / oi
+                    if ratio < min_ratio:
+                        continue
+                else:
+                    ratio = None  # OI 0인데 거래량 있음 = 오늘 신규 생성된 계약(최상위 이상신호)
+                candidates.append({
+                    "ticker": ticker,
+                    "spot": round(spot, 2) if spot is not None else None,
+                    "strike": strike,
+                    "side": side,
+                    "volume": round(vol),
+                    "oi": round(oi),
+                    "vol_oi_ratio": round(ratio, 2) if ratio is not None else None,
+                    "is_new_contract": oi <= 0,
+                })
+        time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+
+    candidates.sort(
+        key=lambda c: c["vol_oi_ratio"] if c["vol_oi_ratio"] is not None else float("inf"),
+        reverse=True,
+    )
+    top = candidates[:top_n]
+    print(
+        f"Unusual Options Activity 스캐너 완료: 후보 {len(candidates)}개 / "
+        f"스킵 {skipped}개 / Top {len(top)} 추출"
+    )
     return top
 
 
@@ -482,7 +543,6 @@ def build_gamma_squeeze_candidates(categories_report: dict) -> list:
                 "call_wall": e.get("call_wall"),
                 "call_wall_distance_pct": e.get("call_wall_distance_pct"),
             })
-
     candidates.sort(key=lambda x: x["price_change_pct"], reverse=True)
     return candidates
 
@@ -505,7 +565,6 @@ def build_vanna_squeeze_candidates(categories_report: dict, top_n: int = 8) -> l
                 "price_change_pct": pct,
                 "vex_total": vex,
             })
-
     candidates.sort(key=lambda x: abs(x["vex_total"]), reverse=True)
     return candidates[:top_n]
 
@@ -531,7 +590,6 @@ def build_charm_squeeze_candidates(categories_report: dict, max_days: int = 5, t
                 "cex_total": cex,
                 "gamma_flip": e.get("gamma_flip"),
             })
-
     candidates.sort(key=lambda x: abs(x["cex_total"]), reverse=True)
     return candidates[:top_n]
 
@@ -567,6 +625,10 @@ def build_report():
     report["dev_reentry_long"] = dev_signals["long_reentry"]
     report["dev_reentry_short_exit"] = dev_signals["short_exit"]
 
+    # ---- Unusual Options Activity ("이상 옵션 거래") ----
+    # 위와 동일한 active_universe_tickers를 재사용해서 추가 유니버스 재계산 없이 이어서 스캔한다.
+    report["unusual_options_activity"] = build_unusual_options_activity(active_universe_tickers)
+
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
@@ -578,6 +640,7 @@ def build_report():
     print(f"차름 스퀴즈 후보: {len(report['charm_squeeze_candidates'])}개")
     print(f"Dev 롱 재진입: {len(report['dev_reentry_long'])}개")
     print(f"Dev 숏·청산: {len(report['dev_reentry_short_exit'])}개")
+    print(f"이상 옵션 거래: {len(report['unusual_options_activity'])}개")
 
 
 if __name__ == "__main__":
