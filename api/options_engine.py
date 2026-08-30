@@ -868,11 +868,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
             if m.put_gamma == 0:
                 m.put_gamma = r.put_gamma
 
-oi_by_strike = [
-      {"strike": k, "call_oi": m.call_oi, "put_oi": m.put_oi}
-      for k, m in sorted(merged.items())
-  ]
-gex = compute_gex_multi_expiry(primary.spot, snapshots)
+    gex = compute_gex_multi_expiry(primary.spot, snapshots)
     max_oi_wall = compute_max_oi_wall(list(merged.values()))
     vanna_charm = compute_vanna_charm(primary.spot, primary.expiry, primary.rows)
 
@@ -920,7 +916,6 @@ gex = compute_gex_multi_expiry(primary.spot, snapshots)
         "net_gex_total": gex["net_gex_total"],
         "regime": gex["regime"],
         "gex_by_strike": gex["by_strike"],
-        "oi_by_strike": oi_by_strike,
         "vex_total": vanna_charm["vex_total"],
         "cex_total": vanna_charm["cex_total"],
         "vanna_charm_expiry_days": vanna_charm["days_to_expiry"],
