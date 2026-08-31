@@ -7,7 +7,23 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
 필요 환경변수:
   MASSIVE_API_KEY  (Vercel Environment Variables에 등록)
 
-[2026-08-13 수정 내역]
+[2026-08-31 수정 내역 — 중요 버그 수정]
+  - _resolve_spot()이 "현재가"로 매번 전일 종가(prev)를 반환하고 있던 심각한 버그를 고침.
+    [2026-08-13 수정] 때 "가격 데이터 주의" 경고를 줄이려고 /v2/aggs/.../prev(전일 종가)를
+    1차 소스로 삼도록 바꿨는데, 그 결과 장중에 검색해도 항상 "어제(또는 가장 최근 완결된
+    거래일) 종가"가 현재가처럼 표시되는 문제가 있었음 (예: 월요일 장중에 검색해도 지난
+    금요일 종가가 나옴 — 15분 지연이 아니라 몇 시간~하루 이상 지연된 것처럼 보였음).
+    → 이제 이미 안정적으로 검증된 같은 계열의 엔드포인트
+      (/v2/aggs/ticker/{ticker}/range/1/day/{오늘}/{오늘}, fetch_daily_closes/
+      fetch_daily_ohlc에서 이미 쓰고 있는 것과 동일 패밀리)를 "오늘 날짜"로 호출해서
+      1차 소스로 쓴다. 장중에는 지금까지의 최신 체결가(15분 지연)가 담긴 당일 봉이
+      돌아오므로 실제 "현재가"에 훨씬 가깝다.
+    → 우선순위: ① 오늘자 일봉(당일 최신 체결가, 15분 지연) → ② 옵션체인의
+      underlying_asset.price(있으면 보조) → ③ 전일 종가(정말 둘 다 실패했을 때만,
+      이때는 is_stale_price=True로 명확히 표시해서 "지금 이 값은 당일 시세가
+      아니다"라는 걸 화면에서 경고할 수 있게 함).
+
+  [2026-08-13 수정 내역]
   - 현재가(spot) 조회 순서를 바꿈. 기존에는 옵션체인 응답 안의
     underlying_asset.price를 먼저 믿고 쓰다가, 이 필드가 자주 비어있어서
     뒤늦게 /v2/aggs/ticker/{ticker}/prev(전일 종가) 로 폴백했음. 이 과정에서
@@ -18,13 +34,16 @@ Massive.com(구 Polygon.io) 유료 옵션체인 API 사용 (Options Starter 플�
       옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
     → 대부분의 경우 prev 호출이 정상 성공하므로 is_stale_price는 이제
       "정말로 아무 가격도 못 가져온 예외적인 경우"에만 True가 된다.
+    (주의: 이 접근은 결국 "현재가"를 전일 종가로 고정시켜버리는 부작용이 있었고,
+     위 2026-08-31 수정에서 다시 바로잡음.)
+
   - [2026-08-12 수정 내역 — 참고용, 아래는 이전 로직에 대한 원인 파악 로그였음]
     근본 원인(underlying_asset.price가 왜 자주 비어있는지)은 Massive API
     응답 스키마 확인이 더 필요함 — 유료 스냅샷/실시간 엔드포인트 사용 여부는
     비용 문제로 보류. [DEBUG spot=None] 로그는 더 이상 필요 없어져서 제거함.
 """
-
 from __future__ import annotations
+
 import math
 import os
 import time
@@ -45,6 +64,7 @@ class MassiveAPIError(RuntimeError):
 # ---------------------------------------------------------------------------
 # 데이터 가져오기 (Massive.com REST API)
 # ---------------------------------------------------------------------------
+
 @dataclass
 class OptionRow:
     strike: float
@@ -88,7 +108,6 @@ def _fetch_full_options_chain(ticker: str) -> list[dict]:
     all_results: list[dict] = []
     params = {"limit": 250}
     next_url = None
-
     while True:
         data = _massive_get(next_url or url, params if not next_url else None)
         all_results.extend(data.get("results", []))
@@ -96,15 +115,17 @@ def _fetch_full_options_chain(ticker: str) -> list[dict]:
         if not next_url:
             break
         next_url = next_url + ("&" if "?" in next_url else "?") + f"apiKey={MASSIVE_API_KEY}"
-
     if not all_results:
         raise ValueError(f"{ticker}: 옵션체인이 없습니다 (옵션 미상장 종목이거나 티커 오류일 수 있음)")
-
     return all_results
 
 
 def _fetch_prev_bar(ticker: str) -> Optional[dict]:
-    """전일(가장 최근 완결된 거래일) 일봉의 시가/종가/거래량을 반환한다."""
+    """전일(가장 최근 완결된 거래일) 일봉의 시가/종가/거래량을 반환한다.
+    주의: 이건 "오늘"이 아니라 "어제"(또는 가장 최근 완결된 거래일) 값이다.
+    등락률(%) 계산용 기준가(prev_open)로만 쓰고, 현재가(spot) 1차 소스로는
+    쓰지 않는다 — 1차 소스는 _fetch_today_bar() 다.
+    """
     url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/prev"
     try:
         data = _massive_get(url)
@@ -120,23 +141,60 @@ def _fetch_prev_bar(ticker: str) -> Optional[dict]:
     return {"open": o, "close": float(c), "volume": r.get("v")}
 
 
+def _fetch_today_bar(ticker: str) -> Optional[dict]:
+    """오늘 날짜 일봉을 반환한다.
+    장중이면 "지금까지의" 최신 체결가(15분 지연)가 담긴, 계속 갱신되는 당일
+    봉이 돌아온다 — 이게 실제 "현재가"에 가장 가까운 값이다.
+    fetch_daily_closes()/fetch_daily_ohlc()에서 이미 쓰고 있는 것과 동일한
+    /v2/aggs/.../range/1/day 엔드포인트 패밀리라 추가 권한/비용 없이 그대로
+    쓸 수 있다.
+    장이 아직 시작 안 했거나(오늘자 체결이 아예 없거나) 주말/휴장일이면
+    results가 비어서 None을 반환하고, 호출부는 다음 폴백 단계로 넘어간다.
+    """
+    today = date.today().isoformat()
+    url = f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{today}/{today}"
+    try:
+        data = _massive_get(url, {"adjusted": "true"})
+    except MassiveAPIError:
+        return None
+    results = data.get("results") or []
+    if not results:
+        return None
+    r = results[0]
+    c = r.get("c")
+    if c is None:
+        return None
+    return {"open": r.get("o"), "close": float(c), "volume": r.get("v")}
+
+
 def _resolve_spot(ticker: str, chain_price: Optional[float]) -> tuple[float, bool, Optional[float]]:
     """현재가(spot)를 결정한다.
 
-    1차: /v2/aggs/.../prev (전일 종가) — leaders report와 동일하게 확실히 성공하는 소스.
-    2차(보조): 옵션체인 응답에 이미 포함된 underlying_asset.price가 있고
-               1차가 실패했을 때만 사용.
+    우선순위:
+      1차: _fetch_today_bar() — 오늘자 일봉(장중이면 최신 체결가, 15분 지연).
+           실제 "현재가"에 가장 가까운 값이라 최우선으로 쓴다.
+      2차: 옵션체인 응답에 이미 포함된 underlying_asset.price — 1차가 없을 때만 보조로 사용.
+      3차(최후 폴백): _fetch_prev_bar() — 전일 종가. 이건 "오늘 시세가 아님"이 명확하므로
+           이 경우에만 is_stale_price=True로 반환해서 화면에 경고를 띄울 수 있게 한다.
 
-    반환: (spot, is_stale_price, prev_open). is_stale_price는 두 소스 다 실패해서
-    정말로 아무 가격도 못 가져온 예외적인 경우에만 True. prev_open은 등락률(%)
-    계산용 — 1차 소스가 실패했으면 None.
+    등락률(%) 계산용 prev_open은 항상 _fetch_prev_bar()에서 별도로 가져온다
+    (가능하면) — spot 값이 어느 소스에서 나왔는지와 무관하게 항상 시도한다.
+
+    반환: (spot, is_stale_price, prev_open).
     """
-    bar = _fetch_prev_bar(ticker)
-    if bar is not None:
-        return bar["close"], False, bar.get("open")
+    prev_bar = _fetch_prev_bar(ticker)
+    prev_open = prev_bar.get("open") if prev_bar else None
+
+    today_bar = _fetch_today_bar(ticker)
+    if today_bar is not None:
+        return today_bar["close"], False, prev_open
 
     if chain_price is not None:
-        return float(chain_price), False, None
+        return float(chain_price), False, prev_open
+
+    if prev_bar is not None:
+        # 오늘자 시세를 하나도 못 가져와서 전일 종가로 대체 — 반드시 "당일 시세 아님"을 표시
+        return prev_bar["close"], True, prev_open
 
     return None, True, None  # 호출부에서 None 체크로 예외 처리
 
@@ -220,10 +278,10 @@ def compute_oi_rollover(prev_snapshot: dict, today_snapshot: dict, min_oi_change
 
     all_keys = set(prev_map.keys()) | set(today_map.keys())
     results = []
-
     for strike, side in all_keys:
         prev_row = prev_map.get((strike, side), {})
         today_row = today_map.get((strike, side), {})
+
         prev_oi = prev_row.get(f"{side}_oi", 0.0)
         today_oi = today_row.get(f"{side}_oi", 0.0)
         today_volume = today_row.get(f"{side}_volume", 0.0)
@@ -296,7 +354,6 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
             row["put_iv"] = float(iv)
 
     spot, is_stale_price, prev_open = _resolve_spot(ticker, chain_price)
-
     if spot is None:
         raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
 
@@ -338,10 +395,10 @@ def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: 
 # ---------------------------------------------------------------------------
 # Max Pain
 # ---------------------------------------------------------------------------
+
 def compute_max_pain(rows: list[OptionRow]) -> dict:
     strikes = [r.strike for r in rows]
     pain_by_strike = {}
-
     for candidate in strikes:
         call_payout = sum((candidate - r.strike) * r.call_oi for r in rows if r.strike < candidate)
         put_payout = sum((r.strike - candidate) * r.put_oi for r in rows if r.strike > candidate)
@@ -366,7 +423,6 @@ def compute_max_oi_wall(rows: list[OptionRow]) -> dict:
     total_oi_by_strike = {r.strike: (r.call_oi + r.put_oi) for r in rows}
     best_strike = max(total_oi_by_strike, key=total_oi_by_strike.get)
     best_row = next(r for r in rows if r.strike == best_strike)
-
     return {
         "max_oi_wall": best_strike,
         "max_oi_wall_total_oi": total_oi_by_strike[best_strike],
@@ -378,22 +434,19 @@ def compute_max_oi_wall(rows: list[OptionRow]) -> dict:
 # ---------------------------------------------------------------------------
 # GEX (Gamma Exposure)
 # ---------------------------------------------------------------------------
+
 def compute_gex(spot: float, expiry: str, rows: list[OptionRow]) -> dict:
     gex_by_strike = {}
-
     for r in rows:
         call_gamma = r.call_gamma
         put_gamma = r.put_gamma
-
         call_gex = call_gamma * r.call_oi * 100 * (spot ** 2) * 0.01
         put_gex = -1 * put_gamma * r.put_oi * 100 * (spot ** 2) * 0.01
-
         gex_by_strike[r.strike] = {
             "call_gex": call_gex,
             "put_gex": put_gex,
             "net_gex": call_gex + put_gex,
         }
-
     return _summarize_gex_by_strike(spot, gex_by_strike)
 
 
@@ -421,7 +474,6 @@ def compute_gex_multi_expiry(spot: float, snapshots: list["ChainSnapshot"]) -> d
             entry["call_gex"] += call_gex
             entry["put_gex"] += put_gex
             entry["net_gex"] += call_gex + put_gex
-
     return _summarize_gex_by_strike(spot, combined)
 
 
@@ -436,7 +488,6 @@ def _summarize_gex_by_strike(spot: float, gex_by_strike: dict[float, dict]) -> d
 
     strikes_at_or_above = {k: v for k, v in gex_by_strike.items() if k >= spot}
     strikes_at_or_below = {k: v for k, v in gex_by_strike.items() if k <= spot}
-
     call_candidates = strikes_at_or_above if strikes_at_or_above else gex_by_strike
     put_candidates = strikes_at_or_below if strikes_at_or_below else gex_by_strike
 
@@ -494,6 +545,7 @@ def _summarize_gex_by_strike(spot: float, gex_by_strike: dict[float, dict]) -> d
 # 참고: 근월물(가장 가까운 만기) 1개 스냅샷 기준으로만 계산한다.
 # (여러 만기를 합치면 만기별로 다른 잔존기간 T를 반영할 수 없어서 부정확해짐)
 # ---------------------------------------------------------------------------
+
 RISK_FREE_RATE_DEFAULT = 0.045  # 무위험 이자율 근사치 (미 단기 국채 수준)
 
 
@@ -581,6 +633,7 @@ def compute_gamma_flip_bs(
     lo, hi = spot * 0.7, spot * 1.3
     n_steps = 200
     step = (hi - lo) / n_steps
+
     prev_price, prev_val = lo, total_gamma_at(lo)
     best_crossing: Optional[float] = None
     for i in range(1, n_steps + 1):
@@ -628,19 +681,16 @@ def compute_vanna_charm(
     for r in rows:
         strike_vex = 0.0
         strike_cex = 0.0
-
         if r.call_iv and r.call_oi:
             vanna_c = _bs_vanna(spot, r.strike, t_years, risk_free_rate, r.call_iv)
             charm_c = _bs_charm_call(spot, r.strike, t_years, risk_free_rate, r.call_iv)
             strike_vex += r.call_oi * vanna_c * 100 * spot
             strike_cex += r.call_oi * charm_c * 100 * spot
-
         if r.put_iv and r.put_oi:
             vanna_p = _bs_vanna(spot, r.strike, t_years, risk_free_rate, r.put_iv)
             charm_p = -_bs_charm_call(spot, r.strike, t_years, risk_free_rate, r.put_iv)
             strike_vex += r.put_oi * vanna_p * 100 * spot
             strike_cex += r.put_oi * charm_p * 100 * spot
-
         if strike_vex or strike_cex:
             by_strike.append({"strike": r.strike, "vex": strike_vex, "cex": strike_cex})
         vex_total += strike_vex
@@ -653,10 +703,12 @@ def compute_vanna_charm(
         "by_strike": by_strike,
     }
 
+
 # ---------------------------------------------------------------------------
 # Stage 분석 (Weinstein 4단계, 간단 버전 — 30주선 기울기 + 가격위치)
 # 지금은 원인 파악을 위해 stage_debug 필드를 임시로 노출한다.
 # ---------------------------------------------------------------------------
+
 def fetch_daily_closes(ticker: str, lookback_days: int = 420) -> tuple[list[float], str]:
     """
     최근 lookback_days(달력일 기준)치 일봉 종가를 오래된 순으로 반환한다.
@@ -669,6 +721,7 @@ def fetch_daily_closes(ticker: str, lookback_days: int = 420) -> tuple[list[floa
         data = _massive_get(url, {"adjusted": "true", "sort": "asc", "limit": 500})
     except MassiveAPIError as e:
         return [], f"API 오류: {e}"
+
     results = data.get("results") or []
     closes = [r.get("c") for r in results if r.get("c") is not None]
     debug = f"start={start.isoformat()} end={end.isoformat()} raw_results={len(results)} closes={len(closes)} status={data.get('status')}"
@@ -677,7 +730,6 @@ def fetch_daily_closes(ticker: str, lookback_days: int = 420) -> tuple[list[floa
 
 def compute_stage(closes: list[float]) -> dict:
     result = {"stage": None, "label": None, "sma150": None, "slope_pct": None, "n_closes": len(closes)}
-
     if len(closes) < 190:
         return result
 
@@ -691,8 +743,8 @@ def compute_stage(closes: list[float]) -> dict:
     sma_now = sma_series[-1]
     sma_recent = sma_series[-40] if len(sma_series) >= 40 else sma_series[0]
     sma_earlier = sma_series[-80] if len(sma_series) >= 80 else sma_series[0]
-
     price_now = closes[-1]
+
     slope_pct = (sma_now - sma_recent) / sma_recent * 100 if sma_recent else 0
     prior_slope_pct = (sma_recent - sma_earlier) / sma_earlier * 100 if sma_earlier else 0
     pos_pct = (price_now - sma_now) / sma_now * 100 if sma_now else 0
@@ -755,6 +807,7 @@ def compute_stage(closes: list[float]) -> dict:
 # ---------------------------------------------------------------------------
 # 한국어 해설 문장 생성 (참고용 — 매수/매도 지시 아님)
 # ---------------------------------------------------------------------------
+
 def _fmt_strike(x) -> str:
     if x is None:
         return "-"
@@ -808,7 +861,6 @@ def build_narrative(
         key_lines.append(
             f"감마 플립: {_fmt_strike(gamma_flip)} — 추세 변화의 기점이 되는 위치 (현재는 {direction}에 위치)"
         )
-
     if key_lines:
         lines.append("<b>주요 핵심 라인:</b>")
         for kl in key_lines:
@@ -841,14 +893,16 @@ def build_narrative(
 
     return lines
 
+
 # ---------------------------------------------------------------------------
 # 통합 분석
 # ---------------------------------------------------------------------------
+
 def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     ticker = ticker.upper().strip()
     snapshots = fetch_option_chain(ticker, expiry=expiry)
-
     primary = snapshots[0]
+
     max_pain = compute_max_pain(primary.rows)
 
     price_change_pct = None
@@ -872,6 +926,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
         {"strike": k, "call_oi": m.call_oi, "put_oi": m.put_oi}
         for k, m in sorted(merged.items())
     ]
+
     gex = compute_gex_multi_expiry(primary.spot, snapshots)
     max_oi_wall = compute_max_oi_wall(list(merged.values()))
     vanna_charm = compute_vanna_charm(primary.spot, primary.expiry, primary.rows)
@@ -948,6 +1003,7 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
 # 데이터 자체가 원래 "15분 지연"이라, 60~90초 정도 캐싱해도
 # 정확도 손실이 사실상 없다.
 # ---------------------------------------------------------------------------
+
 CACHE_TTL_SECONDS = 90
 _analysis_cache: dict[tuple, tuple[float, dict]] = {}
 
@@ -975,16 +1031,16 @@ def analyze_ticker_cached(ticker: str, expiry: Optional[str] = None, ttl: int = 
 # ---------------------------------------------------------------------------
 # Top10 Gamma Flip 스캐너 전용 초경량 분석
 # ---------------------------------------------------------------------------
+
 def quick_gamma_flip(ticker: str) -> dict:
     """Top10 스캐너 전용 초경량 분석.
 
     API 요청 자체에 expiration_date 필터를 걸어서 근월물 계약만 딱 1페이지
-    (최대 250개) 받아온다. 현재가는 /v2/aggs/.../prev를 1차로 사용하고,
-    옵션체인의 underlying_asset.price는 (있으면) 보조로만 참고한다.
+    (최대 250개) 받아온다. 현재가는 _resolve_spot()의 우선순위(오늘자 일봉 →
+    옵션체인 보조 → 전일 종가 폴백)를 그대로 따른다.
     """
     ticker = ticker.upper().strip()
     today = date.today().isoformat()
-
     url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
     params = {
         "expiration_date.gte": today,
@@ -994,7 +1050,6 @@ def quick_gamma_flip(ticker: str) -> dict:
     }
     data = _massive_get(url, params)
     results = data.get("results", [])
-
     if not results:
         raise ValueError(f"{ticker}: 옵션체인이 없습니다")
 
@@ -1035,7 +1090,6 @@ def quick_gamma_flip(ticker: str) -> dict:
             row["put_gamma"] = float(gamma)
 
     spot, is_stale_price, _prev_open = _resolve_spot(ticker, chain_price)
-
     if spot is None or not strikes_dict:
         raise ValueError(f"{ticker}: 현재가 또는 옵션 데이터를 가져오지 못했습니다")
 
@@ -1073,6 +1127,7 @@ def rank_by_liquidity(ticker: str) -> dict:
     results = data.get("results", [])
     if not results:
         raise ValueError(f"{ticker}: 옵션체인이 없습니다")
+
     nearest_expiry = None
     total_oi = 0.0
     for item in results:
@@ -1086,6 +1141,7 @@ def rank_by_liquidity(ticker: str) -> dict:
             continue
         oi = item.get("open_interest") or 0.0
         total_oi += float(oi)
+
     return {"ticker": ticker, "total_oi": total_oi}
 
 
@@ -1102,8 +1158,8 @@ def fetch_daily_ohlc(ticker: str, lookback_days: int = 180) -> tuple[list[dict],
         data = _massive_get(url, {"adjusted": "true", "sort": "asc", "limit": 500})
     except MassiveAPIError as e:
         return [], f"API 오류: {e}"
-    results = data.get("results") or []
 
+    results = data.get("results") or []
     bars = []
     skipped = 0
     for r in results:
