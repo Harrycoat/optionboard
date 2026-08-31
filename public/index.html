@@ -276,6 +276,16 @@
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아왔는지(HULL 스테이지1 관찰타이밍), 상승 전환과 모멘텀까지 확인됐는지(HULL 스테이지2 진입타이밍)를 보여드립니다.</p>
   <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
   <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
+  <div class="section-title">🚨 오늘의 이상 옵션 거래</div>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:8px; line-height:1.6;">유동성 상위 종목군에서 오늘 거래량이 기존 미결제약정(OI) 대비 유난히 크게 튄 옵션 계약들입니다 — 새로운 대규모 포지션이 오늘 생겼을 가능성을 시사해요 (15분 지연).</p>
+  <details class="concept-box" style="margin-bottom:12px;">
+    <summary>Vol/OI 비율이 뭔가요?</summary>
+    <p><b>OI(미결제약정)</b>는 아직 청산되지 않고 남아있는 옵션 계약 수예요. <b>거래량(Volume)</b>은 오늘 하루 동안 실제로 매매된 계약 수고요.</p>
+    <p>보통 하루 거래량은 기존 OI보다 훨씬 적은데, 만약 오늘 거래량이 기존 OI와 비슷하거나 더 크다면(Vol/OI 비율이 높다면) 오늘 하루 동안 새로운 대규모 포지션이 급하게 만들어졌을 가능성이 높다는 뜻이에요. OI가 0인데 거래량이 있는 경우(<b>"신규 계약"</b> 배지)는 오늘 처음 생긴 포지션이라 특히 주목할 만해요.</p>
+    <p style="color:var(--text-dim); font-size:11px;">⚠️ 참고 지표일 뿐 매수/매도 신호가 아니에요. 헤지 목적의 거래였을 수도 있습니다.</p>
+  </details>
+  <div class="updated-note" id="unusualOptionsUpdatedNote">불러오는 중...</div>
+  <div id="unusualOptionsBoard"><div class="leader-empty">불러오는 중...</div></div>
   <div class="section-title">오늘의 주도주</div>
   <div class="updated-note" id="myBoardUpdatedNote">불러오는 중...</div>
   <div id="myTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
@@ -669,6 +679,59 @@ async function loadReentrySignals(){
     longList.map(reentrySignalRowHTML).join('') +
     `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">
       ⚠️ Hull21 이동평균 기반 되돌림 신호이며 매수를 권유하는 투자자문이 아닙니다. 매매 판단은 본인이 결정하시기 바랍니다.
+    </div>`;
+  boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
+    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+  });
+  const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
+  note.textContent = generatedAt
+    ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
+    : '매일 장마감 후 자동 계산';
+}
+// ---------- 오늘의 이상 옵션 거래 (Unusual Options Activity — Vol/OI 비율 상위) ----------
+function unusualOptionRowHTML(r, rank){
+  const sideLabel = r.side === 'call' ? '콜' : '풋';
+  const sideColor = r.side === 'call' ? UP : DOWN;
+  const ratioText = r.vol_oi_ratio != null ? `${fmtNum(r.vol_oi_ratio,2)}x` : '—';
+  const newBadge = r.is_new_contract
+    ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GREEN_OK}22; color:${GREEN_OK};">신규 계약</span>`
+    : '';
+  return `
+    <div class="leader-card" data-ticker="${r.ticker}">
+      <span style="font-size:12px; font-weight:700; color:${GOLD}; min-width:22px;">#${rank}</span>
+      <span class="leader-ticker">${r.ticker}</span>
+      <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
+      <span class="mono" style="font-weight:700; padding:2px 8px; border-radius:4px; background:${sideColor}22; color:${sideColor};">${fmtNum(r.strike,1)} ${sideLabel}</span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">거래량 <b style="color:var(--text)">${fmtVolume(r.volume)}</b></span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">OI <b style="color:var(--text)">${fmtVolume(r.oi)}</b></span>
+      <span class="mono" style="font-size:13px; font-weight:800; padding:2px 8px; border-radius:4px; background:${GOLD}22; color:${GOLD};">Vol/OI ${ratioText}</span>
+      ${newBadge}
+    </div>
+  `;
+}
+async function loadUnusualOptions(){
+  const boardEl = document.getElementById('unusualOptionsBoard');
+  const note = document.getElementById('unusualOptionsUpdatedNote');
+  boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
+  let report;
+  try{
+    const res = await fetch('/leaders_report.json', { cache: 'no-store' });
+    if(!res.ok) throw new Error('로드 실패');
+    report = await res.json();
+  }catch(e){
+    boardEl.innerHTML = '<div class="leader-empty">이상 옵션 거래 데이터를 불러오지 못했습니다</div>';
+    note.textContent = '';
+    return;
+  }
+  const rows = report.unusual_options_activity || [];
+  if(!rows.length){
+    boardEl.innerHTML = '<div class="leader-empty">오늘 이상 옵션 거래가 없습니다</div>';
+    note.textContent = '';
+    return;
+  }
+  boardEl.innerHTML = rows.map((r, i) => unusualOptionRowHTML(r, i + 1)).join('') +
+    `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">
+      ⚠️ Vol/OI 비율이 높을수록 오늘 새로 유입된 대규모 포지션일 가능성이 있습니다. 매수/매도를 권유하는 투자자문이 아닙니다.
     </div>`;
   boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
@@ -1374,6 +1437,7 @@ setInterval(loadMarketFloat, 60000);
 loadMarketStatusBanner();
 loadGainersBoard();
 loadReentrySignals();
+loadUnusualOptions();
 loadMyBoard();
 loadEtfBoard();
   const scrollTopBtn = document.getElementById('scrollTopBtn');
