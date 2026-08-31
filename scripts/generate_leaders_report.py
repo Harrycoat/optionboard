@@ -93,6 +93,7 @@ LIQUIDITY_RETRY_BACKOFF_SECONDS = [5]
 UNUSUAL_OPTIONS_MIN_VOLUME = 300
 UNUSUAL_OPTIONS_MIN_RATIO = 1.0
 UNUSUAL_OPTIONS_TOP_N = 15
+UNUSUAL_OPTIONS_MAX_PER_TICKER = 3  # 한 종목(예: 신규 옵션 상장)이 결과를 독점하지 않도록 제한
 
 
 def parse_watchlist(path):
@@ -510,11 +511,26 @@ def build_unusual_options_activity(
                 })
         time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
 
+    # 실제 Vol/OI 비율이 있는 후보가 항상 "신규 계약"(비율 없음)보다 위로 오도록 정렬한다.
+    # (이전 버전은 신규 계약을 무한대로 취급해서 진짜 이상신호를 다 밀어냈던 버그가 있었음)
     candidates.sort(
-        key=lambda c: c["vol_oi_ratio"] if c["vol_oi_ratio"] is not None else float("inf"),
+        key=lambda c: c["vol_oi_ratio"] if c["vol_oi_ratio"] is not None else -1,
         reverse=True,
     )
-    top = candidates[:top_n]
+
+    # 한 종목(예: 오늘 새 만기 옵션이 무더기로 상장된 경우)이 상위권을 독점하지 않도록
+    # 티커당 최대 개수를 제한해서 다양한 종목이 섞여 나오게 한다.
+    top = []
+    per_ticker_count = {}
+    for c in candidates:
+        cnt = per_ticker_count.get(c["ticker"], 0)
+        if cnt >= UNUSUAL_OPTIONS_MAX_PER_TICKER:
+            continue
+        top.append(c)
+        per_ticker_count[c["ticker"]] = cnt + 1
+        if len(top) >= top_n:
+            break
+
     print(
         f"Unusual Options Activity 스캐너 완료: 후보 {len(candidates)}개 / "
         f"스킵 {skipped}개 / Top {len(top)} 추출"
