@@ -69,6 +69,80 @@ def _parse_date(s):
     return None
 
 
+STRATEGY_LABEL = {
+    "CSP": "현금 담보 풋 매도 (CSP)",
+    "CC": "커버드콜 (CC)",
+}
+
+
+def _fmt_or_dash(v):
+    return v if v is not None and v != "" else "—"
+
+
+def build_case_study_draft(trade):
+    """청산된 트레이드 1건을 블로그용 케이스 스터디 초안(제목+본문)으로 변환한다.
+    해리님이 이 텍스트를 그대로/조금 다듬어서 블로그에 반자동으로 올릴 수 있게
+    (자동 발행은 아니고, 복사해서 붙여넣는 용도의 '초안'만 생성한다)."""
+    ticker = trade.get("ticker") or "—"
+    strategy_raw = (trade.get("strategy") or "").strip().upper()
+    strategy_label = STRATEGY_LABEL.get(strategy_raw, trade.get("strategy") or "포지션")
+    entry_date = trade.get("date") or "—"
+    expiry = trade.get("expiry") or "—"
+    strike = trade.get("strike")
+    premium = trade.get("entry_premium")
+    contracts = trade.get("contracts")
+    exit_price = trade.get("exit_price")
+    pnl = trade.get("pnl")
+    note = trade.get("note") or ""
+
+    put_wall = trade.get("entry_put_wall")
+    call_wall = trade.get("entry_call_wall")
+    gamma_flip = trade.get("entry_gamma_flip")
+    max_pain = trade.get("entry_max_pain")
+
+    if pnl is None:
+        result_word = "결과 미기록"
+    elif pnl > 0:
+        result_word = "승 (수익)"
+    elif pnl < 0:
+        result_word = "패 (손실)"
+    else:
+        result_word = "본전"
+    pnl_text = f"{'+' if (pnl is not None and pnl > 0) else ''}{pnl}" if pnl is not None else "—"
+
+    title = f"[휠 저널] {ticker} {strategy_raw or ''} 케이스 스터디 ({entry_date} 진입)".replace("  ", " ")
+
+    lines = [
+        f"이번 트레이드는 {entry_date}에 {ticker} 종목에 {strategy_label}으로 진입한 건입니다.",
+        "",
+        "■ 진입 정보",
+        f"- 전략: {strategy_label}",
+        f"- 스트라이크: {_fmt_or_dash(strike)}",
+        f"- 진입가(프리미엄): {_fmt_or_dash(premium)}",
+        f"- 계약수: {_fmt_or_dash(contracts)}",
+        f"- 만기일: {expiry}",
+        "",
+        "■ 진입 근거 (진입 시점 GEX 레벨)",
+        f"- Put Wall: {_fmt_or_dash(put_wall)}",
+        f"- Call Wall: {_fmt_or_dash(call_wall)}",
+        f"- Gamma Flip: {_fmt_or_dash(gamma_flip)}",
+        f"- Max Pain: {_fmt_or_dash(max_pain)}",
+    ]
+    if note:
+        lines.append(f"- 메모: {note}")
+    lines += [
+        "",
+        "■ 결과",
+        f"- 청산가: {_fmt_or_dash(exit_price)}",
+        f"- 손익: {pnl_text}",
+        f"- 결과: {result_word}",
+        "",
+        "■ 총평",
+        "(이번 트레이드에서 느낀 점, 다음에 다르게 할 부분을 여기에 자유롭게 적어주세요.)",
+    ]
+    return {"title": title, "body": "\n".join(lines)}
+
+
 def fetch_rows():
     if not SHEET_CSV_URL:
         raise RuntimeError("JOURNAL_SHEET_CSV_URL 환경변수가 설정되지 않았습니다.")
@@ -95,7 +169,7 @@ def build_report(rows):
         pnl = _to_float(row.get("손익"))
 
         if status in CLOSED_STATUSES:
-            closed.append({
+            closed_trade = {
                 "date": row.get("날짜"),
                 "ticker": row.get("티커"),
                 "strategy": row.get("전략(CSP/CC/기타)"),
@@ -110,7 +184,10 @@ def build_report(rows):
                 "entry_gamma_flip": _to_float(row.get("진입시점_GammaFlip")),
                 "entry_max_pain": _to_float(row.get("진입시점_MaxPain")),
                 "note": row.get("메모"),
-            })
+            }
+            # 블로그에 반자동으로 올릴 케이스 스터디 초안(제목+본문)을 미리 만들어 둔다.
+            closed_trade["draft"] = build_case_study_draft(closed_trade)
+            closed.append(closed_trade)
         else:
             open_trades.append(row)
 
