@@ -898,7 +898,11 @@ def build_narrative(
 # 통합 분석
 # ---------------------------------------------------------------------------
 
-def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
+def analyze_ticker(ticker: str, expiry: Optional[str] = None, skip_stage: bool = False) -> dict:
+    """skip_stage=True 이면 Stage(추세단계) 계산용 일봉 조회(fetch_daily_closes,
+    lookback 420일)를 건너뛴다 — 캔들차트 오버레이(레벨선)처럼 Stage 값이
+    필요 없는 호출부에서 네트워크 왕복을 하나 줄여서 응답 속도를 개선하기 위함.
+    """
     ticker = ticker.upper().strip()
     snapshots = fetch_option_chain(ticker, expiry=expiry)
     primary = snapshots[0]
@@ -948,12 +952,15 @@ def analyze_ticker(ticker: str, expiry: Optional[str] = None) -> dict:
     )
 
     stage_debug = None
-    try:
-        closes, stage_debug = fetch_daily_closes(ticker)
-        stage_info = compute_stage(closes)
-    except Exception as e:
-        stage_info = {"stage": None, "label": None, "sma150": None, "slope_pct": None, "pos_pct": None, "prior_slope_pct": None, "n_closes": 0}
-        stage_debug = f"예외 발생: {e}"
+    stage_info = {"stage": None, "label": None, "sma150": None, "slope_pct": None, "pos_pct": None, "prior_slope_pct": None, "n_closes": 0}
+    if skip_stage:
+        stage_debug = "skip_stage=True (호출부에서 Stage 계산 생략)"
+    else:
+        try:
+            closes, stage_debug = fetch_daily_closes(ticker)
+            stage_info = compute_stage(closes)
+        except Exception as e:
+            stage_debug = f"예외 발생: {e}"
 
     return {
         "ticker": ticker,
@@ -1008,13 +1015,13 @@ CACHE_TTL_SECONDS = 90
 _analysis_cache: dict[tuple, tuple[float, dict]] = {}
 
 
-def analyze_ticker_cached(ticker: str, expiry: Optional[str] = None, ttl: int = CACHE_TTL_SECONDS) -> dict:
+def analyze_ticker_cached(ticker: str, expiry: Optional[str] = None, ttl: int = CACHE_TTL_SECONDS, skip_stage: bool = False) -> dict:
     """analyze_ticker()에 짧은 TTL 캐싱을 씌운 버전.
 
-    같은 (ticker, expiry) 조합이 ttl초 이내에 다시 요청되면 Massive API를
-    다시 호출하지 않고 캐시된 결과를 그대로 반환한다.
+    같은 (ticker, expiry, skip_stage) 조합이 ttl초 이내에 다시 요청되면 Massive
+    API를 다시 호출하지 않고 캐시된 결과를 그대로 반환한다.
     """
-    key = (ticker.upper().strip(), expiry)
+    key = (ticker.upper().strip(), expiry, skip_stage)
     now = time.time()
 
     cached = _analysis_cache.get(key)
@@ -1023,7 +1030,7 @@ def analyze_ticker_cached(ticker: str, expiry: Optional[str] = None, ttl: int = 
         if now - cached_at < ttl:
             return cached_result
 
-    result = analyze_ticker(ticker, expiry=expiry)
+    result = analyze_ticker(ticker, expiry=expiry, skip_stage=skip_stage)
     _analysis_cache[key] = (now, result)
     return result
 
