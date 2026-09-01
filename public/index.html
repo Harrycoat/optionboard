@@ -799,6 +799,14 @@ function journalOpenTradeRowHTML(t){
     </div>
   `;
 }
+function parseTradeDate(s){
+  if(!s) return 0;
+  const m = String(s).match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/) || String(s).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(!m) return 0;
+  // MM-DD-YYYY 형식과 YYYY-MM-DD 형식 둘 다 지원
+  const t = m[3].length === 4 ? new Date(`${m[3]}-${m[1]}-${m[2]}`) : new Date(`${m[1]}-${m[2]}-${m[3]}`);
+  return t.getTime() || 0;
+}
 async function loadTradingJournal(){
   const note = document.getElementById('journalUpdatedNote');
   const summaryEl = document.getElementById('journalSummary');
@@ -816,11 +824,15 @@ async function loadTradingJournal(){
     return;
   }
   summaryEl.innerHTML = journalSummaryCardsHTML(report.summary || {});
-  const openTrades = report.open_trades || [];
+  const allOpenTrades = report.open_trades || [];
+  const sortedOpenTrades = allOpenTrades.slice().sort((a,b)=> parseTradeDate(b.date) - parseTradeDate(a.date));
+  const openTrades = sortedOpenTrades.slice(0, 1); // 메인에는 가장 최근 포지션 1개만, 나머지는 전체 기록 페이지에서
+  const moreCount = allOpenTrades.length - openTrades.length;
+  const moreLinkHTML = `<a href="/journal_drafts.html" style="display:block; margin-top:10px; font-size:12px; color:${GOLD};">전체 트레이드 기록 & 블로그 초안 보기 →${moreCount > 0 ? ` (진행중 ${moreCount}건 더)` : ''}</a>`;
   if(!openTrades.length){
-    openEl.innerHTML = '<div class="leader-empty">진행중인 포지션이 없습니다</div>';
+    openEl.innerHTML = '<div class="leader-empty">진행중인 포지션이 없습니다</div>' + moreLinkHTML;
   }else{
-    openEl.innerHTML = openTrades.map(journalOpenTradeRowHTML).join('');
+    openEl.innerHTML = openTrades.map(journalOpenTradeRowHTML).join('') + moreLinkHTML;
     openEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
       card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
     });
