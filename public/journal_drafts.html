@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>휠 트레이딩 저널 · 전체 기록 & 블로그 초안</title>
+<style>
+  :root{
+    --bg: #0a0d12;
+    --panel: #10141b;
+    --panel-2: #151a22;
+    --line: #1f2530;
+    --text: #e7e5df;
+    --text-dim: #8b93a1;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+    padding: 28px 16px 80px;
+  }
+  .wrap{ max-width: 760px; margin: 0 auto; }
+  a.back{ color: var(--text-dim); font-size:13px; text-decoration:none; }
+  a.back:hover{ color: var(--text); }
+  h1{ font-size:19px; margin: 14px 0 4px; }
+  .sub{ color: var(--text-dim); font-size:12.5px; margin-bottom:24px; line-height:1.6; }
+  .section-title{
+    font-size: 13px; color: var(--text-dim); text-transform:uppercase; letter-spacing:0.12em;
+    margin: 28px 0 12px; padding-left:10px; border-left:3px solid #e0a838;
+  }
+  .empty{ color: var(--text-dim); font-size:13px; padding: 20px; border:1px dashed var(--line); border-radius:8px; text-align:center;}
+  .trade-card{
+    background: var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; margin-bottom:14px;
+  }
+  .trade-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+  .ticker{ font-family:'JetBrains Mono', monospace; font-size:16px; font-weight:700; }
+  .badge{ font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; background: var(--panel-2); border:1px solid var(--line); color:var(--text); }
+  .pnl{ font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:700; margin-left:auto; }
+  .row{ font-size:12.5px; color: var(--text-dim); margin-bottom:2px; }
+  .row b{ color: var(--text); font-weight:500; }
+  details{ margin-top:10px; }
+  summary{
+    cursor:pointer; font-size:12.5px; color:#e0a838; font-weight:600; list-style:none;
+    padding:6px 0; user-select:none;
+  }
+  summary::-webkit-details-marker{ display:none; }
+  summary::before{ content:"▸ "; }
+  details[open] summary::before{ content:"▾ "; }
+  textarea{
+    width:100%; min-height:260px; margin-top:8px; background: var(--panel-2); color: var(--text);
+    border:1px solid var(--line); border-radius:8px; padding:12px; font-size:12.5px; line-height:1.6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+    resize: vertical;
+  }
+  .draft-title-input{
+    width:100%; margin-top:8px; background: var(--panel-2); color: var(--text);
+    border:1px solid var(--line); border-radius:8px; padding:10px 12px; font-size:13px; font-weight:600;
+  }
+  .copy-btns{ display:flex; gap:8px; margin-top:8px; }
+  .copy-btn{
+    background:#e0a838; color:#1a1204; border:none; border-radius:6px; padding:8px 14px;
+    font-size:12.5px; font-weight:700; cursor:pointer;
+  }
+  .copy-btn.secondary{ background: var(--panel-2); color: var(--text); border:1px solid var(--line); }
+  .copy-btn:active{ transform: translateY(1px); }
+  .copied-msg{ font-size:11.5px; color:#3ecf6e; margin-left:4px; display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← 메인으로</a>
+  <h1>📓 휠 트레이딩 저널 — 전체 기록</h1>
+  <p class="sub">청산된 트레이드는 블로그 케이스 스터디 초안이 자동으로 만들어져 있습니다. "초안 펼치기"를 눌러 내용을 확인/수정한 뒤, 복사해서 Blogger에 붙여넣으면 됩니다 (자동 발행은 아니고, 복사-붙여넣기용 초안입니다).</p>
+
+  <div class="section-title">진행중 포지션</div>
+  <div id="openList"><div class="empty">불러오는 중...</div></div>
+
+  <div class="section-title">청산된 트레이드 · 블로그 초안</div>
+  <div id="closedList"><div class="empty">불러오는 중...</div></div>
+</div>
+
+<script>
+function fmtNum(v, d){
+  if(v == null || v === '') return '—';
+  const n = Number(v);
+  if(Number.isNaN(n)) return '—';
+  return d != null ? n.toFixed(d) : (Number.isInteger(n) ? String(n) : n.toFixed(2));
+}
+
+function openTradeCardHTML(t){
+  return `
+    <div class="trade-card">
+      <div class="trade-head">
+        <span class="ticker">${t.ticker}</span>
+        <span class="badge">${t.strategy || '—'}</span>
+        <span class="badge">${t.status || '—'}</span>
+      </div>
+      <div class="row">날짜 <b>${t.date || '—'}</b> · 스트라이크 <b>${fmtNum(t.strike,1)}</b> · 만기 <b>${t.expiry || '—'}</b> · D-<b>${t.days_to_expiry ?? '—'}</b></div>
+      <div class="row">현재가 <b>$${fmtNum(t.current_spot)}</b> · 스트라이크 대비 <b>${t.distance_to_strike_pct != null ? (t.distance_to_strike_pct>=0?'+':'')+t.distance_to_strike_pct+'%' : '—'}</b></div>
+      ${t.note ? `<div class="row">메모: ${t.note}</div>` : ''}
+    </div>
+  `;
+}
+
+function closedTradeCardHTML(t, idx){
+  const pnl = t.pnl;
+  const pnlColor = pnl == null ? '#8b93a1' : (pnl >= 0 ? '#e5484d' : '#3d7fe0');
+  const pnlText = pnl != null ? `${pnl >= 0 ? '+' : ''}${fmtNum(pnl,2)}` : '—';
+  const draft = t.draft || { title: '', body: '' };
+  const titleId = `draftTitle_${idx}`;
+  const bodyId = `draftBody_${idx}`;
+  const copiedId = `copied_${idx}`;
+  return `
+    <div class="trade-card">
+      <div class="trade-head">
+        <span class="ticker">${t.ticker}</span>
+        <span class="badge">${t.strategy || '—'}</span>
+        <span class="pnl" style="color:${pnlColor}">${pnlText}</span>
+      </div>
+      <div class="row">진입 <b>${t.date || '—'}</b> → 만기 <b>${t.expiry || '—'}</b> · 스트라이크 <b>${fmtNum(t.strike,1)}</b> · 청산가 <b>${fmtNum(t.exit_price)}</b></div>
+      ${t.note ? `<div class="row">메모: ${t.note}</div>` : ''}
+      <details>
+        <summary>블로그 초안 펼치기</summary>
+        <label style="font-size:11px; color:var(--text-dim);">제목</label>
+        <input class="draft-title-input" id="${titleId}" value="${(draft.title||'').replace(/"/g,'&quot;')}">
+        <label style="font-size:11px; color:var(--text-dim); display:block; margin-top:8px;">본문</label>
+        <textarea id="${bodyId}">${draft.body || ''}</textarea>
+        <div class="copy-btns">
+          <button class="copy-btn" onclick="copyDraft('${titleId}','${bodyId}','${copiedId}')">제목+본문 복사</button>
+          <button class="copy-btn secondary" onclick="copyOne('${bodyId}','${copiedId}')">본문만 복사</button>
+          <span class="copied-msg" id="${copiedId}">복사됨 ✓</span>
+        </div>
+      </details>
+    </div>
+  `;
+}
+
+function copyDraft(titleId, bodyId, copiedId){
+  const title = document.getElementById(titleId).value;
+  const body = document.getElementById(bodyId).value;
+  const text = `${title}\n\n${body}`;
+  navigator.clipboard.writeText(text).then(()=> showCopied(copiedId));
+}
+function copyOne(bodyId, copiedId){
+  const body = document.getElementById(bodyId).value;
+  navigator.clipboard.writeText(body).then(()=> showCopied(copiedId));
+}
+function showCopied(copiedId){
+  const el = document.getElementById(copiedId);
+  el.style.display = 'inline';
+  setTimeout(()=>{ el.style.display = 'none'; }, 1800);
+}
+
+async function load(){
+  const openEl = document.getElementById('openList');
+  const closedEl = document.getElementById('closedList');
+  let report;
+  try{
+    const res = await fetch('/journal_report.json', { cache:'no-store' });
+    if(!res.ok) throw new Error('로드 실패');
+    report = await res.json();
+  }catch(e){
+    openEl.innerHTML = '<div class="empty">데이터를 불러오지 못했습니다</div>';
+    closedEl.innerHTML = '';
+    return;
+  }
+  const openTrades = report.open_trades || [];
+  const closedTrades = report.closed_trades || [];
+  openEl.innerHTML = openTrades.length ? openTrades.map(openTradeCardHTML).join('') : '<div class="empty">진행중인 포지션이 없습니다</div>';
+  closedEl.innerHTML = closedTrades.length ? closedTrades.map(closedTradeCardHTML).join('') : '<div class="empty">청산된 트레이드가 아직 없습니다</div>';
+}
+load();
+</script>
+</body>
+</html>
