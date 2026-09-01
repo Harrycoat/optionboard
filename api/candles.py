@@ -35,7 +35,11 @@ class handler(BaseHTTPRequestHandler):
 
             levels = {}
             try:
-                gex = analyze_ticker_cached(ticker)
+                # skip_stage=True: 이 오버레이는 Stage(추세단계) 값을 쓰지 않으므로,
+                # 420일치 일봉을 별도로 더 조회하는 Stage 계산 단계를 건너뛴다.
+                # (analyze_ticker()가 원래 하던 네트워크 왕복을 하나 줄여서
+                #  캔들차트 응답이 느려지거나 타임아웃 나는 걸 방지)
+                gex = analyze_ticker_cached(ticker, skip_stage=True)
                 levels = {
                     "spot": gex.get("spot"),
                     "max_pain": gex.get("max_pain"),
