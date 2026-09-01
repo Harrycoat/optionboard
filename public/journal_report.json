@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-09-01T05:00:31.417177+00:00",
+  "summary": {
+    "total_closed_trades": 0,
+    "total_with_pnl": 0,
+    "win_count": 0,
+    "loss_count": 0,
+    "win_rate_pct": null,
+    "avg_win": null,
+    "avg_loss": null,
+    "payoff_ratio": null,
+    "total_realized_pnl": null
+  },
+  "closed_trades": [],
+  "open_trades": [
+    {
+      "date": "08-31-2026",
+      "ticker": "BE",
+      "strategy": "CSP",
+      "strike": 203.0,
+      "entry_premium": null,
+      "contracts": 1.0,
+      "expiry": "09-04-2026",
+      "status": "진행중",
+      "entry_put_wall": null,
+      "entry_call_wall": null,
+      "entry_gamma_flip": null,
+      "entry_max_pain": null,
+      "note": "",
+      "current_spot": 206.3,
+      "current_gamma_flip": 295,
+      "current_regime": "negative",
+      "distance_to_strike_pct": 1.63,
+      "days_to_expiry": 3,
+      "live_fetch_error": null
+    }
+  ]
+}
