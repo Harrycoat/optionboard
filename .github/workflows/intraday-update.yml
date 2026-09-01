@@ -34,6 +34,14 @@ jobs:
         env:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: python scripts/snapshot_oi_history.py
+      - name: Update trading journal report (휠 트레이딩 저널)
+        env:
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          JOURNAL_SHEET_CSV_URL: ${{ secrets.JOURNAL_SHEET_CSV_URL }}
+        run: python scripts/generate_journal_report.py
+        # 구글시트가 아직 없거나 URL 시크릿을 아직 안 만들었으면 이 스텝만 실패하고
+        # 나머지(오늘의 주도주 등) 갱신은 계속 진행되도록 무시한다.
+        continue-on-error: true
       - name: Commit updated report
         run: |
           git config user.name "options-board-bot"
@@ -41,5 +49,8 @@ jobs:
           git add public/watchlist_report.json
           git add public/leaders_report.json
           git add public/oi_history/
+          # journal_report.json은 JOURNAL_SHEET_CSV_URL 시크릿을 아직 등록하지 않았으면
+          # 생성되지 않으므로, 없어도 스텝이 죽지 않게 존재할 때만 add한다.
+          [ -f public/journal_report.json ] && git add public/journal_report.json || true
           git diff --cached --quiet || git commit -m "chore: intraday options report update $(date -u +%Y-%m-%dT%H:%M)"
           git push
