@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T17:47:24.949018+00:00",
+  "generated_at": "2026-09-01T20:23:02.892005+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_pnl": 0,
@@ -27,10 +27,10 @@
       "entry_gamma_flip": 213.0,
       "entry_max_pain": 215.0,
       "note": "Put Wall 200 기준 진입. 190~200 구간에 강한 지지대(매물대)가 형성돼 있어, 배정받아도 부담 없는 자리로 판단",
-      "current_spot": 205.92,
-      "current_gamma_flip": 100,
-      "current_regime": "negative",
-      "distance_to_strike_pct": 1.44,
+      "current_spot": 213.63,
+      "current_gamma_flip": 250,
+      "current_regime": "positive",
+      "distance_to_strike_pct": 5.24,
       "days_to_expiry": 3,
       "live_fetch_error": null
     }
