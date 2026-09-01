@@ -786,6 +786,7 @@ function journalOpenTradeRowHTML(t){
     : '';
   return `
     <div class="leader-card" data-ticker="${t.ticker}">
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">${t.date || '—'}</span>
       <span class="leader-ticker">${t.ticker}</span>
       <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:var(--panel-2); border:1px solid var(--line); color:var(--text);">${t.strategy || '—'}</span>
       ${statusHtml}
