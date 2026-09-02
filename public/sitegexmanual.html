@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEX 트레이딩 플레이북 — Put Wall 매수, Call Wall 매도 | GEX Option</title>
+<meta name="description" content="gexoption.com의 Put Wall·Call Wall·Gamma Flip 등 6개 지표를 매수·매도·홀딩 판단으로 바꾸는 사용 매뉴얼.">
+<meta property="og:title" content="GEX 트레이딩 플레이북 — Put Wall 매수, Call Wall 매도 | GEX Option">
+<meta property="og:description" content="gexoption.com의 Put Wall·Call Wall·Gamma Flip 등 6개 지표를 매수·매도·홀딩 판단으로 바꾸는 사용 매뉴얼.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://gexoption.com/gex-manual.html">
+<link rel="canonical" href="https://gexoption.com/gex-manual.html">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#0d0f14;
+    --panel:#151822;
+    --panel-2:#1b1f2a;
+    --border:#2a2f3b;
+    --text:#eae7df;
+    --text-dim:#8d94a3;
+    --accent:#e0a838;
+    --call:#e2565c;
+    --call-soft: rgba(226,86,92,0.14);
+    --put:#4f8fe0;
+    --put-soft: rgba(79,143,224,0.14);
+    --pos-gamma:#4fae8a;
+    --neg-gamma:#d98a3d;
+    --shadow: 0 10px 30px rgba(0,0,0,0.38);
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --bg:#f7f5ef; --panel:#ffffff; --panel-2:#f1ede3; --border:#ddd6c8;
+      --text:#211d16; --text-dim:#6c6557; --accent:#a8721c;
+      --call:#bd3d44; --call-soft: rgba(189,61,68,0.10);
+      --put:#2b5da3; --put-soft: rgba(43,93,163,0.10);
+      --pos-gamma:#2c7f5c; --neg-gamma:#a8621c;
+      --shadow: 0 8px 24px rgba(30,25,15,0.08);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f7f5ef; --panel:#ffffff; --panel-2:#f1ede3; --border:#ddd6c8;
+    --text:#211d16; --text-dim:#6c6557; --accent:#a8721c;
+    --call:#bd3d44; --call-soft: rgba(189,61,68,0.10);
+    --put:#2b5da3; --put-soft: rgba(43,93,163,0.10);
+    --pos-gamma:#2c7f5c; --neg-gamma:#a8621c;
+    --shadow: 0 8px 24px rgba(30,25,15,0.08);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d0f14; --panel:#151822; --panel-2:#1b1f2a; --border:#2a2f3b;
+    --text:#eae7df; --text-dim:#8d94a3; --accent:#e0a838;
+    --call:#e2565c; --call-soft: rgba(226,86,92,0.14);
+    --put:#4f8fe0; --put-soft: rgba(79,143,224,0.14);
+    --pos-gamma:#4fae8a; --neg-gamma:#d98a3d;
+    --shadow: 0 10px 30px rgba(0,0,0,0.38);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ text-size-adjust:100%; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Pretendard', -apple-system, 'Malgun Gothic', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace; font-variant-numeric:tabular-nums; }
+
+  a{ color:inherit; }
+
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 24px; gap:16px; flex-wrap:wrap;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:8px; font-weight:900; font-size:14px; letter-spacing:0.01em; }
+  .topbar .brand .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+  .topbar nav{ display:flex; gap:2px; flex-wrap:wrap; }
+  .topbar nav a{
+    font-size:12px; color:var(--text-dim); text-decoration:none;
+    padding:7px 10px; border-radius:6px; white-space:nowrap;
+  }
+  .topbar nav a:hover{ color:var(--text); background:var(--panel-2); }
+
+  main{ max-width:880px; margin:0 auto; padding:0 24px 100px; }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--accent);
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(26px,4.4vw,38px); font-weight:900; line-height:1.22;
+    letter-spacing:-0.01em; margin:0 0 14px; text-wrap:balance;
+  }
+  h2{
+    font-size:20px; font-weight:900; margin:0 0 6px; letter-spacing:-0.005em;
+  }
+  .section-sub{ color:var(--text-dim); font-size:13.5px; line-height:1.7; margin:0 0 22px; max-width:62ch; }
+  section{ padding:52px 0; border-bottom:1px solid var(--border); }
+  section:last-of-type{ border-bottom:none; }
+
+  .hero{ padding:44px 0 40px; }
+  .hero-lede{ font-size:15.5px; line-height:1.85; color:var(--text-dim); max-width:60ch; margin:0 0 26px; }
+  .hero-stat-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .hero-chip{
+    display:flex; align-items:center; gap:7px;
+    background:var(--panel); border:1px solid var(--border); border-radius:999px;
+    padding:7px 13px; font-size:12px; color:var(--text-dim);
+  }
+  .hero-chip b{ color:var(--text); font-weight:700; }
+  .hero-chip .sw{ width:8px; height:8px; border-radius:2px; }
+
+  figure{ margin:0; }
+  .diagram-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:26px 22px 18px; box-shadow:var(--shadow);
+  }
+  svg text{ fill:var(--text); }
+  figcaption{
+    font-size:12.5px; color:var(--text-dim); line-height:1.7; margin-top:14px;
+    border-top:1px dashed var(--border); padding-top:14px;
+  }
+  figcaption b{ color:var(--text); font-weight:700; }
+
+  .glossary-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:12px;
+  }
+  .term-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:18px 18px 16px; display:flex; flex-direction:column; gap:10px;
+  }
+  .term-card .tag{
+    align-self:flex-start; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+    letter-spacing:0.08em; text-transform:uppercase; padding:3px 8px; border-radius:5px;
+  }
+  .tag.buy{ background:var(--put-soft); color:var(--put); }
+  .tag.sell{ background:var(--call-soft); color:var(--call); }
+  .tag.pivot{ background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); }
+  .tag.info{ background:var(--panel-2); color:var(--text-dim); border:1px solid var(--border); }
+  .term-card h3{ margin:0; font-size:15px; font-weight:700; }
+  .term-card .def{ font-size:12.5px; color:var(--text-dim); line-height:1.65; margin:0; }
+  .term-card .use{ font-size:12.5px; line-height:1.65; margin:0; padding-top:8px; border-top:1px solid var(--border); }
+  .term-card .use b{ font-weight:700; }
+
+  .steps{ display:flex; flex-direction:column; gap:0; counter-reset:step; }
+  .step{
+    display:grid; grid-template-columns:34px 1fr; gap:16px;
+    padding:16px 0; border-top:1px solid var(--border);
+  }
+  .step:first-child{ border-top:none; }
+  .step .num{
+    counter-increment:step; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px;
+    color:var(--accent); display:flex; align-items:flex-start; padding-top:2px;
+  }
+  .step .num::before{ content: counter(step); }
+  .step h3{ margin:0 0 4px; font-size:14.5px; font-weight:700; }
+  .step p{ margin:0; font-size:13px; color:var(--text-dim); line-height:1.7; }
+  .step .kbd{
+    display:inline-block; margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:11px;
+    background:var(--panel-2); border:1px solid var(--border); border-radius:6px; padding:3px 8px; color:var(--text-dim);
+  }
+
+  .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:12px; }
+  table{ border-collapse:collapse; width:100%; min-width:680px; table-layout:fixed; }
+  thead th:nth-child(1){ width:9%; }
+  thead th:nth-child(2){ width:11%; }
+  thead th:nth-child(3){ width:9%; }
+  thead th:nth-child(4){ width:10%; }
+  thead th:nth-child(5){ width:9%; }
+  thead th:nth-child(6){ width:12%; }
+  thead th:nth-child(7){ width:8%; }
+  thead th:nth-child(8){ width:32%; }
+  thead th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--text-dim); font-weight:700; padding:12px 14px; background:var(--panel-2);
+    border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{
+    padding:13px 14px; font-size:13px; border-bottom:1px solid var(--border); white-space:normal;
+  }
+  td.num, td.ticker{ white-space:nowrap; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:var(--panel-2); }
+  td.ticker{ font-weight:700; }
+  td.num{ font-family:'JetBrains Mono',monospace; }
+  .pill{
+    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700;
+    padding:3px 9px; border-radius:999px;
+  }
+  .pill.pos{ background:color-mix(in srgb, var(--pos-gamma) 16%, transparent); color:var(--pos-gamma); }
+  .pill.neg{ background:color-mix(in srgb, var(--neg-gamma) 16%, transparent); color:var(--neg-gamma); }
+  td.verdict{ white-space:normal; min-width:220px; color:var(--text-dim); font-size:12.5px; line-height:1.6; }
+
+  .rules{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
+  .rule-card{
+    background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:10px; padding:16px 18px;
+  }
+  .rule-card.warn{ border-left-color:var(--call); }
+  .rule-card h3{ margin:0 0 6px; font-size:13.5px; font-weight:700; }
+  .rule-card p{ margin:0; font-size:12.5px; color:var(--text-dim); line-height:1.7; }
+  .rule-card .quote{
+    display:block; margin-top:8px; font-size:12px; color:var(--text); font-weight:700;
+    font-style:italic;
+  }
+
+  footer{ max-width:880px; margin:0 auto; padding:30px 24px 60px; }
+  .disclaimer{
+    font-size:11.5px; color:var(--text-dim); line-height:1.8; border-top:1px solid var(--border);
+    padding-top:18px;
+  }
+
+  @media (max-width:640px){
+    .topbar nav{ display:none; }
+    section{ padding:38px 0; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>GEX 트레이딩 플레이북</div>
+  <nav>
+    <a href="#map">가격맵</a>
+    <a href="#glossary">지표사전</a>
+    <a href="#workflow">사용순서</a>
+    <a href="#examples">적용사례</a>
+    <a href="#rules">리스크 규칙</a>
+    <a href="/index.html" style="color:var(--accent); font-weight:700;">🏠 홈</a>
+    <a href="/gex-manual-en.html" style="color:var(--accent); font-weight:700;">EN</a>
+  </nav>
+</div>
+
+<main>
+
+  <section class="hero">
+    <p class="eyebrow">GEXOPTION.COM 활용 매뉴얼</p>
+    <h1>Put Wall에서 사고,<br>Call Wall에서 팔거나 지킨다.</h1>
+    <p class="hero-lede">
+      gexoption.com에서 티커를 검색하면 6개 숫자가 뜬다 — Put Wall, Call Wall, Gamma Flip, Max Pain, Max OI Wall, Net GEX.
+      이 페이지는 그 숫자들을 어디서 사고, 어디서 팔거나 홀딩하고, 언제 방어에 들어갈지로 바꾸는 규칙을 정리한 것이다.
+    </p>
+    <div class="hero-stat-row">
+      <span class="hero-chip"><span class="sw" style="background:var(--put)"></span>Put Wall = <b>지지 · 매수 타점</b></span>
+      <span class="hero-chip"><span class="sw" style="background:var(--accent)"></span>Gamma Flip = <b>변동성 체제 전환선</b></span>
+      <span class="hero-chip"><span class="sw" style="background:var(--call)"></span>Call Wall = <b>저항 · 매도/홀딩 판단</b></span>
+    </div>
+  </section>
+
+  <section id="map">
+    <p class="eyebrow">01 · 가격맵</p>
+    <h2>세 벽이 만드는 세 구역</h2>
+    <p class="section-sub">현재가가 어느 밴드에 있는지가 오늘의 액션을 결정한다. 벽 자체보다, 벽 사이에서 가격이 어디 있는지가 중요하다.</p>
+
+    <figure class="diagram-card">
+      <svg viewBox="0 0 860 240" role="img" aria-label="가격이 낮은 쪽부터 Put Wall, Gamma Flip, Call Wall 순으로 배치되고, 각 구간이 매수 관찰존, 홀딩·관망존, 매도·방어존으로 나뉘는 것을 보여주는 다이어그램">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+          </marker>
+        </defs>
+
+        <!-- zone bands -->
+        <rect x="40" y="70" width="120" height="90" fill="var(--put-soft)"></rect>
+        <rect x="160" y="70" width="500" height="90" fill="transparent"></rect>
+        <rect x="660" y="70" width="160" height="90" fill="var(--call-soft)"></rect>
+
+        <!-- zone labels -->
+        <text x="100" y="100" text-anchor="middle" font-size="10.5" font-weight="700" letter-spacing="0.06em" fill="var(--put)">매수</text>
+        <text x="100" y="114" text-anchor="middle" font-size="10.5" font-weight="700" letter-spacing="0.06em" fill="var(--put)">관찰존</text>
+        <text x="410" y="100" text-anchor="middle" font-size="10.5" font-weight="700" letter-spacing="0.06em" fill="currentColor" opacity="0.55">홀딩 · 관망존</text>
+        <text x="740" y="100" text-anchor="middle" font-size="10.5" font-weight="700" letter-spacing="0.06em" fill="var(--call)">매도 ·</text>
+        <text x="740" y="114" text-anchor="middle" font-size="10.5" font-weight="700" letter-spacing="0.06em" fill="var(--call)">방어존</text>
+
+        <!-- axis -->
+        <line x1="40" y1="160" x2="828" y2="160" stroke="currentColor" stroke-width="1.5" opacity="0.5" marker-end="url(#arrow)"></line>
+        <text x="836" y="164" font-size="10.5" fill="var(--text-dim)">가격 ↑</text>
+
+        <!-- put wall marker -->
+        <line x1="160" y1="66" x2="160" y2="164" stroke="var(--put)" stroke-width="2.5"></line>
+        <circle cx="160" cy="160" r="4.5" fill="var(--put)"></circle>
+        <text x="160" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="var(--put)">PUT WALL</text>
+        <text x="160" y="185" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">지지 · 매수 타점</text>
+        <text x="160" y="199" text-anchor="middle" font-size="10" fill="var(--text-dim)">터치가 아니라 반등 확인 후 진입</text>
+
+        <!-- gamma flip marker -->
+        <line x1="430" y1="66" x2="430" y2="164" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5,4"></line>
+        <text x="430" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="var(--accent)">GAMMA FLIP</text>
+        <text x="430" y="185" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">변동성 체제 전환선</text>
+        <text x="430" y="199" text-anchor="middle" font-size="10" fill="var(--text-dim)">위=양의 감마(박스권) · 아래=음의 감마(변동)</text>
+
+        <!-- call wall marker -->
+        <line x1="700" y1="66" x2="700" y2="164" stroke="var(--call)" stroke-width="2.5"></line>
+        <circle cx="700" cy="160" r="4.5" fill="var(--call)"></circle>
+        <text x="700" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="var(--call)">CALL WALL</text>
+        <text x="700" y="185" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">저항 · 매도/홀딩 판단</text>
+        <text x="700" y="199" text-anchor="middle" font-size="10" fill="var(--text-dim)">근접 시 콜라 · 방어풋 검토</text>
+
+        <!-- current price marker -->
+        <polygon points="290,178 283,192 297,192" fill="currentColor"></polygon>
+        <text x="290" y="207" text-anchor="middle" font-size="10.5" font-weight="700" fill="currentColor">현재가 예시</text>
+      </svg>
+      <figcaption>
+        가격이 <b style="color:var(--put)">Put Wall</b> 근처까지 눌리고 반등이 확인되면 <b>매수 신호</b>, <b style="color:var(--accent)">Gamma Flip</b>을 위에서 유지하는 동안은 박스권 성격이 강해 <b>홀딩·관망</b>,
+        <b style="color:var(--call)">Call Wall</b>에 접근하면 <b>차익실현 또는 방어(콜라/방어풋)</b>를 판단하는 자리 — 세 벽이 그대로 세 가지 행동으로 이어진다.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="glossary">
+    <p class="eyebrow">02 · 지표 사전</p>
+    <h2>gexoption.com이 보여주는 6개 숫자</h2>
+    <p class="section-sub">티커를 검색하면 이 순서로 스캔한다. 각 지표가 뭘 뜻하고, 실전에서 뭘로 쓰는지.</p>
+
+    <div class="glossary-grid">
+      <div class="term-card">
+        <span class="tag buy">매수 신호</span>
+        <h3>Put Wall (풋월)</h3>
+        <p class="def">풋옵션 매도자(주로 기관)들의 헤지 물량이 몰린 스트라이크. 주가가 근접하면 이들이 방어 매수에 나서는 경향이 있어 하방 지지로 작용.</p>
+        <p class="use"><b>실전 적용 —</b> 눌림목 매수·CSP 스트라이크·추가매수 타점의 1순위 기준선. 단, <b>닿기만 한 캔들</b>이 아니라 <b>거래량 동반 반등</b>이 확인된 뒤 진입.</p>
+      </div>
+      <div class="term-card">
+        <span class="tag sell">매도/홀딩 판단</span>
+        <h3>Call Wall (콜월)</h3>
+        <p class="def">콜옵션 매도자들의 헤지 물량이 몰린 스트라이크. 주가가 근접하면 이들이 상승을 방어하려 매도에 나서 상방 저항으로 작용.</p>
+        <p class="use"><b>실전 적용 —</b> 차익실현·커버드콜 스트라이크·콜라(collar) 진입 자리. "지지선에서 콜라 걸면 생돈 날린다" — 방어는 지지가 아니라 이 저항에서 건다.</p>
+      </div>
+      <div class="term-card">
+        <span class="tag pivot">체제 전환선</span>
+        <h3>Gamma Flip (감마 플립)</h3>
+        <p class="def">시장의 변동성 성격이 바뀌는 기준가. 위=양의 감마(딜러가 변동성을 누르는 박스권), 아래=음의 감마(딜러가 변동성을 키우는 추세장).</p>
+        <p class="use"><b>실전 적용 —</b> 이 선을 깨고 종가가 마감되면 손절 라인을 좁히거나 포지션 크기를 줄인다. 박스권 전략(휠·CC)은 플립 위에서만 신뢰도가 높다.</p>
+      </div>
+      <div class="term-card">
+        <span class="tag info">자석 가격</span>
+        <h3>Max Pain (맥스페인)</h3>
+        <p class="def">만기일에 옵션 매도자 전체의 손실이 최소가 되는 가격. 만기가 가까워질수록 주가가 이 가격 쪽으로 수렴하는 경향이 있다는 가설.</p>
+        <p class="use"><b>실전 적용 —</b> 만기 D-2~0 근처 단기 스캘핑·주간 옵션 매도 시 참고. 스윙 포지션의 방향 근거로는 쓰지 않는다.</p>
+      </div>
+      <div class="term-card">
+        <span class="tag info">가장 두꺼운 벽</span>
+        <h3>Max OI Wall</h3>
+        <p class="def">미결제약정(OI)이 가장 많이 쌓인 단일 스트라이크. Call/Put Wall과 같은 값이면 그 레벨의 신뢰도가 특히 높다는 뜻.</p>
+        <p class="use"><b>실전 적용 —</b> Call Wall·Put Wall과 겹치는지 항상 대조한다. 세 지표가 한 스트라이크로 합류하면 "약한 저항"이 아니라 "진짜 벽"이다.</p>
+      </div>
+      <div class="term-card">
+        <span class="tag info">체제 요약</span>
+        <h3>Net GEX · 감마 체제</h3>
+        <p class="def">전체 감마 익스포저의 합. 양수(양의 감마)=딜러가 변동성을 억제, 음수(음의 감마)=딜러가 변동성을 증폭시키는 방향으로 헤지.</p>
+        <p class="use"><b>실전 적용 —</b> 음의 감마 + Stage 1/4 조합은 이 매뉴얼의 신호를 걸러내는 필터로 쓴다 — 신호는 나와도 크기를 줄인다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="workflow">
+    <p class="eyebrow">03 · 사용 순서</p>
+    <h2>검색부터 진입까지, 6단계</h2>
+    <p class="section-sub">gexoption.com 검색창에 티커를 치는 순간부터 실제 주문까지 항상 같은 순서로 밟는다.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num"></div>
+        <div>
+          <h3>티커 검색</h3>
+          <p>gexoption.com 검색창에 종목 입력 → 현재가·만기(D-n)·6개 지표가 한 화면에 뜬다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num"></div>
+        <div>
+          <h3>3벽 위치 확인</h3>
+          <p>Put Wall / Gamma Flip / Call Wall을 낮은 가격 순으로 정렬해보고, 현재가가 어느 밴드(매수 관찰존 / 홀딩·관망존 / 매도·방어존)에 있는지 표시한다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num"></div>
+        <div>
+          <h3>합류 여부 대조</h3>
+          <p>Max OI Wall이 Call Wall·Put Wall 중 어디와 겹치는지 확인 — 겹치는 벽일수록 신뢰도가 높다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num"></div>
+        <div>
+          <h3>체제·Stage로 필터링</h3>
+          <p>Net GEX 부호(양/음)와 Weinstein Stage를 같이 본다. 양의 감마+Stage 2 = 신호 신뢰도 상, 음의 감마+Stage 1/4 = 신호 크기 축소.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num"></div>
+        <div>
+          <h3>상위 프레임 교차검증</h3>
+          <p>주봉(방향) → 일봉(추세) → 4H Hull21/50(진입) 순으로 내려오며 GEX 신호와 방향이 일치하는지 확인 — GEX 단독으로는 진입하지 않는다.</p>
+          <span class="kbd">특히 D-2 이하 근접 만기 데이터는 초단기 참고용</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num"></div>
+        <div>
+          <h3>주문 · 방어 라인 설정</h3>
+          <p>Put Wall 반등 확인 시 매수/CSP, Call Wall 근접 시 익절 또는 콜라 매수, Gamma Flip 이탈 시 손절선을 좁힌다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="examples">
+    <p class="eyebrow">04 · 적용 사례</p>
+    <h2>오늘 조회한 3종목으로 읽어보기</h2>
+    <p class="section-sub">2026-09-02 gexoption.com 조회 기준. 숫자를 대입해서 위 6단계를 그대로 따라간 결과.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>티커</th>
+            <th>현재가</th>
+            <th>Put Wall</th>
+            <th>Gamma Flip</th>
+            <th>Call Wall</th>
+            <th>체제</th>
+            <th>Stage</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ticker">SNDK</td>
+            <td class="num">$1,537.17</td>
+            <td class="num" style="color:var(--put)">1,500</td>
+            <td class="num" style="color:var(--accent)">1,513.9</td>
+            <td class="num" style="color:var(--call)">1,600</td>
+            <td><span class="pill pos">양의 감마</span></td>
+            <td>Stage 2</td>
+            <td class="verdict">플립(1,513.9) 위 유지 중 → 홀딩·관망존. 1,500까지 눌리고 반등 확인되면 추가매수, 1,600 접근 시 차익실현/콜라 검토.</td>
+          </tr>
+          <tr>
+            <td class="ticker">DRAM</td>
+            <td class="num">$55.85</td>
+            <td class="num" style="color:var(--put)">54</td>
+            <td class="num" style="color:var(--accent)">60</td>
+            <td class="num" style="color:var(--call)">60</td>
+            <td><span class="pill pos">양의 감마</span></td>
+            <td>—</td>
+            <td class="verdict">Call Wall·Gamma Flip·Max OI Wall이 60에서 3중 합류 — 강한 벽. 커버드콜은 60 스트라이크, 재진입은 54 눌림 반등 확인 후.</td>
+          </tr>
+          <tr>
+            <td class="ticker">PLTR</td>
+            <td class="num">$168.65</td>
+            <td class="num" style="color:var(--put)">165</td>
+            <td class="num" style="color:var(--accent)">175.6</td>
+            <td class="num" style="color:var(--call)">180</td>
+            <td><span class="pill neg">음의 감마</span></td>
+            <td>Stage 1</td>
+            <td class="verdict">플립(175.6) 아래, 음의 감마 + Stage 1(바닥다지기) — 신호 필터에 걸리는 조합. 165 반등이 나와도 포지션 크기는 축소, Stage 2 전환 전엔 보수적으로.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="rules">
+    <p class="eyebrow">05 · 리스크 규칙</p>
+    <h2>숫자보다 우선하는 4가지 원칙</h2>
+    <p class="section-sub">벽이 뜬다고 바로 액션하지 않는다. 아래 규칙이 먼저다.</p>
+
+    <div class="rules">
+      <div class="rule-card">
+        <h3>터치 ≠ 신호</h3>
+        <p>Put Wall에 심지가 닿은 것과 그 자리에서 거래량을 동반해 반등한 것은 다르다. 반등 확인 전 진입은 조기 진입이다.</p>
+      </div>
+      <div class="rule-card warn">
+        <h3>방어는 저항에서 건다</h3>
+        <p>콜라·방어풋은 Call Wall(저항) 근처에서 설계한다. 지지 근처에서 걸면 상승분을 스스로 깎아먹는다.</p>
+        <span class="quote">"지지선에서 콜라 걸면 생돈 날린다"</span>
+      </div>
+      <div class="rule-card">
+        <h3>음의 감마는 크기를 줄이는 신호</h3>
+        <p>음의 감마 구간은 딜러 헤지가 변동성을 증폭시키는 방향으로 작동한다. 같은 셋업이어도 포지션 크기를 낮춘다.</p>
+      </div>
+      <div class="rule-card">
+        <h3>GEX는 최종 확인, 최초 판단이 아니다</h3>
+        <p>주봉·일봉·4H로 이미 방향이 선 자리에서 GEX 벽으로 타점만 좁힌다. GEX 신호 하나로 새 방향을 열지 않는다.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p class="disclaimer">
+    이 페이지의 모든 레벨(Put Wall·Call Wall·Gamma Flip·Max Pain·Max OI Wall·Net GEX)은 gexoption.com이 15분 지연 데이터로 계산한 참고 지표이며, 매수·매도를 권유하는 투자자문이 아닙니다.
+    근접 만기(D-2 이하) 수치는 근접 만기 합산 기준이라 스윙 이상 판단에는 상위 타임프레임과 함께 교차검증해야 합니다. 실제 매매 판단과 그 결과의 책임은 전적으로 투자자 본인에게 있습니다.
+  </p>
+</footer>
+
+</body>
+</html>
