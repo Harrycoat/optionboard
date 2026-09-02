@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T20:23:02.892005+00:00",
+  "generated_at": "2026-09-02T17:28:47.184997+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_pnl": 0,
@@ -27,11 +27,32 @@
       "entry_gamma_flip": 213.0,
       "entry_max_pain": 215.0,
       "note": "Put Wall 200 기준 진입. 190~200 구간에 강한 지지대(매물대)가 형성돼 있어, 배정받아도 부담 없는 자리로 판단",
-      "current_spot": 213.63,
-      "current_gamma_flip": 250,
+      "current_spot": 209.98,
+      "current_gamma_flip": 245,
       "current_regime": "positive",
-      "distance_to_strike_pct": 5.24,
-      "days_to_expiry": 3,
+      "distance_to_strike_pct": 3.44,
+      "days_to_expiry": 2,
+      "live_fetch_error": null
+    },
+    {
+      "date": "09-05-2026",
+      "ticker": "PLTR",
+      "strategy": "CC",
+      "strike": 177.5,
+      "entry_premium": 1.72,
+      "contracts": 1.0,
+      "expiry": "09-11-2026",
+      "status": "진행중",
+      "entry_put_wall": 165.0,
+      "entry_call_wall": 180.0,
+      "entry_gamma_flip": 174.7,
+      "entry_max_pain": 180.0,
+      "note": "PLTR 수익실현에 PUTWALL 165대기 반등 확인 후 주식100주 매수 후 167 반등확인 후 CC 프리미엄 170불 수익완료",
+      "current_spot": 167.825,
+      "current_gamma_flip": 135,
+      "current_regime": "negative",
+      "distance_to_strike_pct": -5.45,
+      "days_to_expiry": 9,
       "live_fetch_error": null
     }
   ]
