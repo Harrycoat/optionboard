@@ -285,10 +285,6 @@
   <div class="updated-note" id="journalUpdatedNote">불러오는 중...</div>
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
-  <div class="section-title">🔥 오늘의 급등주 Top 10</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">유동성 상위 종목군에서 오늘 등락률이 가장 큰 종목들입니다 (전일 시가 대비, 15분 지연).</p>
-  <div class="updated-note" id="gainersUpdatedNote">불러오는 중...</div>
-  <div id="gainersBoard"><div class="leader-empty">불러오는 중...</div></div>
   <div class="section-title">🎯 오늘의 매수 신호</div>
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아왔는지(HULL 스테이지1 관찰타이밍), 상승 전환과 모멘텀까지 확인됐는지(HULL 스테이지2 진입타이밍)를 보여드립니다.</p>
   <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
@@ -303,9 +299,6 @@
   </details>
   <div class="updated-note" id="unusualOptionsUpdatedNote">불러오는 중...</div>
   <div id="unusualOptionsBoard"><div class="leader-empty">불러오는 중...</div></div>
-  <div class="section-title">오늘의 주도주</div>
-  <div class="updated-note" id="myBoardUpdatedNote">불러오는 중...</div>
-  <div id="myTickerBoard"><div class="leader-empty">불러오는 중...</div></div>
   <div class="section-title">ETF 마켓 리더</div>
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">먼저 상승하는 섹터(ETF)를 찾고, 그 안에서 가장 강하게 오르는 종목을 골라 거래하세요 — 흐름을 타는 것이 핵심입니다.</p>
   <div class="updated-note" id="etfBoardUpdatedNote">불러오는 중...</div>
@@ -599,61 +592,6 @@ async function loadMacroStrip(){
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
 }
-function gainerRowHTML(r, rank){
-  const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
-  const isFlipReliable = r.gamma_flip != null && r.spot &&
-    Math.abs(r.gamma_flip - r.spot) / r.spot <= 0.5;
-  const flipText = isFlipReliable ? fmtNum(r.gamma_flip,1) : '데이터 부족';
-  const flipColor = isFlipReliable ? GOLD : '#8b93a1';
-  const pct = r.price_change_pct;
-  const pctColor = (pct != null && pct >= 0) ? UP : DOWN;
-  const pctText = (pct != null) ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%` : '—';
-  const regimeHtml = r.gamma_regime
-    ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${r.gamma_regime === 'positive' ? DOWN : UP}22; color:${r.gamma_regime === 'positive' ? DOWN : UP};">${r.gamma_regime === 'positive' ? '양감마' : '음감마'}</span>`
-    : '';
-  return `
-    <div class="leader-card" data-ticker="${r.ticker}">
-      <span style="font-size:12px; font-weight:700; color:${GOLD}; min-width:22px;">#${rank}</span>
-      <span class="leader-ticker">${r.ticker}</span>
-      <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
-      <span class="mono" style="font-size:13px; font-weight:800; padding:2px 8px; border-radius:4px; background:${pctColor}22; color:${pctColor};">${pctText}</span>
-      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${sm.color}22; color:${sm.color};">STAGE ${r.stage ?? '—'} · ${sm.label}</span>
-      ${regimeHtml}
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">Gamma Flip <b style="color:${flipColor}">${flipText}</b></span>
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">Call Wall <b style="color:${UP}">${fmtNum(r.call_wall,1)}</b></span>
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">거래량 ${fmtVolume(r.volume)}</span>
-    </div>
-  `;
-}
-async function loadGainersBoard(){
-  const boardEl = document.getElementById('gainersBoard');
-  const note = document.getElementById('gainersUpdatedNote');
-  boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
-  let report;
-  try{
-    const res = await fetch('/leaders_report.json', { cache: 'no-store' });
-    if(!res.ok) throw new Error('로드 실패');
-    report = await res.json();
-  }catch(e){
-    boardEl.innerHTML = '<div class="leader-empty">급등주 데이터를 불러오지 못했습니다</div>';
-    note.textContent = '';
-    return;
-  }
-  const gainers = report.top_gainers || [];
-  if(!gainers.length){
-    boardEl.innerHTML = '<div class="leader-empty">오늘 급등주 데이터가 없습니다</div>';
-    note.textContent = '';
-    return;
-  }
-  boardEl.innerHTML = gainers.map((r, i) => gainerRowHTML(r, i + 1)).join('');
-  boardEl.querySelectorAll('.leader-card').forEach(card=>{
-    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
-  });
-  const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
-  note.textContent = generatedAt
-    ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
-    : '매일 장마감 후 자동 계산';
-}
 // ---------- 오늘의 매수 신호 (Hull21 Dev% 재진입 스캐너 — HULL 스테이지1~2) ----------
 const STAGE_COLORS = { 1: GOLD, 2: UP };
 function reentrySignalRowHTML(r){
@@ -842,22 +780,6 @@ async function loadTradingJournal(){
     ? `장중 자동 갱신 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
     : '';
 }
-async function fetchTickersFromSheet(csvUrl){
-  const res = await fetch(csvUrl, { cache: 'no-store' });
-  if(!res.ok) throw new Error('구글시트 로드 실패');
-  const text = await res.text();
-  const nameMap = {};
-  const tickers = [];
-  text.split(/\r?\n/).forEach(line => {
-    const parts = line.split(',');
-    const t = (parts[0] || '').trim().toUpperCase();
-    if(!/^[A-Z]{1,6}$/.test(t) || t === 'TICKER') return;
-    tickers.push(t);
-    const name = (parts[1] || '').trim();
-    if(name) nameMap[t] = name;
-  });
-  return { tickers: tickers.slice(0, 10), nameMap };
-}
 const STAGE_META = {
   1: { label: '바닥권', color: GOLD },
   2: { label: '상승',   color: UP },
@@ -897,49 +819,7 @@ function myBoardRowHTML(r, nameMap){
     </div>
   `;
 }
-async function loadTickerBoard(csvUrl, boardElId, noteElId){
-  const boardEl = document.getElementById(boardElId);
-  const note = document.getElementById(noteElId);
-  boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
-      let tickers, sheetNameMap;
-      try{
-        const result = await fetchTickersFromSheet(csvUrl);
-        tickers = result.tickers;
-        sheetNameMap = result.nameMap;
-  }catch(e){
-    boardEl.innerHTML = '<div class="leader-empty">구글시트에서 티커 리스트를 불러오지 못했습니다</div>';
-    note.textContent = '';
-    return;
-  }
-  if(!tickers.length){
-    boardEl.innerHTML = '<div class="leader-empty">구글시트에 티커가 없습니다</div>';
-    note.textContent = '';
-    return;
-  }
-  const results = await Promise.all(
-    tickers.map(t =>
-      fetch(`/api/search?ticker=${encodeURIComponent(t)}`)
-        .then(res => res.ok ? res.json() : null)
-        .catch(() => null)
-    )
-  );
-  const rows = results.filter(r => r && !r.error);
-  if(!rows.length){
-    boardEl.innerHTML = '<div class="leader-empty">데이터를 불러오지 못했습니다</div>';
-    note.textContent = '';
-    return;
-  }
-  boardEl.innerHTML = rows.map(r => myBoardRowHTML(r, sheetNameMap)).join('');
-  boardEl.querySelectorAll('.leader-card').forEach(card=>{
-    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
-  });
-  note.textContent = `실시간 계산 · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
-}
-const TICKER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXwE0ik6itZFGTe6irbrniOtzQ1a3dXR-fg8hYdaiUotQRpzmseG5BdoHpU-w330-GzhttZXrDldVJ/pub?output=csv";
 const ETF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnoCuQ1-jpfy_LAqCiOBxruPHlX58jFWwB1shKgDICq8VNQhW-8b6FWyYwaHY_43b1Nzc0xtugbIrK/pub?output=csv";
-async function loadMyBoard(){
-  await loadTickerBoard(TICKER_SHEET_CSV_URL, 'myTickerBoard', 'myBoardUpdatedNote');
-}
 async function fetchEtfRowsFromSheet(csvUrl){
   const res = await fetch(csvUrl, { cache: 'no-store' });
   if(!res.ok) throw new Error('구글시트 로드 실패');
@@ -1537,10 +1417,8 @@ loadMarketFloat();
 setInterval(loadMarketFloat, 60000);
 loadMarketStatusBanner();
 loadTradingJournal();
-loadGainersBoard();
 loadReentrySignals();
 loadUnusualOptions();
-loadMyBoard();
 loadEtfBoard();
   const scrollTopBtn = document.getElementById('scrollTopBtn');
 window.addEventListener('scroll', () => {
