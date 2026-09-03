@@ -297,8 +297,8 @@
     </span>
     <span style="font-size:13px; font-weight:700; color:var(--gold); white-space:nowrap;">글 보러가기 →</span>
   </a>
-  <div class="section-title">📓 나의 휠 트레이딩 저널</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">실전 휠 전략(CSP/CC) 매매 기록입니다. 승률·손익비는 청산된 트레이드 기준이고, 진행중 포지션은 현재 GEX 레벨과 함께 자동으로 갱신됩니다.</p>
+  <div class="section-title">📈 나의 Put Wall 스윙 저널</div>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Put Wall(하방 지지) 근처에서 주식을 매수하는 실전 스윙 매매 기록입니다. 승률·손익비는 청산된 트레이드 기준이고, 진행중 포지션은 현재가·수익률과 함께 Hull21/50·150일선 기준 구조 유지 여부까지 자동으로 갱신됩니다.</p>
   <div class="updated-note" id="journalUpdatedNote">불러오는 중...</div>
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
@@ -739,7 +739,7 @@ async function loadUnusualOptions(){
     ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
     : '매일 장마감 후 자동 계산';
 }
-// ---------- 나의 휠 트레이딩 저널 (구글시트 -> journal_report.json) ----------
+// ---------- 나의 Put Wall 스윙 저널 (구글시트 -> journal_report.json) ----------
 function journalSummaryCardsHTML(summary){
   const wr = summary.win_rate_pct;
   const wrColor = wr == null ? '#8b93a1' : (wr >= 50 ? UP : DOWN);
@@ -757,25 +757,25 @@ function journalSummaryCardsHTML(summary){
   `;
 }
 function journalOpenTradeRowHTML(t){
-  const distColor = t.distance_to_strike_pct == null ? '#8b93a1' : (t.distance_to_strike_pct >= 0 ? UP : DOWN);
-  const distText = t.distance_to_strike_pct != null ? `${t.distance_to_strike_pct >= 0 ? '+' : ''}${t.distance_to_strike_pct}%` : '—';
-  const regimeHtml = t.current_regime
-    ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${t.current_regime === 'positive' ? DOWN : UP}22; color:${t.current_regime === 'positive' ? DOWN : UP};">${t.current_regime === 'positive' ? '양감마' : '음감마'}</span>`
+  const retColor = t.return_pct == null ? '#8b93a1' : (t.return_pct >= 0 ? UP : DOWN);
+  const retText = t.return_pct != null ? `${t.return_pct >= 0 ? '+' : ''}${t.return_pct}%` : '—';
+  const pnlText = t.unrealized_pnl != null ? ` (${t.unrealized_pnl >= 0 ? '+' : ''}$${fmtNum(t.unrealized_pnl,2)})` : '';
+  const isIntact = t.structural_status === '구조유지';
+  const structuralHtml = t.structural_status
+    ? `<span style="font-size:9px; font-weight:700; padding:2px 7px; border-radius:4px; background:${isIntact ? UP : DOWN}22; color:${isIntact ? UP : DOWN};" title="${(t.structural_reasons||[]).join(' / ')}">${isIntact ? '✅ 구조 유지' : '⚠️ 청산 신호'}</span>`
     : '';
-  const statusHtml = t.status
-    ? `<span style="font-size:9px; font-weight:700; padding:2px 7px; border-radius:4px; background:${GOLD}22; color:${GOLD};">${t.status}</span>`
-    : '';
+  const putWallText = t.entry_put_wall != null
+    ? `${fmtNum(t.entry_put_wall,1)}${t.entry_put_wall_date ? ` (${t.entry_put_wall_date})` : ''}`
+    : '—';
   return `
     <div class="leader-card" data-ticker="${t.ticker}">
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">${t.date || '—'}</span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">${t.buy_date || '—'}</span>
       <span class="leader-ticker">${t.ticker}</span>
-      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:var(--panel-2); border:1px solid var(--line); color:var(--text);">${t.strategy || '—'}</span>
-      ${statusHtml}
-      <span class="mono" style="font-size:12px; color:var(--text-dim);">스트라이크 <b style="color:var(--text)">${fmtNum(t.strike,1)}</b></span>
+      <span class="mono" style="font-size:11px; color:var(--text-dim);">Put Wall <b style="color:var(--text)">${putWallText}</b></span>
+      <span class="mono" style="font-size:12px; color:var(--text-dim);">매수가 <b style="color:var(--text)">$${fmtNum(t.buy_price)}</b></span>
       <span class="mono" style="font-size:12px; color:var(--text-dim);">현재가 <b style="color:var(--text)">$${fmtNum(t.current_spot)}</b></span>
-      <span class="mono" style="font-size:12px; color:${distColor};">${distText}</span>
-      ${regimeHtml}
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">D-${t.days_to_expiry ?? '—'}</span>
+      <span class="mono" style="font-size:12px; color:${retColor};">${retText}${pnlText}</span>
+      ${structuralHtml}
       ${t.note ? `<span class="journal-trade-note">"${t.note}"</span>` : ''}
     </div>
   `;
@@ -806,7 +806,7 @@ async function loadTradingJournal(){
   }
   summaryEl.innerHTML = journalSummaryCardsHTML(report.summary || {});
   const allOpenTrades = report.open_trades || [];
-  const sortedOpenTrades = allOpenTrades.slice().sort((a,b)=> parseTradeDate(b.date) - parseTradeDate(a.date));
+  const sortedOpenTrades = allOpenTrades.slice().sort((a,b)=> parseTradeDate(b.buy_date) - parseTradeDate(a.buy_date));
   const openTrades = sortedOpenTrades.slice(0, 1); // 메인에는 가장 최근 포지션 1개만, 나머지는 전체 기록 페이지에서
   const moreCount = allOpenTrades.length - openTrades.length;
   const moreLinkHTML = `<a href="/journal_drafts.html" style="display:block; margin-top:10px; font-size:12px; color:${GOLD};">전체 트레이드 기록 & 블로그 초안 보기 →${moreCount > 0 ? ` (진행중 ${moreCount}건 더)` : ''}</a>`;
