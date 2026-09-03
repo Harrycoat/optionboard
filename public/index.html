@@ -1249,36 +1249,37 @@ function renderOiGexChart(containerId, d){
   el.innerHTML = svg;
 }
 function buildXShareText(d){
-  const regimePos = d.regime === 'positive';
-  const regimeLine = regimePos ? '📊 Positive Gamma — range-bound bias' : '📊 Negative Gamma — volatility expansion bias';
-  const regimeTag = regimePos ? '#RangeBound' : '#VolatilityExpansion';
   const lines = [
-    'See where GEX shows resistance and support',
-    '옵션을 알면 주식 진입시점이 보인다',
+    `$${d.ticker} $${fmtNum(d.spot)} — 지금 살까, 팔까? (Buy or Sell now?)`,
     '',
-    `$${d.ticker} $${fmtNum(d.spot)}`,
-    regimeLine,
+    '"풋월에서 사고, 콜월에서 판다"',
+    '"Buy at the Put Wall, Sell at the Call Wall"',
+    '— 단기 스윙의 기본 원칙 (The Golden Rule of Swing Trading)',
+    '',
+    '옵션 시장이 만드는 지지선(Put Wall)과 저항선(Call Wall), 이 두 라인만 알면 매수·매도 타이밍이 보입니다.',
+    '',
   ];
-  if(d.put_wall != null && d.spot){
-    const pct = ((d.put_wall - d.spot) / d.spot * 100).toFixed(1);
-    lines.push(`🔵 Put Wall $${fmtNum(d.put_wall,1)} (${pct>0?'+':''}${pct}%)`);
+  if(d.put_wall != null){
+    const pctTxt = d.spot ? ` (${(((d.put_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.put_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
+    lines.push(`📍 Put Wall $${fmtNum(d.put_wall,1)}${pctTxt} → 매수 관심가 (BUY ZONE) — 반등 확인 후 진입`);
   }
-  if(d.call_wall != null && d.spot){
-    const pct = ((d.call_wall - d.spot) / d.spot * 100).toFixed(1);
-    lines.push(`🔴 Call Wall $${fmtNum(d.call_wall,1)} (${pct>0?'+':''}${pct}%)`);
+  if(d.call_wall != null){
+    const pctTxt = d.spot ? ` (${(((d.call_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.call_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
+    lines.push(`📍 Call Wall $${fmtNum(d.call_wall,1)}${pctTxt} → 매도 · 익절가 (SELL ZONE) — 하락 전환 확인 시 청산/홀딩 판단`);
   }
-  if(d.gamma_flip != null){
-    lines.push(`⚡ Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
-  }
-  if(d.max_pain != null){
-    lines.push(`🎯 Max Pain $${fmtNum(d.max_pain,1)} (${d.expiry_used})`);
+  if(d.call_wall != null){
+    lines.push(`🚀 Call Wall 돌파 시 (BREAKOUT) → 2차 진입 (RE-ENTRY) — 저항 뚫고 상승 탄력 붙는 구간`);
   }
   lines.push('');
-  lines.push('These are the levels market makers actually hedge around.');
-  lines.push('기관·마켓메이커가 실제로 헤지하는 지지선·저항선입니다.');
+  lines.push('지지선에서 사고, 저항선에서 팔고 — 그런데 저항선을 강하게 뚫으면? 오히려 그게 추가 진입 신호가 됩니다.');
+  lines.push('');
+  lines.push(`지금 $${d.ticker}는 어느 구간에 있을까요?`);
+  lines.push('실시간 GEX 데이터로 확인하세요 👇');
   lines.push('gexoption.com');
-  lines.push('⚠️ For informational purposes only. Not investment advice.');
-  lines.push(`#${d.ticker} #Options #Stocks #GEX #Gamma ${regimeTag}`);
+  lines.push('');
+  lines.push('⚠️ 정보 제공 목적이며, 투자 권유가 아닙니다. Not investment advice.');
+  lines.push('모든 투자 결정과 책임은 본인에게 있습니다.');
+  lines.push(`#옵션스윙 #풋월콜월 #GEX #주식스윙매매 #${d.ticker} #PutWall #CallWall #OptionsTrading`);
   return lines.join('\n');
 }
   function showToast(msg){
