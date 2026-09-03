@@ -1,14 +1,19 @@
 """
 scripts/generate_journal_report.py
 
-해리님이 구글시트에 직접 입력하는 트레이딩 저널(휠 전략 CSP/CC 매매 원장)을
+해리님이 구글시트에 직접 입력하는 트레이딩 저널(Put Wall 매수 주식 스윙 원장)을
 읽어서, public/journal_report.json 을 생성한다.
 
-- "청산" 상태인 행들 -> 승률 / 평균 손익 / 손익비(payoff ratio) 집계
-- "진행중"/"배정" 상태인 행들 -> 현재가를 다시 조회해서 스트라이크 대비
-  거리(%), 만기까지 D-day 를 계산해서 "지금 이 포지션이 어떤 상태인지"를
-  최신으로 유지 (구글시트 자체는 해리님이 이벤트 있을 때만 손으로 업데이트하고,
-  이 스크립트가 장중에 주기적으로 돌면서 "현재 상태"만 자동으로 계산해준다)
+v2: CSP/CC 옵션 휠 전략 기록에서 "Put Wall 매수 → 주식 스윙" 기록으로 전면
+교체했다 (일반 독자에게는 CC/CSP보다 "얼마에 사서 얼마에 팔았다"가 훨씬
+이해하기 쉽다는 판단).
+
+- "청산" 상태인 행들 -> 승률 / 평균 손익률 / 손익비(payoff ratio) / 누적 실현손익($) 집계
+- "진행중" 상태인 행들 -> 현재가를 다시 조회해서 매수가 대비 미실현 수익률(%)과
+  금액($)을 계산하고, put_wall_ftd_signal.py와 동일한 로직(Hull21/50 데드크로스,
+  150일선 이탈)으로 "구조 유지" / "청산 신호 발생" 상태까지 함께 보여준다
+  (구글시트 자체는 해리님이 이벤트 있을 때만 손으로 업데이트하고, 이 스크립트가
+  장중에 주기적으로 돌면서 "현재 상태"만 자동으로 계산해준다)
 
 구글시트 준비 방법:
   1. 구글시트 파일을 열고 공유 설정을 "링크가 있는 모든 사용자 - 뷰어"로 변경
@@ -19,21 +24,34 @@ scripts/generate_journal_report.py
      JOURNAL_SHEET_CSV_URL 이름으로 등록한다.
 
 헤더(컬럼) 순서는 아래를 그대로 기준으로 한다 (앞뒤 공백은 자동으로 무시됨):
-  날짜 | 티커 | 전략(CSP/CC/기타) | 스트라이크 | 진입가(프리미엄) | 계약수 |
-  만기일 | 상태(진행중/배정/청산) | 청산가 | 손익 |
-  진입시점_PutWall | 진입시점_CallWall | 진입시점_GammaFlip | 진입시점_MaxPain | 메모
+  매수일자 | 티커 | PutWall | PutWall_일자 | 매수가 | 수량 |
+  상태(진행중/청산) | 청산일자 | 청산가 | 메모
+
+  예시 행: 09-02-2026 | PLTR | 165 | 09-01-2026 | 167.00 | 100 | 진행중 | | | 풋월 반등 확인 후 진입
 """
 import csv
 import io
 import json
 import os
 import sys
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 
 import requests
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "api"))
-from options_engine import quick_gamma_flip  # noqa: E402
+ROOT = os.path.join(os.path.dirname(__file__), "..")
+sys.path.insert(0, os.path.join(ROOT, "api"))
+sys.path.insert(0, os.path.dirname(__file__))
+
+from options_engine import quick_gamma_flip, fetch_daily_ohlc  # noqa: E402
+from dev_reentry_scanner import hull_ma_series  # noqa: E402
+from put_wall_ftd_signal import (  # noqa: E402
+    HULL_FAST_PERIOD,
+    HULL_SLOW_PERIOD,
+    SMA_PERIOD,
+    LOOKBACK_DAYS_REQUEST,
+    sma_series,
+    structural_exit_signals,
+)
 
 SHEET_CSV_URL = os.environ.get("JOURNAL_SHEET_CSV_URL", "").strip()
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "journal_report.json")
@@ -55,28 +73,48 @@ def _to_float(s):
         return None
 
 
-def _parse_date(s):
-    """여러 흔한 표기(08-31-2026, 2026-08-31, 2026-08-31T00:00:00 등)를 다 받아본다."""
-    s = _clean(s)
-    if not s:
-        return None
-    fmts = ["%m-%d-%Y", "%Y-%m-%d", "%Y/%m/%d", "%m/%d/%Y", "%Y-%m-%dT%H:%M:%S"]
-    for fmt in fmts:
-        try:
-            return datetime.strptime(s[:19] if "T" in s else s, fmt).date()
-        except ValueError:
-            continue
-    return None
-
-
-STRATEGY_LABEL = {
-    "CSP": "현금 담보 풋 매도 (CSP)",
-    "CC": "커버드콜 (CC)",
-}
-
-
 def _fmt_or_dash(v):
     return v if v is not None and v != "" else "—"
+
+
+def _pct(buy_price, price):
+    if not buy_price or price is None:
+        return None
+    return round((price - buy_price) / buy_price * 100, 2)
+
+
+def _dollar_pnl(buy_price, price, quantity):
+    if buy_price is None or price is None or not quantity:
+        return None
+    return round((price - buy_price) * quantity, 2)
+
+
+# ---------------------------------------------------------------------------
+# 구조적 상태 (Hull21/50 데드크로스, 150일선 이탈) — put_wall_ftd_signal.py와
+# 동일한 계산을 그대로 재사용한다. 종목별로 한 번만 일봉을 조회하도록 캐싱한다.
+# ---------------------------------------------------------------------------
+def compute_structural_status(ticker, bars_cache):
+    if ticker in bars_cache:
+        bars = bars_cache[ticker]
+    else:
+        try:
+            bars, _debug = fetch_daily_ohlc(ticker, lookback_days=LOOKBACK_DAYS_REQUEST)
+        except Exception:
+            bars = None
+        bars_cache[ticker] = bars
+
+    if not bars or len(bars) < SMA_PERIOD + 5:
+        return {"status": None, "reasons": [], "error": "일봉 데이터 부족"}
+
+    closes = [b["close"] for b in bars]
+    dates = [b["time"] for b in bars]
+    hull_fast = hull_ma_series(closes, period=HULL_FAST_PERIOD)
+    hull_slow = hull_ma_series(closes, period=HULL_SLOW_PERIOD)
+    sma150 = sma_series(closes, period=SMA_PERIOD)
+
+    reasons = structural_exit_signals(closes, dates, hull_fast, hull_slow, sma150)
+    status = "청산신호" if reasons else "구조유지"
+    return {"status": status, "reasons": reasons, "error": None}
 
 
 def build_case_study_draft(trade):
@@ -84,56 +122,47 @@ def build_case_study_draft(trade):
     해리님이 이 텍스트를 그대로/조금 다듬어서 블로그에 반자동으로 올릴 수 있게
     (자동 발행은 아니고, 복사해서 붙여넣는 용도의 '초안'만 생성한다)."""
     ticker = trade.get("ticker") or "—"
-    strategy_raw = (trade.get("strategy") or "").strip().upper()
-    strategy_label = STRATEGY_LABEL.get(strategy_raw, trade.get("strategy") or "포지션")
-    entry_date = trade.get("date") or "—"
-    expiry = trade.get("expiry") or "—"
-    strike = trade.get("strike")
-    premium = trade.get("entry_premium")
-    contracts = trade.get("contracts")
+    buy_date = trade.get("buy_date") or "—"
+    put_wall = trade.get("entry_put_wall")
+    put_wall_date = trade.get("entry_put_wall_date")
+    buy_price = trade.get("buy_price")
+    quantity = trade.get("quantity")
+    exit_date = trade.get("exit_date") or "—"
     exit_price = trade.get("exit_price")
-    pnl = trade.get("pnl")
+    final_return_pct = trade.get("final_return_pct")
+    final_pnl = trade.get("final_pnl")
     note = trade.get("note") or ""
 
-    put_wall = trade.get("entry_put_wall")
-    call_wall = trade.get("entry_call_wall")
-    gamma_flip = trade.get("entry_gamma_flip")
-    max_pain = trade.get("entry_max_pain")
-
-    if pnl is None:
+    if final_return_pct is None:
         result_word = "결과 미기록"
-    elif pnl > 0:
+    elif final_return_pct > 0:
         result_word = "승 (수익)"
-    elif pnl < 0:
+    elif final_return_pct < 0:
         result_word = "패 (손실)"
     else:
         result_word = "본전"
-    pnl_text = f"{'+' if (pnl is not None and pnl > 0) else ''}{pnl}" if pnl is not None else "—"
+    return_text = f"{'+' if (final_return_pct is not None and final_return_pct > 0) else ''}{final_return_pct}%" if final_return_pct is not None else "—"
+    pnl_text = f"{'+' if (final_pnl is not None and final_pnl > 0) else ''}${final_pnl}" if final_pnl is not None else "—"
 
-    title = f"[휠 저널] {ticker} {strategy_raw or ''} 케이스 스터디 ({entry_date} 진입)".replace("  ", " ")
+    title = f"[스윙 저널] {ticker} Put Wall 매수 케이스 스터디 ({buy_date} 진입)"
 
     lines = [
-        f"이번 트레이드는 {entry_date}에 {ticker} 종목에 {strategy_label}으로 진입한 건입니다.",
+        f"이번 트레이드는 {buy_date}에 {ticker} 종목을 Put Wall 근처에서 매수한 건입니다.",
         "",
         "■ 진입 정보",
-        f"- 전략: {strategy_label}",
-        f"- 스트라이크: {_fmt_or_dash(strike)}",
-        f"- 진입가(프리미엄): {_fmt_or_dash(premium)}",
-        f"- 계약수: {_fmt_or_dash(contracts)}",
-        f"- 만기일: {expiry}",
-        "",
-        "■ 진입 근거 (진입 시점 GEX 레벨)",
-        f"- Put Wall: {_fmt_or_dash(put_wall)}",
-        f"- Call Wall: {_fmt_or_dash(call_wall)}",
-        f"- Gamma Flip: {_fmt_or_dash(gamma_flip)}",
-        f"- Max Pain: {_fmt_or_dash(max_pain)}",
+        f"- 매수일자: {buy_date}",
+        f"- 매수가: {_fmt_or_dash(buy_price)}",
+        f"- 수량: {_fmt_or_dash(quantity)}",
+        f"- 진입 근거 Put Wall: {_fmt_or_dash(put_wall)} ({put_wall_date or '—'} 기준)",
     ]
     if note:
         lines.append(f"- 메모: {note}")
     lines += [
         "",
         "■ 결과",
+        f"- 청산일자: {exit_date}",
         f"- 청산가: {_fmt_or_dash(exit_price)}",
+        f"- 수익률: {return_text}",
         f"- 손익: {pnl_text}",
         f"- 결과: {result_word}",
         "",
@@ -149,7 +178,7 @@ def fetch_rows():
     resp = requests.get(SHEET_CSV_URL, timeout=20)
     resp.raise_for_status()
     reader = csv.DictReader(io.StringIO(resp.text))
-    # 헤더 앞뒤 공백 제거 (해리님 시트에 '스트라이크 ', ' 손익' 처럼 공백 섞여 있어도 안전하게)
+    # 헤더 앞뒤 공백 제거 (시트에 '매수가 ', ' 수량'처럼 공백 섞여 있어도 안전하게)
     reader.fieldnames = [(_clean(h)) for h in reader.fieldnames]
     rows = []
     for raw in reader:
@@ -165,24 +194,23 @@ def build_report(rows):
     open_trades = []
 
     for row in rows:
-        status = row.get("상태(진행중/배정/청산)", "")
-        pnl = _to_float(row.get("손익"))
+        status = row.get("상태(진행중/청산)", "")
+        buy_price = _to_float(row.get("매수가"))
+        quantity = _to_float(row.get("수량"))
 
         if status in CLOSED_STATUSES:
+            exit_price = _to_float(row.get("청산가"))
             closed_trade = {
-                "date": row.get("날짜"),
-                "ticker": row.get("티커"),
-                "strategy": row.get("전략(CSP/CC/기타)"),
-                "strike": _to_float(row.get("스트라이크")),
-                "entry_premium": _to_float(row.get("진입가(프리미엄)")),
-                "contracts": _to_float(row.get("계약수")),
-                "expiry": row.get("만기일"),
-                "exit_price": _to_float(row.get("청산가")),
-                "pnl": pnl,
-                "entry_put_wall": _to_float(row.get("진입시점_PutWall")),
-                "entry_call_wall": _to_float(row.get("진입시점_CallWall")),
-                "entry_gamma_flip": _to_float(row.get("진입시점_GammaFlip")),
-                "entry_max_pain": _to_float(row.get("진입시점_MaxPain")),
+                "buy_date": row.get("매수일자"),
+                "ticker": row.get("티커", "").upper(),
+                "entry_put_wall": _to_float(row.get("PutWall")),
+                "entry_put_wall_date": row.get("PutWall_일자"),
+                "buy_price": buy_price,
+                "quantity": quantity,
+                "exit_date": row.get("청산일자"),
+                "exit_price": exit_price,
+                "final_return_pct": _pct(buy_price, exit_price),
+                "final_pnl": _dollar_pnl(buy_price, exit_price, quantity),
                 "note": row.get("메모"),
             }
             # 블로그에 반자동으로 올릴 케이스 스터디 초안(제목+본문)을 미리 만들어 둔다.
@@ -191,11 +219,12 @@ def build_report(rows):
         else:
             open_trades.append(row)
 
-    # ---- 승률 / 손익비 집계 (청산된 트레이드만 대상) ----
-    pnl_values = [t["pnl"] for t in closed if t["pnl"] is not None]
-    wins = [p for p in pnl_values if p > 0]
-    losses = [p for p in pnl_values if p < 0]
-    win_rate = round(len(wins) / len(pnl_values) * 100, 1) if pnl_values else None
+    # ---- 승률 / 손익비 / 누적 실현손익 집계 (청산된 트레이드만 대상) ----
+    return_values = [t["final_return_pct"] for t in closed if t["final_return_pct"] is not None]
+    pnl_values = [t["final_pnl"] for t in closed if t["final_pnl"] is not None]
+    wins = [p for p in return_values if p > 0]
+    losses = [p for p in return_values if p < 0]
+    win_rate = round(len(wins) / len(return_values) * 100, 1) if return_values else None
     avg_win = round(sum(wins) / len(wins), 2) if wins else None
     avg_loss = round(sum(losses) / len(losses), 2) if losses else None
     payoff_ratio = round(avg_win / abs(avg_loss), 2) if avg_win and avg_loss else None
@@ -203,25 +232,25 @@ def build_report(rows):
 
     summary = {
         "total_closed_trades": len(closed),
-        "total_with_pnl": len(pnl_values),
+        "total_with_return": len(return_values),
         "win_count": len(wins),
         "loss_count": len(losses),
         "win_rate_pct": win_rate,
-        "avg_win": avg_win,
-        "avg_loss": avg_loss,
+        "avg_win_pct": avg_win,
+        "avg_loss_pct": avg_loss,
         "payoff_ratio": payoff_ratio,
         "total_realized_pnl": total_realized_pnl,
     }
 
-    # ---- 진행중/배정 포지션 -> 현재가 다시 조회해서 실시간 상태 계산 ----
+    # ---- 진행중 포지션 -> 현재가/구조 상태 다시 조회해서 실시간 계산 ----
     live_cache = {}
+    bars_cache = {}
     open_result = []
-    today = date.today()
 
     for row in open_trades:
         ticker = row.get("티커", "").upper()
-        strike = _to_float(row.get("스트라이크"))
-        expiry_d = _parse_date(row.get("만기일"))
+        row_buy_price = _to_float(row.get("매수가"))
+        row_quantity = _to_float(row.get("수량"))
 
         live = live_cache.get(ticker)
         if live is None:
@@ -232,32 +261,25 @@ def build_report(rows):
             live_cache[ticker] = live
 
         spot = live.get("spot") if isinstance(live, dict) else None
-        dist_pct = None
-        if spot and strike:
-            dist_pct = round((spot - strike) / strike * 100, 2)
-
-        dte = (expiry_d - today).days if expiry_d else None
+        structural = compute_structural_status(ticker, bars_cache)
 
         open_result.append({
-            "date": row.get("날짜"),
+            "buy_date": row.get("매수일자"),
             "ticker": ticker,
-            "strategy": row.get("전략(CSP/CC/기타)"),
-            "strike": strike,
-            "entry_premium": _to_float(row.get("진입가(프리미엄)")),
-            "contracts": _to_float(row.get("계약수")),
-            "expiry": row.get("만기일"),
-            "status": row.get("상태(진행중/배정/청산)"),
-            "entry_put_wall": _to_float(row.get("진입시점_PutWall")),
-            "entry_call_wall": _to_float(row.get("진입시점_CallWall")),
-            "entry_gamma_flip": _to_float(row.get("진입시점_GammaFlip")),
-            "entry_max_pain": _to_float(row.get("진입시점_MaxPain")),
+            "entry_put_wall": _to_float(row.get("PutWall")),
+            "entry_put_wall_date": row.get("PutWall_일자"),
+            "buy_price": row_buy_price,
+            "quantity": row_quantity,
+            "status": row.get("상태(진행중/청산)"),
             "note": row.get("메모"),
             "current_spot": spot,
             "current_gamma_flip": live.get("gamma_flip") if isinstance(live, dict) else None,
             "current_regime": live.get("regime") if isinstance(live, dict) else None,
-            "distance_to_strike_pct": dist_pct,
-            "days_to_expiry": dte,
-            "live_fetch_error": live.get("error") if isinstance(live, dict) else None,
+            "return_pct": _pct(row_buy_price, spot),
+            "unrealized_pnl": _dollar_pnl(row_buy_price, spot, row_quantity),
+            "structural_status": structural["status"],
+            "structural_reasons": structural["reasons"],
+            "live_fetch_error": live.get("error") if isinstance(live, dict) else structural.get("error"),
         })
 
     return {
