@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>휠 트레이딩 저널 · 전체 기록 & 블로그 초안</title>
+<title>Put Wall 스윙 저널 · 전체 기록 & 블로그 초안</title>
 <style>
   :root{
     --bg: #0a0d12;
@@ -70,8 +70,8 @@
 <body>
 <div class="wrap">
   <a class="back" href="/">← 메인으로</a>
-  <h1>📓 휠 트레이딩 저널 — 전체 기록</h1>
-  <p class="sub">청산된 트레이드는 블로그 케이스 스터디 초안이 자동으로 만들어져 있습니다. "초안 펼치기"를 눌러 내용을 확인/수정한 뒤, 복사해서 Blogger에 붙여넣으면 됩니다 (자동 발행은 아니고, 복사-붙여넣기용 초안입니다).</p>
+  <h1>📈 Put Wall 스윙 저널 — 전체 기록</h1>
+  <p class="sub">Put Wall(하방 지지) 근처에서 매수하는 실전 스윙 매매 기록입니다. 진행중 포지션은 Hull21/50·150일선 기준 구조 유지 여부까지 자동으로 표시되고, 청산된 트레이드는 블로그 케이스 스터디 초안이 자동으로 만들어져 있습니다. "초안 펼치기"를 눌러 내용을 확인/수정한 뒤, 복사해서 Blogger에 붙여넣으면 됩니다 (자동 발행은 아니고, 복사-붙여넣기용 초안입니다).</p>
 
   <div class="section-title">진행중 포지션</div>
   <div id="openList"><div class="empty">불러오는 중...</div></div>
@@ -89,24 +89,39 @@ function fmtNum(v, d){
 }
 
 function openTradeCardHTML(t){
+  const isIntact = t.structural_status === '구조유지';
+  const structuralBadge = t.structural_status
+    ? `<span class="badge" style="background:${isIntact ? '#123' : '#3d1414'}; color:${isIntact ? '#3ecf6e' : '#e5484d'}; border-color:${isIntact ? '#1e5c3a' : '#5c1e1e'};" title="${(t.structural_reasons||[]).join(' / ')}">${isIntact ? '✅ 구조 유지' : '⚠️ 청산 신호'}</span>`
+    : '';
+  const retColor = t.return_pct == null ? '#8b93a1' : (t.return_pct >= 0 ? '#e5484d' : '#3d7fe0');
+  const retText = t.return_pct != null ? `${t.return_pct >= 0 ? '+' : ''}${t.return_pct}%` : '—';
+  const pnlText = t.unrealized_pnl != null ? ` (${t.unrealized_pnl >= 0 ? '+' : ''}$${fmtNum(t.unrealized_pnl,2)})` : '';
+  const putWallText = t.entry_put_wall != null
+    ? `${fmtNum(t.entry_put_wall,1)}${t.entry_put_wall_date ? ` (${t.entry_put_wall_date})` : ''}`
+    : '—';
   return `
     <div class="trade-card">
       <div class="trade-head">
         <span class="ticker">${t.ticker}</span>
-        <span class="badge">${t.strategy || '—'}</span>
         <span class="badge">${t.status || '—'}</span>
+        ${structuralBadge}
       </div>
-      <div class="row">날짜 <b>${t.date || '—'}</b> · 스트라이크 <b>${fmtNum(t.strike,1)}</b> · 만기 <b>${t.expiry || '—'}</b> · D-<b>${t.days_to_expiry ?? '—'}</b></div>
-      <div class="row">현재가 <b>$${fmtNum(t.current_spot)}</b> · 스트라이크 대비 <b>${t.distance_to_strike_pct != null ? (t.distance_to_strike_pct>=0?'+':'')+t.distance_to_strike_pct+'%' : '—'}</b></div>
+      <div class="row">매수일자 <b>${t.buy_date || '—'}</b> · Put Wall <b>${putWallText}</b></div>
+      <div class="row">매수가 <b>$${fmtNum(t.buy_price)}</b> · 현재가 <b>$${fmtNum(t.current_spot)}</b> · 수익 <b style="color:${retColor}">${retText}${pnlText}</b></div>
       ${t.note ? `<div class="row">메모: ${t.note}</div>` : ''}
     </div>
   `;
 }
 
 function closedTradeCardHTML(t, idx){
-  const pnl = t.pnl;
+  const pnl = t.final_pnl;
   const pnlColor = pnl == null ? '#8b93a1' : (pnl >= 0 ? '#e5484d' : '#3d7fe0');
-  const pnlText = pnl != null ? `${pnl >= 0 ? '+' : ''}${fmtNum(pnl,2)}` : '—';
+  const retPct = t.final_return_pct;
+  const retText = retPct != null ? `${retPct >= 0 ? '+' : ''}${retPct}%` : '—';
+  const pnlText = pnl != null ? `${pnl >= 0 ? '+' : ''}$${fmtNum(pnl,2)}` : '—';
+  const putWallText = t.entry_put_wall != null
+    ? `${fmtNum(t.entry_put_wall,1)}${t.entry_put_wall_date ? ` (${t.entry_put_wall_date})` : ''}`
+    : '—';
   const draft = t.draft || { title: '', body: '' };
   const titleId = `draftTitle_${idx}`;
   const bodyId = `draftBody_${idx}`;
@@ -115,10 +130,10 @@ function closedTradeCardHTML(t, idx){
     <div class="trade-card">
       <div class="trade-head">
         <span class="ticker">${t.ticker}</span>
-        <span class="badge">${t.strategy || '—'}</span>
-        <span class="pnl" style="color:${pnlColor}">${pnlText}</span>
+        <span class="pnl" style="color:${pnlColor}">${retText} (${pnlText})</span>
       </div>
-      <div class="row">진입 <b>${t.date || '—'}</b> → 만기 <b>${t.expiry || '—'}</b> · 스트라이크 <b>${fmtNum(t.strike,1)}</b> · 청산가 <b>${fmtNum(t.exit_price)}</b></div>
+      <div class="row">매수 <b>${t.buy_date || '—'}</b> → 청산 <b>${t.exit_date || '—'}</b> · Put Wall <b>${putWallText}</b></div>
+      <div class="row">매수가 <b>$${fmtNum(t.buy_price)}</b> · 청산가 <b>$${fmtNum(t.exit_price)}</b> · 수량 <b>${fmtNum(t.quantity,0)}</b></div>
       ${t.note ? `<div class="row">메모: ${t.note}</div>` : ''}
       <details>
         <summary>블로그 초안 펼치기</summary>
