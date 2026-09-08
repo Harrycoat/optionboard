@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-08T19:59:47.814544+00:00",
+  "generated_at": "2026-09-08T23:25:49.943787+00:00",
   "tickers": [
     {
       "ticker": "NVDA",
-      "spot": 225.71,
+      "spot": 225.73,
       "is_stale_price": false,
-      "price_change_pct": -2.33,
+      "price_change_pct": -2.32,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -13,16 +13,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:58:17.721268+00:00",
+      "generated_at": "2026-09-08T23:24:17.922937+00:00",
       "max_pain": 225,
       "call_wall": 230,
       "put_wall": 225,
-      "gamma_flip": 224.49,
+      "gamma_flip": 224.42,
       "max_oi_wall": 240,
       "max_oi_wall_total_oi": 89202.0,
       "max_oi_wall_call_oi": 88139.0,
       "max_oi_wall_put_oi": 1063.0,
-      "net_gex_total": 330403650.90222704,
+      "net_gex_total": 342499456.48878884,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -431,15 +431,15 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 579376628.8161486,
-      "cex_total": -74493638103.67082,
+      "vex_total": 623053242.1104043,
+      "cex_total": -89364824899.43272,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 225 (-0.3%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 230 (+1.9%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 224.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "&nbsp;&nbsp;• 감마 플립: 224.4 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
         "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 225 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -0.3%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 225~230 사이 박스권에서 움직이되, 옵션 만기 특성상 225(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
@@ -447,16 +447,16 @@
       "stage_label": "상승국면",
       "stage_sma150": 201.23,
       "stage_slope_pct": 3.93,
-      "stage_pos_pct": 12.16,
+      "stage_pos_pct": 12.17,
       "stage_prior_slope_pct": 2.96,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "MU",
-      "spot": 1007.85,
+      "spot": 1000.26,
       "is_stale_price": false,
-      "price_change_pct": 3.76,
+      "price_change_pct": 2.98,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -464,16 +464,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:58:28.473159+00:00",
+      "generated_at": "2026-09-08T23:24:29.571463+00:00",
       "max_pain": 950,
       "call_wall": 1050,
-      "put_wall": 995,
-      "gamma_flip": 956.21,
+      "put_wall": 950,
+      "gamma_flip": 979.36,
       "max_oi_wall": 600,
       "max_oi_wall_total_oi": 29549.0,
       "max_oi_wall_call_oi": 6.0,
       "max_oi_wall_put_oi": 29543.0,
-      "net_gex_total": 236648027.31051007,
+      "net_gex_total": 209927584.36998016,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -1932,32 +1932,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -179754650.89509505,
-      "cex_total": -36909911367.410866,
+      "vex_total": 158112794.6726784,
+      "cex_total": -89367233198.97296,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 995 (-1.3%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1050 (+4.2%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 956.2 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 950 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -5.7%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 995~1050 사이 박스권에서 움직이되, 옵션 만기 특성상 950(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 950 (-5.0%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1050 (+5.0%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 979.4 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 950 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -5.0%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 950~1050 사이 박스권에서 움직이되, 옵션 만기 특성상 950(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
-      "stage_sma150": 714.03,
-      "stage_slope_pct": 27.71,
-      "stage_pos_pct": 41.15,
+      "stage_sma150": 713.98,
+      "stage_slope_pct": 27.7,
+      "stage_pos_pct": 40.1,
       "stage_prior_slope_pct": 55.77,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "DELL",
-      "spot": 532.665,
+      "spot": 533.88,
       "is_stale_price": false,
-      "price_change_pct": 3.68,
+      "price_change_pct": 3.91,
       "expiry_used": "2026-09-11",
       "expiries_included_in_gex": [
         "2026-09-11",
@@ -1965,16 +1965,16 @@
         "2026-09-25",
         "2026-10-02"
       ],
-      "generated_at": "2026-09-08T19:58:34.715314+00:00",
+      "generated_at": "2026-09-08T23:24:36.282394+00:00",
       "max_pain": 490,
       "call_wall": 600,
       "put_wall": 500,
-      "gamma_flip": 490.49,
+      "gamma_flip": 493.92,
       "max_oi_wall": 600,
       "max_oi_wall_total_oi": 10204.0,
       "max_oi_wall_call_oi": 10136.0,
       "max_oi_wall_put_oi": 68.0,
-      "net_gex_total": 61998073.13136195,
+      "net_gex_total": 59742276.658864796,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -2913,32 +2913,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -140423870.55420476,
-      "cex_total": -6213231567.766634,
+      "vex_total": -124886042.23902538,
+      "cex_total": -7385869214.82236,
       "vanna_charm_expiry_days": 3,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 500 (-6.1%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 600 (+12.6%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 490.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-11, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 490 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -8.0%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 500 (-6.3%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 600 (+12.4%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 493.9 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-11, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 490 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -8.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 500~600 사이 박스권에서 움직이되, 옵션 만기 특성상 490(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
       "stage_sma150": 298.86,
       "stage_slope_pct": 38.91,
-      "stage_pos_pct": 78.24,
+      "stage_pos_pct": 78.64,
       "stage_prior_slope_pct": 42.38,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "AVGO",
-      "spot": 367.71,
+      "spot": 368.56,
       "is_stale_price": false,
-      "price_change_pct": 2.23,
+      "price_change_pct": 2.46,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -2946,16 +2946,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:58:40.755895+00:00",
+      "generated_at": "2026-09-08T23:24:43.448068+00:00",
       "max_pain": 352.5,
       "call_wall": 370,
       "put_wall": 365,
-      "gamma_flip": 354.12,
+      "gamma_flip": 352.59,
       "max_oi_wall": 370,
       "max_oi_wall_total_oi": 12317.0,
       "max_oi_wall_call_oi": 10117.0,
       "max_oi_wall_put_oi": 2200.0,
-      "net_gex_total": 141736951.43606547,
+      "net_gex_total": 137346455.66959393,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -3514,32 +3514,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 82715127.90953624,
-      "cex_total": -22330535998.11135,
+      "vex_total": 54415501.40605601,
+      "cex_total": -18833163155.710007,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 365 (-0.7%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 370 (+0.6%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 354.1 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 352.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -4.1%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 365 (-1.0%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 370 (+0.4%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 352.6 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 352.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -4.4%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 365~370 사이 박스권에서 움직이되, 옵션 만기 특성상 352.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 3,
       "stage_label": "천정권",
-      "stage_sma150": 375.19,
+      "stage_sma150": 375.2,
       "stage_slope_pct": 2.58,
-      "stage_pos_pct": -1.99,
+      "stage_pos_pct": -1.77,
       "stage_prior_slope_pct": 3.14,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "SNDK",
-      "spot": 1755.81,
+      "spot": 1737.99,
       "is_stale_price": false,
-      "price_change_pct": 10.71,
+      "price_change_pct": 9.58,
       "expiry_used": "2026-09-11",
       "expiries_included_in_gex": [
         "2026-09-11",
@@ -3547,16 +3547,16 @@
         "2026-09-25",
         "2026-10-02"
       ],
-      "generated_at": "2026-09-08T19:58:51.629473+00:00",
+      "generated_at": "2026-09-08T23:24:55.368180+00:00",
       "max_pain": 1595,
       "call_wall": 1800,
       "put_wall": 1500,
-      "gamma_flip": 1602.57,
+      "gamma_flip": 1642.13,
       "max_oi_wall": 1500,
       "max_oi_wall_total_oi": 8264.0,
       "max_oi_wall_call_oi": 2946.0,
       "max_oi_wall_put_oi": 5318.0,
-      "net_gex_total": 131836391.59481472,
+      "net_gex_total": 111540951.80160333,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -5700,32 +5700,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -169683315.65535936,
-      "cex_total": -30647611429.450676,
+      "vex_total": 28070156.554745037,
+      "cex_total": -45066988598.943504,
       "vanna_charm_expiry_days": 3,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 1500 (-14.6%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1800 (+2.5%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 1602.6 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-11, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 1595 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -9.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 1500 (-13.7%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1800 (+3.6%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 1642.1 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-11, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 1595 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -8.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 1500~1800 사이 박스권에서 움직이되, 옵션 만기 특성상 1595(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
-      "stage_sma150": 1244.46,
-      "stage_slope_pct": 30.38,
-      "stage_pos_pct": 41.09,
+      "stage_sma150": 1244.35,
+      "stage_slope_pct": 30.37,
+      "stage_pos_pct": 39.67,
       "stage_prior_slope_pct": 80.29,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "TSLA",
-      "spot": 367.679,
+      "spot": 368.16,
       "is_stale_price": false,
-      "price_change_pct": 1.55,
+      "price_change_pct": 1.68,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -5733,16 +5733,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:58:58.645058+00:00",
+      "generated_at": "2026-09-08T23:25:02.913763+00:00",
       "max_pain": 357.5,
       "call_wall": 370,
       "put_wall": 360,
-      "gamma_flip": 349.61,
+      "gamma_flip": 351.92,
       "max_oi_wall": 400,
       "max_oi_wall_total_oi": 37339.0,
       "max_oi_wall_call_oi": 35834.0,
       "max_oi_wall_put_oi": 1505.0,
-      "net_gex_total": 355085390.7516494,
+      "net_gex_total": 325227759.5591015,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -6401,32 +6401,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -77469224.3911513,
-      "cex_total": -41150283738.44843,
+      "vex_total": 45180626.42598687,
+      "cex_total": -59074075724.428444,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 360 (-2.1%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 370 (+0.6%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 349.6 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 357.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.8%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 360 (-2.2%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 370 (+0.5%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 351.9 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 357.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.9%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 360~370 사이 박스권에서 움직이되, 옵션 만기 특성상 357.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 4,
       "stage_label": "하락국면",
-      "stage_sma150": 384.52,
+      "stage_sma150": 384.53,
       "stage_slope_pct": -6.7,
-      "stage_pos_pct": -4.38,
+      "stage_pos_pct": -4.26,
       "stage_prior_slope_pct": -1.61,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "AAPL",
-      "spot": 316.115,
+      "spot": 316.22,
       "is_stale_price": false,
-      "price_change_pct": -3.71,
+      "price_change_pct": -3.68,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -6434,16 +6434,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:59:06.119953+00:00",
+      "generated_at": "2026-09-08T23:25:09.597533+00:00",
       "max_pain": 320,
       "call_wall": 320,
       "put_wall": 310,
-      "gamma_flip": 312.94,
+      "gamma_flip": 312.44,
       "max_oi_wall": 330,
       "max_oi_wall_total_oi": 36156.0,
       "max_oi_wall_call_oi": 32266.0,
       "max_oi_wall_put_oi": 3890.0,
-      "net_gex_total": 129148526.22680135,
+      "net_gex_total": 138130597.1219128,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -6847,15 +6847,15 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 575299326.8903794,
-      "cex_total": -59775248211.57312,
+      "vex_total": 585594642.6047187,
+      "cex_total": -65198902810.51686,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 310 (-1.9%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 310 (-2.0%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 320 (+1.2%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 312.9 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "&nbsp;&nbsp;• 감마 플립: 312.4 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
         "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 320 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +1.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 310~320 사이 박스권에서 움직이되, 옵션 만기 특성상 320(Max Pain) 쪽으로 수렴하며 끌려 올라갈 가능성이 있는 상태\""
       ],
@@ -6863,16 +6863,16 @@
       "stage_label": "상승국면",
       "stage_sma150": 289.37,
       "stage_slope_pct": 4.95,
-      "stage_pos_pct": 9.24,
+      "stage_pos_pct": 9.28,
       "stage_prior_slope_pct": 3.48,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "META",
-      "spot": 614.915,
+      "spot": 613.48,
       "is_stale_price": false,
-      "price_change_pct": 0.42,
+      "price_change_pct": 0.18,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -6880,16 +6880,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:59:14.218715+00:00",
+      "generated_at": "2026-09-08T23:25:18.957808+00:00",
       "max_pain": 600,
       "call_wall": 620,
       "put_wall": 610,
-      "gamma_flip": 596.2,
+      "gamma_flip": 600.54,
       "max_oi_wall": 595,
       "max_oi_wall_total_oi": 14147.0,
       "max_oi_wall_call_oi": 12776.0,
       "max_oi_wall_put_oi": 1371.0,
-      "net_gex_total": 257869859.2210937,
+      "net_gex_total": 252584060.03147689,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -7863,32 +7863,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -34426794.0144755,
-      "cex_total": -25935095285.63634,
+      "vex_total": 76164257.02248164,
+      "cex_total": -38111736920.225174,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 610 (-0.8%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 620 (+0.8%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 596.2 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 600 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.4%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 610 (-0.6%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 620 (+1.1%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 600.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 600 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 610~620 사이 박스권에서 움직이되, 옵션 만기 특성상 600(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 1,
       "stage_label": "바닥다지기",
-      "stage_sma150": 613.15,
+      "stage_sma150": 613.14,
       "stage_slope_pct": -2.68,
-      "stage_pos_pct": 0.29,
+      "stage_pos_pct": 0.06,
       "stage_prior_slope_pct": -2.69,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "MSFT",
-      "spot": 493.42,
+      "spot": 493.95,
       "is_stale_price": false,
-      "price_change_pct": -3.25,
+      "price_change_pct": -3.15,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -7896,16 +7896,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:59:20.744023+00:00",
+      "generated_at": "2026-09-08T23:25:25.725844+00:00",
       "max_pain": 500,
       "call_wall": 505,
       "put_wall": 490,
-      "gamma_flip": 494.49,
+      "gamma_flip": 494.17,
       "max_oi_wall": 500,
       "max_oi_wall_total_oi": 9006.0,
       "max_oi_wall_call_oi": 3787.0,
       "max_oi_wall_put_oi": 5219.0,
-      "net_gex_total": -13039234.285479147,
+      "net_gex_total": -8059299.7171071125,
       "regime": "negative",
       "oi_by_strike": [
         {
@@ -8369,32 +8369,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 289152574.18868893,
-      "cex_total": -13443711340.23861,
+      "vex_total": 303493384.16471344,
+      "cex_total": -16971914472.326338,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>음의 감마 (변동성 확대)</b>: 딜러들이 가격 움직임을 증폭시키는 방향으로 헤지하는 경향이 있어, 추세가 붙으면 변동성이 커질 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 490 (-0.7%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 505 (+2.3%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 494.5 — 추세 변화의 기점이 되는 위치 (현재는 아래에 위치)",
-        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 500 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +1.3%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 490 (-0.8%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 505 (+2.2%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 494.2 — 추세 변화의 기점이 되는 위치 (현재는 아래에 위치)",
+        "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 500 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +1.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 490~505 사이 박스권에서 움직이되, 옵션 만기 특성상 500(Max Pain) 쪽으로 수렴하며 끌려 올라갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
       "stage_sma150": 416.49,
       "stage_slope_pct": -0.52,
-      "stage_pos_pct": 18.47,
+      "stage_pos_pct": 18.6,
       "stage_prior_slope_pct": -6.31,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "GOOGL",
-      "spot": 338.415,
+      "spot": 338.36,
       "is_stale_price": false,
-      "price_change_pct": -1.18,
+      "price_change_pct": -1.2,
       "expiry_used": "2026-09-09",
       "expiries_included_in_gex": [
         "2026-09-09",
@@ -8402,16 +8402,16 @@
         "2026-09-14",
         "2026-09-16"
       ],
-      "generated_at": "2026-09-08T19:59:27.987349+00:00",
+      "generated_at": "2026-09-08T23:25:33.383350+00:00",
       "max_pain": 337.5,
       "call_wall": 342.5,
       "put_wall": 335,
-      "gamma_flip": 335.02,
+      "gamma_flip": 334.22,
       "max_oi_wall": 430,
       "max_oi_wall_total_oi": 21757.0,
       "max_oi_wall_call_oi": 21757.0,
       "max_oi_wall_put_oi": 0.0,
-      "net_gex_total": 113505079.05189466,
+      "net_gex_total": 133905778.95039625,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -8925,15 +8925,15 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 180270836.1837896,
-      "cex_total": -19001715175.889473,
+      "vex_total": 172490055.80149648,
+      "cex_total": -21108984495.888203,
       "vanna_charm_expiry_days": 1,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 335 (-1.0%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 342.5 (+1.2%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 335.0 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "&nbsp;&nbsp;• 감마 플립: 334.2 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
         "<b>만기일 (2026-09-09, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 337.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -0.3%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 335~342.5 사이 박스권에서 움직이되, 옵션 만기 특성상 337.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
@@ -8941,16 +8941,16 @@
       "stage_label": "천정권",
       "stage_sma150": 341.88,
       "stage_slope_pct": 1.88,
-      "stage_pos_pct": -1.01,
+      "stage_pos_pct": -1.03,
       "stage_prior_slope_pct": 7.42,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
     },
     {
       "ticker": "SPCX",
-      "spot": 153.861,
+      "spot": 153.47,
       "is_stale_price": false,
-      "price_change_pct": 3.55,
+      "price_change_pct": 3.28,
       "expiry_used": "2026-09-11",
       "expiries_included_in_gex": [
         "2026-09-11",
@@ -8958,16 +8958,16 @@
         "2026-09-25",
         "2026-10-02"
       ],
-      "generated_at": "2026-09-08T19:59:35.804419+00:00",
+      "generated_at": "2026-09-08T23:25:40.020118+00:00",
       "max_pain": 145,
       "call_wall": 160,
       "put_wall": 150,
-      "gamma_flip": 150.07,
+      "gamma_flip": 150.71,
       "max_oi_wall": 150,
       "max_oi_wall_total_oi": 114966.0,
       "max_oi_wall_call_oi": 60493.0,
       "max_oi_wall_put_oi": 54473.0,
-      "net_gex_total": 64010911.039401926,
+      "net_gex_total": 53241312.8547966,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -9691,32 +9691,32 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -385831536.57552445,
-      "cex_total": -17501188870.42701,
+      "vex_total": -366681691.0824607,
+      "cex_total": -18242365315.91749,
       "vanna_charm_expiry_days": 3,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 150 (-2.5%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 160 (+4.0%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 150.1 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-11, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 145 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -5.8%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 150 (-2.3%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 160 (+4.3%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 150.7 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-11, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 145 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -5.5%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 150~160 사이 박스권에서 움직이되, 옵션 만기 특성상 145(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
       "stage_sma150": 70.19,
-      "stage_slope_pct": 64.16,
-      "stage_pos_pct": 119.21,
+      "stage_slope_pct": 64.15,
+      "stage_pos_pct": 118.66,
       "stage_prior_slope_pct": 78.29,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=243 closes=243 status=DELAYED",
       "stage_n_closes": 243
     },
     {
       "ticker": "PLTR",
-      "spot": 170.24,
+      "spot": 170.3,
       "is_stale_price": false,
-      "price_change_pct": -5.43,
+      "price_change_pct": -5.39,
       "expiry_used": "2026-09-11",
       "expiries_included_in_gex": [
         "2026-09-11",
@@ -9724,7 +9724,7 @@
         "2026-09-25",
         "2026-10-02"
       ],
-      "generated_at": "2026-09-08T19:59:43.814151+00:00",
+      "generated_at": "2026-09-08T23:25:45.943497+00:00",
       "max_pain": 172.5,
       "call_wall": 175,
       "put_wall": 170,
@@ -9733,7 +9733,7 @@
       "max_oi_wall_total_oi": 43051.0,
       "max_oi_wall_call_oi": 18955.0,
       "max_oi_wall_put_oi": 24096.0,
-      "net_gex_total": 30851654.235261206,
+      "net_gex_total": 34202602.55827225,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -10302,13 +10302,13 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 340544184.64185077,
-      "cex_total": -16374733562.33971,
+      "vex_total": 347870694.9327302,
+      "cex_total": -16746132466.183113,
       "vanna_charm_expiry_days": 3,
       "narrative": [
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 170 (-0.1%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 170 (-0.2%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 175 (+2.8%) — 이 근처에서 막히는지 체크",
         "&nbsp;&nbsp;• 감마 플립: 166.4 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
         "<b>만기일 (2026-09-11, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 172.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 +1.3%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
@@ -10318,7 +10318,7 @@
       "stage_label": "바닥다지기",
       "stage_sma150": 143.7,
       "stage_slope_pct": -3.35,
-      "stage_pos_pct": 18.47,
+      "stage_pos_pct": 18.51,
       "stage_prior_slope_pct": -7.75,
       "stage_debug": "start=2025-07-15 end=2026-09-08 raw_results=290 closes=290 status=DELAYED",
       "stage_n_closes": 290
