@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T17:24:30.457966+00:00",
+  "generated_at": "2026-09-10T20:08:07.284952+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_return": 0,
@@ -22,14 +22,14 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 366.1005,
+      "current_spot": 363.15,
       "current_gamma_flip": 370,
       "current_regime": "positive",
-      "return_pct": 4.3,
-      "unrealized_pnl": 1510.05,
+      "return_pct": 3.46,
+      "unrealized_pnl": 1215.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⛔ 종가(366.1005)가 150일선(383.9) 아래로 이탈"
+        "⛔ 종가(363.15)가 150일선(383.88) 아래로 이탈"
       ],
       "live_fetch_error": null
     },
@@ -42,14 +42,14 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 166.4,
-      "current_gamma_flip": 75,
+      "current_spot": 165.845,
+      "current_gamma_flip": 114,
       "current_regime": "negative",
-      "return_pct": 0.67,
-      "unrealized_pnl": 110.0,
+      "return_pct": 0.33,
+      "unrealized_pnl": 54.5,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 175.54 < Hull50 189.72 (교차 시점은 더 이전)"
+        "⚠️ 이미 데드크로스 상태 — Hull21 175.49 < Hull50 189.7 (교차 시점은 더 이전)"
       ],
       "live_fetch_error": null
     },
@@ -62,15 +62,15 @@
       "quantity": 50.0,
       "status": "진행중",
       "note": "풋월 334 - 350상승 확인 후 1차진입",
-      "current_spot": 364.24,
-      "current_gamma_flip": 365,
+      "current_spot": 360.93,
+      "current_gamma_flip": 360,
       "current_regime": "positive",
-      "return_pct": 3.92,
-      "unrealized_pnl": 687.0,
+      "return_pct": 2.98,
+      "unrealized_pnl": 521.5,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 361.49 < Hull50 363.75 (교차 시점은 더 이전)",
-        "⛔ 종가(364.24)가 150일선(375.87) 아래로 이탈"
+        "⚠️ 이미 데드크로스 상태 — Hull21 361.19 < Hull50 363.65 (교차 시점은 더 이전)",
+        "⛔ 종가(360.93)가 150일선(375.84) 아래로 이탈"
       ],
       "live_fetch_error": null
     }
