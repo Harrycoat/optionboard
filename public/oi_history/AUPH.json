@@ -1582,7 +1582,7 @@
   {
     "ticker": "AUPH",
     "date": "2026-09-15",
-    "spot": 16.41,
+    "spot": 16.1,
     "expiries_used": [
       "2026-09-18",
       "2026-10-16"
@@ -1632,7 +1632,7 @@
       },
       {
         "strike": 11,
-        "call_oi": 112.0,
+        "call_oi": 114.0,
         "put_oi": 10.0,
         "call_volume": 17.0,
         "put_volume": 4.0
@@ -1654,34 +1654,34 @@
       {
         "strike": 14,
         "call_oi": 44.0,
-        "put_oi": 326.0,
+        "put_oi": 332.0,
         "call_volume": 3.0,
         "put_volume": 9.0
       },
       {
         "strike": 15,
         "call_oi": 420.0,
-        "put_oi": 525.0,
+        "put_oi": 531.0,
         "call_volume": 2.0,
         "put_volume": 35.0
       },
       {
         "strike": 16,
-        "call_oi": 348.0,
+        "call_oi": 353.0,
         "put_oi": 360.0,
         "call_volume": 55.0,
-        "put_volume": 4.0
+        "put_volume": 9.0
       },
       {
         "strike": 17,
-        "call_oi": 1725.0,
+        "call_oi": 1594.0,
         "put_oi": 225.0,
-        "call_volume": 287.0,
-        "put_volume": 10.0
+        "call_volume": 18.0,
+        "put_volume": 7.0
       },
       {
         "strike": 18,
-        "call_oi": 832.0,
+        "call_oi": 838.0,
         "put_oi": 3.0,
         "call_volume": 27.0,
         "put_volume": 3.0
@@ -1695,9 +1695,9 @@
       },
       {
         "strike": 20,
-        "call_oi": 7219.0,
+        "call_oi": 7238.0,
         "put_oi": 0.0,
-        "call_volume": 35.0,
+        "call_volume": 27.0,
         "put_volume": 0.0
       },
       {
