@@ -4,12 +4,25 @@
     "api/candles.py": { "maxDuration": 30 },
     "api/earnings_scan.py": { "maxDuration": 30 }
   },
+  "redirects": [
+    {
+      "source": "/future-leaders.html",
+      "destination": "https://gex-future-leaders.harryahn.chatgpt.site",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/leaders_report.json",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
     }
   ]
