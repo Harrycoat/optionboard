@@ -139,14 +139,16 @@ def gamma_flip_table_html(rows):
 def buy_signal_table_html(rows):
     trs = [
         "<tr>" + td(r.get("ticker")) + td(f"${r.get('spot', '-')}")
-        + td(r.get("stage_label")) + td(r.get("hull21"))
-        + td(pct_text(r.get("dev_pct"))) + "</tr>"
+        + td(r.get("signal_label") or r.get("stage_label"))
+        + td(f"{r.get('ma50', '-')} / {r.get('ma100', '-')}")
+        + td(f"{r.get('volume_ratio', '-')}x")
+        + td(r.get("score", "-")) + "</tr>"
         for r in rows
     ]
     return _table(
-        ["티커", "현재가", "스테이지", "Hull21", "Dev%"],
+        ["티커", "현재가", "신호", "MA50 / MA100", "거래량 배수", "점수"],
         trs,
-        "오늘 매수 신호(스테이지1·2)가 없습니다.",
+        "오늘 확정 조건을 통과한 기술적 진입 후보가 없습니다.",
     )
 
 
@@ -154,7 +156,10 @@ def build_post(report, date_str):
     title = f"[{date_str}] 오늘의 GEX 감마 브리핑 | GEXOPTION"
     gainers = report.get("top_gainers", [])
     flip_rows = report.get("top10_gamma_flip", [])
-    signals = report.get("dev_reentry_long", [])
+    trend_signals = report.get("technical_trend_candidates", [])
+    hull_signals = report.get("technical_hull_entries", [])
+    signal_map = {row.get("ticker"): row for row in trend_signals + hull_signals}
+    signals = sorted(signal_map.values(), key=lambda row: row.get("score", 0), reverse=True)
 
     body = f"""
 <div style="max-width:820px; margin:0 auto; color:{TEXT_COLOR}; font-family:Arial,sans-serif; line-height:1.75;">
@@ -162,18 +167,18 @@ def build_post(report, date_str):
   <p style="margin:0 0 20px; color:{MUTED_COLOR};">{date_str} 장 마감 데이터 · GEXOPTION.COM</p>
   <div style="padding:16px 18px; background:#fff8e1; border-left:4px solid {ACCENT_COLOR}; border-radius:8px; margin-bottom:24px;">
     <b>오늘의 한눈 요약</b><br>급등 후보 {len(gainers)}개, Gamma Flip 근접 종목 {len(flip_rows)}개,
-    HULL 매수 관찰 신호 {len(signals)}개가 포착되었습니다.
+    기술적 진입 후보 {len(signals)}개가 포착되었습니다.
   </div>
   <p style="margin:0 0 26px;">유동성 상위 미국 주식의 옵션 데이터를 기준으로 Call Wall, Put Wall,
-  Gamma Flip과 HULL 되돌림 신호를 정리했습니다. 수치는 매매 지시가 아니라 당일 시장 구조를 확인하기 위한 참고 자료입니다.</p>
+  Gamma Flip과 MA50·MA100 신규 교차, Hull21 눌림 재진입을 정리했습니다. 수치는 매매 지시가 아니라 당일 시장 구조를 확인하기 위한 참고 자료입니다.</p>
   <h3 style="margin:26px 0 6px; color:#0f172a;">🔥 오늘의 급등주 Top 10</h3>
   <p style="margin:0; color:{MUTED_COLOR};">가격 변화와 주요 GEX 레벨을 함께 비교합니다.</p>
   {gainers_table_html(gainers)}
   <h3 style="margin:30px 0 6px; color:#0f172a;">📍 Gamma Flip 근접 Top 10</h3>
   <p style="margin:0; color:{MUTED_COLOR};">현재가가 Gamma Flip에 가까울수록 감마 체제 변화 가능성을 주의해서 봅니다.</p>
   {gamma_flip_table_html(flip_rows)}
-  <h3 style="margin:30px 0 6px; color:#0f172a;">🎯 오늘의 HULL 관찰 신호</h3>
-  <p style="margin:0; color:{MUTED_COLOR};">Hull21 이동평균과 Dev% 밴드 되돌림을 기준으로 한 스캐너 결과입니다.</p>
+  <h3 style="margin:30px 0 6px; color:#0f172a;">🎯 오늘의 기술적 진입 후보</h3>
+  <p style="margin:0; color:{MUTED_COLOR};">신규 MA50·MA100 상승 교차 또는 상승 추세의 Hull21 눌림 재진입 중 거래량·유동성 조건을 통과한 결과입니다.</p>
   {buy_signal_table_html(signals)}
   <p style="text-align:center; margin:30px 0;"><a href="{SITE_URL}" target="_blank" rel="noopener"
      style="display:inline-block; padding:12px 20px; background:#0f172a; color:#fff; text-decoration:none; border-radius:8px; font-weight:700;">GEXOPTION에서 실시간 데이터 확인하기</a></p>

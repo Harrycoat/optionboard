@@ -634,10 +634,16 @@ def build_report():
     report["vanna_squeeze_candidates"] = build_vanna_squeeze_candidates(report["categories"])
     report["charm_squeeze_candidates"] = build_charm_squeeze_candidates(report["categories"])
 
-    # ---- Dev% 재진입 스캐너 ("오늘의 매수 신호") ----
-    # active_universe(100종목)를 재사용해서 추가 API 호출 부담 없이 이어서 스캔한다.
+    # ---- 오늘의 기술적 진입 후보 ----
+    # MA50/100 신규 교차와 상승 추세 내 Hull21 눌림 재진입을 함께 찾는다.
+    # active_universe(100종목)를 재사용해 유동성·거래량을 확인하고 진입 후보만 GEX로 보강한다.
     active_universe_tickers = load_or_build_active_universe()
     dev_signals = build_dev_reentry_signals(active_universe_tickers)
+    report["technical_top_pick"] = dev_signals["top_pick"]
+    report["technical_trend_candidates"] = dev_signals["trend_candidates"]
+    report["technical_hull_entries"] = dev_signals["hull_entries"]
+    report["technical_watch_candidates"] = dev_signals["watch_candidates"]
+    # 기존 화면/블로그와의 호환을 위해 레거시 키도 유지한다.
     report["dev_reentry_long"] = dev_signals["long_reentry"]
     report["dev_reentry_short_exit"] = dev_signals["short_exit"]
 
@@ -654,8 +660,9 @@ def build_report():
     print(f"감마 스퀴즈 후보: {len(report['gamma_squeeze_candidates'])}개")
     print(f"바나 스퀴즈 후보: {len(report['vanna_squeeze_candidates'])}개")
     print(f"차름 스퀴즈 후보: {len(report['charm_squeeze_candidates'])}개")
-    print(f"Dev 롱 재진입: {len(report['dev_reentry_long'])}개")
-    print(f"Dev 숏·청산: {len(report['dev_reentry_short_exit'])}개")
+    print(f"MA50/100 신규추세: {len(report['technical_trend_candidates'])}개")
+    print(f"Hull21 눌림 재진입: {len(report['technical_hull_entries'])}개")
+    print(f"기술적 관찰 후보: {len(report['technical_watch_candidates'])}개")
     print(f"이상 옵션 거래: {len(report['unusual_options_activity'])}개")
 
 
