@@ -1118,6 +1118,8 @@ def quick_gamma_flip(ticker: str) -> dict:
         "spot": float(spot),
         "is_stale_price": is_stale_price,
         "expiry_used": nearest_expiry,
+        "call_wall": gex["call_wall"],
+        "put_wall": gex["put_wall"],
         "gamma_flip": gex["gamma_flip"],
         "regime": gex["regime"],
         "net_gex_total": gex["net_gex_total"],
