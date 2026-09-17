@@ -815,7 +815,6 @@ def _wall_shift_label(call_delta, put_delta, flip_delta, spot_delta, has_previou
         return "기준값 저장", "baseline"
     call_delta = call_delta or 0
     put_delta = put_delta or 0
-    flip_delta = flip_delta or 0
     spot_delta = spot_delta or 0
     if call_delta < 0 and put_delta > 0:
         return "변동 구간 압축", "squeeze"
@@ -829,14 +828,14 @@ def _wall_shift_label(call_delta, put_delta, flip_delta, spot_delta, has_previou
         if spot_delta < 0:
             return "하락 이동 확인", "bearish"
         return "하락 구조·가격 버팀", "watch_down"
-    if call_delta > 0 or flip_delta > 0:
+    if call_delta > 0:
         if spot_delta > 0:
-            return "상방 이동 확인", "bullish"
-        return "상방 공간 확대", "upside"
-    if put_delta < 0 or flip_delta < 0:
+            return "Call Wall 상승 확인", "bullish"
+        return "Call Wall 상승·가격 대기", "upside"
+    if call_delta < 0:
         if spot_delta < 0:
-            return "하방 이동 확인", "bearish"
-        return "하방 지지 약화", "downside"
+            return "Call Wall 하락 확인", "bearish"
+        return "Call Wall 하락·가격 버팀", "downside"
     return "주요 Wall 유지", "stable"
 
 
@@ -875,10 +874,20 @@ def build_wall_shift_radar(categories_report: dict, previous_report: dict, captu
         label, shift_type = _wall_shift_label(
             call_delta, put_delta, flip_delta, spot_delta, previous is not None
         )
+
+        # 상승 후보 전용: Put Wall(지지)이 올라왔거나 Call Wall(저항)이
+        # 위로 이동한 종목만 보여준다. 유지/하락 및 Gamma Flip 단독 변화는 제외한다.
+        bullish_wall_shift = previous is not None and (
+            (put_delta is not None and put_delta > 0)
+            or (call_delta is not None and call_delta > 0)
+        )
+        if not bullish_wall_shift:
+            continue
+
         spot = snapshot.get("spot")
         movement_score = sum(
             abs(_pct_of_spot(delta, spot) or 0)
-            for delta in (call_delta, put_delta, flip_delta)
+            for delta in (call_delta, put_delta)
         )
         price_confirmed = shift_type in ("bullish", "bearish")
         ranking_score = movement_score + abs(spot_change_pct or 0) * 0.5
