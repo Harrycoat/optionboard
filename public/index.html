@@ -261,6 +261,16 @@
   <a class="home-btn" href="/future-leaders.html" style="border-color:#55e6b5; color:#55e6b5;">🚀 Future Leaders</a>
     <a class="home-btn" href="/gex-manual.html" style="border-color: var(--gold); color: var(--gold);">🎯 사용법 매뉴얼</a>
 </header>
+  <nav aria-label="메인 카테고리" style="border-bottom:1px solid var(--line); background:var(--panel); overflow-x:auto;">
+  <div style="max-width:1100px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; gap:8px; white-space:nowrap;">
+    <a class="home-btn" href="/">HOME</a>
+    <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#future-leaders-core" style="border-color:#55e6b5; color:#55e6b5;">Future Leaders</a>
+    <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#premium-swing" style="border-color:#e0a838; color:#e0a838;">Swing Trade</a>
+    <a class="home-btn" href="#etf-market-leader">ETF Market Leader</a>
+    <a class="home-btn" href="#unusual-options">Unusual Options</a>
+    <a class="home-btn" href="#today-buy-signal">Today’s Buy Signal</a>
+  </div>
+</nav>
 <div class="market-float" id="marketFloat">
   <div class="market-float-head">
     <span>📍 시장</span>
@@ -304,12 +314,11 @@
   <div class="updated-note" id="journalUpdatedNote">불러오는 중...</div>
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
-</div>
-  <div class="section-title">🎯 오늘의 매수 신호</div>
+</div><div class="section-title" id="today-buy-signal">🎯 오늘의 매수 신호</div>
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아왔는지(HULL 스테이지1 관찰타이밍), 상승 전환과 모멘텀까지 확인됐는지(HULL 스테이지2 진입타이밍)를 보여드립니다.</p>
   <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
   <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
-  <div class="section-title">🚨 오늘의 이상 옵션 거래</div>
+ <div class="section-title" id="unusual-options">🚨 오늘의 이상 옵션 거래</div>
   <div style="background:linear-gradient(135deg, rgba(224,168,56,0.14), rgba(224,168,56,0.03)); border:1px solid var(--gold); border-radius:10px; padding:16px 18px; margin-bottom:12px;">
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
       <span style="font-size:22px;">🐋</span>
@@ -325,7 +334,7 @@
   </details>
   <div class="updated-note" id="unusualOptionsUpdatedNote">불러오는 중...</div>
   <div id="unusualOptionsBoard"><div class="leader-empty">불러오는 중...</div></div>
-  <div class="section-title">ETF 마켓 리더</div>
+  <div class="section-title" id="etf-market-leader">ETF 마켓 리더</div>
   <div style="background:linear-gradient(135deg, rgba(224,168,56,0.14), rgba(224,168,56,0.03)); border:1px solid var(--gold); border-radius:10px; padding:16px 18px; margin-bottom:12px;">
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
       <span style="font-size:22px;">🌊</span>
