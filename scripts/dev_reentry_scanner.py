@@ -34,7 +34,7 @@ BAND_LOOKBACK = 50
 BAND_MULTIPLIER = 2.0
 SLOPE_LOOKBACK = 3
 STAGE_LOOKBACK_DAYS = 15  # 최근 스트레치~복귀 패턴을 찾기 위해 살펴보는 기간
-LOOKBACK_DAYS_REQUEST = 130  # Hull21 계산 + 50일 밴드 + 단계 판별 여유값
+LOOKBACK_DAYS_REQUEST = 200  # Hull21 계산 + 50일 밴드 + 단계 판별 여유값
 
 PER_TICKER_DELAY_SECONDS = 0.4
 MAX_RETRIES = 1
