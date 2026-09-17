@@ -315,7 +315,7 @@
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
 </div><div class="section-title" id="wall-shift-radar">🧭 Wall Shift Radar</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">직전 업데이트와 현재 데이터를 비교해 Call Wall·Put Wall·Gamma Flip이 어느 방향으로 이동했는지 보여드립니다. 지지가 올라오는 종목과 저항이 열리는 종목을 빠르게 확인하세요.</p>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">직전 업데이트와 비교해 Put Wall(지지)이 상승했거나 Call Wall(저항)이 위로 이동한 종목만 보여드립니다.</p>
   <div class="updated-note" id="wallShiftUpdatedNote">불러오는 중...</div>
   <div id="wallShiftBoard"><div class="leader-empty">불러오는 중...</div></div>
   <div style="margin-top:22px; padding-top:16px; border-top:1px solid var(--line);">
@@ -730,8 +730,8 @@ async function loadWallShiftRadar(){
   }
   const rows = report.wall_shift_radar || [];
   if(!rows.length){
-    boardEl.innerHTML = '<div class="leader-empty">첫 Wall 기준값을 준비하고 있습니다. 다음 업데이트부터 이동 변화가 표시됩니다.</div>';
-    note.textContent = 'Call Wall · Put Wall · Gamma Flip 변화를 추적합니다';
+    boardEl.innerHTML = '<div class="leader-empty">이번 스캔에서 Put Wall 또는 Call Wall이 상승한 종목이 없습니다</div>';
+    note.textContent = 'Put Wall 상승 · Call Wall 상승 종목만 표시합니다';
   }else{
     boardEl.innerHTML = rows.map(wallShiftRowHTML).join('') +
       `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">
