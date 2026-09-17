@@ -1625,7 +1625,7 @@
   {
     "ticker": "DPRO",
     "date": "2026-09-17",
-    "spot": 5.83,
+    "spot": 5.75,
     "expiries_used": [
       "2026-09-18",
       "2026-10-16"
@@ -1642,7 +1642,7 @@
         "strike": 2,
         "call_oi": 86.0,
         "put_oi": 0.0,
-        "call_volume": 6.0,
+        "call_volume": 60.0,
         "put_volume": 0.0
       },
       {
@@ -1663,56 +1663,56 @@
         "strike": 4,
         "call_oi": 347.0,
         "put_oi": 863.0,
-        "call_volume": 16.0,
-        "put_volume": 47.0
+        "call_volume": 21.0,
+        "put_volume": 48.0
       },
       {
         "strike": 5,
         "call_oi": 3517.0,
         "put_oi": 2819.0,
-        "call_volume": 123.0,
-        "put_volume": 176.0
+        "call_volume": 130.0,
+        "put_volume": 206.0
       },
       {
         "strike": 6,
         "call_oi": 30995.0,
         "put_oi": 3360.0,
-        "call_volume": 711.0,
-        "put_volume": 125.0
+        "call_volume": 968.0,
+        "put_volume": 133.0
       },
       {
         "strike": 7,
         "call_oi": 2037.0,
         "put_oi": 51.0,
-        "call_volume": 99.0,
+        "call_volume": 113.0,
         "put_volume": 2.0
       },
       {
         "strike": 7.5,
         "call_oi": 96774.0,
         "put_oi": 341.0,
-        "call_volume": 1158.0,
+        "call_volume": 1531.0,
         "put_volume": 20.0
       },
       {
         "strike": 8,
         "call_oi": 719.0,
         "put_oi": 7.0,
-        "call_volume": 12.0,
+        "call_volume": 14.0,
         "put_volume": 2.0
       },
       {
         "strike": 9,
         "call_oi": 1589.0,
         "put_oi": 13.0,
-        "call_volume": 63.0,
+        "call_volume": 67.0,
         "put_volume": 6.0
       },
       {
         "strike": 10,
         "call_oi": 5210.0,
         "put_oi": 145.0,
-        "call_volume": 7.0,
+        "call_volume": 2.0,
         "put_volume": 3.0
       },
       {
