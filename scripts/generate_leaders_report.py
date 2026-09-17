@@ -32,15 +32,6 @@ daily_update.py와 동일한 크론(.github/workflows/daily-update.yml)에서
   [매일]           active_universe.txt(100종목)만 스캔해서 Top10 Gamma Flip을
                    계산한다. 100종목이라 현재가 조회를 포함해도 훨씬 빠르다.
 
----
-[Dev% 재진입 스캐너 — "오늘의 매수 신호"]
-
-active_universe.txt(100종목)를 그대로 재사용해서, Hull21 이동평균 + Dev%
-괴리율 기반 재진입 신호(TOS ThinkScript Hull_Deviation_Reentry_v3와 동일 로직)를
-계산한다. dev_reentry_scanner.py에 로직이 분리되어 있고, 여기서는 결과만
-받아서 리포트에 합친다.
-
----
 [Unusual Options Activity 스캐너 — "이상 옵션 거래"]
 
 active_universe.txt(100종목)를 그대로 재사용해서(추가 유니버스 재계산 없음),
@@ -53,7 +44,8 @@ import json
 import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, time as dt_time, timezone
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -63,11 +55,10 @@ from options_engine import (
     quick_gamma_flip,
     rank_by_liquidity,
     fetch_oi_volume_snapshot,
+    fetch_daily_ohlc,
     MASSIVE_API_BASE,
     MASSIVE_API_KEY,
 )
-from dev_reentry_scanner import build_dev_reentry_signals  # noqa: E402
-
 WATCHLIST_PATH = os.path.join(os.path.dirname(__file__), "leaders_watchlist.txt")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_report.json")
 UNIVERSE_PATH = os.path.join(os.path.dirname(__file__), "sp500_nasdaq100_universe.txt")
@@ -94,6 +85,15 @@ UNUSUAL_OPTIONS_MIN_VOLUME = 300
 UNUSUAL_OPTIONS_MIN_RATIO = 1.0
 UNUSUAL_OPTIONS_TOP_N = 15
 UNUSUAL_OPTIONS_MAX_PER_TICKER = 3  # 한 종목(예: 신규 옵션 상장)이 결과를 독점하지 않도록 제한
+WALL_HISTORY_LIMIT = 20
+WALL_SHIFT_TOP_N = 10
+CALL_WALL_SCAN_TOP_N = 15
+CALL_WALL_BREAK_BUFFER_PCT = 0.3
+CALL_WALL_PREP_DISTANCE_PCT = 1.0
+CALL_WALL_MIN_RVOL = 1.5
+
+_QUICK_FLIP_CACHE = {}
+_ACTIVE_UNIVERSE_CACHE = None
 
 
 def parse_watchlist(path):
@@ -297,9 +297,13 @@ def compute_flip_distance_pct(spot, gamma_flip):
 
 
 def try_quick_flip(ticker: str):
+    if ticker in _QUICK_FLIP_CACHE:
+        return _QUICK_FLIP_CACHE[ticker], None
     for attempt in range(UNIVERSE_MAX_RETRIES + 1):
         try:
-            return quick_gamma_flip(ticker), None
+            result = quick_gamma_flip(ticker)
+            _QUICK_FLIP_CACHE[ticker] = result
+            return result, None
         except Exception as e:
             if attempt < UNIVERSE_MAX_RETRIES:
                 wait = UNIVERSE_RETRY_BACKOFF_SECONDS[attempt]
@@ -360,15 +364,19 @@ def build_active_universe(
 
 
 def load_or_build_active_universe() -> list:
+    global _ACTIVE_UNIVERSE_CACHE
+    if _ACTIVE_UNIVERSE_CACHE is not None:
+        return list(_ACTIVE_UNIVERSE_CACHE)
     is_scan_day = datetime.now(timezone.utc).weekday() == LIQUIDITY_SCAN_WEEKDAY
     file_exists = os.path.exists(ACTIVE_UNIVERSE_PATH)
     if is_scan_day or not file_exists:
         reason = "월요일" if is_scan_day else "active_universe.txt 없음"
         print(f"\n유동성 재스캔 조건 충족 ({reason}) — 전체 유니버스 스캔 실행")
-        return build_active_universe()
+        _ACTIVE_UNIVERSE_CACHE = build_active_universe()
     else:
         print(f"\n기존 active_universe.txt 재사용 (다음 갱신: 월요일)")
-        return load_universe(ACTIVE_UNIVERSE_PATH)
+        _ACTIVE_UNIVERSE_CACHE = load_universe(ACTIVE_UNIVERSE_PATH)
+    return list(_ACTIVE_UNIVERSE_CACHE)
 
 
 def build_top10_gamma_flip(top_n: int = 10) -> list:
@@ -459,6 +467,158 @@ def build_top_gainers(top_n: int = 10, min_price: float = 5.0, min_volume: int =
         time.sleep(PER_TICKER_DELAY_SECONDS)
     print(f"Top Gainers 스캐너 완료: Top {len(top)} 추출")
     return top
+
+
+def _sma(values: list[float], period: int):
+    if len(values) < period:
+        return None
+    return sum(values[-period:]) / period
+
+
+def _ema(values: list[float], period: int):
+    if len(values) < period:
+        return None
+    value = sum(values[:period]) / period
+    multiplier = 2 / (period + 1)
+    for price in values[period:]:
+        value = price * multiplier + value * (1 - multiplier)
+    return value
+
+
+def _intraday_volume_fraction(now_utc=None) -> float:
+    """미 동부 장중 경과 비율. 장 시작 직후 과대평가 방지를 위해 최소 10%로 둔다."""
+    now_et = (now_utc or datetime.now(timezone.utc)).astimezone(ZoneInfo("America/New_York"))
+    market_open = datetime.combine(now_et.date(), dt_time(9, 30), tzinfo=now_et.tzinfo)
+    market_close = datetime.combine(now_et.date(), dt_time(16, 0), tzinfo=now_et.tzinfo)
+    if now_et <= market_open:
+        return 0.10
+    if now_et >= market_close:
+        return 1.0
+    elapsed = (now_et - market_open).total_seconds()
+    return max(0.10, min(1.0, elapsed / (6.5 * 60 * 60)))
+
+
+def _previous_breakout_map(previous_report: dict) -> dict:
+    return {
+        row.get("ticker"): row
+        for row in previous_report.get("call_wall_breakouts", [])
+        if row.get("ticker")
+    }
+
+
+def build_call_wall_breakout_scan(tickers: list, previous_report: dict) -> list:
+    """Call Wall 돌파를 주식 거래량과 추세선으로 확인하는 수동 스윙 후보 스캔."""
+    print(f"\nCall Wall 거래량 돌파 스캐너: {len(tickers)}개 종목 스캔 시작")
+    previous_map = _previous_breakout_map(previous_report)
+    volume_fraction = _intraday_volume_fraction()
+    candidates = []
+
+    for i, ticker in enumerate(tickers, 1):
+        if i % 20 == 0 or i == 1:
+            print(f"  진행: {i}/{len(tickers)} ({ticker})")
+        gex, err = try_quick_flip(ticker)
+        if not gex or gex.get("call_wall") is None or gex.get("spot") is None:
+            continue
+
+        bars, _debug = fetch_daily_ohlc(ticker, lookback_days=330)
+        if len(bars) < 21:
+            continue
+        closes = [float(row["close"]) for row in bars]
+        current_bar = bars[-1]
+        current_volume = float(current_bar.get("volume") or 0)
+        today_et = datetime.now(timezone.utc).astimezone(
+            ZoneInfo("America/New_York")
+        ).date().isoformat()
+        volume_is_current_day = current_bar.get("time") == today_et
+        applied_volume_fraction = volume_fraction if volume_is_current_day else 1.0
+        historical_volumes = [
+            float(row.get("volume") or 0) for row in bars[-21:-1]
+            if row.get("volume") is not None
+        ]
+        avg_volume_20 = (
+            sum(historical_volumes) / len(historical_volumes)
+            if historical_volumes else None
+        )
+        expected_volume = avg_volume_20 * applied_volume_fraction if avg_volume_20 else None
+        relative_volume = current_volume / expected_volume if expected_volume else None
+
+        spot = float(gex["spot"])
+        call_wall = float(gex["call_wall"])
+        wall_distance_pct = (spot - call_wall) / call_wall * 100
+        above_wall = spot > call_wall
+        buffered_breakout = wall_distance_pct >= CALL_WALL_BREAK_BUFFER_PCT
+        volume_confirmed = bool(
+            volume_is_current_day
+            and not gex.get("is_stale_price")
+            and relative_volume is not None
+            and relative_volume >= CALL_WALL_MIN_RVOL
+        )
+
+        previous = previous_map.get(ticker) or {}
+        previously_above = bool(previous.get("above_call_wall"))
+        if previously_above and not above_wall:
+            signal_type, signal_label = "failed", "⚠️ 돌파 실패"
+        elif previously_above and above_wall:
+            signal_type, signal_label = "holding", "✅ 돌파 유지"
+        elif buffered_breakout and volume_confirmed:
+            signal_type, signal_label = "confirmed", "🚀 거래량 돌파 확인"
+        elif above_wall:
+            signal_type, signal_label = "attempt", "🟡 돌파 시도"
+        elif wall_distance_pct >= -CALL_WALL_PREP_DISTANCE_PCT:
+            signal_type, signal_label = "preparing", "👀 돌파 준비"
+        else:
+            continue
+
+        ema21 = _ema(closes, 21)
+        ma50 = _sma(closes, 50)
+        ma200 = _sma(closes, 200)
+        trend_confirmed = bool(
+            ema21 is not None and ma50 is not None and ma200 is not None
+            and spot > ema21 and spot > ma50 and ma50 > ma200
+        )
+        gamma_bonus = 15 if gex.get("regime") == "negative" else 0
+        signal_rank = {
+            "confirmed": 5, "holding": 4, "attempt": 3, "preparing": 2, "failed": 1
+        }[signal_type]
+        score = (
+            signal_rank * 100
+            + min(relative_volume or 0, 5) * 10
+            + (20 if trend_confirmed else 0)
+            + gamma_bonus
+            + max(min(wall_distance_pct, 5), -5)
+        )
+        candidates.append({
+            "ticker": ticker,
+            "spot": round(spot, 2),
+            "call_wall": call_wall,
+            "wall_distance_pct": round(wall_distance_pct, 2),
+            "above_call_wall": above_wall,
+            "signal_type": signal_type,
+            "signal_label": signal_label,
+            "relative_volume": round(relative_volume, 2) if relative_volume is not None else None,
+            "current_volume": round(current_volume),
+            "average_volume_20": round(avg_volume_20) if avg_volume_20 is not None else None,
+            "volume_fraction": round(applied_volume_fraction, 3),
+            "volume_as_of": current_bar.get("time"),
+            "volume_is_current_day": volume_is_current_day,
+            "volume_confirmed": volume_confirmed,
+            "gamma_regime": gex.get("regime"),
+            "ema21": round(ema21, 2) if ema21 is not None else None,
+            "ma50": round(ma50, 2) if ma50 is not None else None,
+            "ma200": round(ma200, 2) if ma200 is not None else None,
+            "trend_confirmed": trend_confirmed,
+            "score": round(score, 2),
+        })
+        time.sleep(UNIVERSE_PER_TICKER_DELAY_SECONDS)
+
+    candidates.sort(key=lambda row: (-row["score"], row["ticker"]))
+    result = candidates[:CALL_WALL_SCAN_TOP_N]
+    print(
+        f"Call Wall 돌파 스캐너 완료: 후보 {len(candidates)}개 / "
+        f"거래량 확인 {sum(1 for row in candidates if row['signal_type'] == 'confirmed')}개 / "
+        f"Top {len(result)} 표시"
+    )
+    return result
 
 
 def build_unusual_options_activity(
@@ -610,13 +770,169 @@ def build_charm_squeeze_candidates(categories_report: dict, max_days: int = 5, t
     return candidates[:top_n]
 
 
+def _load_previous_report() -> dict:
+    try:
+        with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _flatten_wall_snapshots(categories_report: dict, captured_at: str) -> dict:
+    snapshots = {}
+    for category, entries in categories_report.items():
+        for entry in entries:
+            if entry.get("status") != "ok" or entry.get("spot") is None:
+                continue
+            snapshots[entry["ticker"]] = {
+                "captured_at": captured_at,
+                "category": category,
+                "sector": entry.get("sector"),
+                "spot": entry.get("spot"),
+                "call_wall": entry.get("call_wall"),
+                "put_wall": entry.get("put_wall"),
+                "gamma_flip": entry.get("gamma_flip"),
+                "gamma_regime": entry.get("gamma_regime"),
+            }
+    return snapshots
+
+
+def _number_delta(current, previous):
+    if current is None or previous is None:
+        return None
+    return round(float(current) - float(previous), 2)
+
+
+def _pct_of_spot(value, spot):
+    if value is None or not spot:
+        return None
+    return round(float(value) / float(spot) * 100, 2)
+
+
+def _wall_shift_label(call_delta, put_delta, flip_delta, spot_delta, has_previous):
+    if not has_previous:
+        return "기준값 저장", "baseline"
+    call_delta = call_delta or 0
+    put_delta = put_delta or 0
+    flip_delta = flip_delta or 0
+    spot_delta = spot_delta or 0
+    if call_delta < 0 and put_delta > 0:
+        return "변동 구간 압축", "squeeze"
+    if call_delta > 0 and put_delta < 0:
+        return "상하단 범위 확대", "expansion"
+    if put_delta > 0 and call_delta >= 0:
+        if spot_delta > 0:
+            return "상승 이동 확인", "bullish"
+        return "상승 구조·가격 대기", "watch_up"
+    if put_delta < 0 and call_delta <= 0:
+        if spot_delta < 0:
+            return "하락 이동 확인", "bearish"
+        return "하락 구조·가격 버팀", "watch_down"
+    if call_delta > 0 or flip_delta > 0:
+        if spot_delta > 0:
+            return "상방 이동 확인", "bullish"
+        return "상방 공간 확대", "upside"
+    if put_delta < 0 or flip_delta < 0:
+        if spot_delta < 0:
+            return "하방 이동 확인", "bearish"
+        return "하방 지지 약화", "downside"
+    return "주요 Wall 유지", "stable"
+
+
+def build_wall_shift_radar(categories_report: dict, previous_report: dict, captured_at: str):
+    """직전 리포트와 현재 리포트의 Wall 이동을 비교하고 이력을 보존한다."""
+    history = previous_report.get("wall_history") or {}
+    history = {
+        ticker: rows[-WALL_HISTORY_LIMIT:]
+        for ticker, rows in history.items()
+        if isinstance(rows, list)
+    }
+
+    # Wall Shift 첫 배포 시 기존 리포트의 카테고리 값을 직전 기준으로 사용한다.
+    if not history and previous_report.get("categories"):
+        previous_at = previous_report.get("generated_at") or "previous-report"
+        for ticker, snapshot in _flatten_wall_snapshots(
+            previous_report["categories"], previous_at
+        ).items():
+            history[ticker] = [snapshot]
+
+    current = _flatten_wall_snapshots(categories_report, captured_at)
+    radar = []
+    for ticker, snapshot in current.items():
+        rows = history.setdefault(ticker, [])
+        rows = [row for row in rows if row.get("captured_at") != captured_at]
+        rows.append(snapshot)
+        history[ticker] = rows[-WALL_HISTORY_LIMIT:]
+
+        previous = history[ticker][-2] if len(history[ticker]) >= 2 else None
+        call_delta = _number_delta(snapshot.get("call_wall"), previous and previous.get("call_wall"))
+        put_delta = _number_delta(snapshot.get("put_wall"), previous and previous.get("put_wall"))
+        flip_delta = _number_delta(snapshot.get("gamma_flip"), previous and previous.get("gamma_flip"))
+        spot_delta = _number_delta(snapshot.get("spot"), previous and previous.get("spot"))
+        previous_spot = previous and previous.get("spot")
+        spot_change_pct = _pct_of_spot(spot_delta, previous_spot)
+        label, shift_type = _wall_shift_label(
+            call_delta, put_delta, flip_delta, spot_delta, previous is not None
+        )
+        spot = snapshot.get("spot")
+        movement_score = sum(
+            abs(_pct_of_spot(delta, spot) or 0)
+            for delta in (call_delta, put_delta, flip_delta)
+        )
+        price_confirmed = shift_type in ("bullish", "bearish")
+        ranking_score = movement_score + abs(spot_change_pct or 0) * 0.5
+        radar.append({
+            "ticker": ticker,
+            "sector": snapshot.get("sector"),
+            "spot": spot,
+            "gamma_regime": snapshot.get("gamma_regime"),
+            "shift_label": label,
+            "shift_type": shift_type,
+            "movement_score": round(movement_score, 2),
+            "ranking_score": round(ranking_score, 2),
+            "price_confirmed": price_confirmed,
+            "previous_spot": previous_spot,
+            "spot_change": spot_delta,
+            "spot_change_pct": spot_change_pct,
+            "previous_captured_at": previous and previous.get("captured_at"),
+            "current_captured_at": captured_at,
+            "previous_call_wall": previous and previous.get("call_wall"),
+            "call_wall": snapshot.get("call_wall"),
+            "call_wall_delta": call_delta,
+            "previous_put_wall": previous and previous.get("put_wall"),
+            "put_wall": snapshot.get("put_wall"),
+            "put_wall_delta": put_delta,
+            "previous_gamma_flip": previous and previous.get("gamma_flip"),
+            "gamma_flip": snapshot.get("gamma_flip"),
+            "gamma_flip_delta": flip_delta,
+            "call_wall_upside_pct": _pct_of_spot(
+                _number_delta(snapshot.get("call_wall"), spot), spot
+            ),
+            "put_wall_distance_pct": _pct_of_spot(
+                _number_delta(spot, snapshot.get("put_wall")), spot
+            ),
+        })
+
+    radar.sort(
+        key=lambda row: (
+            0 if row["shift_type"] == "bullish" else 1,
+            -row["ranking_score"],
+            row["ticker"],
+        )
+    )
+    return radar[:WALL_SHIFT_TOP_N], history
+
+
 def build_report():
     print(f"daily_update.py 직후 실행이라 {STARTUP_DELAY_SECONDS}초 대기 후 시작합니다...")
     time.sleep(STARTUP_DELAY_SECONDS)
 
+    previous_report = _load_previous_report()
     categories = parse_watchlist(WATCHLIST_PATH)
+    generated_at = datetime.now(timezone.utc).isoformat()
     report = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": generated_at,
         "categories": {},
     }
 
@@ -633,19 +949,16 @@ def build_report():
     report["gamma_squeeze_candidates"] = build_gamma_squeeze_candidates(report["categories"])
     report["vanna_squeeze_candidates"] = build_vanna_squeeze_candidates(report["categories"])
     report["charm_squeeze_candidates"] = build_charm_squeeze_candidates(report["categories"])
+    report["wall_shift_radar"], report["wall_history"] = build_wall_shift_radar(
+        report["categories"], previous_report, generated_at
+    )
 
-    # ---- 오늘의 기술적 진입 후보 ----
-    # MA50/100 신규 교차와 상승 추세 내 Hull21 눌림 재진입을 함께 찾는다.
-    # active_universe(100종목)를 재사용해 유동성·거래량을 확인하고 진입 후보만 GEX로 보강한다.
     active_universe_tickers = load_or_build_active_universe()
-    dev_signals = build_dev_reentry_signals(active_universe_tickers)
-    report["technical_top_pick"] = dev_signals["top_pick"]
-    report["technical_trend_candidates"] = dev_signals["trend_candidates"]
-    report["technical_hull_entries"] = dev_signals["hull_entries"]
-    report["technical_watch_candidates"] = dev_signals["watch_candidates"]
-    # 기존 화면/블로그와의 호환을 위해 레거시 키도 유지한다.
-    report["dev_reentry_long"] = dev_signals["long_reentry"]
-    report["dev_reentry_short_exit"] = dev_signals["short_exit"]
+
+    # ---- Call Wall 거래량 돌파 스캔 (수동 스윙 트레이딩용) ----
+    report["call_wall_breakouts"] = build_call_wall_breakout_scan(
+        active_universe_tickers, previous_report
+    )
 
     # ---- Unusual Options Activity ("이상 옵션 거래") ----
     # 위와 동일한 active_universe_tickers를 재사용해서 추가 유니버스 재계산 없이 이어서 스캔한다.
@@ -660,9 +973,8 @@ def build_report():
     print(f"감마 스퀴즈 후보: {len(report['gamma_squeeze_candidates'])}개")
     print(f"바나 스퀴즈 후보: {len(report['vanna_squeeze_candidates'])}개")
     print(f"차름 스퀴즈 후보: {len(report['charm_squeeze_candidates'])}개")
-    print(f"MA50/100 신규추세: {len(report['technical_trend_candidates'])}개")
-    print(f"Hull21 눌림 재진입: {len(report['technical_hull_entries'])}개")
-    print(f"기술적 관찰 후보: {len(report['technical_watch_candidates'])}개")
+    print(f"Wall Shift Radar: {len(report['wall_shift_radar'])}개")
+    print(f"Call Wall 거래량 돌파 후보: {len(report['call_wall_breakouts'])}개")
     print(f"이상 옵션 거래: {len(report['unusual_options_activity'])}개")
 
 
