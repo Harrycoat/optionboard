@@ -268,7 +268,7 @@
     <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#premium-swing" style="border-color:#e0a838; color:#e0a838;">Swing Trade</a>
     <a class="home-btn" href="#etf-market-leader" onclick="event.preventDefault(); document.getElementById('etf-market-leader')?.scrollIntoView({behavior:'smooth', block:'start'});">ETF Market Leader</a>
    <a class="home-btn" href="#unusual-options" onclick="event.preventDefault(); document.getElementById('unusual-options')?.scrollIntoView({behavior:'smooth', block:'start'});">Unusual Options</a>
-    <a class="home-btn" href="#today-buy-signal" onclick="event.preventDefault(); document.getElementById('today-buy-signal')?.scrollIntoView({behavior:'smooth', block:'start'});">Today’s Buy Signal</a>
+    <a class="home-btn" href="#wall-shift-radar" onclick="event.preventDefault(); document.getElementById('wall-shift-radar')?.scrollIntoView({behavior:'smooth', block:'start'});">Wall Shift Radar</a>
   </div>
 </nav>
 <div class="market-float" id="marketFloat">
@@ -314,10 +314,16 @@
   <div class="updated-note" id="journalUpdatedNote">불러오는 중...</div>
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
-</div><div class="section-title" id="today-buy-signal">🎯 오늘의 기술적 진입 후보</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">오늘 새로 발생한 MA50·MA100 상승 교차와 상승 추세 안의 Hull21 눌림 재진입을 찾습니다. 거래량·평균 거래대금으로 거른 뒤 Put Wall·Gamma Flip 위치를 함께 확인합니다.</p>
-  <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
-  <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
+</div><div class="section-title" id="wall-shift-radar">🧭 Wall Shift Radar</div>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">직전 업데이트와 현재 데이터를 비교해 Call Wall·Put Wall·Gamma Flip이 어느 방향으로 이동했는지 보여드립니다. 지지가 올라오는 종목과 저항이 열리는 종목을 빠르게 확인하세요.</p>
+  <div class="updated-note" id="wallShiftUpdatedNote">불러오는 중...</div>
+  <div id="wallShiftBoard"><div class="leader-empty">불러오는 중...</div></div>
+  <div style="margin-top:22px; padding-top:16px; border-top:1px solid var(--line);">
+    <div style="font-size:15px; font-weight:800; color:var(--text); margin-bottom:5px;">🚀 Call Wall 거래량 돌파 스캔</div>
+    <p style="color:var(--text-dim); font-size:12px; line-height:1.6; margin:0 0 10px;">Call Wall 돌파 여부를 장중 시간보정 거래량(RVOL), 21EMA, 50·200일선과 함께 판정합니다. 스윙 후보를 직접 점검하기 위한 우선순위 목록입니다.</p>
+    <div class="updated-note" id="callWallBreakoutNote">불러오는 중...</div>
+    <div id="callWallBreakoutBoard"><div class="leader-empty">불러오는 중...</div></div>
+  </div>
  <div class="section-title" id="unusual-options">🚨 오늘의 이상 옵션 거래</div>
   <div style="background:linear-gradient(135deg, rgba(224,168,56,0.14), rgba(224,168,56,0.03)); border:1px solid var(--gold); border-radius:10px; padding:16px 18px; margin-bottom:12px;">
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
@@ -647,30 +653,68 @@ async function loadMacroStrip(){
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
 }
-// ---------- 오늘의 기술적 진입 후보 (MA50/100 + Hull21 + 거래량/유동성 + GEX) ----------
-const SIGNAL_COLORS = { combined: UP, trend_cross: '#55e6b5', hull_reentry: GOLD, watch: '#8aa0b8' };
-function reentrySignalRowHTML(r){
-  const signalType = r.signal_type || (r.stage === 2 ? 'hull_reentry' : 'watch');
-  const signalColor = SIGNAL_COLORS[signalType] || GOLD;
-  const volumeText = r.volume_ratio != null ? `${fmtNum(r.volume_ratio,2)}x` : '—';
-  const gexBadge = r.gex_available
-    ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${r.gex_confirmed ? GREEN_OK : GOLD}22; color:${r.gex_confirmed ? GREEN_OK : GOLD};">GEX ${r.gex_confirmed ? '확인' : '주의'}</span>`
-    : '';
+// ---------- Wall Shift Radar ----------
+const WALL_SHIFT_COLORS = {
+  bullish: '#55e6b5', upside: '#55e6b5', squeeze: GOLD,
+  expansion: '#8aa0ff', bearish: DOWN, downside: DOWN,
+  watch_up: GOLD, watch_down: GOLD,
+  stable: '#8aa0b8', baseline: '#8aa0b8'
+};
+function wallValueHTML(label, previous, current, delta, color){
+  const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '―';
+  const deltaText = delta == null ? '' : ` <b style="color:${color};">${arrow} ${delta > 0 ? '+' : ''}${fmtNum(delta,2)}</b>`;
+  const valueText = previous == null
+    ? `$${fmtNum(current,1)}`
+    : `$${fmtNum(previous,1)} → $${fmtNum(current,1)}`;
+  return `<span class="mono" style="font-size:10.5px; color:var(--text-dim);">${label} <b style="color:var(--text);">${valueText}</b>${deltaText}</span>`;
+}
+function wallShiftRowHTML(r){
+  const color = WALL_SHIFT_COLORS[r.shift_type] || GOLD;
+  const spotColor = r.spot_change_pct > 0 ? UP : r.spot_change_pct < 0 ? DOWN : '#8aa0b8';
+  const callColor = r.call_wall_delta > 0 ? UP : r.call_wall_delta < 0 ? DOWN : '#8aa0b8';
+  const putColor = r.put_wall_delta > 0 ? UP : r.put_wall_delta < 0 ? DOWN : '#8aa0b8';
+  const flipColor = r.gamma_flip_delta > 0 ? UP : r.gamma_flip_delta < 0 ? DOWN : '#8aa0b8';
   return `
     <div class="leader-card" data-ticker="${r.ticker}">
       <span class="leader-ticker">${r.ticker}</span>
       <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
-      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${signalColor}22; color:${signalColor};">${r.signal_label || r.stage_label}</span>
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">MA50/100 <b style="color:var(--text)">${fmtNum(r.ma50,2)} / ${fmtNum(r.ma100,2)}</b></span>
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">거래량 <b style="color:${r.volume_confirmed ? GREEN_OK : GOLD}">${volumeText}</b></span>
-      ${r.score != null ? `<span class="mono" style="font-size:11px; color:${GOLD};">점수 <b>${fmtNum(r.score,1)}</b></span>` : ''}
-      ${gexBadge}
+      ${r.spot_change_pct != null ? `<span class="mono" style="font-size:10px; font-weight:800; color:${spotColor};">가격 ${r.spot_change_pct > 0 ? '+' : ''}${fmtNum(r.spot_change_pct,2)}%</span>` : ''}
+      <span style="font-size:10px; font-weight:800; padding:2px 7px; border-radius:4px; background:${color}22; color:${color};">${r.shift_label}</span>
+      ${wallValueHTML('Put', r.previous_put_wall, r.put_wall, r.put_wall_delta, putColor)}
+      ${wallValueHTML('Call', r.previous_call_wall, r.call_wall, r.call_wall_delta, callColor)}
+      ${wallValueHTML('Flip', r.previous_gamma_flip, r.gamma_flip, r.gamma_flip_delta, flipColor)}
+      ${r.call_wall_upside_pct != null ? `<span class="mono" style="font-size:10px; color:${GOLD};">상방여유 ${r.call_wall_upside_pct >= 0 ? '+' : ''}${fmtNum(r.call_wall_upside_pct,1)}%</span>` : ''}
     </div>
   `;
 }
-async function loadReentrySignals(){
-  const boardEl = document.getElementById('reentrySignalBoard');
-  const note = document.getElementById('reentryUpdatedNote');
+function callWallBreakoutRowHTML(r){
+  const signalColors = {
+    confirmed: UP, holding: '#55e6b5', attempt: GOLD,
+    preparing: '#8aa0ff', failed: DOWN
+  };
+  const color = signalColors[r.signal_type] || '#8aa0b8';
+  const wallPct = r.wall_distance_pct == null
+    ? '—'
+    : `${r.wall_distance_pct >= 0 ? '+' : ''}${fmtNum(r.wall_distance_pct,2)}%`;
+  const rvol = r.relative_volume == null ? '—' : `${fmtNum(r.relative_volume,2)}x`;
+  const gammaText = r.gamma_regime === 'negative' ? '음의 감마' : r.gamma_regime === 'positive' ? '양의 감마' : '감마 —';
+  return `
+    <div class="leader-card" data-ticker="${r.ticker}">
+      <span class="leader-ticker">${r.ticker}</span>
+      <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
+      <span style="font-size:10px; font-weight:800; padding:3px 8px; border-radius:4px; background:${color}22; color:${color};">${r.signal_label}</span>
+      <span class="mono" style="font-size:10.5px; color:var(--text-dim);">Call <b style="color:var(--text);">$${fmtNum(r.call_wall,1)}</b> <b style="color:${r.wall_distance_pct >= 0 ? UP : GOLD};">${wallPct}</b></span>
+      <span class="mono" style="font-size:10.5px; color:${r.volume_confirmed ? UP : 'var(--text-dim)'};">RVOL <b>${rvol}</b></span>
+      <span style="font-size:9.5px; font-weight:700; color:${r.trend_confirmed ? UP : 'var(--text-dim)'};">${r.trend_confirmed ? '✓ 21EMA·50/200 추세 확인' : '추세선 확인 대기'}</span>
+      <span style="font-size:9.5px; color:${r.gamma_regime === 'negative' ? GOLD : 'var(--text-dim)'};">${gammaText}</span>
+    </div>
+  `;
+}
+async function loadWallShiftRadar(){
+  const boardEl = document.getElementById('wallShiftBoard');
+  const note = document.getElementById('wallShiftUpdatedNote');
+  const breakoutBoard = document.getElementById('callWallBreakoutBoard');
+  const breakoutNote = document.getElementById('callWallBreakoutNote');
   boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
   let report;
   try{
@@ -678,48 +722,40 @@ async function loadReentrySignals(){
     if(!res.ok) throw new Error('로드 실패');
     report = await res.json();
   }catch(e){
-    boardEl.innerHTML = '<div class="leader-empty">매수 신호 데이터를 불러오지 못했습니다</div>';
+    boardEl.innerHTML = '<div class="leader-empty">Wall Shift 데이터를 불러오지 못했습니다</div>';
     note.textContent = '';
+    breakoutBoard.innerHTML = '<div class="leader-empty">Call Wall 돌파 데이터를 불러오지 못했습니다</div>';
+    breakoutNote.textContent = '';
     return;
   }
-  const topPick = report.technical_top_pick || null;
-  const trendList = report.technical_trend_candidates || [];
-  const hullList = report.technical_hull_entries || [];
-  const legacyList = report.dev_reentry_long || [];
-  const entryMap = new Map();
-  [...trendList, ...hullList].forEach(r => entryMap.set(r.ticker, r));
-  if(!entryMap.size){
-    legacyList.filter(r => r.stage === 2).forEach(r => entryMap.set(r.ticker, r));
+  const rows = report.wall_shift_radar || [];
+  if(!rows.length){
+    boardEl.innerHTML = '<div class="leader-empty">첫 Wall 기준값을 준비하고 있습니다. 다음 업데이트부터 이동 변화가 표시됩니다.</div>';
+    note.textContent = 'Call Wall · Put Wall · Gamma Flip 변화를 추적합니다';
+  }else{
+    boardEl.innerHTML = rows.map(wallShiftRowHTML).join('') +
+      `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">
+        ⚠️ Wall 이동은 옵션 포지셔닝 변화에 대한 참고 정보이며 매수·매도 권유가 아닙니다. 가격 반응과 거래량을 함께 확인하세요.
+      </div>`;
+    boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
+      card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+    });
   }
-  const entryList = [...entryMap.values()].sort((a,b) => (b.score || 0) - (a.score || 0));
-  const watchList = report.technical_watch_candidates || legacyList.filter(r => r.stage === 1);
-  if(!entryList.length && !watchList.length){
-    boardEl.innerHTML = '<div class="leader-empty">오늘 새로 발생한 기술적 진입 후보가 없습니다</div>';
-    note.textContent = '';
-    return;
-  }
-  const sections = [];
-  if(topPick){
-    sections.push(`<div style="font-size:11px; color:${GOLD}; font-weight:800; margin:4px 0 7px;">🏆 오늘의 최우선 후보</div>${reentrySignalRowHTML(topPick)}`);
-  }
-  const remainingEntries = entryList.filter(r => !topPick || r.ticker !== topPick.ticker);
-  if(remainingEntries.length){
-    sections.push(`<div style="font-size:11px; color:var(--text-dim); font-weight:700; margin:12px 0 7px;">확정 조건 통과</div>${remainingEntries.map(reentrySignalRowHTML).join('')}`);
-  }
-  if(watchList.length){
-    sections.push(`<div style="font-size:11px; color:var(--text-dim); font-weight:700; margin:12px 0 7px;">오늘의 관찰 후보 — 거래량·유동성·추세 조건 중 일부 미충족</div>${watchList.map(reentrySignalRowHTML).join('')}`);
-  }
-  boardEl.innerHTML = sections.join('') +
-    `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">
-      ⚠️ 이동평균·거래량·GEX 기반 기술적 후보이며 매수를 권유하는 투자자문이 아닙니다. 펀더멘털과 위험을 별도로 확인하세요.
-    </div>`;
-  boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
+  const breakoutRows = report.call_wall_breakouts || [];
+  breakoutBoard.innerHTML = breakoutRows.length
+    ? breakoutRows.map(callWallBreakoutRowHTML).join('') +
+      `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:10px;">⚠️ 돌파 신호는 후보 선별용입니다. 다음 스캔의 유지 여부와 실적·시장 방향을 함께 확인하세요.</div>`
+    : '<div class="leader-empty">현재 조건에 맞는 Call Wall 돌파·준비 종목이 없습니다</div>';
+  breakoutBoard.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
   const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
   note.textContent = generatedAt
-    ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
-    : '매일 장마감 후 자동 계산';
+    ? `직전 업데이트 대비 변화 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
+    : '직전 업데이트 대비 Wall 이동';
+  breakoutNote.textContent = generatedAt
+    ? `유동성 상위 100종목 · 마지막 스캔: ${generatedAt.toLocaleString('ko-KR')}`
+    : '유동성 상위 100종목 스캔';
 }
 // ---------- 오늘의 이상 옵션 거래 (Unusual Options Activity — Vol/OI 비율 상위) ----------
 function unusualOptionRowHTML(r, rank){
@@ -1582,7 +1618,7 @@ loadMarketFloat();
 setInterval(loadMarketFloat, 60000);
 loadMarketStatusBanner();
 loadTradingJournal();
-loadReentrySignals();
+loadWallShiftRadar();
 loadUnusualOptions();
 loadEtfBoard();
   const scrollTopBtn = document.getElementById('scrollTopBtn');
