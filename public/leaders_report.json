@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T03:14:27.898445+00:00",
+  "generated_at": "2026-09-17T04:31:39.125906+00:00",
   "categories": {
     "wave1": [
       {
@@ -9,14 +9,14 @@
         "call_wall": 200,
         "put_wall": 195,
         "call_wall_distance_pct": 1.25,
-        "gamma_flip": 194.21,
+        "gamma_flip": 194.16,
         "gamma_regime": "positive",
         "price_change_pct": 0.05,
         "volume": 4475467.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 65054710.81142668,
-        "cex_total": -10579649094.073404,
+        "vex_total": 64231601.963723354,
+        "cex_total": -10813889431.551085,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -27,14 +27,14 @@
         "call_wall": 180,
         "put_wall": 170,
         "call_wall_distance_pct": 3.25,
-        "gamma_flip": 167.56,
+        "gamma_flip": 167.55,
         "gamma_regime": "positive",
         "price_change_pct": 2.32,
         "volume": 20983996.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 102346886.70104972,
-        "cex_total": -55235522631.66231,
+        "vex_total": 102510280.4782067,
+        "cex_total": -56948081729.51764,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -45,15 +45,15 @@
         "call_wall": 250,
         "put_wall": 245,
         "call_wall_distance_pct": 1.64,
-        "gamma_flip": 255,
+        "gamma_flip": 247.71,
         "gamma_regime": "positive",
         "price_change_pct": -0.86,
         "volume": 33488488.0,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 0.0,
-        "cex_total": 0.0,
-        "vanna_charm_expiry_days": -1,
+        "vex_total": 378116462.02714056,
+        "cex_total": -18701346533.444923,
+        "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
@@ -63,15 +63,15 @@
         "call_wall": 350,
         "put_wall": 340,
         "call_wall_distance_pct": 2.08,
-        "gamma_flip": 345,
+        "gamma_flip": 341.05,
         "gamma_regime": "positive",
         "price_change_pct": -1.21,
         "volume": 18928864.0,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 0.0,
-        "cex_total": 0.0,
-        "vanna_charm_expiry_days": -1,
+        "vex_total": 717288821.2178563,
+        "cex_total": -89776976649.95145,
+        "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
@@ -81,15 +81,15 @@
         "call_wall": 500,
         "put_wall": 480,
         "call_wall_distance_pct": 1.98,
-        "gamma_flip": 500,
+        "gamma_flip": 488.65,
         "gamma_regime": "positive",
         "price_change_pct": -0.55,
         "volume": 16670285.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 0.0,
-        "cex_total": 0.0,
-        "vanna_charm_expiry_days": -1,
+        "vex_total": 714722664.0367773,
+        "cex_total": -87646544771.93172,
+        "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
@@ -105,8 +105,8 @@
         "volume": 11758622.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -13007192.67452862,
-        "cex_total": -28374355082.02019,
+        "vex_total": -14345753.626000062,
+        "cex_total": -29071114757.458508,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -117,14 +117,14 @@
         "call_wall": 175,
         "put_wall": 155,
         "call_wall_distance_pct": 1.88,
-        "gamma_flip": 166.31,
+        "gamma_flip": 166.32,
         "gamma_regime": "positive",
         "price_change_pct": 1.49,
         "volume": 3903013.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 2129939.0991892135,
-        "cex_total": -3498100995.2304115,
+        "vex_total": 2125364.6765299533,
+        "cex_total": -3694374944.720045,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -135,14 +135,14 @@
         "call_wall": 380,
         "put_wall": 360,
         "call_wall_distance_pct": 1.16,
-        "gamma_flip": 359.53,
+        "gamma_flip": 359.49,
         "gamma_regime": "positive",
         "price_change_pct": 2.21,
         "volume": 5251586.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 6184772.6154876705,
-        "cex_total": -14246144469.289673,
+        "vex_total": 6303257.726251481,
+        "cex_total": -14780243972.117865,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -153,14 +153,14 @@
         "call_wall": 330,
         "put_wall": 300,
         "call_wall_distance_pct": 1.65,
-        "gamma_flip": 309.8,
+        "gamma_flip": 309.78,
         "gamma_regime": "positive",
         "price_change_pct": 0.19,
         "volume": 2346913.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 20213253.019419845,
-        "cex_total": -9105843343.270153,
+        "vex_total": 20546947.240420748,
+        "cex_total": -9550984033.232792,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -171,14 +171,14 @@
         "call_wall": 600,
         "put_wall": 550,
         "call_wall_distance_pct": 6.52,
-        "gamma_flip": 543.14,
+        "gamma_flip": 543.1,
         "gamma_regime": "positive",
         "price_change_pct": 1.75,
         "volume": 13108085.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 11858106.760545557,
-        "cex_total": -53158620068.67235,
+        "vex_total": 12370123.915544631,
+        "cex_total": -54788790965.3773,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       }
@@ -191,14 +191,14 @@
         "call_wall": 1600,
         "put_wall": 1500,
         "call_wall_distance_pct": 5.27,
-        "gamma_flip": 1566.98,
+        "gamma_flip": 1566.78,
         "gamma_regime": "negative",
         "price_change_pct": -1.92,
         "volume": 7419190.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 152174397.7168661,
-        "cex_total": -94689628155.41794,
+        "vex_total": 154593243.39618716,
+        "cex_total": -98634160483.1729,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -209,15 +209,15 @@
         "call_wall": 950,
         "put_wall": 900,
         "call_wall_distance_pct": 2.53,
-        "gamma_flip": 1005,
+        "gamma_flip": 938.72,
         "gamma_regime": "positive",
         "price_change_pct": -0.82,
         "volume": 20213011.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 0.0,
-        "cex_total": 0.0,
-        "vanna_charm_expiry_days": -1,
+        "vex_total": 295914253.0693596,
+        "cex_total": -89410728506.03886,
+        "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
@@ -227,14 +227,14 @@
         "call_wall": 425,
         "put_wall": 400,
         "call_wall_distance_pct": 1.93,
-        "gamma_flip": 439.35,
+        "gamma_flip": 439.17,
         "gamma_regime": "negative",
         "price_change_pct": -1.06,
         "volume": 7624185.0,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 40229078.4011223,
-        "cex_total": 1066053677.2865603,
+        "vex_total": 40778831.32644248,
+        "cex_total": 681833980.014528,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -245,14 +245,14 @@
         "call_wall": 850,
         "put_wall": 780,
         "call_wall_distance_pct": 8.53,
-        "gamma_flip": 819.09,
+        "gamma_flip": 818.82,
         "gamma_regime": "negative",
         "price_change_pct": -0.21,
         "volume": 3401096.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 52114285.0745531,
-        "cex_total": -11359162908.875753,
+        "vex_total": 52700559.96462277,
+        "cex_total": -12338714635.110874,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -263,14 +263,14 @@
         "call_wall": 355,
         "put_wall": 330,
         "call_wall_distance_pct": 4.06,
-        "gamma_flip": 333.1,
+        "gamma_flip": 333.05,
         "gamma_regime": "positive",
         "price_change_pct": 0.19,
         "volume": 2550159.0,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 16468086.202965857,
-        "cex_total": -4768552351.398401,
+        "vex_total": 17048808.42984894,
+        "cex_total": -5028803403.867832,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -281,14 +281,14 @@
         "call_wall": 280,
         "put_wall": 260,
         "call_wall_distance_pct": 4.0,
-        "gamma_flip": 273.0,
+        "gamma_flip": 272.91,
         "gamma_regime": "positive",
         "price_change_pct": -2.85,
         "volume": 7603152.0,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 133702865.67125401,
-        "cex_total": -814195392.1425437,
+        "vex_total": 133654203.31332077,
+        "cex_total": -1528505511.633637,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -299,14 +299,14 @@
         "call_wall": 260,
         "put_wall": 230,
         "call_wall_distance_pct": 10.51,
-        "gamma_flip": 252.67,
+        "gamma_flip": 252.6,
         "gamma_regime": "positive",
         "price_change_pct": -1.06,
         "volume": 960065,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 3426131.8136501377,
-        "cex_total": 245506368.6212783,
+        "vex_total": 3577180.3122285213,
+        "cex_total": 204336888.5385528,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       }
@@ -319,14 +319,14 @@
         "call_wall": 70,
         "put_wall": 60,
         "call_wall_distance_pct": 5.22,
-        "gamma_flip": 63.28,
+        "gamma_flip": 63.23,
         "gamma_regime": "positive",
         "price_change_pct": -1.14,
         "volume": 617459,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 10030443.090868693,
-        "cex_total": -1742652218.9153197,
+        "vex_total": 10062361.07746513,
+        "cex_total": -1807002798.2878711,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -337,14 +337,14 @@
         "call_wall": 88,
         "put_wall": 80,
         "call_wall_distance_pct": 4.45,
-        "gamma_flip": 84.37,
+        "gamma_flip": 84.36,
         "gamma_regime": "positive",
         "price_change_pct": -0.06,
         "volume": 2366467.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 4492396.3461852865,
-        "cex_total": -1325734290.006173,
+        "vex_total": 4491608.543714699,
+        "cex_total": -1381604914.6858883,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -361,8 +361,8 @@
         "volume": 703761,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 2212818.437934349,
-        "cex_total": 155462903.86891147,
+        "vex_total": 2221117.1221792283,
+        "cex_total": 146789276.33571833,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -373,14 +373,14 @@
         "call_wall": 110,
         "put_wall": 100,
         "call_wall_distance_pct": 4.94,
-        "gamma_flip": 105.03,
+        "gamma_flip": 104.99,
         "gamma_regime": "positive",
         "price_change_pct": -0.17,
         "volume": 601856,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 3360664.4681942565,
-        "cex_total": -921235367.8862547,
+        "vex_total": 3413850.2510971343,
+        "cex_total": -990783853.7384763,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
@@ -391,14 +391,14 @@
         "call_wall": 45,
         "put_wall": 35,
         "call_wall_distance_pct": 16.7,
-        "gamma_flip": 44.72,
+        "gamma_flip": 44.69,
         "gamma_regime": "positive",
         "price_change_pct": 0.73,
         "volume": 715425,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 882077.9914715916,
-        "cex_total": -22424573.499322183,
+        "vex_total": 881716.6277909323,
+        "cex_total": -33467351.70533004,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       }
@@ -482,7 +482,7 @@
       "spot": 150.88,
       "price_change_pct": 4.14,
       "volume": 108770003.0,
-      "gamma_flip": 146.69,
+      "gamma_flip": 146.68,
       "gamma_regime": "positive",
       "call_wall": 155,
       "put_wall": 150,
@@ -494,7 +494,7 @@
       "spot": 36.85,
       "price_change_pct": 2.5,
       "volume": 31390538.0,
-      "gamma_flip": 34.97,
+      "gamma_flip": 34.96,
       "gamma_regime": "positive",
       "call_wall": 40,
       "put_wall": 35,
@@ -506,7 +506,7 @@
       "spot": 174.34,
       "price_change_pct": 2.32,
       "volume": 20983996.0,
-      "gamma_flip": 167.56,
+      "gamma_flip": 167.54,
       "gamma_regime": "positive",
       "call_wall": 180,
       "put_wall": 170,
@@ -518,7 +518,7 @@
       "spot": 30.08,
       "price_change_pct": 2.31,
       "volume": 12243268.0,
-      "gamma_flip": 30.13,
+      "gamma_flip": 30.14,
       "gamma_regime": "negative",
       "call_wall": 31,
       "put_wall": 30,
@@ -530,7 +530,7 @@
       "spot": 143.16,
       "price_change_pct": 2.24,
       "volume": 34366403.0,
-      "gamma_flip": 145.1,
+      "gamma_flip": 145.08,
       "gamma_regime": "positive",
       "call_wall": 145,
       "put_wall": 140,
@@ -542,7 +542,7 @@
       "spot": 375.65,
       "price_change_pct": 2.21,
       "volume": 5251586.0,
-      "gamma_flip": 359.52,
+      "gamma_flip": 359.48,
       "gamma_regime": "positive",
       "call_wall": 380,
       "put_wall": 360,
@@ -554,7 +554,7 @@
       "spot": 11.13,
       "price_change_pct": 2.16,
       "volume": 17225692.0,
-      "gamma_flip": 10.63,
+      "gamma_flip": 10.62,
       "gamma_regime": "positive",
       "call_wall": 12,
       "put_wall": 11,
@@ -566,7 +566,7 @@
       "spot": 56.68,
       "price_change_pct": 2.11,
       "volume": 24029331.0,
-      "gamma_flip": 54.98,
+      "gamma_flip": 54.97,
       "gamma_regime": "positive",
       "call_wall": 60,
       "put_wall": 55,
@@ -590,7 +590,7 @@
       "spot": 563.29,
       "price_change_pct": 1.75,
       "volume": 13108085.0,
-      "gamma_flip": 543.14,
+      "gamma_flip": 543.09,
       "gamma_regime": "positive",
       "call_wall": 600,
       "put_wall": 550,
@@ -606,7 +606,7 @@
       "category": "wave1",
       "spot": 174.34,
       "price_change_pct": 2.32,
-      "vex_total": 102346886.70104972
+      "vex_total": 102510280.4782067
     },
     {
       "ticker": "ANET",
@@ -614,7 +614,7 @@
       "category": "wave1",
       "spot": 197.54,
       "price_change_pct": 0.05,
-      "vex_total": 65054710.81142668
+      "vex_total": 64231601.963723354
     },
     {
       "ticker": "NET",
@@ -622,7 +622,7 @@
       "category": "wave1",
       "spot": 324.65,
       "price_change_pct": 0.19,
-      "vex_total": 20213253.019419845
+      "vex_total": 20546947.240420748
     },
     {
       "ticker": "TER",
@@ -630,7 +630,7 @@
       "category": "wave2",
       "spot": 341.15,
       "price_change_pct": 0.19,
-      "vex_total": 16468086.202965857
+      "vex_total": 17048808.42984894
     },
     {
       "ticker": "CRWD",
@@ -638,7 +638,7 @@
       "category": "wave1",
       "spot": 241.36,
       "price_change_pct": 1.87,
-      "vex_total": -13007192.67452862
+      "vex_total": -14345753.626000062
     },
     {
       "ticker": "DELL",
@@ -646,7 +646,7 @@
       "category": "wave1",
       "spot": 563.29,
       "price_change_pct": 1.75,
-      "vex_total": 11858106.760545557
+      "vex_total": 12370123.915544631
     },
     {
       "ticker": "PANW",
@@ -654,7 +654,7 @@
       "category": "wave1",
       "spot": 375.65,
       "price_change_pct": 2.21,
-      "vex_total": 6184772.6154876705
+      "vex_total": 6303257.726251481
     },
     {
       "ticker": "FTNT",
@@ -662,7 +662,7 @@
       "category": "wave1",
       "spot": 171.77,
       "price_change_pct": 1.49,
-      "vex_total": 2129939.0991892135
+      "vex_total": 2125364.6765299533
     }
   ],
   "charm_squeeze_candidates": [
@@ -672,8 +672,35 @@
       "category": "wave2",
       "spot": 1519.97,
       "days_to_expiry": 1,
-      "cex_total": -94689628155.41794,
-      "gamma_flip": 1566.98
+      "cex_total": -98634160483.1729,
+      "gamma_flip": 1566.78
+    },
+    {
+      "ticker": "GOOGL",
+      "sector": "TECH",
+      "category": "wave1",
+      "spot": 342.87,
+      "days_to_expiry": 1,
+      "cex_total": -89776976649.95145,
+      "gamma_flip": 341.05
+    },
+    {
+      "ticker": "MU",
+      "sector": "SEMIS",
+      "category": "wave2",
+      "spot": 926.55,
+      "days_to_expiry": 1,
+      "cex_total": -89410728506.03886,
+      "gamma_flip": 938.72
+    },
+    {
+      "ticker": "MSFT",
+      "sector": "TECH",
+      "category": "wave1",
+      "spot": 490.3,
+      "days_to_expiry": 1,
+      "cex_total": -87646544771.93172,
+      "gamma_flip": 488.65
     },
     {
       "ticker": "PLTR",
@@ -681,8 +708,8 @@
       "category": "wave1",
       "spot": 174.34,
       "days_to_expiry": 1,
-      "cex_total": -55235522631.66231,
-      "gamma_flip": 167.56
+      "cex_total": -56948081729.51764,
+      "gamma_flip": 167.55
     },
     {
       "ticker": "DELL",
@@ -690,8 +717,8 @@
       "category": "wave1",
       "spot": 563.29,
       "days_to_expiry": 1,
-      "cex_total": -53158620068.67235,
-      "gamma_flip": 543.14
+      "cex_total": -54788790965.3773,
+      "gamma_flip": 543.1
     },
     {
       "ticker": "CRWD",
@@ -699,44 +726,17 @@
       "category": "wave1",
       "spot": 241.36,
       "days_to_expiry": 1,
-      "cex_total": -28374355082.02019,
+      "cex_total": -29071114757.458508,
       "gamma_flip": 231.0
     },
     {
-      "ticker": "PANW",
-      "sector": "SECURITY",
+      "ticker": "AMZN",
+      "sector": "CONSUMER",
       "category": "wave1",
-      "spot": 375.65,
+      "spot": 245.96,
       "days_to_expiry": 1,
-      "cex_total": -14246144469.289673,
-      "gamma_flip": 359.53
-    },
-    {
-      "ticker": "STX",
-      "sector": "SEMIS",
-      "category": "wave2",
-      "spot": 783.18,
-      "days_to_expiry": 1,
-      "cex_total": -11359162908.875753,
-      "gamma_flip": 819.09
-    },
-    {
-      "ticker": "ANET",
-      "sector": "NETWORKING",
-      "category": "wave1",
-      "spot": 197.54,
-      "days_to_expiry": 1,
-      "cex_total": -10579649094.073404,
-      "gamma_flip": 194.21
-    },
-    {
-      "ticker": "NET",
-      "sector": "SECURITY",
-      "category": "wave1",
-      "spot": 324.65,
-      "days_to_expiry": 1,
-      "cex_total": -9105843343.270153,
-      "gamma_flip": 309.8
+      "cex_total": -18701346533.444923,
+      "gamma_flip": 247.71
     }
   ],
   "dev_reentry_long": [
@@ -1049,6 +1049,16 @@
       "is_new_contract": false
     },
     {
+      "ticker": "AMZN",
+      "spot": 245.96,
+      "strike": 232.5,
+      "side": "call",
+      "volume": 15477,
+      "oi": 42,
+      "vol_oi_ratio": 368.5,
+      "is_new_contract": false
+    },
+    {
       "ticker": "MCHP",
       "spot": 69.59,
       "strike": 55,
@@ -1076,16 +1086,6 @@
       "volume": 418,
       "oi": 2,
       "vol_oi_ratio": 209.0,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "XOM",
-      "spot": 163.32,
-      "strike": 120,
-      "side": "call",
-      "volume": 39602,
-      "oi": 245,
-      "vol_oi_ratio": 161.64,
       "is_new_contract": false
     }
   ]
