@@ -2238,7 +2238,7 @@
   {
     "ticker": "ITRI",
     "date": "2026-09-18",
-    "spot": 90.94,
+    "spot": 90.46,
     "expiries_used": [
       "2026-09-18",
       "2026-10-16"
@@ -2305,13 +2305,13 @@
         "call_oi": 0.0,
         "put_oi": 278.0,
         "call_volume": 0.0,
-        "put_volume": 265.0
+        "put_volume": 13.0
       },
       {
         "strike": 90,
         "call_oi": 10.0,
         "put_oi": 13.0,
-        "call_volume": 2.0,
+        "call_volume": 10.0,
         "put_volume": 3.0
       },
       {
@@ -2319,7 +2319,7 @@
         "call_oi": 22.0,
         "put_oi": 41.0,
         "call_volume": 15.0,
-        "put_volume": 23.0
+        "put_volume": 24.0
       },
       {
         "strike": 100,
