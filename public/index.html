@@ -222,6 +222,12 @@
   .hero-rail-point{ position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; border:2px solid var(--panel); }.hero-rail-point span{ position:absolute; left:50%; bottom:17px; transform:translateX(-50%); white-space:nowrap; font:700 11px 'JetBrains Mono',monospace; text-align:center; line-height:1.5; }
   .member-benefits{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }.member-benefit{ display:flex; gap:12px; align-items:center; padding:15px 17px; background:var(--panel); border:1px solid var(--line); border-radius:9px; }.member-benefit-icon{ display:grid; place-items:center; width:42px; height:42px; flex:0 0 42px; border:1px solid rgba(224,168,56,.45); border-radius:9px; color:var(--gold); font-size:20px; }.member-benefit b{ display:block; font-size:14px; }.member-benefit span{ display:block; color:var(--text-dim); font-size:11px; margin-top:4px; line-height:1.4; }
   .nvda-preview{ margin:18px 0 22px; padding:20px; border:1px solid var(--line); border-radius:11px; background:var(--panel); }.nvda-preview-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:15px; }.nvda-preview-title{ font-weight:800; }.nvda-preview-label{ color:var(--text-dim); font-size:11px; }.nvda-preview-grid{ display:grid; grid-template-columns:190px 1fr 225px; gap:18px; align-items:center; }.nvda-symbol{ font:800 19px 'JetBrains Mono',monospace; }.nvda-price{ font:700 29px 'JetBrains Mono',monospace; margin-top:5px; }.nvda-regime{ display:inline-block; margin-top:10px; padding:6px 10px; border:1px solid #22c55e; border-radius:20px; color:#55e6b5; font-size:11px; }.nvda-kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:7px; }.nvda-kpi{ background:var(--panel-2); border:1px solid var(--line); border-radius:7px; padding:9px 6px; text-align:center; }.nvda-kpi small{ display:block; color:var(--text-dim); font-size:9px; }.nvda-kpi b{ display:block; margin-top:4px; font:700 14px 'JetBrains Mono',monospace; }.nvda-mini-rail{ position:relative; height:4px; border-radius:5px; background:linear-gradient(90deg,var(--down),#68758a 50%,var(--up)); margin:34px 12px 18px; }.nvda-mini-marker{ position:absolute; top:50%; transform:translate(-50%,-50%); width:10px; height:10px; border-radius:50%; }.nvda-mini-marker span{ position:absolute; left:50%; bottom:13px; transform:translateX(-50%); white-space:nowrap; font:700 9px 'JetBrains Mono',monospace; }.nvda-signup{ border-left:1px solid var(--line); padding-left:18px; text-align:center; }.nvda-signup b{ font-size:13px; line-height:1.5; }.nvda-signup button{ width:100%; margin-top:12px; border:0; border-radius:7px; padding:11px; background:var(--gold); color:#111; font-weight:800; cursor:pointer; }
+  .watchlist-page-title{ display:none; margin:2px 0 18px; padding-bottom:16px; border-bottom:1px solid var(--line); }
+  .watchlist-page-title h1{ font-size:24px; margin:0; }
+  .watchlist-page-title p{ color:var(--text-dim); font-size:12px; margin-top:7px; }
+  body.watchlist-view .member-hero, body.watchlist-view .nvda-preview{ display:none; }
+  body.watchlist-view .watchlist-page-title{ display:block; }
+  body.watchlist-view main{ padding-top:22px; }
   @media(max-width:900px){.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
   .chart-btn{
     display:inline-flex; align-items:center; gap:6px;
@@ -337,6 +343,7 @@
   </div>
 </div>
 <main>
+  <div class="watchlist-page-title"><h1>⭐ 나의 관심종목</h1><p>내가 저장한 종목의 현재가와 Put Wall · Call Wall을 한 화면에서 확인합니다.</p></div>
   <section class="nvda-preview" aria-labelledby="nvdaPreviewTitle">
     <div class="nvda-preview-top"><div class="nvda-preview-title" id="nvdaPreviewTitle">⌕ NVDA 검색 결과 미리보기</div><div class="nvda-preview-label">실제 검색 데이터 · 옵션 15분 지연</div></div>
     <div class="nvda-preview-grid">
@@ -1952,10 +1959,19 @@ async function loadMarketFloat(){
   if(subEl) subEl.textContent = new Date().toLocaleTimeString('ko-KR');
 }
 loadMarketFloat();
-loadNvdaPreview();
+function isWatchlistView(){ return new URLSearchParams(location.search).get('view') === 'watchlist'; }
+function openWatchlistView(){
+  if(!currentUser){ openAuthModal(); return; }
+  document.body.classList.add('watchlist-view');
+  history.pushState({view:'watchlist'}, '', '/?view=watchlist#interestSection');
+  document.getElementById('interestSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+if(isWatchlistView()) document.body.classList.add('watchlist-view');
+window.addEventListener('popstate', () => document.body.classList.toggle('watchlist-view', isWatchlistView()));
+if(!isWatchlistView()) loadNvdaPreview();
 initMemberAccount();
-document.getElementById('memberHeroSignup').addEventListener('click', () => currentUser ? document.getElementById('interestSection').scrollIntoView({behavior:'smooth'}) : openAuthModal());
-document.getElementById('nvdaSignupBtn').addEventListener('click', () => currentUser ? document.getElementById('interestSection').scrollIntoView({behavior:'smooth'}) : openAuthModal());
+document.getElementById('memberHeroSignup').addEventListener('click', openWatchlistView);
+document.getElementById('nvdaSignupBtn').addEventListener('click', openWatchlistView);
 document.getElementById('memberHeroSearch').addEventListener('click', () => { document.getElementById('tickerInput').focus(); window.scrollTo({top:0,behavior:'smooth'}); });
 document.getElementById('accountBtn').addEventListener('click', openAuthModal);
 document.getElementById('authCloseBtn').addEventListener('click', closeAuthModal);
