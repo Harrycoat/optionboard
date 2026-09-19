@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>모멘텀 강세주 TOP 100 | GEX Option</title>
+<style>
+:root{--bg:#0a0d12;--panel:#10141b;--line:#252b36;--text:#e7e5df;--dim:#8b93a1;--gold:#e0a838;--green:#55e6b5;--red:#e5484d;--blue:#3d7fe0}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif} a{color:inherit}
+header{position:sticky;top:0;z-index:5;background:rgba(10,13,18,.94);border-bottom:1px solid var(--line);padding:14px 20px}
+.header-inner,.wrap{max-width:1100px;margin:auto}.header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:800}.brand b{color:var(--gold)}
+.home{padding:8px 12px;border:1px solid var(--line);border-radius:7px;text-decoration:none}.wrap{padding:28px 20px 70px}
+h1{font-size:26px;margin:0 0 8px}.intro{color:var(--dim);font-size:13px;line-height:1.6}.updated{color:var(--green);font-size:12px;margin-top:8px}
+.tools{display:flex;gap:9px;flex-wrap:wrap;margin:22px 0 14px}.tools input,.tools select{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:7px;padding:10px 12px;font-size:13px}.tools input{flex:1;min-width:220px}
+.table-box{overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)} table{width:100%;border-collapse:collapse;min-width:840px}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}th{position:sticky;top:0;background:#151a22;color:var(--dim)}th:nth-child(2),td:nth-child(2),th:nth-child(3),td:nth-child(3){text-align:left}.ticker{font-weight:800;font-size:13px}.name{color:var(--dim)}.positive{color:var(--red)}.negative{color:var(--blue)}
+.actions{display:flex;justify-content:flex-end;gap:6px}.btn{border:1px solid var(--line);background:#151a22;color:var(--text);border-radius:6px;padding:6px 8px;cursor:pointer;text-decoration:none;white-space:nowrap}.btn:hover,.btn.saved{border-color:var(--gold);color:var(--gold)}
+.notice{margin-top:14px;color:var(--dim);font-size:11px;line-height:1.6}.empty{padding:30px;text-align:center;color:var(--dim)}
+@media(max-width:600px){h1{font-size:21px}.wrap{padding:22px 12px 60px}.header-inner{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div class="brand"><b>GEX Option</b> · 모멘텀 강세주</div><a class="home" href="/">← 메인으로</a></div></header>
+<main class="wrap">
+  <h1>모멘텀 강세주 TOP 100</h1>
+  <p class="intro">중장기 가격 강도와 모멘텀 순위입니다. 종목을 관심종목에 저장하거나 GEX 분석 화면으로 바로 이동할 수 있습니다.</p>
+  <div class="updated" id="updated">데이터 불러오는 중...</div>
+  <div class="tools"><input id="filter" placeholder="티커 또는 회사명 검색"><select id="count"><option value="25">25개 보기</option><option value="50">50개 보기</option><option value="100" selected>100개 보기</option></select></div>
+  <div class="table-box"><table><thead><tr><th>순위</th><th>티커</th><th>회사명</th><th>Wtd Alpha</th><th>현재가</th><th>등락률</th><th>52주 상승률</th><th>기능</th></tr></thead><tbody id="rows"><tr><td colspan="8" class="empty">불러오는 중...</td></tr></tbody></table></div>
+  <p class="notice">매주 갱신되는 참고용 모멘텀 목록이며 투자 권유가 아닙니다. 가격과 순위는 데이터 기준일 이후 달라질 수 있습니다.</p>
+</main>
+<script>
+const WATCH_KEY='gexoption_watchlist_v1', LIMIT=20; let allRows=[];
+function parseCSV(text){const out=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'&&quoted&&n==='"'){cell+='"';i++;}else if(c==='"'){quoted=!quoted;}else if(c===','&&!quoted){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(v=>v!==''))out.push(row);row=[];cell='';}else cell+=c;}if(cell||row.length){row.push(cell);out.push(row);}const head=out.shift();return out.map(r=>Object.fromEntries(head.map((h,i)=>[h,r[i]??''])));}
+function saved(){try{return JSON.parse(localStorage.getItem(WATCH_KEY)||'[]')}catch(e){return[]}}
+function toggle(ticker){let list=saved();if(list.includes(ticker))list=list.filter(x=>x!==ticker);else{if(list.length>=LIMIT){alert('관심종목은 최대 20개까지 저장할 수 있습니다.');return;}list.unshift(ticker)}localStorage.setItem(WATCH_KEY,JSON.stringify(list));render();}
+function pctClass(v){return String(v).trim().startsWith('-')?'negative':'positive'}
+function render(){const q=document.getElementById('filter').value.trim().toUpperCase(),limit=Number(document.getElementById('count').value),watch=saved();const rows=allRows.filter(r=>!q||r.Symbol.toUpperCase().includes(q)||r.Name.toUpperCase().includes(q)).slice(0,limit);document.getElementById('rows').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.Rank}</td><td class="ticker">${r.Symbol}</td><td class="name">${r.Name}</td><td class="positive">${r['Wtd Alpha']}</td><td>$${r.Latest}</td><td class="${pctClass(r['%Change'])}">${r['%Change']}</td><td class="${pctClass(r['52W %Chg'])}">${r['52W %Chg']}</td><td><div class="actions"><button class="btn ${watch.includes(r.Symbol)?'saved':''}" onclick="toggle('${r.Symbol}')">${watch.includes(r.Symbol)?'★ 저장됨':'☆ 관심추가'}</button><a class="btn" href="/?ticker=${encodeURIComponent(r.Symbol)}">GEX 조회</a></div></td></tr>`).join(''):'<tr><td colspan="8" class="empty">검색 결과가 없습니다.</td></tr>';}
+fetch('/data/momentum-top-100.csv',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.text()}).then(text=>{allRows=parseCSV(text);document.getElementById('updated').textContent=`업데이트: ${allRows[0]?.Time||'날짜 미상'} · ${allRows.length}개 종목`;render()}).catch(()=>document.getElementById('rows').innerHTML='<tr><td colspan="8" class="empty">데이터를 불러오지 못했습니다.</td></tr>');
+document.getElementById('filter').addEventListener('input',render);document.getElementById('count').addEventListener('change',render);
+</script>
+</body></html>
