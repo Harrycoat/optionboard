@@ -1043,6 +1043,7 @@ async function loadEtfBoard(){
 }
 const SEARCH_AD_SLOT_ID = '9835003235';
 const PERSONAL_WATCHLIST_KEY = 'gexoption_watchlist_v1';
+const ACTIVE_WATCHLIST_USER_KEY = 'gexoption_active_watchlist_user';
 const PERSONAL_WATCHLIST_LIMIT = 20;
 let supabaseClient = null;
 let currentUser = null;
@@ -1100,6 +1101,21 @@ async function applyAuthSession(session){
   const sessionVersion = ++authSessionVersion;
   currentUser = session?.user || null;
   authReady = true;
+  try{
+    if(currentUser?.id){
+      localStorage.setItem(ACTIVE_WATCHLIST_USER_KEY, currentUser.id);
+      const accountKey = activeWatchlistKey();
+      const legacy = JSON.parse(localStorage.getItem(PERSONAL_WATCHLIST_KEY) || '[]');
+      const account = JSON.parse(localStorage.getItem(accountKey) || '[]');
+      if(Array.isArray(legacy) && legacy.length){
+        const migrated = [...new Set([...account, ...legacy].map(validWatchTicker).filter(Boolean))].slice(0, PERSONAL_WATCHLIST_LIMIT);
+        localStorage.setItem(accountKey, JSON.stringify(migrated));
+        localStorage.removeItem(PERSONAL_WATCHLIST_KEY);
+      }
+    }else{
+      localStorage.removeItem(ACTIVE_WATCHLIST_USER_KEY);
+    }
+  }catch(e){}
   updateAccountUI();
   if(currentUser) await mergeCloudWatchlist(sessionVersion); else await loadPersonalWatchlist();
 }
@@ -1141,8 +1157,10 @@ async function mergeCloudWatchlist(sessionVersion = authSessionVersion){
   const merged = [...new Set([...cloud, ...local])].slice(0, PERSONAL_WATCHLIST_LIMIT);
   const storageKey = activeWatchlistKey();
   if(storageKey){ try{ localStorage.setItem(storageKey, JSON.stringify(merged)); }catch(e){} }
-  await syncWatchlistToCloud(merged);
   await loadPersonalWatchlist();
+  watchlistSyncQueue = watchlistSyncQueue
+    .catch(() => {})
+    .then(() => syncWatchlistToCloud(merged));
 }
 async function syncWatchlistToCloud(tickers){
   if(!supabaseClient || !currentUser) return;
@@ -1220,15 +1238,23 @@ async function loadPersonalWatchlist(){
     board.innerHTML = '<div class="empty" style="grid-column:1/-1;">아직 관심종목이 없습니다. 위 검색창에서 종목을 조회해 추가해보세요.</div>';
     return;
   }
-  board.classList.add('interest-loading');
+  if(!board.dataset.watchEventsBound){
+    board.dataset.watchEventsBound = 'true';
+    board.addEventListener('click', event => {
+      const removeButton = event.target.closest('.interest-remove');
+      if(removeButton){ event.stopPropagation(); removePersonalWatchlist(removeButton.dataset.remove); return; }
+      const card = event.target.closest('.interest-card');
+      if(card) searchTicker(card.dataset.ticker);
+    });
+  }
   if(refresh) refresh.disabled = true;
-  board.innerHTML = tickers.map(t => `<div class="empty">${t} 불러오는 중...</div>`).join('');
-  const results = await Promise.all(tickers.map(ticker => fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`).then(r => r.ok ? r.json() : null).catch(() => null)));
-  board.innerHTML = tickers.map((ticker, i) => personalWatchCardHTML(ticker, results[i])).join('');
-  board.classList.remove('interest-loading');
+  board.innerHTML = tickers.map((t, i) => `<div class="empty" data-watch-slot="${i}">${t} 불러오는 중...</div>`).join('');
+  await Promise.allSettled(tickers.map(async (ticker, i) => {
+    const data = await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`).then(r => r.ok ? r.json() : null).catch(() => null);
+    const slot = board.querySelector(`[data-watch-slot="${i}"]`);
+    if(slot) slot.outerHTML = personalWatchCardHTML(ticker, data);
+  }));
   if(refresh) refresh.disabled = false;
-  board.querySelectorAll('.interest-card').forEach(card => card.addEventListener('click', () => searchTicker(card.dataset.ticker)));
-  board.querySelectorAll('.interest-remove').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); removePersonalWatchlist(button.dataset.remove); }));
 }
 function addPersonalWatchlist(ticker){
   if(!currentUser){ openAuthModal(); showToast('로그인 후 관심종목을 저장할 수 있습니다'); return; }
