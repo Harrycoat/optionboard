@@ -1052,15 +1052,22 @@ function validWatchTicker(value){
   const ticker = String(value || '').trim().toUpperCase();
   return /^[A-Z0-9.^-]{1,12}$/.test(ticker) ? ticker : '';
 }
+function activeWatchlistKey(){
+  return currentUser?.id ? `${PERSONAL_WATCHLIST_KEY}_${currentUser.id}` : null;
+}
 function getPersonalWatchlist(){
+  const storageKey = activeWatchlistKey();
+  if(!storageKey) return [];
   try{
-    const parsed = JSON.parse(localStorage.getItem(PERSONAL_WATCHLIST_KEY) || '[]');
+    const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
     if(!Array.isArray(parsed)) return [];
     return [...new Set(parsed.map(validWatchTicker).filter(Boolean))].slice(0, PERSONAL_WATCHLIST_LIMIT);
   }catch(e){ return []; }
 }
 function savePersonalWatchlist(tickers){
-  try{ localStorage.setItem(PERSONAL_WATCHLIST_KEY, JSON.stringify(tickers)); }catch(e){}
+  const storageKey = activeWatchlistKey();
+  if(!storageKey) return;
+  try{ localStorage.setItem(storageKey, JSON.stringify(tickers)); }catch(e){}
   updateInterestButton();
   if(currentUser) syncWatchlistToCloud(tickers);
 }
@@ -1085,9 +1092,6 @@ async function initMemberAccount(){
 async function applyAuthSession(session){
   currentUser = session?.user || null;
   authReady = true;
-  if(!currentUser){
-    try{ localStorage.removeItem(PERSONAL_WATCHLIST_KEY); }catch(e){}
-  }
   updateAccountUI();
   if(currentUser) await mergeCloudWatchlist(); else await loadPersonalWatchlist();
 }
@@ -1120,7 +1124,8 @@ async function mergeCloudWatchlist(){
   if(error){ console.warn('관심종목 불러오기 실패:', error.message); return; }
   const cloud = (data || []).map(row => validWatchTicker(row.ticker)).filter(Boolean);
   const merged = [...new Set([...cloud, ...local])].slice(0, PERSONAL_WATCHLIST_LIMIT);
-  try{ localStorage.setItem(PERSONAL_WATCHLIST_KEY, JSON.stringify(merged)); }catch(e){}
+  const storageKey = activeWatchlistKey();
+  if(storageKey){ try{ localStorage.setItem(storageKey, JSON.stringify(merged)); }catch(e){} }
   await syncWatchlistToCloud(merged);
   await loadPersonalWatchlist();
 }
@@ -1914,7 +1919,7 @@ document.getElementById('authCloseBtn').addEventListener('click', closeAuthModal
 document.getElementById('authModal').addEventListener('click', event => { if(event.target.id === 'authModal') closeAuthModal(); });
 document.getElementById('signInBtn').addEventListener('click', () => submitAuth('signin'));
 document.getElementById('signUpBtn').addEventListener('click', () => submitAuth('signup'));
-document.getElementById('signOutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); try{ localStorage.removeItem(PERSONAL_WATCHLIST_KEY); }catch(e){} const quickInput=document.getElementById('interestTickerInput'); if(quickInput) quickInput.value=''; await loadPersonalWatchlist(); closeAuthModal(); showToast('로그아웃했습니다'); });
+document.getElementById('signOutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); const quickInput=document.getElementById('interestTickerInput'); if(quickInput) quickInput.value=''; await loadPersonalWatchlist(); closeAuthModal(); showToast('로그아웃했습니다'); });
 setInterval(loadMarketFloat, 60000);
 loadMarketStatusBanner();
 loadTradingJournal();
