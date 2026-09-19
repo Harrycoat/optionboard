@@ -1571,14 +1571,18 @@ function renderOiGexChart(containerId, d){
     return;
   }
   const spot = d.spot;
-  const MAX_ROWS = 24;
-  let rows = oiRows.slice()
+  const MAX_ROWS = 16;
+  const nearestTo = price => oiRows.slice().sort((a,b)=>Math.abs(a.strike-price)-Math.abs(b.strike-price))[0];
+  const coreRows = oiRows.slice()
     .sort((a, b) => Math.abs(a.strike - spot) - Math.abs(b.strike - spot))
+    .slice(0, MAX_ROWS - 2);
+  const mustShow = [nearestTo(d.call_wall), nearestTo(d.put_wall)].filter(Boolean);
+  let rows = [...new Map([...coreRows, ...mustShow].map(r=>[r.strike,r])).values()]
     .slice(0, MAX_ROWS)
     .sort((a, b) => b.strike - a.strike);
   const maxOi = Math.max(1, ...rows.map(r => Math.max(r.call_oi, r.put_oi)));
-  const rowH = 22;
-  const padTop = 10, padBottom = 10;
+  const rowH = 18;
+  const padTop = 8, padBottom = 8;
   const width = 560;
   const centerX = width / 2;
   const barMax = centerX - 70;
