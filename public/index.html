@@ -1329,10 +1329,16 @@ async function openWatchlistDecision(ticker){
 }
 function showSelectedDecisionDetail(){
   if(!selectedDecisionData) return;
-  renderDetail(selectedDecisionData);
   const section=document.getElementById('detailSection');
   section.style.display='block';
   document.getElementById('decisionCloseBtn').style.display='block';
+  renderDetail(selectedDecisionData);
+  requestAnimationFrame(()=>{
+    window.dispatchEvent(new Event('resize'));
+    if(window.Plotly){
+      document.querySelectorAll('#detail .js-plotly-plot').forEach(chart=>Plotly.Plots.resize(chart));
+    }
+  });
   section.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function closeSelectedDecisionDetail(){
