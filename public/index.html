@@ -230,6 +230,10 @@
   body.watchlist-view .market-float,
   body.watchlist-view #marketStatusBanner,
   body.watchlist-view #todayBuySignalSection{ display:none; }
+  body.watchlist-view #searchAdSlot{ display:none !important; min-height:0 !important; margin:0 !important; }
+  body.watchlist-view #detailSection{ margin-top:12px; }
+  body.watchlist-view #detailSection > .section-title{ margin-top:16px; margin-bottom:8px; }
+  body.watchlist-view #detailSection .detail{ margin-top:0; }
   body.watchlist-view .watchlist-page-title{ display:block; }
   body.watchlist-view main{ padding-top:22px; }
   @media(max-width:900px){.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
@@ -1361,7 +1365,7 @@ async function searchTicker(ticker){
       return;
     }
     renderDetail(data);
-    refreshSearchAd();
+    if(!isWatchlistView()) refreshSearchAd();
   }catch(e){
     detail.innerHTML = `<div class="empty">요청 실패: ${e.message}</div>`;
   }finally{
