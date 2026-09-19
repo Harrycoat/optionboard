@@ -1047,6 +1047,8 @@ const PERSONAL_WATCHLIST_LIMIT = 20;
 let supabaseClient = null;
 let currentUser = null;
 let authReady = false;
+let watchlistSyncQueue = Promise.resolve();
+let authSessionVersion = 0;
 
 function validWatchTicker(value){
   const ticker = String(value || '').trim().toUpperCase();
@@ -1069,7 +1071,12 @@ function savePersonalWatchlist(tickers){
   if(!storageKey) return;
   try{ localStorage.setItem(storageKey, JSON.stringify(tickers)); }catch(e){}
   updateInterestButton();
-  if(currentUser) syncWatchlistToCloud(tickers);
+  if(currentUser){
+    const snapshot = [...tickers];
+    watchlistSyncQueue = watchlistSyncQueue
+      .catch(() => {})
+      .then(() => syncWatchlistToCloud(snapshot));
+  }
 }
 async function initMemberAccount(){
   const button = document.getElementById('accountBtn');
@@ -1090,10 +1097,11 @@ async function initMemberAccount(){
   }
 }
 async function applyAuthSession(session){
+  const sessionVersion = ++authSessionVersion;
   currentUser = session?.user || null;
   authReady = true;
   updateAccountUI();
-  if(currentUser) await mergeCloudWatchlist(); else await loadPersonalWatchlist();
+  if(currentUser) await mergeCloudWatchlist(sessionVersion); else await loadPersonalWatchlist();
 }
 function updateAccountUI(){
   const button = document.getElementById('accountBtn');
@@ -1117,11 +1125,18 @@ function updateAccountUI(){
   if(heroButton) heroButton.textContent = currentUser ? '내 관심종목 보기 →' : '무료로 시작하기 →';
   if(previewButton) previewButton.textContent = currentUser ? '내 관심종목 보기' : '무료 회원가입';
 }
-async function mergeCloudWatchlist(){
+async function mergeCloudWatchlist(sessionVersion = authSessionVersion){
   if(!supabaseClient || !currentUser) return;
+  const userId = currentUser.id;
   const local = getPersonalWatchlist();
-  const { data, error } = await supabaseClient.from('user_watchlists').select('ticker').eq('user_id', currentUser.id).order('created_at', { ascending:false });
-  if(error){ console.warn('관심종목 불러오기 실패:', error.message); return; }
+  const { data, error } = await supabaseClient.from('user_watchlists').select('ticker').eq('user_id', userId).order('created_at', { ascending:false });
+  if(sessionVersion !== authSessionVersion || currentUser?.id !== userId) return;
+  if(error){
+    console.warn('관심종목 불러오기 실패:', error.message);
+    await loadPersonalWatchlist();
+    showToast('관심종목 서버 연결이 지연되어 기기에 저장된 목록을 표시합니다');
+    return;
+  }
   const cloud = (data || []).map(row => validWatchTicker(row.ticker)).filter(Boolean);
   const merged = [...new Set([...cloud, ...local])].slice(0, PERSONAL_WATCHLIST_LIMIT);
   const storageKey = activeWatchlistKey();
@@ -1131,10 +1146,12 @@ async function mergeCloudWatchlist(){
 }
 async function syncWatchlistToCloud(tickers){
   if(!supabaseClient || !currentUser) return;
+  const userId = currentUser.id;
   const clean = [...new Set((tickers || []).map(validWatchTicker).filter(Boolean))].slice(0, PERSONAL_WATCHLIST_LIMIT);
-  await supabaseClient.from('user_watchlists').delete().eq('user_id', currentUser.id);
+  const { error:deleteError } = await supabaseClient.from('user_watchlists').delete().eq('user_id', userId);
+  if(deleteError){ console.warn('관심종목 서버 정리 실패:', deleteError.message); return; }
   if(!clean.length) return;
-  const rows = clean.map(ticker => ({ user_id:currentUser.id, ticker }));
+  const rows = clean.map(ticker => ({ user_id:userId, ticker }));
   const { error } = await supabaseClient.from('user_watchlists').insert(rows);
   if(error) console.warn('관심종목 저장 실패:', error.message);
 }
