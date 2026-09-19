@@ -296,7 +296,7 @@
     <span>Max Pain · GEX Terminal</span>
   </div>
   <div class="searchbar">
-    <input id="tickerInput" class="mono" placeholder="티커 입력 (예: AAPL, NET, SNDK)" autocomplete="off">
+    <input id="tickerInput" name="stock-symbol-search" type="search" class="mono" placeholder="티커 입력 (예: AAPL, NET, SNDK)" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" data-lpignore="true" data-1p-ignore>
     <button id="searchBtn">조회</button>
   </div>
     <a class="home-btn" href="https://mijoostock.com" target="_blank" rel="noopener">🏠 홈으로</a>
@@ -356,7 +356,7 @@
     </div>
     <p id="interestStorageNote" style="color:var(--text-dim); font-size:12px; margin:8px 0 10px;">티커를 입력해 관심종목에 바로 추가할 수 있습니다.</p>
     <div class="interest-quick-add">
-      <input id="interestTickerInput" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="티커 입력 (예: AAPL, NVDA)" aria-label="관심종목 티커 입력">
+      <input id="interestTickerInput" name="watchlist-stock-symbol" type="search" maxlength="10" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="티커 입력 (예: AAPL, NVDA)" aria-label="관심종목 티커 입력">
       <button id="interestQuickAddBtn" type="button">+ 종목 추가</button>
     </div>
     <div class="watchlist-grid" id="personalWatchlist">
