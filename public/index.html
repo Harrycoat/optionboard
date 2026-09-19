@@ -134,6 +134,13 @@
   .decision-action{ padding:13px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); }
   .decision-action b{ display:block; font-size:12px; margin-bottom:6px; }.decision-action span{ color:var(--text-dim); font-size:11px; line-height:1.45; }
   .decision-detail-btn,.decision-close-btn{ display:block; margin:15px auto 0; padding:10px 18px; border:1px solid var(--gold); border-radius:7px; background:rgba(224,168,56,.12); color:var(--gold); font-weight:800; cursor:pointer; }
+  .expert-chart-box{ margin-top:16px; border:1px solid var(--line); border-radius:9px; background:var(--panel-2); overflow:hidden; }
+  .expert-chart-box > summary{ padding:14px 16px; color:var(--text); font-size:13px; font-weight:800; cursor:pointer; list-style:none; }
+  .expert-chart-box > summary::-webkit-details-marker{ display:none; }
+  .expert-chart-box > summary::before{ content:'＋'; color:var(--gold); margin-right:8px; }
+  .expert-chart-box[open] > summary::before{ content:'－'; }
+  .expert-chart-box > summary small{ display:block; margin:4px 0 0 22px; color:var(--text-dim); font-size:11px; font-weight:400; }
+  .expert-chart-content{ padding:0 14px 16px; }
   @media(max-width:760px){ .decision-actions-grid{ grid-template-columns:1fr 1fr; }.decision-dashboard{ padding:14px; }.decision-marker span{ font-size:8px; } }
   .interest-status{ display:inline-block; margin-top:8px; padding:3px 7px; border-radius:4px; font-size:10px; font-weight:800; }
   .interest-loading{ opacity:.65; pointer-events:none; }
@@ -1683,13 +1690,16 @@ function renderDetail(d){
       <div class="kpi"><div class="label">Net GEX</div><div class="value" style="color:${regimePos?UP:DOWN}">${fmtCompact(d.net_gex_total)}</div></div>
       <div class="kpi"><div class="label">체제</div><div class="value" style="color:${regimePos?UP:DOWN}">${regimePos?'양의 감마':'음의 감마'}</div></div>
     </div>
-    <canvas id="gexCanvas"></canvas>
-    <div class="legend">
-      <span><span class="sw" style="background:${UP}"></span>Call GEX</span>
-      <span><span class="sw" style="background:${DOWN}"></span>Put GEX</span>
-      <span><span class="sw" style="background:${GOLD}"></span>현재가</span>
-    </div>
-    <div class="oigex-panel">
+    <details class="expert-chart-box" id="expertGexCharts">
+      <summary>전문가용 GEX 차트 보기<small>스트라이크별 Call·Put GEX와 OI 원본 데이터</small></summary>
+      <div class="expert-chart-content">
+      <canvas id="gexCanvas"></canvas>
+      <div class="legend">
+        <span><span class="sw" style="background:${UP}"></span>Call GEX</span>
+        <span><span class="sw" style="background:${DOWN}"></span>Put GEX</span>
+        <span><span class="sw" style="background:${GOLD}"></span>현재가</span>
+      </div>
+      <div class="oigex-panel">
       <div class="oigex-head">
         <span class="oigex-title">스트라이크별 OI + GEX 레벨</span>
         <span class="oigex-sub">15분 지연 데이터</span>
@@ -1707,7 +1717,9 @@ function renderDetail(d){
         <p>즉 현재가가 두 벽 사이 박스권에 있다면 그 범위 안에서 움직일 가능성이 있고, 어느 한쪽 벽에 가까워질수록 거기서 반등하는지 혹은 뚫고 나가는지를 지켜보면 돼요. 막대가 길고 두꺼운 스트라이크일수록 "더 두꺼운 벽"이라고 볼 수 있어요.</p>
         <p style="color:var(--text-dim); font-size:11px;">⚠️ 참고 지표일 뿐 매수/매도 신호가 아니에요.</p>
       </details>
-    </div>
+      </div>
+      </div>
+    </details>
     <div id="oiChangeSection" style="margin-top:18px;"></div>
     <div class="note">
       ${conciseNarrativeHTML(d)}
@@ -1717,8 +1729,15 @@ function renderDetail(d){
     </div>
   `;
   updateInterestButton();
-  drawGexChart(d);
-  renderOiGexChart('oigexChart', d);
+  const expertCharts = document.getElementById('expertGexCharts');
+  expertCharts?.addEventListener('toggle', () => {
+    if(!expertCharts.open || expertCharts.dataset.rendered) return;
+    expertCharts.dataset.rendered = 'true';
+    requestAnimationFrame(() => {
+      drawGexChart(d);
+      renderOiGexChart('oigexChart', d);
+    });
+  });
   loadOiChange(d.ticker);
 }
 async function loadOiChange(ticker){
