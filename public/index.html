@@ -1730,7 +1730,7 @@ function renderDetail(d){
       <div class="kpi"><div class="label">Net GEX</div><div class="value" style="color:${regimePos?UP:DOWN}">${fmtCompact(d.net_gex_total)}</div></div>
       <div class="kpi"><div class="label">체제</div><div class="value" style="color:${regimePos?UP:DOWN}">${regimePos?'양의 감마':'음의 감마'}</div></div>
     </div>
-    <details class="expert-chart-box" id="expertGexCharts">
+    <details class="expert-chart-box" id="expertGexCharts" open>
       <summary>전문가용 GEX 차트 보기<small>스트라이크별 Call·Put GEX와 OI 원본 데이터</small></summary>
       <div class="expert-chart-content">
       <canvas id="gexCanvas"></canvas>
@@ -1770,14 +1770,16 @@ function renderDetail(d){
   `;
   updateInterestButton();
   const expertCharts = document.getElementById('expertGexCharts');
-  expertCharts?.addEventListener('toggle', () => {
-    if(!expertCharts.open || expertCharts.dataset.rendered) return;
+  const renderExpertCharts = () => {
+    if(!expertCharts?.open || expertCharts.dataset.rendered) return;
     expertCharts.dataset.rendered = 'true';
     requestAnimationFrame(() => {
       drawGexChart(d);
       renderOiGexChart('oigexChart', d);
     });
-  });
+  };
+  expertCharts?.addEventListener('toggle', renderExpertCharts);
+  renderExpertCharts();
   loadOiChange(d.ticker);
 }
 async function loadOiChange(ticker){
