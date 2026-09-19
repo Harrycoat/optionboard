@@ -1096,6 +1096,8 @@ function updateAccountUI(){
   const signedOut = document.getElementById('authSignedOut');
   const signedIn = document.getElementById('authSignedIn');
   const note = document.getElementById('interestStorageNote');
+  const quickAdd = document.querySelector('.interest-quick-add');
+  const refreshButton = document.getElementById('interestRefreshBtn');
   button.classList.toggle('signed-in', Boolean(currentUser));
   button.textContent = currentUser ? '● 내 계정' : '👤 로그인';
   signedOut.style.display = currentUser ? 'none' : 'block';
@@ -1104,6 +1106,8 @@ function updateAccountUI(){
   note.textContent = currentUser
     ? '관심종목이 계정에 저장되어 PC와 휴대폰에서 동기화됩니다.'
     : '로그인하면 내 관심종목을 안전하게 저장하고 여러 기기에서 확인할 수 있습니다.';
+  if(quickAdd) quickAdd.style.display = currentUser ? 'flex' : 'none';
+  if(refreshButton) refreshButton.style.display = currentUser ? 'inline-flex' : 'none';
   const heroButton = document.getElementById('memberHeroSignup');
   const previewButton = document.getElementById('nvdaSignupBtn');
   if(heroButton) heroButton.textContent = currentUser ? '내 관심종목 보기 →' : '무료로 시작하기 →';
@@ -1910,7 +1914,7 @@ document.getElementById('authCloseBtn').addEventListener('click', closeAuthModal
 document.getElementById('authModal').addEventListener('click', event => { if(event.target.id === 'authModal') closeAuthModal(); });
 document.getElementById('signInBtn').addEventListener('click', () => submitAuth('signin'));
 document.getElementById('signUpBtn').addEventListener('click', () => submitAuth('signup'));
-document.getElementById('signOutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); try{ localStorage.removeItem(PERSONAL_WATCHLIST_KEY); }catch(e){} await loadPersonalWatchlist(); closeAuthModal(); showToast('로그아웃했습니다'); });
+document.getElementById('signOutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); try{ localStorage.removeItem(PERSONAL_WATCHLIST_KEY); }catch(e){} const quickInput=document.getElementById('interestTickerInput'); if(quickInput) quickInput.value=''; await loadPersonalWatchlist(); closeAuthModal(); showToast('로그아웃했습니다'); });
 setInterval(loadMarketFloat, 60000);
 loadMarketStatusBanner();
 loadTradingJournal();
