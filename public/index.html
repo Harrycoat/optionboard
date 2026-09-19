@@ -118,6 +118,23 @@
   .interest-card{ position:relative; padding-right:36px; }
   .interest-remove{ position:absolute; top:8px; right:8px; width:24px; height:24px; border-radius:50%; border:0; background:transparent; color:var(--text-dim); cursor:pointer; font-size:17px; line-height:1; }
   .interest-remove:hover{ background:rgba(229,72,77,0.14); color:var(--up); }
+  .decision-dashboard{ display:none; margin-top:18px; padding:20px; border:1px solid var(--line); border-radius:11px; background:var(--panel); }
+  .decision-dashboard.open{ display:block; }
+  .decision-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .decision-symbol{ font:800 22px 'JetBrains Mono',monospace; }.decision-price{ font:700 25px 'JetBrains Mono',monospace; color:var(--gold); }
+  .decision-badge{ padding:8px 12px; border-radius:7px; border:1px solid currentColor; font-size:13px; font-weight:800; }
+  .decision-delay{ color:var(--text-dim); font-size:11px; }
+  .decision-rail-wrap{ margin-top:16px; padding:18px 18px 12px; border:1px solid var(--line); border-radius:9px; background:var(--panel-2); }
+  .decision-rail{ position:relative; height:6px; margin:42px 12px 32px; border-radius:10px; background:linear-gradient(90deg,var(--down),#72829b 48%,var(--up)); }
+  .decision-marker{ position:absolute; top:50%; transform:translate(-50%,-50%); width:13px; height:13px; border-radius:50%; border:2px solid var(--panel); }
+  .decision-marker span{ position:absolute; left:50%; bottom:17px; transform:translateX(-50%); white-space:nowrap; text-align:center; font:700 10px/1.45 'JetBrains Mono',monospace; }
+  .decision-response{ margin-top:14px; padding:15px 16px; border-left:3px solid #55e6b5; background:rgba(85,230,181,.07); border-radius:7px; }
+  .decision-response b{ display:block; margin-bottom:6px; }.decision-response p{ color:var(--text-dim); font-size:12px; line-height:1.65; }
+  .decision-actions-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-top:12px; }
+  .decision-action{ padding:13px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); }
+  .decision-action b{ display:block; font-size:12px; margin-bottom:6px; }.decision-action span{ color:var(--text-dim); font-size:11px; line-height:1.45; }
+  .decision-detail-btn,.decision-close-btn{ display:block; margin:15px auto 0; padding:10px 18px; border:1px solid var(--gold); border-radius:7px; background:rgba(224,168,56,.12); color:var(--gold); font-weight:800; cursor:pointer; }
+  @media(max-width:760px){ .decision-actions-grid{ grid-template-columns:1fr 1fr; }.decision-dashboard{ padding:14px; }.decision-marker span{ font-size:8px; } }
   .interest-status{ display:inline-block; margin-top:8px; padding:3px 7px; border-radius:4px; font-size:10px; font-weight:800; }
   .interest-loading{ opacity:.65; pointer-events:none; }
   .account-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; background:var(--panel-2); color:var(--text); border:1px solid var(--line); padding:9px 13px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
@@ -377,6 +394,7 @@
     <div class="watchlist-grid" id="personalWatchlist">
       <div class="empty" style="grid-column:1/-1;">아직 관심종목이 없습니다. 위 검색창에서 종목을 조회해 추가해보세요.</div>
     </div>
+    <div class="decision-dashboard" id="decisionDashboard" aria-live="polite"></div>
   </section>
  <div style="display:none;">
   <div class="section-title">📈 나의 Put Wall 스윙 저널</div>
@@ -393,6 +411,7 @@
 </section>
   <div id="detailSection" style="display:none;">
     <div class="section-title">상세 분석</div>
+    <button class="decision-close-btn" id="decisionCloseBtn" type="button" style="display:none;">상세 분석 닫기 ↑</button>
     <div id="searchAdSlot" style="margin-bottom:16px; min-height:1px;"></div>
     <div class="detail" id="detail"></div>
     <div style="max-width:420px; margin:32px auto 0; text-align:center;">
@@ -1068,6 +1087,8 @@ let currentUser = null;
 let authReady = false;
 let watchlistSyncQueue = Promise.resolve();
 let authSessionVersion = 0;
+let personalWatchData = new Map();
+let selectedDecisionData = null;
 
 function validWatchTicker(value){
   const ticker = String(value || '').trim().toUpperCase();
@@ -1234,6 +1255,90 @@ function personalWatchCardHTML(ticker, d){
     <div class="rows"><div class="r"><span>Put Wall</span><b>$${fmtNum(d.put_wall,1)}</b></div><div class="r"><span>Call Wall</span><b>$${fmtNum(d.call_wall,1)}</b></div></div>
   </article>`;
 }
+function decisionMeta(d){
+  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall), flip=Number(d.gamma_flip);
+  if(![spot,put,call].every(Number.isFinite)) return { label:'데이터 확인', color:'var(--text-dim)', response:'핵심 가격 데이터를 확인하고 있습니다.' };
+  const putGap=Math.abs((spot-put)/spot*100), callGap=Math.abs((call-spot)/spot*100);
+  if(spot < put) return { label:'위험 관리', color:DOWN, response:`현재가가 Put Wall $${fmtNum(put,1)} 아래입니다. 지지 회복 전까지 신규 진입보다 위험 관리를 우선하세요.` };
+  if(spot >= call) return { label:'돌파 유지 확인', color:UP, response:`현재가가 Call Wall $${fmtNum(call,1)} 위입니다. 돌파 가격이 새로운 지지로 전환되는지 확인하세요.` };
+  if(callGap <= 1) return { label:'헤지 검토', color:UP, response:`Call Wall $${fmtNum(call,1)}에 근접했습니다. 저항 반응이 나오면 일부 수익실현이나 헤지를 검토하세요.` };
+  if(putGap <= 1.5) return { label:'진입 검토', color:DOWN, response:`Put Wall $${fmtNum(put,1)} 부근입니다. 지지와 반등이 확인될 때 분할 진입을 검토하세요.` };
+  if(Number.isFinite(flip) && spot >= flip) return { label:'보유·관찰', color:'#55e6b5', response:`현재가는 Gamma Flip $${fmtNum(flip,1)} 위, Call Wall $${fmtNum(call,1)} 아래입니다. 추세를 관찰하고 Call Wall 접근 시 헤지를 검토하세요.` };
+  return { label:'관찰', color:GOLD, response:`현재가는 Put Wall과 Gamma Flip 사이입니다. Gamma Flip 회복 또는 Put Wall 지지 반응을 기다리세요.` };
+}
+function wallHistory(ticker,d){
+  const key=`gexoption_wall_history_v1_${currentUser?.id || 'guest'}`;
+  const today=new Date().toISOString().slice(0,10);
+  let all={};
+  try{ all=JSON.parse(localStorage.getItem(key)||'{}')||{}; }catch(e){}
+  const next={date:today,put:Number(d.put_wall),call:Number(d.call_wall)};
+  const item=all[ticker]||{};
+  if(!item.current) item.current=next;
+  else if(item.current.date!==today){ item.previous=item.current; item.current=next; }
+  else item.current=next;
+  all[ticker]=item;
+  try{ localStorage.setItem(key,JSON.stringify(all)); }catch(e){}
+  return item.previous || null;
+}
+function wallChangeText(now,previous){
+  if(!previous || !Number.isFinite(Number(previous))) return '첫 기록';
+  const diff=Number(now)-Number(previous);
+  if(Math.abs(diff)<0.001) return '변화 없음';
+  return `${diff>0?'▲':'▼'} $${fmtNum(Math.abs(diff),1)}`;
+}
+function markerLeft(value,min,max){
+  if(!Number.isFinite(value)||max<=min) return 50;
+  return Math.max(4,Math.min(96,(value-min)/(max-min)*100));
+}
+function renderDecisionDashboard(d){
+  selectedDecisionData=d;
+  const box=document.getElementById('decisionDashboard');
+  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall), flip=Number(d.gamma_flip);
+  const vals=[spot,put,call,flip].filter(Number.isFinite);
+  const rawMin=Math.min(...vals), rawMax=Math.max(...vals), pad=Math.max((rawMax-rawMin)*.18,1);
+  const min=rawMin-pad,max=rawMax+pad, meta=decisionMeta(d), previous=wallHistory(d.ticker,d);
+  const markers=[
+    {name:'Put Wall',value:put,color:DOWN},{name:'Gamma Flip',value:flip,color:GOLD},
+    {name:'현재가',value:spot,color:'#55e6b5'},{name:'Call Wall',value:call,color:UP}
+  ].filter(x=>Number.isFinite(x.value)).map(x=>`<i class="decision-marker" style="left:${markerLeft(x.value,min,max)}%;background:${x.color};box-shadow:0 0 10px ${x.color}"><span style="color:${x.color}">${x.name}<br>$${fmtNum(x.value,1)}</span></i>`).join('');
+  box.innerHTML=`
+    <div class="decision-top"><div><span class="decision-symbol">${d.ticker} 투자판단</span> <span class="decision-price">$${fmtNum(spot)}</span></div><span class="decision-badge" style="color:${meta.color}">● 현재 판단 · ${meta.label}</span><span class="decision-delay">◷ 옵션 데이터 15분 지연</span></div>
+    <div class="decision-rail-wrap"><div class="decision-rail">${markers}</div></div>
+    <div class="decision-response"><b>오늘의 대응</b><p>${meta.response}</p></div>
+    <div class="decision-actions-grid">
+      <div class="decision-action"><b style="color:${DOWN}">진입 검토</b><span>$${fmtNum(put,1)} 부근 지지 확인</span></div>
+      <div class="decision-action"><b style="color:#55e6b5">보유·관찰</b><span>${Number.isFinite(flip)?`$${fmtNum(flip,1)} 위 유지 확인`:'Gamma Flip 확인'}</span></div>
+      <div class="decision-action"><b style="color:${UP}">헤지 검토</b><span>$${fmtNum(call,1)} 접근 또는 저항 확인</span></div>
+      <div class="decision-action"><b>전일 대비 Wall 변화</b><span>Put ${wallChangeText(put,previous?.put)} · Call ${wallChangeText(call,previous?.call)}</span></div>
+    </div>
+    <button class="decision-detail-btn" type="button" onclick="showSelectedDecisionDetail()">상세 분석 보기 →</button>`;
+  box.classList.add('open');
+  document.getElementById('detailSection').style.display='none';
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function openWatchlistDecision(ticker){
+  ticker=validWatchTicker(ticker); if(!ticker) return;
+  const box=document.getElementById('decisionDashboard');
+  box.classList.add('open'); box.innerHTML=`<div class="empty">${ticker} 투자판단 계산 중...</div>`;
+  try{
+    let data=personalWatchData.get(ticker);
+    if(!data){ const res=await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`); data=await res.json(); }
+    if(!data || data.error) throw new Error(data?.error||'데이터를 불러오지 못했습니다');
+    renderDecisionDashboard(data);
+  }catch(e){ box.innerHTML=`<div class="empty">${ticker} 투자판단을 불러오지 못했습니다.</div>`; }
+}
+function showSelectedDecisionDetail(){
+  if(!selectedDecisionData) return;
+  renderDetail(selectedDecisionData);
+  const section=document.getElementById('detailSection');
+  section.style.display='block';
+  document.getElementById('decisionCloseBtn').style.display='block';
+  section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeSelectedDecisionDetail(){
+  document.getElementById('detailSection').style.display='none';
+  document.getElementById('decisionDashboard')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
 async function loadPersonalWatchlist(){
   const board = document.getElementById('personalWatchlist');
   const count = document.getElementById('interestCount');
@@ -1262,13 +1367,15 @@ async function loadPersonalWatchlist(){
       const removeButton = event.target.closest('.interest-remove');
       if(removeButton){ event.stopPropagation(); removePersonalWatchlist(removeButton.dataset.remove); return; }
       const card = event.target.closest('.interest-card');
-      if(card) searchTicker(card.dataset.ticker);
+      if(card) openWatchlistDecision(card.dataset.ticker);
     });
   }
   if(refresh) refresh.disabled = true;
+  personalWatchData = new Map();
   board.innerHTML = tickers.map((t, i) => `<div class="empty" data-watch-slot="${i}">${t} 불러오는 중...</div>`).join('');
   await Promise.allSettled(tickers.map(async (ticker, i) => {
     const data = await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`).then(r => r.ok ? r.json() : null).catch(() => null);
+    if(data && !data.error) personalWatchData.set(ticker,data);
     const slot = board.querySelector(`[data-watch-slot="${i}"]`);
     if(slot) slot.outerHTML = personalWatchCardHTML(ticker, data);
   }));
@@ -1310,6 +1417,13 @@ async function quickAddPersonalWatchlist(){
 }
 function removePersonalWatchlist(ticker){
   savePersonalWatchlist(getPersonalWatchlist().filter(t => t !== ticker));
+  if(selectedDecisionData?.ticker === ticker){
+    selectedDecisionData = null;
+    const dashboard = document.getElementById('decisionDashboard');
+    dashboard.classList.remove('open');
+    dashboard.innerHTML = '';
+    document.getElementById('detailSection').style.display = 'none';
+  }
   loadPersonalWatchlist();
   showToast(`${ticker} 관심종목에서 삭제했습니다`);
 }
@@ -1909,6 +2023,7 @@ document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
 document.getElementById('interestRefreshBtn').addEventListener('click', loadPersonalWatchlist);
+document.getElementById('decisionCloseBtn').addEventListener('click', closeSelectedDecisionDetail);
 document.getElementById('interestQuickAddBtn').addEventListener('click', quickAddPersonalWatchlist);
 document.getElementById('interestTickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') quickAddPersonalWatchlist();
