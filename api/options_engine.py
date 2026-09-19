@@ -103,14 +103,33 @@ def _massive_get(url: str, params: Optional[dict] = None) -> dict:
     return data
 
 
-def _fetch_full_options_chain(ticker: str) -> list[dict]:
+def _fetch_full_options_chain(ticker: str, max_expiries: Optional[int] = None) -> list[dict]:
     url = f"{MASSIVE_API_BASE}/v3/snapshot/options/{ticker}"
     all_results: list[dict] = []
     params = {"limit": 250}
+    selected_expiries: list[str] = []
+    if max_expiries:
+        params.update({
+            "expiration_date.gte": date.today().isoformat(),
+            "sort": "expiration_date",
+            "order": "asc",
+        })
     next_url = None
     while True:
         data = _massive_get(next_url or url, params if not next_url else None)
-        all_results.extend(data.get("results", []))
+        page_results = data.get("results", [])
+        reached_expiry_limit = False
+        for item in page_results:
+            if max_expiries:
+                expiry = (item.get("details") or {}).get("expiration_date")
+                if expiry and expiry not in selected_expiries:
+                    if len(selected_expiries) >= max_expiries:
+                        reached_expiry_limit = True
+                        break
+                    selected_expiries.append(expiry)
+            all_results.append(item)
+        if reached_expiry_limit:
+            break
         next_url = data.get("next_url")
         if not next_url:
             break
@@ -318,7 +337,9 @@ def compute_oi_rollover(prev_snapshot: dict, today_snapshot: dict, min_oi_change
 
 
 def fetch_option_chain(ticker: str, expiry: Optional[str] = None, max_expiries: int = 4) -> list[ChainSnapshot]:
-    raw_results = _fetch_full_options_chain(ticker)
+    # 기본 조회는 실제 계산에 쓰는 최근 만기만 내려받는다. 예전에는 전 만기를
+    # 모두 받은 뒤 4개만 사용해 관심종목 카드 로딩이 불필요하게 느렸다.
+    raw_results = _fetch_full_options_chain(ticker, None if expiry else max_expiries)
 
     chain_price = None
     by_expiry: dict[str, dict[float, dict]] = {}
@@ -1118,8 +1139,6 @@ def quick_gamma_flip(ticker: str) -> dict:
         "spot": float(spot),
         "is_stale_price": is_stale_price,
         "expiry_used": nearest_expiry,
-        "call_wall": gex["call_wall"],
-        "put_wall": gex["put_wall"],
         "gamma_flip": gex["gamma_flip"],
         "regime": gex["regime"],
         "net_gex_total": gex["net_gex_total"],
