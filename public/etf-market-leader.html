@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ETF Market Leader | GEX Option</title>
+  <style>
+    :root{--bg:#0b0f14;--panel:#111720;--line:#27303d;--text:#edf2f7;--dim:#8fa0b5;--gold:#e0a838;--red:#e94b55;--blue:#3f83df;--green:#55e6b5}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}header{border-bottom:1px solid var(--line);padding:18px 22px}.bar{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{font-weight:900;color:var(--gold);font-size:19px}.home{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:9px 14px;border-radius:7px}main{max-width:1100px;margin:auto;padding:38px 20px 70px}h1{margin:0 0 8px;font-size:30px}.sub{color:var(--dim);line-height:1.65;margin:0 0 22px}.intro{background:linear-gradient(135deg,rgba(224,168,56,.14),rgba(224,168,56,.03));border:1px solid var(--gold);border-radius:10px;padding:16px 18px;margin-bottom:18px}.intro b{display:block;margin-bottom:7px}.note,.muted{color:var(--dim);font-size:12px}.note{margin:12px 0}.group{margin:12px 0 20px}.row{display:grid;grid-template-columns:130px 105px 135px 1fr 1fr 1fr;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:7px 0}.row.leader{margin-left:25px;opacity:.9}.ticker{font-size:16px;font-weight:900}.mono{font-family:Consolas,monospace}.stage{font-size:11px;color:var(--gold)}.empty{padding:30px;text-align:center;color:var(--dim);border:1px solid var(--line);border-radius:8px}@media(max-width:760px){.row{grid-template-columns:1fr 1fr}.row.leader{margin-left:10px}}
+  </style>
+</head>
+<body>
+<header><div class="bar"><div class="brand">GEX Option · ETF Market Leader</div><a class="home" href="/">← 메인으로</a></div></header>
+<main>
+  <h1>🌊 ETF 마켓 리더</h1>
+  <p class="sub">강한 섹터 ETF와 그 안에서 가장 강하게 움직이는 주도주를 한 페이지에서 확인합니다.</p>
+  <div class="intro"><b>지금 오르는 섹터 안의 진짜 주도주는?</b><span class="muted">섹터의 방향과 함께 주도주의 GEX 핵심 레벨을 비교합니다.</span></div>
+  <div class="note" id="updated">불러오는 중...</div><div id="board"><div class="empty">데이터를 불러오는 중...</div></div>
+</main>
+<script>
+const CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vRnoCuQ1-jpfy_LAqCiOBxruPHlX58jFWwB1shKgDICq8VNQhW-8b6FWyYwaHY_43b1Nzc0xtugbIrK/pub?output=csv';
+const fmt=(v,d=2)=>v==null?'—':Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
+function row(d,name,leader=false){return `<div class="row${leader?' leader':''}"><span class="ticker">${leader?'↳ ':''}${d.ticker}${name?` <small class="muted">${name}</small>`:''}</span><span class="mono muted">$${fmt(d.spot)}</span><span class="stage">STAGE ${d.stage??'—'} · ${d.stage_label||''}</span><span class="muted">Gamma Flip <b style="color:var(--gold)">${fmt(d.gamma_flip,1)}</b></span><span class="muted">Call Wall <b style="color:var(--red)">${fmt(d.call_wall,1)}</b></span><span class="muted">Put Wall <b style="color:var(--blue)">${fmt(d.put_wall,1)}</b></span></div>`}
+async function load(){const board=document.getElementById('board'),updated=document.getElementById('updated');try{const text=await fetch(CSV,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.text()});const groups=[];text.split(/\r?\n/).forEach(line=>{const p=line.split(','),ticker=(p[0]||'').trim().toUpperCase();if(!/^[A-Z]{1,6}$/.test(ticker)||ticker==='TICKER')return;groups.push({ticker,name:(p[1]||'').trim(),leaders:(p[2]||'').split('|').map(x=>x.trim().toUpperCase()).filter(x=>/^[A-Z]{1,6}$/.test(x)).slice(0,6)})});const list=groups.slice(0,10),tickers=[...new Set(list.flatMap(g=>[g.ticker,...g.leaders]))],results=await Promise.all(tickers.map(t=>fetch('/api/search?ticker='+encodeURIComponent(t)).then(r=>r.ok?r.json():null).catch(()=>null))),map={};tickers.forEach((t,i)=>{if(results[i]&&!results[i].error)map[t]=results[i]});board.innerHTML=list.map(g=>map[g.ticker]?`<section class="group">${row(map[g.ticker],g.name)}${g.leaders.filter(t=>map[t]).map(t=>row(map[t],'',true)).join('')}</section>`:'').join('')||'<div class="empty">데이터를 불러오지 못했습니다.</div>';updated.textContent='실시간 계산 · '+new Date().toLocaleTimeString('ko-KR')+' 기준'}catch(e){board.innerHTML='<div class="empty">데이터를 불러오지 못했습니다.</div>';updated.textContent='' }}load();
+</script>
+</body></html>
