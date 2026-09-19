@@ -1988,9 +1988,10 @@ function drawGexChart(d){
   const padding = {top:14, bottom:26, left:8, right:8};
   const plotH = H - padding.top - padding.bottom;
   const zeroY = padding.top + plotH/2;
-  const barW = Math.max(2, (W - padding.left - padding.right)/use.length - 3);
+  const slotW = (W - padding.left - padding.right) / use.length;
+  const barW = Math.max(3, Math.min(8, slotW * 0.38));
   use.forEach((r,i)=>{
-    const x = padding.left + i*((W-padding.left-padding.right)/use.length);
+    const x = padding.left + i * slotW + (slotW - barW) / 2;
     const callH = (r.call_gex/maxAbs) * (plotH/2);
     const putH = (Math.abs(r.put_gex)/maxAbs) * (plotH/2);
     ctx.fillStyle = UP;
@@ -2011,8 +2012,9 @@ function drawGexChart(d){
   const step = Math.ceil(use.length/6);
   use.forEach((r,i)=>{
     if(i % step !== 0) return;
-    const x = padding.left + i*((W-padding.left-padding.right)/use.length);
-    ctx.fillText(r.strike.toFixed(0), x, H-8);
+    const x = padding.left + i * slotW + slotW / 2;
+    const label = r.strike.toFixed(0);
+    ctx.fillText(label, x - ctx.measureText(label).width / 2, H-8);
   });
 }
 let candleChartInstance = null;
