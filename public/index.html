@@ -109,6 +109,11 @@
   .interest-count{ color:var(--text-dim); font-size:11px; font-family:'JetBrains Mono',monospace; }
   .interest-refresh, .interest-add-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; background:var(--panel-2); color:var(--text); border:1px solid var(--line); padding:7px 10px; border-radius:6px; font-size:12px; cursor:pointer; font-family:'Pretendard',sans-serif; white-space:nowrap; }
   .interest-refresh:hover, .interest-add-btn:hover{ border-color:var(--gold); color:var(--gold); }
+  .interest-quick-add{ display:flex; gap:8px; margin:0 0 12px; max-width:430px; }
+  .interest-quick-add input{ flex:1; min-width:0; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:6px; padding:9px 11px; font-family:'JetBrains Mono',monospace; text-transform:uppercase; }
+  .interest-quick-add input:focus{ outline:none; border-color:var(--gold); }
+  .interest-quick-add button{ background:var(--gold); color:#111; border:0; border-radius:6px; padding:9px 14px; font-weight:800; cursor:pointer; white-space:nowrap; }
+  .interest-quick-add button:disabled{ opacity:.55; cursor:wait; }
   .interest-add-btn.saved{ border-color:var(--gold); color:var(--gold); background:rgba(224,168,56,0.12); }
   .interest-card{ position:relative; padding-right:36px; }
   .interest-remove{ position:absolute; top:8px; right:8px; width:24px; height:24px; border-radius:50%; border:0; background:transparent; color:var(--text-dim); cursor:pointer; font-size:17px; line-height:1; }
@@ -316,7 +321,11 @@
         <button class="interest-refresh" id="interestRefreshBtn" type="button">↻ 새로고침</button>
       </div>
     </div>
-    <p id="interestStorageNote" style="color:var(--text-dim); font-size:12px; margin:8px 0 12px;">종목을 검색한 뒤 ‘관심종목 추가’를 누르면 이 브라우저에 저장됩니다.</p>
+    <p id="interestStorageNote" style="color:var(--text-dim); font-size:12px; margin:8px 0 10px;">티커를 입력해 관심종목에 바로 추가할 수 있습니다.</p>
+    <div class="interest-quick-add">
+      <input id="interestTickerInput" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="티커 입력 (예: AAPL, NVDA)" aria-label="관심종목 티커 입력">
+      <button id="interestQuickAddBtn" type="button">+ 종목 추가</button>
+    </div>
     <div class="watchlist-grid" id="personalWatchlist">
       <div class="empty" style="grid-column:1/-1;">아직 관심종목이 없습니다. 위 검색창에서 종목을 조회해 추가해보세요.</div>
     </div>
@@ -1154,6 +1163,27 @@ function addPersonalWatchlist(ticker){
   loadPersonalWatchlist();
   showToast(`${ticker} 관심종목에 추가했습니다`);
 }
+async function quickAddPersonalWatchlist(){
+  const input = document.getElementById('interestTickerInput');
+  const button = document.getElementById('interestQuickAddBtn');
+  const ticker = validWatchTicker(input?.value || '');
+  if(!ticker){ showToast('추가할 티커를 입력해주세요'); input?.focus(); return; }
+  if(getPersonalWatchlist().includes(ticker)){ showToast(`${ticker}는 이미 관심종목에 있습니다`); return; }
+  button.disabled = true;
+  button.textContent = '확인 중...';
+  try{
+    const response = await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`);
+    const data = await response.json();
+    if(!response.ok || data.error){ showToast(`${ticker} 종목을 찾을 수 없습니다`); return; }
+    addPersonalWatchlist(ticker);
+    input.value = '';
+  }catch(error){
+    showToast('종목 확인 중 오류가 발생했습니다');
+  }finally{
+    button.disabled = false;
+    button.textContent = '+ 종목 추가';
+  }
+}
 function removePersonalWatchlist(ticker){
   savePersonalWatchlist(getPersonalWatchlist().filter(t => t !== ticker));
   loadPersonalWatchlist();
@@ -1707,6 +1737,10 @@ document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
 document.getElementById('interestRefreshBtn').addEventListener('click', loadPersonalWatchlist);
+document.getElementById('interestQuickAddBtn').addEventListener('click', quickAddPersonalWatchlist);
+document.getElementById('interestTickerInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') quickAddPersonalWatchlist();
+});
 const MARKET_FLOAT_TICKERS = [
   { ticker: 'SPY', label: 'S&P500' },
   { ticker: 'QQQ', label: '나스닥100' },
