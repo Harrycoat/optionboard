@@ -1096,6 +1096,25 @@ let watchlistSyncQueue = Promise.resolve();
 let authSessionVersion = 0;
 let personalWatchData = new Map();
 let selectedDecisionData = null;
+const WATCH_DATA_CACHE_KEY = 'gexoption_watch_data_v2';
+
+function watchDataCacheKey(){ return `${WATCH_DATA_CACHE_KEY}_${currentUser?.id || 'guest'}`; }
+function getCachedWatchData(ticker){
+  try{
+    const cache = JSON.parse(localStorage.getItem(watchDataCacheKey()) || '{}');
+    return cache[ticker]?.data || null;
+  }catch(e){ return null; }
+}
+function saveCachedWatchData(ticker, data){
+  if(!data || data.error) return;
+  try{
+    const key = watchDataCacheKey();
+    const cache = JSON.parse(localStorage.getItem(key) || '{}');
+    cache[ticker] = { savedAt:Date.now(), data };
+    const keep = Object.fromEntries(Object.entries(cache).sort((a,b)=>b[1].savedAt-a[1].savedAt).slice(0,40));
+    localStorage.setItem(key, JSON.stringify(keep));
+  }catch(e){}
+}
 
 function validWatchTicker(value){
   const ticker = String(value || '').trim().toUpperCase();
@@ -1334,11 +1353,26 @@ async function openWatchlistDecision(ticker){
     renderDecisionDashboard(data);
   }catch(e){ box.innerHTML=`<div class="empty">${ticker} 투자판단을 불러오지 못했습니다.</div>`; }
 }
-function showSelectedDecisionDetail(){
+async function showSelectedDecisionDetail(){
   if(!selectedDecisionData) return;
   const section=document.getElementById('detailSection');
   section.style.display='block';
   document.getElementById('decisionCloseBtn').style.display='block';
+  if(selectedDecisionData._summary){
+    section.querySelector('#detail').innerHTML='<div class="empty">상세 옵션 데이터를 불러오는 중...</div>';
+    section.scrollIntoView({behavior:'smooth',block:'start'});
+    try{
+      const ticker=selectedDecisionData.ticker;
+      const response=await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`);
+      const fullData=await response.json();
+      if(!response.ok || fullData.error) throw new Error(fullData.error || '상세 데이터 오류');
+      selectedDecisionData=fullData;
+      personalWatchData.set(ticker,fullData);
+    }catch(error){
+      section.querySelector('#detail').innerHTML='<div class="empty">상세 분석을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</div>';
+      return;
+    }
+  }
   renderDetail(selectedDecisionData);
   requestAnimationFrame(()=>{
     window.dispatchEvent(new Event('resize'));
@@ -1385,14 +1419,20 @@ async function loadPersonalWatchlist(){
   }
   if(refresh) refresh.disabled = true;
   personalWatchData = new Map();
-  board.innerHTML = tickers.map((t, i) => `<div class="empty" data-watch-slot="${i}">${t} 불러오는 중...</div>`).join('');
-  await Promise.allSettled(tickers.map(async (ticker, i) => {
-    const data = await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`).then(r => r.ok ? r.json() : null).catch(() => null);
+  board.innerHTML = tickers.map((ticker, i) => {
+    const cached = getCachedWatchData(ticker);
+    if(cached){ personalWatchData.set(ticker,cached); return personalWatchCardHTML(ticker,cached); }
+    return `<div class="empty" data-watch-slot="${i}">${ticker} 불러오는 중...</div>`;
+  }).join('');
+  Promise.allSettled(tickers.map(async (ticker, i) => {
+    const data = await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}&view=summary`).then(r => r.ok ? r.json() : null).catch(() => null);
     if(data && !data.error) personalWatchData.set(ticker,data);
+    if(data && !data.error) saveCachedWatchData(ticker,data);
+    const currentCard = board.querySelector(`.interest-card[data-ticker="${ticker}"]`);
     const slot = board.querySelector(`[data-watch-slot="${i}"]`);
-    if(slot) slot.outerHTML = personalWatchCardHTML(ticker, data);
-  }));
-  if(refresh) refresh.disabled = false;
+    if(currentCard) currentCard.outerHTML = personalWatchCardHTML(ticker, data || getCachedWatchData(ticker));
+    else if(slot) slot.outerHTML = personalWatchCardHTML(ticker, data);
+  })).finally(() => { if(refresh) refresh.disabled = false; });
 }
 function addPersonalWatchlist(ticker){
   if(!currentUser){ openAuthModal(); showToast('로그인 후 관심종목을 저장할 수 있습니다'); return; }
