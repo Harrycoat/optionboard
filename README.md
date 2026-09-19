@@ -15,6 +15,16 @@ Max Pain + GEX(Gamma Exposure) 자동 계산 대시보드.
 
 두 군데 다 등록해야 합니다 (Vercel은 실시간 검색용, GitHub Secrets는 daily_update.py 자동 실행용).
 
+### 선택: 회원가입·관심종목 동기화
+
+회원 기능은 Supabase를 사용하며, 설정하지 않아도 기존 브라우저 관심종목은 계속 작동합니다.
+
+1. Supabase 프로젝트의 SQL Editor에서 `supabase/schema.sql` 실행
+2. Vercel Environment Variables에 `SUPABASE_URL`, `SUPABASE_ANON_KEY` 등록
+3. Supabase Authentication URL Configuration에 `https://gexoption.com` 등록
+
+`SUPABASE_ANON_KEY`는 브라우저 공개용 키이며, `service_role` 키는 절대 프론트엔드나 `/api/config`에 넣지 마세요.
+
 ---
 
 ## 1. 프로젝트 구조
