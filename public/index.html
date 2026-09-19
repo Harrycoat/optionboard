@@ -1064,7 +1064,7 @@ function savePersonalWatchlist(tickers){
 async function initMemberAccount(){
   const button = document.getElementById('accountBtn');
   try{
-    const response = await fetch('/api/config');
+    const response = await fetch('/api/search?mode=config', { cache:'no-store' });
     const config = response.ok ? await response.json() : {};
     if(!config.supabaseUrl || !config.supabaseAnonKey || !window.supabase){
       button.textContent = '👤 회원 준비 중';
@@ -1385,9 +1385,9 @@ function renderDetail(d){
         <button class="interest-add-btn" id="interestAddBtn" type="button" onclick="togglePersonalWatchlist(currentDetail.ticker)" aria-pressed="false">
           ☆ 관심종목 추가
         </button>
-        <button class="share-x-btn" onclick="shareToX(currentDetail)" title="X에 올릴 요약 텍스트 복사">
+        <button class="share-x-btn" onclick="shareToX(currentDetail)" title="검색한 종목의 한·영 홍보 문구 복사">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.65l7.73-8.84L1.24 2.25h6.83l4.72 6.24 5.45-6.24Zm-1.17 17.52h1.83L7.02 4.13H5.06l12.01 15.64Z"/></svg>
-          공유 텍스트 복사
+          홍보 문구 복사 · Copy
         </button>
       </div>
     </div>
@@ -1584,36 +1584,46 @@ function renderOiGexChart(containerId, d){
 }
 function buildXShareText(d){
   const lines = [
-    `$${d.ticker} $${fmtNum(d.spot)} — 지금 살까, 팔까? (Buy or Sell now?)`,
+    `🚨 $${d.ticker} $${fmtNum(d.spot)} — Buy or Sell Now?`,
     '',
-    '"풋월에서 사고, 콜월에서 판다"',
-    '"Buy at the Put Wall, Sell at the Call Wall"',
-    '— 단기 스윙의 기본 원칙 (The Golden Rule of Swing Trading)',
-    '',
-    '옵션 시장이 만드는 지지선(Put Wall)과 저항선(Call Wall), 이 두 라인만 알면 매수·매도 타이밍이 보입니다.',
+    '“Buy near the Put Wall, manage risk near the Call Wall.”',
+    'Put Wall에서 반등을 확인하고, Call Wall에서 저항과 수익실현 여부를 판단하세요.',
     '',
   ];
   if(d.put_wall != null){
     const pctTxt = d.spot ? ` (${(((d.put_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.put_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
-    lines.push(`📍 Put Wall $${fmtNum(d.put_wall,1)}${pctTxt} → 매수 관심가 (BUY ZONE) — 반등 확인 후 진입`);
+    lines.push(`📍 Put Wall $${fmtNum(d.put_wall,1)}${pctTxt} — Potential BUY ZONE`);
+    lines.push(`$${fmtNum(d.put_wall,1)} 지지와 반등을 확인하세요.`);
+    lines.push('Watch for support, volume, and HULL 21 turning upward.');
   }
   if(d.call_wall != null){
     const pctTxt = d.spot ? ` (${(((d.call_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.call_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
-    lines.push(`📍 Call Wall $${fmtNum(d.call_wall,1)}${pctTxt} → 매도 · 익절가 (SELL ZONE) — 하락 전환 확인 시 청산/홀딩 판단`);
+    lines.push('');
+    lines.push(`📍 Call Wall $${fmtNum(d.call_wall,1)}${pctTxt} — SELL · TAKE-PROFIT ZONE`);
+    lines.push(`$${fmtNum(d.call_wall,1)}에서 저항을 받고 H21 TOP이 나타나면 일부 수익실현이나 헤지를 검토합니다.`);
+    lines.push(`A rejection near $${fmtNum(d.call_wall,1)} may signal a short-term top.`);
   }
   if(d.call_wall != null){
-    lines.push(`🚀 Call Wall 돌파 시 (BREAKOUT) → 2차 진입 (RE-ENTRY) — 저항 뚫고 상승 탄력 붙는 구간`);
+    lines.push('');
+    lines.push('🚀 Call Wall Breakout — RE-ENTRY ZONE');
+    lines.push(`5분봉이 $${fmtNum(d.call_wall,1)} 위에서 마감하고 거래량과 H21 상승이 확인되면 재진입 후보입니다.`);
+    lines.push('When resistance breaks and becomes support, momentum may continue higher.');
   }
   lines.push('');
-  lines.push('지지선에서 사고, 저항선에서 팔고 — 그런데 저항선을 강하게 뚫으면? 오히려 그게 추가 진입 신호가 됩니다.');
+  lines.push('The GEX Swing-Trading Framework');
+  lines.push('Put Wall Bounce → Entry Setup');
+  lines.push('Call Wall Rejection → Take Profit or Hedge');
+  lines.push('Call Wall Breakout → Re-entry Setup');
   lines.push('');
-  lines.push(`지금 $${d.ticker}는 어느 구간에 있을까요?`);
-  lines.push('실시간 GEX 데이터로 확인하세요 👇');
-  lines.push('gexoption.com');
+  lines.push('오늘의 실시간 Put Wall · Call Wall · GEX 데이터 확인');
+  lines.push('Check today’s real-time GEX levels 👇');
+  lines.push('👉 gexoption.com');
   lines.push('');
-  lines.push('⚠️ 정보 제공 목적이며, 투자 권유가 아닙니다. Not investment advice.');
-  lines.push('모든 투자 결정과 책임은 본인에게 있습니다.');
-  lines.push(`#옵션스윙 #풋월콜월 #GEX #주식스윙매매 #${d.ticker} #PutWall #CallWall #OptionsTrading`);
+  lines.push('⚠️ For educational and informational purposes only. Not investment advice.');
+  lines.push('Wall levels can change during the trading session.');
+  lines.push('모든 투자 판단과 책임은 투자자 본인에게 있습니다.');
+  lines.push('');
+  lines.push(`#${d.ticker} #GEX #PutWall #CallWall #OptionsTrading #SwingTrading #StockMarket #미국주식 #옵션매매 #스윙트레이딩`);
   return lines.join('\n');
 }
   function showToast(msg){
@@ -1634,7 +1644,7 @@ async function shareToX(d){
   const text = buildXShareText(d);
   try{
     await navigator.clipboard.writeText(text);
-    showToast('복사 완료! X 앱/웹에 붙여넣기 하세요 ✅');
+    showToast('홍보 문구 복사 완료! 원하는 SNS에 붙여넣으세요 ✅');
   }catch(e){
     const ta = document.createElement('textarea');
     ta.value = text;
@@ -1645,7 +1655,7 @@ async function shareToX(d){
     ta.select();
     try{
       document.execCommand('copy');
-      showToast('복사 완료! X 앱/웹에 붙여넣기 하세요 ✅');
+      showToast('홍보 문구 복사 완료! 원하는 SNS에 붙여넣으세요 ✅');
     }catch(e2){
       showToast('복사 실패 — 직접 선택해서 복사해주세요');
     }

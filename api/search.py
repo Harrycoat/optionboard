@@ -80,6 +80,13 @@ class handler(BaseHTTPRequestHandler):
             self._handle_symbol_search(query)
             return
 
+        if mode == "config":
+            self.wfile.write(json.dumps({
+                "supabaseUrl": os.environ.get("SUPABASE_URL", ""),
+                "supabaseAnonKey": os.environ.get("SUPABASE_ANON_KEY", ""),
+            }).encode("utf-8"))
+            return
+
         ticker = (query.get("ticker", [""])[0]).strip()
         if not ticker:
             self.wfile.write(json.dumps({"error": "ticker 파라미터가 필요합니다. 예: /api/search?ticker=AAPL"}, ensure_ascii=False).encode())
