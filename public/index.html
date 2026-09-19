@@ -228,7 +228,8 @@
   body.watchlist-view .member-hero,
   body.watchlist-view .nvda-preview,
   body.watchlist-view .market-float,
-  body.watchlist-view #marketStatusBanner{ display:none; }
+  body.watchlist-view #marketStatusBanner,
+  body.watchlist-view #todayBuySignalSection{ display:none; }
   body.watchlist-view .watchlist-page-title{ display:block; }
   body.watchlist-view main{ padding-top:22px; }
   @media(max-width:900px){.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
@@ -379,10 +380,13 @@
   <div class="updated-note" id="journalUpdatedNote">불러오는 중...</div>
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
-</div><div class="section-title" id="today-buy-signal">🎯 오늘의 매수 신호</div>
+</div>
+<section id="todayBuySignalSection">
+  <div class="section-title" id="today-buy-signal">🎯 오늘의 매수 신호</div>
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아왔는지(HULL 스테이지1 관찰타이밍), 상승 전환과 모멘텀까지 확인됐는지(HULL 스테이지2 진입타이밍)를 보여드립니다.</p>
   <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
   <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
+</section>
   <div id="detailSection" style="display:none;">
     <div class="section-title">상세 분석</div>
     <div id="searchAdSlot" style="margin-bottom:16px; min-height:1px;"></div>
@@ -1974,6 +1978,8 @@ if(!isWatchlistView()){
   loadMarketFloat();
   loadNvdaPreview();
   loadMarketStatusBanner();
+  loadTradingJournal();
+  loadReentrySignals();
   setInterval(loadMarketFloat, 60000);
 }
 initMemberAccount();
@@ -1986,8 +1992,6 @@ document.getElementById('authModal').addEventListener('click', event => { if(eve
 document.getElementById('signInBtn').addEventListener('click', () => submitAuth('signin'));
 document.getElementById('signUpBtn').addEventListener('click', () => submitAuth('signup'));
 document.getElementById('signOutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); const quickInput=document.getElementById('interestTickerInput'); if(quickInput) quickInput.value=''; await loadPersonalWatchlist(); closeAuthModal(); showToast('로그아웃했습니다'); });
-loadTradingJournal();
-loadReentrySignals();
   const scrollTopBtn = document.getElementById('scrollTopBtn');
 window.addEventListener('scroll', () => {
   if (window.scrollY > 300) {
