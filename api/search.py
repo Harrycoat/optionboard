@@ -65,11 +65,15 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         query = parse_qs(urlparse(self.path).query)
         mode = (query.get("mode", [""])[0]).strip()
+        view = (query.get("view", [""])[0]).strip()
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "no-store")
+        if view == "summary":
+            self.send_header("Cache-Control", "public, s-maxage=300, stale-while-revalidate=900")
+        else:
+            self.send_header("Cache-Control", "no-store")
         self.end_headers()
 
         if mode == "earnings_scan":
@@ -93,7 +97,15 @@ class handler(BaseHTTPRequestHandler):
             return
 
         try:
-            result = analyze_ticker_cached(ticker)
+            result = analyze_ticker_cached(ticker, ttl=300 if view == "summary" else 90, skip_stage=view == "summary")
+            if view == "summary":
+                keep = {
+                    "ticker", "spot", "is_stale_price", "price_change_pct",
+                    "expiry_used", "generated_at", "call_wall", "put_wall",
+                    "gamma_flip", "net_gex_total", "regime",
+                }
+                result = {key: value for key, value in result.items() if key in keep}
+                result["_summary"] = True
             self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
         except Exception as e:
             self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
