@@ -1,7 +1,7 @@
 """오늘의 기술적 진입 후보 스캐너.
 
 유동성 상위 종목에서 오늘 새로 발생한 두 이벤트를 찾는다.
-1) MA50이 MA100을 상향 돌파한 신규 추세
+1) 주가가 200일 이동평균선을 상향 돌파한 장기 추세 전환
 2) 상승 추세 안에서 Hull21 Dev%가 하단 밴드로부터 재진입한 눌림목
 
 평균 거래대금과 거래량을 확인하고, 진입 후보에는 GEX 위치를 추가해 순위를 정한다.
@@ -19,7 +19,9 @@ BAND_LOOKBACK = 50
 BAND_MULTIPLIER = 2.0
 HULL_PERIOD = 21
 SLOPE_LOOKBACK = 3
-LOOKBACK_DAYS_REQUEST = 200
+LOOKBACK_DAYS_REQUEST = 460
+TREND_MA_PERIOD = 200
+TREND_CHART_POINTS = 70
 
 MIN_PRICE = 5.0
 MIN_AVG_DOLLAR_VOLUME = 20_000_000
@@ -28,7 +30,7 @@ MAX_ENTRY_RESULTS = 10
 MAX_WATCH_RESULTS = 10
 MAX_GEX_LOOKUPS = 10
 RECENT_SIGNAL_LOOKBACK = 5
-NEAR_TREND_GAP_PCT = 1.0
+NEAR_TREND_GAP_PCT = 2.0
 NEAR_HULL_BAND_GAP_PCT = 1.0
 
 PER_TICKER_DELAY_SECONDS = 0.4
@@ -37,8 +39,8 @@ MAX_RETRIES = 1
 RETRY_BACKOFF_SECONDS = [5]
 
 SIGNAL_LABELS = {
-    "combined": "최우선: 신규추세 + Hull21",
-    "trend_cross": "MA50/100 신규추세",
+    "combined": "최우선: 200일선 돌파 + Hull21",
+    "trend_cross": "200일선 상향 돌파",
     "hull_reentry": "Hull21 눌림 재진입",
     "watch": "오늘의 관찰 후보",
     "near": "신호 임박",
@@ -127,9 +129,25 @@ def _round_or_none(value, digits=2):
     return None if value is None else round(float(value), digits)
 
 
+def _trend_chart_points(bars, sma200):
+    """홈 카드에서 주가·200일선·거래량을 함께 그릴 수 있는 최근 데이터."""
+    start = max(0, len(bars) - TREND_CHART_POINTS)
+    points = []
+    for index in range(start, len(bars)):
+        if sma200[index] is None:
+            continue
+        points.append({
+            "time": bars[index].get("time"),
+            "close": round(float(bars[index]["close"]), 2),
+            "ma200": round(float(sma200[index]), 2),
+            "volume": round(float(bars[index].get("volume") or 0)),
+        })
+    return points
+
+
 def _compute_signal_at_end(ticker, bars, signal_age=0):
     """주어진 마지막 일봉에서 발생한 신규추세·Hull21 재진입 이벤트를 계산한다."""
-    if not bars or len(bars) < 105:
+    if not bars or len(bars) < TREND_MA_PERIOD + 5:
         return None
 
     closes = [float(bar["close"]) for bar in bars]
@@ -139,7 +157,8 @@ def _compute_signal_at_end(ticker, bars, signal_age=0):
     hull = hull_ma_series(closes)
     sma50 = _sma_series(closes, 50)
     sma100 = _sma_series(closes, 100)
-    required = (hull[-1], hull[-2], sma50[-1], sma50[-2], sma100[-1], sma100[-2])
+    sma200 = _sma_series(closes, TREND_MA_PERIOD)
+    required = (hull[-1], hull[-2], sma50[-1], sma100[-1], sma200[-1], sma200[-2])
     if any(value is None for value in required):
         return None
 
@@ -159,12 +178,8 @@ def _compute_signal_at_end(ticker, bars, signal_age=0):
     liquid = spot >= MIN_PRICE and avg_dollar_volume >= MIN_AVG_DOLLAR_VOLUME
     volume_confirmed = volume_ratio >= MIN_VOLUME_RATIO
 
-    trend_cross = sma50[-2] <= sma100[-2] and sma50[-1] > sma100[-1]
-    trend_active = (
-        sma50[-1] > sma100[-1]
-        and sma50[-6] is not None
-        and sma50[-1] > sma50[-6]
-    )
+    trend_cross = closes[-2] <= sma200[-2] and closes[-1] > sma200[-1]
+    trend_active = spot > sma200[-1]
 
     today_dev = dev_pct[-1]
     previous_dev = dev_pct[-2]
@@ -181,7 +196,7 @@ def _compute_signal_at_end(ticker, bars, signal_age=0):
     hull_rising = now_hull_slope > 0 and now_hull_slope > previous_hull_slope
     above_hull21 = spot > hull[-1]
 
-    trend_entry = trend_cross and spot > sma50[-1] and volume_confirmed and liquid
+    trend_entry = trend_cross and volume_confirmed and liquid
     hull_entry = (
         hull_reentry
         and trend_active
@@ -230,6 +245,9 @@ def _compute_signal_at_end(ticker, bars, signal_age=0):
         "band_lower": _round_or_none(lower_band[-1]),
         "ma50": round(sma50[-1], 2),
         "ma100": round(sma100[-1], 2),
+        "ma200": round(sma200[-1], 2),
+        "above_ma200": spot > sma200[-1],
+        "trend_chart": _trend_chart_points(bars, sma200),
         "trend_cross": trend_cross,
         "trend_active": trend_active,
         "hull_reentry": hull_reentry,
@@ -247,7 +265,7 @@ def _compute_signal_at_end(ticker, bars, signal_age=0):
 
 def _compute_near_signal(ticker, bars):
     """신규 돌파·재진입 직전까지 접근한 유동성 종목을 관찰 후보로 반환한다."""
-    if not bars or len(bars) < 105:
+    if not bars or len(bars) < TREND_MA_PERIOD + 5:
         return None
     closes = [float(bar["close"]) for bar in bars]
     volumes = [float(bar.get("volume") or 0) for bar in bars]
@@ -255,7 +273,8 @@ def _compute_near_signal(ticker, bars):
     hull = hull_ma_series(closes)
     sma50 = _sma_series(closes, 50)
     sma100 = _sma_series(closes, 100)
-    required = (hull[-1], hull[-4], sma50[-1], sma50[-6], sma100[-1])
+    sma200 = _sma_series(closes, TREND_MA_PERIOD)
+    required = (hull[-1], hull[-4], sma50[-1], sma50[-6], sma100[-1], sma200[-1])
     if any(value is None for value in required):
         return None
     dev_pct = [None if value is None else (close-value)/value*100 for close,value in zip(closes,hull)]
@@ -270,9 +289,9 @@ def _compute_near_signal(ticker, bars):
     if not liquid:
         return None
 
-    ma_gap_pct = (sma100[-1] - sma50[-1]) / sma100[-1] * 100 if sma100[-1] else 999
-    trend_near = 0 <= ma_gap_pct <= NEAR_TREND_GAP_PCT and sma50[-1] > sma50[-6] and spot > sma50[-1]
-    trend_active = sma50[-1] > sma100[-1] and sma50[-1] > sma50[-6]
+    ma_gap_pct = (sma200[-1] - spot) / sma200[-1] * 100 if sma200[-1] else 999
+    trend_near = 0 <= ma_gap_pct <= NEAR_TREND_GAP_PCT and spot > closes[-4]
+    trend_active = spot > sma200[-1]
     hull_band_gap = dev_pct[-1] - lower_band[-1]
     hull_near = trend_active and -0.5 <= hull_band_gap <= NEAR_HULL_BAND_GAP_PCT and spot >= hull[-1] * 0.985
     if not trend_near and not hull_near:
@@ -297,6 +316,9 @@ def _compute_near_signal(ticker, bars):
         "band_lower": _round_or_none(lower_band[-1]),
         "ma50": round(sma50[-1], 2),
         "ma100": round(sma100[-1], 2),
+        "ma200": round(sma200[-1], 2),
+        "above_ma200": spot > sma200[-1],
+        "trend_chart": _trend_chart_points(bars, sma200),
         "trend_cross": False,
         "trend_active": trend_active,
         "hull_reentry": False,
@@ -307,7 +329,7 @@ def _compute_near_signal(ticker, bars):
         "volume_ratio": round(volume_ratio, 2),
         "avg_dollar_volume": round(avg_dollar_volume),
         "liquidity_confirmed": True,
-        "near_reason": "MA50/100 돌파 임박" if trend_near else "Hull21 하단밴드 재진입 임박",
+        "near_reason": "200일선 돌파 임박" if trend_near else "Hull21 하단밴드 재진입 임박",
         "signal_age": 0,
         "signal_date": bars[-1].get("time"),
     }
@@ -319,6 +341,14 @@ def compute_technical_signal(ticker, bars):
         snapshot = bars if signal_age == 0 else bars[:-signal_age]
         signal = _compute_signal_at_end(ticker, snapshot, signal_age=signal_age)
         if signal:
+            # 최근 며칠 전 발생한 신호라도 차트와 200일선 위치는 최신 거래일까지 보여준다.
+            closes = [float(bar["close"]) for bar in bars]
+            latest_sma200 = _sma_series(closes, TREND_MA_PERIOD)
+            if latest_sma200[-1] is not None:
+                signal["signal_ma200"] = signal.get("ma200")
+                signal["ma200"] = round(latest_sma200[-1], 2)
+                signal["above_ma200"] = closes[-1] > latest_sma200[-1]
+                signal["trend_chart"] = _trend_chart_points(bars, latest_sma200)
             return signal
     return _compute_near_signal(ticker, bars)
 

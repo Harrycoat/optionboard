@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Today’s Buy Signal | GEX Option</title>
-  <meta name="description" content="MA50/100 신규 상승 추세와 Hull21 눌림 재진입을 한 페이지에서 확인하는 오늘의 매수 신호 대시보드">
+  <meta name="description" content="200일 이동평균선 상향 돌파와 Hull21 눌림 재진입을 한 페이지에서 확인하는 오늘의 매수 신호 대시보드">
   <style>
     :root{--bg:#080b10;--panel:#11161e;--panel2:#171e28;--line:#293342;--text:#eef2f7;--dim:#8d99a8;--gold:#e0a838;--green:#55e6b5;--red:#ff7278;--blue:#81adff}
     *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}a{color:inherit;text-decoration:none}
@@ -29,7 +29,7 @@
     <section class="summary"><div class="summary-card"><small>스캔 유니버스</small><b>100</b></div><div class="summary-card entry"><small>Stage 2 · 진입 검토</small><b id="entryCount">—</b></div><div class="summary-card watch"><small>Stage 1 · 관찰</small><b id="watchCount">—</b></div><div class="summary-card"><small>최우선 후보</small><b id="topTicker">—</b></div></section>
 
     <section class="section"><div class="section-head"><div><h2>오늘의 최우선 신호</h2><p>기술 신호 점수와 GEX 위치가 가장 강한 한 종목</p></div></div><div class="top-pick" id="topPick"></div></section>
-    <section class="section"><div class="section-head"><div><h2>Stage 2 · 신규 상승 추세</h2><p>MA50이 MA100을 상향 돌파하고 거래량이 확인된 종목</p></div><span class="count" id="trendCount"></span></div><div class="signal-table" id="trendBoard"><div class="empty">불러오는 중...</div></div></section>
+    <section class="section"><div class="section-head"><div><h2>Stage 2 · 장기 상승추세 전환</h2><p>주가가 200일 이동평균선을 상향 돌파하고 거래량이 확인된 종목</p></div><span class="count" id="trendCount"></span></div><div class="signal-table" id="trendBoard"><div class="empty">불러오는 중...</div></div></section>
     <section class="section"><div class="section-head"><div><h2>Stage 2 · Hull21 눌림 재진입</h2><p>상승 추세 안에서 Dev% 하단 밴드로부터 되돌아온 종목</p></div><span class="count" id="hullCount"></span></div><div class="signal-table" id="hullBoard"><div class="empty">불러오는 중...</div></div></section>
     <section class="section"><div class="section-head"><div><h2>Stage 1 · 신호 임박·관찰 후보</h2><p>신호에 가까워졌거나 거래량·추세 확인이 더 필요한 종목</p></div><span class="count" id="watchBoardCount"></span></div><div class="signal-table" id="watchBoard"><div class="empty">불러오는 중...</div></div></section>
     <div class="notice">⚠️ 이 화면은 Hull21·이동평균·거래량·GEX를 이용한 교육용 기술 스크리너입니다. 매수를 권유하는 투자자문이 아니며, 실제 진입 전 주봉 Stage와 Put Wall 지지 여부를 직접 확인해야 합니다.</div>
@@ -57,7 +57,7 @@
       const el=document.getElementById('topPick'); if(!r){el.innerHTML='<div class="empty">오늘 최우선 진입 후보가 없습니다.</div>';el.classList.add('show');return;}
       document.getElementById('topTicker').textContent=r.ticker;
       const age=Number(r.signal_age)||0,ageText=age===0?'오늘':`D-${age}`;
-      el.innerHTML=`<div class="top-symbol"><small>TOP SIGNAL · ${ageText} · SCORE ${fmt(r.score,1)}</small><strong>${r.ticker}</strong><span>현재가 $${fmt(r.spot)}</span><button type="button" data-watch-add="${r.ticker}">☆ 관심추가</button></div><div class="top-grid"><div class="metric"><small>신호</small><b>${r.signal_label}</b></div><div class="metric"><small>HULL21</small><b>$${fmt(r.hull21)}</b></div><div class="metric"><small>DEV%</small><b>${Number(r.dev_pct)>=0?'+':''}${fmt(r.dev_pct,2)}%</b></div><div class="metric"><small>VOLUME RATIO</small><b>${fmt(r.volume_ratio,2)}x</b></div>${wallHTML(r)}<div class="top-note">${r.gex_confirmed?'Put Wall과 Gamma Flip 위에서 기술 신호가 확인됐습니다.':'기술 신호는 발생했지만 Put Wall·Gamma Flip 위치를 추가 확인하세요.'}</div></div>`;
+      el.innerHTML=`<div class="top-symbol"><small>TOP SIGNAL · ${ageText} · SCORE ${fmt(r.score,1)}</small><strong>${r.ticker}</strong><span>현재가 $${fmt(r.spot)}</span><button type="button" data-watch-add="${r.ticker}">☆ 관심추가</button></div><div class="top-grid"><div class="metric"><small>신호</small><b>${r.signal_label}</b></div><div class="metric"><small>200일 이동평균선</small><b>$${fmt(r.ma200)}</b></div><div class="metric"><small>HULL21</small><b>$${fmt(r.hull21)}</b></div><div class="metric"><small>VOLUME RATIO</small><b>${fmt(r.volume_ratio,2)}x</b></div>${wallHTML(r)}<div class="top-note">${r.above_ma200?'현재 주가가 200일선 위에 있습니다. 돌파 후 지지와 거래량 지속 여부를 확인하세요.':'200일선 위로 다시 올라서는지 확인할 때까지 관찰합니다.'}</div></div>`;
       el.classList.add('show'); el.addEventListener('click',()=>location.href=`/?ticker=${encodeURIComponent(r.ticker)}`);
     }
     async function loadSignals(){

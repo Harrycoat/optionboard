@@ -341,6 +341,14 @@
   .reentry-current-copy span,.reentry-current-action span{ color:var(--text-dim); }
   .reentry-current-action{ border-color:rgba(85,230,181,.28); }
   .reentry-current-action strong{ color:#55e6b5; }
+  .reentry-trend-chart{ padding:12px 16px 8px; border-top:1px solid rgba(224,168,56,.22); background:rgba(7,11,17,.38); }
+  .reentry-trend-chart-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px; color:var(--text-dim); font-size:9px; }
+  .reentry-trend-chart-head b{ color:var(--text); font-size:11px; }
+  .reentry-trend-legend{ display:flex; flex-wrap:wrap; gap:10px; }.reentry-trend-legend i{ display:inline-block; width:13px; height:2px; margin-right:4px; vertical-align:middle; }
+  .reentry-trend-svg{ display:block; width:100%; height:auto; max-height:220px; }
+  .reentry-trend-status{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; padding:0 16px 14px; background:rgba(7,11,17,.38); }
+  .reentry-trend-step{ padding:7px 5px; border-radius:5px; background:var(--panel-2); color:var(--text-dim); text-align:center; font-size:9px; }
+  .reentry-trend-step.active{ background:rgba(85,230,181,.12); color:#55e6b5; font-weight:800; }
   .reentry-current-levels{ display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid rgba(224,168,56,.22); }
   .reentry-current-level{ padding:10px 12px; text-align:center; }
   .reentry-current-level small{ display:block; color:var(--text-dim); font-size:8px; font-weight:800; letter-spacing:.05em; }
@@ -435,6 +443,7 @@
     .ai-leader-symbol{ grid-column:1; }.ai-row-actions{ grid-column:2; grid-row:1; }.ai-row-decision{ justify-self:auto; }
     .reentry-current-head{ flex-direction:column; padding:13px 12px 10px; }.reentry-current-title{ font-size:16px; }.reentry-current-badges{ justify-content:flex-start; }
     .reentry-current-body{ grid-template-columns:1fr; padding:0 12px 12px; }.reentry-current-level{ padding:9px 5px; }
+    .reentry-trend-chart{ padding:10px 8px 6px; }.reentry-trend-status{ grid-template-columns:1fr 1fr; padding:0 8px 10px; }
     .ai-stage-track,.ai-wall-rail{ grid-column:1/-1; }.ai-wall-rail{ margin:25px 16px 24px; }
     .interest-card{ min-height:142px; padding:14px 48px 14px 14px; }
     .interest-remove{ top:6px; right:6px; width:36px; height:36px; font-size:20px; }
@@ -822,7 +831,7 @@
 </div>
 <section id="todayBuySignalSection">
   <div class="section-title" id="today-buy-signal">🎯 오늘의 매수 신호</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아왔는지(HULL 스테이지1 관찰타이밍), 상승 전환과 모멘텀까지 확인됐는지(HULL 스테이지2 진입타이밍)를 보여드립니다.</p>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">주가가 장기 추세 기준인 200일 이동평균선을 상향 돌파했는지 먼저 확인하고, Hull21 눌림목·거래량·GEX 위치로 진입 가능성을 다시 점검합니다.</p>
   <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
   <div id="reentryCurrentSignal" class="reentry-current-signal" aria-live="polite"><div class="leader-empty" style="padding:14px 16px;">현재 신호를 분석하고 있습니다.</div></div>
   <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
@@ -1179,6 +1188,7 @@ function reentrySignalRowHTML(r){
       <span style="font-size:9px; font-weight:800; color:${signalAge===0?UP:'#81adff'};">${ageLabel}</span>
       <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
       <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${stageColor}22; color:${stageColor};">${r.stage_label}</span>
+      ${Number.isFinite(Number(r.ma200)) ? `<span class="mono" style="font-size:11px; color:var(--text-dim);">MA200 <b style="color:${r.above_ma200?'#55e6b5':GOLD}">${fmtNum(r.ma200,2)}</b></span>` : ''}
       <span class="mono" style="font-size:11px; color:var(--text-dim);">Hull21 <b style="color:${GOLD}">${fmtNum(r.hull21,2)}</b></span>
       <span class="mono" style="font-size:11px; color:${devColor};">Dev% <b>${devText}</b></span>
       ${r.volume_confirmed ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GREEN_OK}22; color:${GREEN_OK};">거래량 확인</span>` : ''}
@@ -1186,16 +1196,46 @@ function reentrySignalRowHTML(r){
     </div>
   `;
 }
+function reentryTrendChartHTML(r){
+  const points = (r.trend_chart || []).map(p=>({
+    close:Number(p.close), ma200:Number(p.ma200), volume:Number(p.volume)||0, time:String(p.time||'')
+  })).filter(p=>Number.isFinite(p.close) && Number.isFinite(p.ma200));
+  if(points.length < 2) return `<div class="reentry-trend-chart"><div class="leader-empty">200일선 추세 차트는 다음 자동 계산 후 표시됩니다.</div></div>`;
+  const width=720, height=230, left=28, right=18, top=16, priceBottom=158, volumeTop=178, volumeBottom=218;
+  const values=points.flatMap(p=>[p.close,p.ma200]);
+  const rawMin=Math.min(...values), rawMax=Math.max(...values), pad=Math.max((rawMax-rawMin)*.12,rawMax*.01,0.5);
+  const min=rawMin-pad, max=rawMax+pad, x=i=>left+i*(width-left-right)/Math.max(1,points.length-1);
+  const y=value=>top+(max-value)/(max-min)*(priceBottom-top);
+  const maxVolume=Math.max(...points.map(p=>p.volume),1), barWidth=Math.max(2,(width-left-right)/points.length*.55);
+  const pricePath=points.map((p,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(p.close).toFixed(1)}`).join(' ');
+  const maPath=points.map((p,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(p.ma200).toFixed(1)}`).join(' ');
+  let crossIndex=-1;
+  for(let i=1;i<points.length;i++) if(points[i-1].close<=points[i-1].ma200 && points[i].close>points[i].ma200) crossIndex=i;
+  const bars=points.map((p,i)=>{const h=p.volume/maxVolume*(volumeBottom-volumeTop);return `<rect x="${(x(i)-barWidth/2).toFixed(1)}" y="${(volumeBottom-h).toFixed(1)}" width="${barWidth.toFixed(1)}" height="${h.toFixed(1)}" fill="${i>=Math.max(0,crossIndex-1)?'#55e6b5':'#26364b'}" opacity="${i>=Math.max(0,crossIndex-1)?'.72':'.8'}"/>`;}).join('');
+  const crossMark=crossIndex>=0?`<line x1="${x(crossIndex)}" y1="${top}" x2="${x(crossIndex)}" y2="${priceBottom}" stroke="#ff676d" stroke-dasharray="4 4"/><circle cx="${x(crossIndex)}" cy="${y(points[crossIndex].close)}" r="5" fill="#ff676d" stroke="#0b1119" stroke-width="2"/><text x="${Math.min(x(crossIndex)+8,width-135)}" y="${top+12}" fill="#ff8b90" font-size="9">200일선 상향 돌파</text>`:'';
+  const age=Number(r.signal_age)||0, activeStep=r.above_ma200?(age===0?2:3):1;
+  return `<div class="reentry-trend-chart">
+    <div class="reentry-trend-chart-head"><b>주가와 200일 이동평균선 · 일봉</b><div class="reentry-trend-legend"><span><i style="background:#55e6b5"></i>주가</span><span><i style="background:#e0a838"></i>200일선</span><span>막대 · 거래량</span></div></div>
+    <svg class="reentry-trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${r.ticker} 주가, 200일 이동평균선과 거래량 추세 차트">
+      <line x1="${left}" y1="${top}" x2="${width-right}" y2="${top}" stroke="#202b3a"/><line x1="${left}" y1="${(top+priceBottom)/2}" x2="${width-right}" y2="${(top+priceBottom)/2}" stroke="#202b3a"/><line x1="${left}" y1="${priceBottom}" x2="${width-right}" y2="${priceBottom}" stroke="#202b3a"/>
+      <path d="${maPath}" fill="none" stroke="#e0a838" stroke-width="2"/><path d="${pricePath}" fill="none" stroke="#55e6b5" stroke-width="2.5"/>
+      ${crossMark}<line x1="${left}" y1="${volumeTop-7}" x2="${width-right}" y2="${volumeTop-7}" stroke="#202b3a"/>${bars}
+      <text x="${left}" y="${height-2}" fill="#728198" font-size="9">${points[0].time}</text><text x="${width-right}" y="${height-2}" fill="#728198" font-size="9" text-anchor="end">${points[points.length-1].time}</text>
+      <text x="${width-right}" y="${Math.max(top+10,y(points[points.length-1].close)-7)}" fill="#55e6b5" font-size="9" text-anchor="end">현재 $${fmtNum(points[points.length-1].close)}</text>
+      <text x="${width-right}" y="${Math.min(priceBottom-3,y(points[points.length-1].ma200)+12)}" fill="#e0a838" font-size="9" text-anchor="end">MA200 $${fmtNum(points[points.length-1].ma200)}</text>
+    </svg></div>
+    <div class="reentry-trend-status">${['200일선 아래 · 관찰','상향 돌파 · 추세 전환','200일선 지지 · 진입 검토','상승 지속 · 보유 관리'].map((label,i)=>`<span class="reentry-trend-step${activeStep===i+1?' active':''}">${i+1}. ${label}</span>`).join('')}</div>`;
+}
 function reentryCurrentSignalHTML(r, isConfirmed){
   if(!r) return `<div class="leader-empty" style="padding:14px 16px;">현재 조건을 충족한 신호와 관찰 후보가 없습니다.</div>`;
   const signalType = r.signal_type || '';
   const isTrend = signalType === 'trend_cross' || r.trend_cross;
   const isHull = signalType === 'hull_reentry' || r.hull_reentry;
   const signalTitle = isTrend
-    ? 'MA50/100 신규 상승추세'
+    ? '200일선 상향 돌파 · 장기 추세 전환'
     : isHull ? 'Hull21 눌림목 재진입' : (r.signal_label || r.stage_label || '신호 임박 · 관찰 후보');
   const meaning = isTrend
-    ? '50일 이동평균선이 100일 이동평균선을 상향 돌파해 중기 상승추세 전환이 확인된 신호입니다.'
+    ? '주가가 장기 추세 기준인 200일 이동평균선을 상향 돌파했습니다. 향후 상승추세로 전환될 가능성이 생긴 초기 신호입니다.'
     : isHull
       ? 'Dev%가 하단 밴드 아래에서 다시 올라오고 Hull21 상승 조건이 확인된 눌림목 재진입 신호입니다.'
       : '아직 진입 조건이 모두 확인된 매수 신호는 아닙니다. Hull21·추세·거래량 조건이 완성되는지 관찰하는 후보입니다.';
@@ -1205,8 +1245,14 @@ function reentryCurrentSignalHTML(r, isConfirmed){
   const hasSpot = Number.isFinite(spot);
   const hasPut = Number.isFinite(put);
   const hasCall = Number.isFinite(call);
+  const ma200 = Number(r.ma200);
+  const hasMa200 = Number.isFinite(ma200);
   let action = '가격 구조와 거래량 확인 전에는 신규 진입을 서두르지 않습니다.';
-  if(hasSpot && hasPut && hasCall){
+  if(isTrend && hasMa200){
+    action = r.above_ma200
+      ? `200일선 $${fmtNum(ma200)} 위에서 지지가 이어지는지 확인합니다. 거래량을 유지하며 지지하면 진입을 검토하고, 다시 200일선 아래로 내려가면 신호를 무효로 봅니다.`
+      : `현재가가 다시 200일선 $${fmtNum(ma200)} 아래로 내려왔습니다. 200일선 회복 전까지 신규 진입을 보류합니다.`;
+  }else if(hasSpot && hasPut && hasCall){
     if(spot < put) action = `현재가가 Put Wall $${fmtNum(put)} 아래입니다. Put Wall 회복이 확인되기 전까지 신규 진입을 보류합니다.`;
     else if(spot >= call) action = `현재가가 Call Wall $${fmtNum(call)}에 도달했습니다. 돌파 후 지지 전환을 확인하고 보유 또는 진입을 판단합니다.`;
     else action = `Put Wall $${fmtNum(put)} 지지를 유지하면 진입을 검토하고, Call Wall $${fmtNum(call)} 접근 시 추격매수보다 돌파·저항 반응을 확인합니다.`;
@@ -1217,6 +1263,7 @@ function reentryCurrentSignalHTML(r, isConfirmed){
   }
   const badges = [
     r.stage ? `STAGE ${r.stage}` : '',
+    hasMa200 ? (r.above_ma200 ? '200일선 위' : '200일선 아래') : '',
     r.volume_confirmed ? `거래량 ${r.volume_ratio ? fmtNum(r.volume_ratio,2)+'배' : '확인'}` : '',
     r.gex_confirmed ? 'GEX 확인' : '',
     !isConfirmed ? '관찰 후보' : ''
@@ -1226,6 +1273,7 @@ function reentryCurrentSignalHTML(r, isConfirmed){
       <div><div class="reentry-current-kicker">${isConfirmed ? '현재 최우선 신호' : '현재 최우선 관찰 후보'}</div><div class="reentry-current-title"><b>${r.ticker}</b> · ${signalTitle}</div></div>
       <div class="reentry-current-badges">${badges}</div>
     </div>
+    ${reentryTrendChartHTML(r)}
     <div class="reentry-current-body">
       <div class="reentry-current-copy"><strong>왜 표시됐나요?</strong><span>${meaning}</span></div>
       <div class="reentry-current-action"><strong>현재 대응</strong><span>${action}</span></div>

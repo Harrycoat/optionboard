@@ -965,7 +965,7 @@ def build_report():
 
     active_universe_tickers = load_or_build_active_universe()
 
-    # ---- Today's Buy Signal (신규 추세 + Hull21 눌림 재진입) ----
+    # ---- Today's Buy Signal (200일선 장기 추세 전환 + Hull21 눌림 재진입) ----
     # 전용 페이지와 홈 요약이 같은 결과를 사용하도록 한 번만 계산한다.
     try:
         buy_signals = build_dev_reentry_signals(active_universe_tickers)
