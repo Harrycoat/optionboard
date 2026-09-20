@@ -12,7 +12,7 @@ import os
 import requests
 
 sys.path.insert(0, os.path.dirname(__file__))
-from options_engine import analyze_ticker_cached, recommend_paper_option_contracts  # noqa: E402
+from options_engine import analyze_ticker_cached, quote_paper_option_contracts, recommend_paper_option_contracts  # noqa: E402
 from earnings_engine import (  # noqa: E402
     scan_earnings_movers,
     scan_earnings_movers_from_watchlist,
@@ -99,6 +99,15 @@ class handler(BaseHTTPRequestHandler):
         if mode == "paper_options":
             try:
                 result = recommend_paper_option_contracts(ticker)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
+            return
+
+        if mode == "paper_option_quotes":
+            try:
+                contracts = [item.strip() for item in (query.get("contracts", [""])[0]).split(",") if item.strip()]
+                result = quote_paper_option_contracts(ticker, contracts)
                 self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
