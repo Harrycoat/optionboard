@@ -4,7 +4,7 @@
     {href:'/ai-leader-roadmap.html#aiLeaderMap',label:'🧭 AI 주도주 로드맵',match:p=>p==='/ai-leader-roadmap.html',tone:'#55e6b5'},
     {href:'/industry-leaders.html',label:'🏭 산업별 주도주',match:p=>p==='/industry-leaders.html',tone:'#81adff'},
     {href:'/momentum-top-100.html',label:'모멘텀 TOP 100',match:p=>p==='/momentum-top-100.html'},
-    {href:'/etf-market-leader.html',label:'대형주 ETF',match:p=>p==='/etf-market-leader.html'},
+    {href:'/etf-market-leader.html',label:'성장성 ETF',match:p=>p==='/etf-market-leader.html'},
     {href:'/unusual-options.html',label:'거래량 급증주',match:p=>p==='/unusual-options.html'},
     {href:'/today-buy-signal.html',label:'🎯 오늘의 매수 신호',match:p=>p==='/today-buy-signal.html',tone:'#e0a838'},
     {href:'https://gex-future-leaders.harryahn.chatgpt.site/#future-leaders-core',label:'장기보유 운용',external:true,tone:'#55e6b5'},
