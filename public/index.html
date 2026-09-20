@@ -193,6 +193,8 @@
   .paper-option-statuses{ display:flex; gap:6px; flex-wrap:wrap; }
   .paper-option-status{ padding:6px 8px; border:1px solid var(--line); border-radius:5px; background:var(--panel-2); color:var(--text-dim); font:700 9px/1.45 'JetBrains Mono',monospace; }
   .paper-option-status b{ color:var(--text); }.paper-option-status .positive{ color:#55e6b5; }.paper-option-status .negative{ color:var(--up); }
+  .paper-option-close{ margin-left:7px; padding:3px 7px; border:1px solid var(--gold); border-radius:4px; background:rgba(224,168,56,.08); color:var(--gold); font-size:8px; font-weight:900; cursor:pointer; }
+  .paper-option-close:hover{ background:rgba(224,168,56,.16); }
   .paper-option-state{ display:inline-block; margin-right:5px; padding:2px 5px; border-radius:4px; font:900 8px 'Pretendard',sans-serif; }
   .paper-option-state.running{ color:#55e6b5; background:rgba(85,230,181,.1); }.paper-option-state.finished{ color:var(--text-dim); background:rgba(139,150,169,.12); }
   .paper-option-cashflow{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:7px; color:var(--text-dim); font:700 9px 'JetBrains Mono',monospace; }
@@ -1370,6 +1372,7 @@ function paperOptionState(option){
   if(expiry && expiry<today) return {label:'만기 종료',className:'finished'};
   return {label:'운용중',className:'running'};
 }
+function isPaperOptionOpen(option){ return paperOptionState(option).className==='running'; }
 function paperCoachStateKey(){ return `${PAPER_COACH_OPEN_KEY}_${currentUser?.id||'guest'}`; }
 function isPaperCoachOpen(ticker){
   try{ const state=JSON.parse(localStorage.getItem(paperCoachStateKey())||'{}'); return state[ticker]!==false; }catch(e){ return true; }
@@ -1385,14 +1388,14 @@ function paperPositionGuideHTML(position,last){
   const calls=Array.isArray(position.coveredCalls)?position.coveredCalls:[], hedges=Array.isArray(position.hedges)?position.hedges:[];
   const ccReceived=calls.reduce((sum,option)=>sum+Number(option.premium||0)*100*Number(option.contracts||0),0);
   const hedgePaid=hedges.reduce((sum,option)=>sum+Number(option.premium||0)*100*Number(option.contracts||0),0);
-  const optionEvaluationPnl=calls.reduce((sum,option)=>sum+(Number(option.premium||0)-Number(option.currentPremium??option.premium??0))*100*Number(option.contracts||0),0)+hedges.reduce((sum,option)=>sum+(Number(option.currentPremium??option.premium??0)-Number(option.premium||0))*100*Number(option.contracts||0),0);
+  const optionEvaluationPnl=calls.reduce((sum,option)=>sum+(isPaperOptionOpen(option)?(Number(option.premium||0)-Number(option.currentPremium??option.premium??0))*100*Number(option.contracts||0):Number(option.realizedPnl||0)),0)+hedges.reduce((sum,option)=>sum+(isPaperOptionOpen(option)?(Number(option.currentPremium??option.premium??0)-Number(option.premium||0))*100*Number(option.contracts||0):Number(option.realizedPnl||0)),0);
   const stockPnl=(spot-Number(position.avgPrice||spot))*Number(position.quantity||0), integratedPnl=stockPnl+optionEvaluationPnl;
   const optionStatus=[...calls.map(option=>{
-    const current=Number(option.currentPremium??option.premium), entry=Number(option.premium), contracts=Number(option.contracts||0), pnl=(entry-current)*100*contracts, received=entry*100*contracts, state=paperOptionState(option);
-    return `<div class="paper-option-status"><span class="paper-option-state ${state.className}">${state.label}</span><b>CC ${contracts}계약</b> · ${String(option.expiry||'').slice(5)} $${fmtNum(option.strike)}C · 받은 프리미엄 <span class="positive">+$${fmtNum(received)}</span> · 매도 $${fmtNum(entry)} → 현재 $${fmtNum(current)} · 평가손익 <span class="${pnl>=0?'positive':'negative'}">${pnl>=0?'+':''}$${fmtNum(pnl)}</span></div>`;
+    const open=isPaperOptionOpen(option), current=Number(open?(option.currentPremium??option.premium):(option.closePremium??option.currentPremium??option.premium)), entry=Number(option.premium), contracts=Number(option.contracts||0), pnl=open?(entry-current)*100*contracts:Number(option.realizedPnl||0), received=entry*100*contracts, state=paperOptionState(option);
+    return `<div class="paper-option-status"><span class="paper-option-state ${state.className}">${state.label}</span><b>CC ${contracts}계약</b> · ${String(option.expiry||'').slice(5)} $${fmtNum(option.strike)}C · 받은 프리미엄 <span class="positive">+$${fmtNum(received)}</span> · 매도 $${fmtNum(entry)} → ${open?'현재':'청산'} $${fmtNum(current)} · ${open?'평가':'확정'}손익 <span class="${pnl>=0?'positive':'negative'}">${pnl>=0?'+':''}$${fmtNum(pnl)}</span>${open?`<button class="paper-option-close" type="button" onclick="event.stopPropagation(); closePaperOption('${ticker}','CC','${option.id}')">청산</button>`:''}</div>`;
   }),...hedges.map(option=>{
-    const current=Number(option.currentPremium??option.premium), entry=Number(option.premium), contracts=Number(option.contracts||0), pnl=(current-entry)*100*contracts, paid=entry*100*contracts, state=paperOptionState(option);
-    return `<div class="paper-option-status"><span class="paper-option-state ${state.className}">${state.label}</span><b>Put 헤지 ${contracts}계약</b> · ${String(option.expiry||'').slice(5)} $${fmtNum(option.strike)}P · 지급액 <span class="negative">-$${fmtNum(paid)}</span> · 매입 $${fmtNum(entry)} → 현재 $${fmtNum(current)} · 평가손익 <span class="${pnl>=0?'positive':'negative'}">${pnl>=0?'+':''}$${fmtNum(pnl)}</span></div>`;
+    const open=isPaperOptionOpen(option), current=Number(open?(option.currentPremium??option.premium):(option.closePremium??option.currentPremium??option.premium)), entry=Number(option.premium), contracts=Number(option.contracts||0), pnl=open?(current-entry)*100*contracts:Number(option.realizedPnl||0), paid=entry*100*contracts, state=paperOptionState(option);
+    return `<div class="paper-option-status"><span class="paper-option-state ${state.className}">${state.label}</span><b>Put 헤지 ${contracts}계약</b> · ${String(option.expiry||'').slice(5)} $${fmtNum(option.strike)}P · 지급액 <span class="negative">-$${fmtNum(paid)}</span> · 매입 $${fmtNum(entry)} → ${open?'현재':'청산'} $${fmtNum(current)} · ${open?'평가':'확정'}손익 <span class="${pnl>=0?'positive':'negative'}">${pnl>=0?'+':''}$${fmtNum(pnl)}</span>${open?`<button class="paper-option-close" type="button" onclick="event.stopPropagation(); closePaperOption('${ticker}','HEDGE','${option.id}')">청산</button>`:''}</div>`;
   })].join('');
   const put=Number(data?.put_wall), call=Number(data?.call_wall);
   const hasWalls=Number.isFinite(put)&&Number.isFinite(call)&&call>put;
@@ -1427,15 +1430,15 @@ function renderPaperAccount(){
   const positions=Object.values(account.positions||{}).filter(p=>Number(p.quantity)>0);
   positionsBody.innerHTML=positions.length?positions.map(p=>{
     const last=Number(p.lastPrice||p.avgPrice), stockPnl=(last-Number(p.avgPrice))*Number(p.quantity);
-    const calls=Array.isArray(p.coveredCalls)?p.coveredCalls:[], contracts=calls.reduce((sum,c)=>sum+(Number(c.contracts)||0),0), latestCall=calls[0];
-    const hedges=Array.isArray(p.hedges)?p.hedges:[], hedgeContracts=hedges.reduce((sum,h)=>sum+(Number(h.contracts)||0),0), latestHedge=hedges[0];
-    const ccPnl=calls.reduce((sum,c)=>sum+((Number(c.premium)||0)-(Number(c.currentPremium??c.premium)||0))*100*(Number(c.contracts)||0),0);
-    const hedgePnl=hedges.reduce((sum,h)=>sum+((Number(h.currentPremium??h.premium)||0)-(Number(h.premium)||0))*100*(Number(h.contracts)||0),0);
-    const ccLiability=calls.reduce((sum,c)=>sum+(Number(c.currentPremium??c.premium)||0)*100*(Number(c.contracts)||0),0);
-    const hedgeValue=hedges.reduce((sum,h)=>sum+(Number(h.currentPremium??h.premium)||0)*100*(Number(h.contracts)||0),0);
+    const calls=Array.isArray(p.coveredCalls)?p.coveredCalls:[], openCalls=calls.filter(isPaperOptionOpen), contracts=openCalls.reduce((sum,c)=>sum+(Number(c.contracts)||0),0), latestCall=openCalls[0];
+    const hedges=Array.isArray(p.hedges)?p.hedges:[], openHedges=hedges.filter(isPaperOptionOpen), hedgeContracts=openHedges.reduce((sum,h)=>sum+(Number(h.contracts)||0),0), latestHedge=openHedges[0];
+    const ccPnl=calls.reduce((sum,c)=>sum+(isPaperOptionOpen(c)?((Number(c.premium)||0)-(Number(c.currentPremium??c.premium)||0))*100*(Number(c.contracts)||0):Number(c.realizedPnl||0)),0);
+    const hedgePnl=hedges.reduce((sum,h)=>sum+(isPaperOptionOpen(h)?((Number(h.currentPremium??h.premium)||0)-(Number(h.premium)||0))*100*(Number(h.contracts)||0):Number(h.realizedPnl||0)),0);
+    const ccLiability=openCalls.reduce((sum,c)=>sum+(Number(c.currentPremium??c.premium)||0)*100*(Number(c.contracts)||0),0);
+    const hedgeValue=openHedges.reduce((sum,h)=>sum+(Number(h.currentPremium??h.premium)||0)*100*(Number(h.contracts)||0),0);
     const pnl=stockPnl+ccPnl+hedgePnl, costBasis=Number(p.avgPrice)*Number(p.quantity), pct=costBasis>0?pnl/costBasis*100:0;
-    const cc=contracts&&latestCall?`${String(latestCall.expiry||'').slice(5)} · $${fmtNum(latestCall.strike)}C · 매도 $${fmtNum(latestCall.premium)} → 현재 $${fmtNum(latestCall.currentPremium??latestCall.premium)}`:(p.ccStatus||'미보유');
-    const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · 매입 $${fmtNum(latestHedge.premium)} → 현재 $${fmtNum(latestHedge.currentPremium??latestHedge.premium)}`:(p.hedgeStatus||'없음');
+    const cc=contracts&&latestCall?`${String(latestCall.expiry||'').slice(5)} · $${fmtNum(latestCall.strike)}C · 매도 $${fmtNum(latestCall.premium)} → 현재 $${fmtNum(latestCall.currentPremium??latestCall.premium)}`:(calls.length?'종료':'미보유');
+    const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · 매입 $${fmtNum(latestHedge.premium)} → 현재 $${fmtNum(latestHedge.currentPremium??latestHedge.premium)}`:(hedges.length?'종료':'없음');
     const csp=p.cspStatus||'미보유';
     return `<tr><td>${p.ticker}</td><td>$${fmtNum(last)}</td><td>${fmtNum(p.quantity,0)}주</td><td>$${fmtNum(p.avgPrice)}</td><td title="${cc}">${cc}</td><td>${csp}</td><td title="${hedge}">${hedge}</td><td style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td>$${fmtNum(last*Number(p.quantity)+hedgeValue-ccLiability)}</td><td><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
   }).join(''):'<tr><td class="paper-table-empty" colspan="10">관심종목을 선택하고 ‘모의 매수’를 눌러 첫 포지션을 만들어보세요.</td></tr>';
@@ -1454,7 +1457,7 @@ async function refreshPaperAccountPrices(){
   const button=document.getElementById('paperRefreshBtn'); if(button) button.disabled=true;
   const positions=Object.values(account.positions||{}).filter(p=>Number(p.quantity)>0);
   await Promise.allSettled(positions.map(async p=>{
-    const contracts=[...(p.coveredCalls||[]),...(p.hedges||[])].map(option=>option.contractTicker).filter(Boolean);
+    const contracts=[...(p.coveredCalls||[]),...(p.hedges||[])].filter(isPaperOptionOpen).map(option=>option.contractTicker).filter(Boolean);
     const [summaryResponse,quotesResponse]=await Promise.all([
       fetch(`/api/search?ticker=${encodeURIComponent(p.ticker)}&view=summary`),
       contracts.length?fetch(`/api/search?mode=paper_option_quotes&ticker=${encodeURIComponent(p.ticker)}&contracts=${encodeURIComponent(contracts.join(','))}`):Promise.resolve(null),
@@ -1467,6 +1470,7 @@ async function refreshPaperAccountPrices(){
     if(quotesResponse?.ok){
       const result=await quotesResponse.json(), quotes=result.quotes||{}, updatedAt=new Date().toISOString();
       for(const key of ['coveredCalls','hedges']) account.positions[p.ticker][key]=(account.positions[p.ticker][key]||[]).map(option=>{
+        if(!isPaperOptionOpen(option)) return option;
         const quote=quotes[String(option.contractTicker||'').toUpperCase()];
         return quote?{...option,currentPremium:Number(quote.premium),currentBid:quote.bid,currentAsk:quote.ask,quoteUpdatedAt:updatedAt}:option;
       });
@@ -1583,6 +1587,25 @@ function updatePaperTradeEstimate(){
   document.getElementById('paperTradeCashAfter').textContent=Number.isFinite(after)?`$${fmtNum(after)}`:'—';
   document.getElementById('paperTradeCashAfter').style.color=after<0?DOWN:'var(--text)';
 }
+function closePaperOption(ticker,type,optionId){
+  const account=getPaperAccount(), position=account?.positions?.[ticker], key=type==='CC'?'coveredCalls':'hedges';
+  const options=Array.isArray(position?.[key])?position[key]:[], option=options.find(item=>item.id===optionId);
+  if(!account||!position||!option||!isPaperOptionOpen(option)){ showToast('청산할 운용중 계약을 찾지 못했습니다'); return; }
+  const current=Number(option.currentPremium??option.premium), entry=Number(option.premium), contracts=Number(option.contracts||0);
+  if(!Number.isFinite(current)||current<0||contracts<1){ showToast('현재 옵션 가격을 갱신한 뒤 다시 시도해주세요'); return; }
+  const amount=current*100*contracts, realizedPnl=(type==='CC'?entry-current:current-entry)*100*contracts;
+  const label=type==='CC'?'CC':'Put 헤지';
+  if(!window.confirm(`${ticker} ${label} ${contracts}계약을 현재 프리미엄 $${fmtNum(current)}에 모의 청산할까요?`)) return;
+  if(type==='CC'){
+    if(amount>account.cash){ showToast('CC를 되살 모의계좌 현금이 부족합니다'); return; }
+    account.cash-=amount;
+  }else account.cash+=amount;
+  const closedAt=new Date().toISOString();
+  account.positions[ticker][key]=options.map(item=>item.id===optionId?{...item,status:'CLOSED',closePremium:current,realizedPnl,closedAt}:item);
+  account.trades.unshift({id:`${Date.now()}_${ticker}_${type}_CLOSE`,side:type==='CC'?'CC_BUY_CLOSE':'HEDGE_SELL_CLOSE',ticker,quantity:contracts,price:current,amount,strike:option.strike,expiry:option.expiry,realizedPnl,createdAt:closedAt});
+  account.updatedAt=closedAt;
+  if(savePaperAccount(account)){ renderPaperAccount(); showToast(`${ticker} ${label} 청산 완료 · 확정손익 ${realizedPnl>=0?'+':''}$${fmtNum(realizedPnl)}`); }
+}
 function executePaperTrade(){
   const account=getPaperAccount(), quantity=Math.floor(Number(document.getElementById('paperTradeQuantity').value));
   if(!account || !paperTradeDraft || quantity<1){ showToast('거래 수량을 확인해주세요'); return; }
@@ -1598,7 +1621,7 @@ function executePaperTrade(){
     message=`${ticker} ${quantity}주 모의 매수 완료`;
   }else if(mode==='SELL'){
     if(quantity>oldQty){ showToast(`보유수량 ${fmtNum(oldQty,0)}주보다 많이 매도할 수 없습니다`); return; }
-    const covered=(Array.isArray(old.coveredCalls)?old.coveredCalls:[]).reduce((sum,c)=>sum+(Number(c.contracts)||0)*100,0);
+    const covered=(Array.isArray(old.coveredCalls)?old.coveredCalls:[]).filter(isPaperOptionOpen).reduce((sum,c)=>sum+(Number(c.contracts)||0)*100,0);
     if(oldQty-quantity<covered){ showToast(`CC 담보 ${fmtNum(covered,0)}주는 매도할 수 없습니다`); return; }
     const proceeds=price*quantity, newQty=oldQty-quantity;
     account.cash+=proceeds;
@@ -1608,7 +1631,7 @@ function executePaperTrade(){
   }else if(mode==='CC'){
     const strike=Number(document.getElementById('paperCcStrike').value), premium=Number(document.getElementById('paperCcPremium').value), expiry=document.getElementById('paperCcExpiry').value;
     if(!Number.isFinite(strike)||strike<=0||!Number.isFinite(premium)||premium<=0||!expiry){ showToast('CC 행사가·만기일·프리미엄을 확인해주세요'); return; }
-    const calls=Array.isArray(old.coveredCalls)?old.coveredCalls:[], covered=calls.reduce((sum,c)=>sum+(Number(c.contracts)||0)*100,0), available=oldQty-covered;
+    const calls=Array.isArray(old.coveredCalls)?old.coveredCalls:[], covered=calls.filter(isPaperOptionOpen).reduce((sum,c)=>sum+(Number(c.contracts)||0)*100,0), available=oldQty-covered;
     if(quantity*100>available){ showToast(`CC ${quantity}계약에는 미담보 주식 ${quantity*100}주가 필요합니다`); return; }
     const option=paperTradeDraft.selectedOption||{}, premiumTotal=premium*100*quantity, call={id:`${Date.now()}_${ticker}_CC`,status:'OPEN',contracts:quantity,strike,expiry,premium,currentPremium:premium,delta:Number(option.delta)||0.15,bid:option.bid,ask:option.ask,contractTicker:option.ticker,openedAt:new Date().toISOString()};
     account.positions[ticker]={...old,coveredCalls:[call,...calls],lastPrice:price,updatedAt:new Date().toISOString()};
