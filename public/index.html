@@ -39,6 +39,8 @@
     color: var(--text);
     font-family: 'Pretendard', -apple-system, sans-serif;
     min-height: 100vh;
+    max-width:100%;
+    overflow-x:hidden;
   }
   .mono{ font-family:'JetBrains Mono', monospace; }
   header{
@@ -279,6 +281,7 @@
   .detail-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
   .detail-head h2{ font-size:22px; font-family:'JetBrains Mono',monospace; }
   .detail-head .spot-big{ font-size:26px; font-family:'JetBrains Mono',monospace; color: var(--gold);}
+  .detail-head-actions{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; min-width:0; max-width:100%; }
   .kpi-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin: 16px 0;}
   .kpi{ background: var(--panel-2); border:1px solid var(--line); border-radius:6px; padding:10px 12px;}
   .kpi .label{ font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em;}
@@ -365,6 +368,14 @@
     .decision-action{ padding:12px; }
     .decision-detail-btn,.decision-close-btn,.decision-paper-btn{ width:100%; min-height:44px; }
     .decision-trade-buttons{ display:grid; grid-template-columns:1fr; }
+    .detail{ width:100%; max-width:100%; min-width:0; padding:14px 12px; overflow:hidden; }
+    .detail-head{ align-items:flex-start; }
+    .detail-head-actions{ width:100%; display:grid; grid-template-columns:1fr 1fr; align-items:stretch; gap:8px; }
+    .detail-head-actions .spot-big{ grid-column:1 / -1; }
+    .detail-head-actions button{ width:100%; min-width:0; min-height:42px; justify-content:center; white-space:normal; line-height:1.3; }
+    .detail-head-actions .share-x-btn{ grid-column:1 / -1; }
+    .quickfacts{ width:100%; }
+    .qf-item{ min-width:50%; }
     .auth-actions{ grid-template-columns:1fr; }
     .paper-section{ padding:12px 10px; }
     .paper-head{ align-items:flex-start; }
@@ -2290,7 +2301,7 @@ function renderDetail(d){
     </div>
     <div class="detail-head">
       <h2>${d.ticker}</h2>
-      <div style="display:flex; align-items:baseline; gap:10px;">
+      <div class="detail-head-actions">
         <div class="spot-big">$${fmtNum(d.spot)}</div>
         <button class="chart-btn" onclick="openCandleChart(currentDetail)" title="캔들차트 + 지지/저항선 보기">
           📈 캔들차트 보기
