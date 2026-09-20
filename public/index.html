@@ -159,14 +159,15 @@
   .paper-setup-form{ display:flex; justify-content:center; gap:8px; max-width:430px; margin:14px auto 0; }
   .paper-setup-form input,.paper-trade-field input{ min-width:0; background:var(--panel-2); border:1px solid var(--line); color:var(--text); border-radius:7px; padding:10px 12px; font:700 14px 'JetBrains Mono',monospace; }
   .paper-setup-form input{ flex:1; }.paper-primary{ border:0; border-radius:7px; padding:10px 15px; background:var(--gold); color:#111; font-weight:900; cursor:pointer; white-space:nowrap; }
-  .paper-table-wrap{ margin-top:9px; overflow-x:auto; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); scrollbar-width:thin; }
-  .paper-table{ width:100%; min-width:1180px; border-collapse:collapse; table-layout:auto; }
-  .paper-table th,.paper-table td{ padding:7px 8px; border-right:1px solid var(--line); text-align:center; white-space:nowrap; }
+  .paper-table-wrap{ margin-top:9px; overflow-x:hidden; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); }
+  .paper-table{ width:100%; min-width:0; border-collapse:collapse; table-layout:fixed; }
+  .paper-table th,.paper-table td{ padding:7px 6px; border-right:1px solid var(--line); text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .paper-table th:nth-child(1){ width:7%; }.paper-table th:nth-child(2){ width:10%; }.paper-table th:nth-child(3){ width:8%; }.paper-table th:nth-child(4){ width:11%; }.paper-table th:nth-child(5){ width:13%; }.paper-table th:nth-child(6){ width:9%; }.paper-table th:nth-child(7){ width:13%; }.paper-table th:nth-child(8){ width:12%; }.paper-table th:nth-child(9){ width:11%; }.paper-table th:nth-child(10){ width:6%; }
   .paper-table th:last-child,.paper-table td:last-child{ border-right:0; }
   .paper-table th{ color:var(--text-dim); font-size:9px; font-weight:600; border-bottom:1px solid var(--line); }
   .paper-table td{ font:700 10px 'JetBrains Mono',monospace; }
   .paper-table td:first-child{ color:var(--text); font-weight:900; }
-  .paper-table .paper-guide-cell{ padding:0 8px 10px; border-right:0; white-space:normal; text-align:left; }
+  .paper-table .paper-guide-cell{ padding:0 8px 10px; border-right:0; white-space:normal; overflow:visible; text-overflow:clip; text-align:left; }
   .paper-position-guide{ padding:11px 12px; border:1px solid var(--line); border-radius:7px; background:#0d1219; }
   .paper-guide-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:9px; }
   .paper-guide-top b{ font-size:11px; }.paper-guide-top span{ color:var(--text-dim); font-size:9px; }
