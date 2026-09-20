@@ -378,8 +378,23 @@
     .qf-item{ min-width:50%; }
     .auth-actions{ grid-template-columns:1fr; }
     .paper-section{ padding:12px 10px; }
-    .paper-head{ align-items:flex-start; }
-    .paper-head-actions{ flex-wrap:wrap; justify-content:flex-end; }
+    .paper-head{ align-items:stretch; flex-direction:column; }
+    .paper-head-main{ justify-content:space-between; }
+    .paper-refresh{ white-space:nowrap; }
+    .paper-head-actions{ flex-wrap:wrap; justify-content:flex-start; }
+    .paper-table-wrap{ border:0; background:transparent; overflow:visible; }
+    .paper-table,.paper-table tbody{ display:block; width:100%; }
+    .paper-table thead{ display:none; }
+    .paper-position-row{ display:grid; grid-template-columns:1fr 1fr; width:100%; margin-top:10px; border:1px solid var(--line); border-radius:9px; overflow:hidden; background:var(--panel-2); }
+    .paper-position-row td{ display:flex; min-width:0; min-height:62px; padding:10px 11px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); text-align:left; white-space:normal; overflow:visible; text-overflow:clip; flex-direction:column; justify-content:center; gap:5px; font-size:12px; line-height:1.35; }
+    .paper-position-row td::before{ content:attr(data-label); color:var(--text-dim); font:600 9px 'Pretendard',sans-serif; }
+    .paper-position-row td:nth-child(even){ border-right:0; }
+    .paper-position-row td:nth-child(1),.paper-position-row td:nth-child(2){ font-size:15px; }
+    .paper-position-row td:nth-child(5),.paper-position-row td:nth-child(7),.paper-position-row td:nth-child(10){ grid-column:1 / -1; border-right:0; }
+    .paper-position-row td:nth-child(10){ align-items:stretch; min-height:54px; border-bottom:0; }
+    .paper-position-row .paper-manage{ width:100%; min-height:38px; font-size:12px; }
+    .paper-guide-row{ display:block; width:100%; }
+    .paper-table .paper-guide-cell{ display:block; width:100%; padding:8px 0 12px; }
     .paper-setup-form{ flex-direction:column; }
     .paper-setup-form input,.paper-setup-form button{ min-height:44px; width:100%; }
     .paper-table-wrap{ margin-right:-2px; }
@@ -1451,7 +1466,7 @@ function renderPaperAccount(){
     const cc=contracts&&latestCall?`${String(latestCall.expiry||'').slice(5)} · $${fmtNum(latestCall.strike)}C · 매도 $${fmtNum(latestCall.premium)} → 현재 $${fmtNum(latestCall.currentPremium??latestCall.premium)}`:(calls.length?'종료':'미보유');
     const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · 매입 $${fmtNum(latestHedge.premium)} → 현재 $${fmtNum(latestHedge.currentPremium??latestHedge.premium)}`:(hedges.length?'종료':'없음');
     const csp=p.cspStatus||'미보유';
-    return `<tr><td>${p.ticker}</td><td>$${fmtNum(last)}</td><td>${fmtNum(p.quantity,0)}주</td><td>$${fmtNum(p.avgPrice)}</td><td title="${cc}">${cc}</td><td>${csp}</td><td title="${hedge}">${hedge}</td><td style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td>$${fmtNum(last*Number(p.quantity)+hedgeValue-ccLiability)}</td><td><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
+    return `<tr class="paper-position-row"><td data-label="종목">${p.ticker}</td><td data-label="현재가">$${fmtNum(last)}</td><td data-label="보유수량">${fmtNum(p.quantity,0)}주</td><td data-label="평균매입가">$${fmtNum(p.avgPrice)}</td><td data-label="CC 현황" title="${cc}">${cc}</td><td data-label="CSP 현황">${csp}</td><td data-label="Put 헤지" title="${hedge}">${hedge}</td><td data-label="통합손익" style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td data-label="순평가액">$${fmtNum(last*Number(p.quantity)+hedgeValue-ccLiability)}</td><td data-label="관리"><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
   }).join(''):'<tr><td class="paper-table-empty" colspan="10">관심종목을 선택하고 ‘모의 매수’를 눌러 첫 포지션을 만들어보세요.</td></tr>';
   if(!positions.length && tradePanel) closePaperTrade();
 }
