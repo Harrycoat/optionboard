@@ -128,7 +128,7 @@
   .ai-sector-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 12px; }
   .ai-sector-chip{ border:0; border-radius:999px; background:var(--panel-2); color:var(--text-dim); padding:7px 10px; font-size:10px; cursor:pointer; }
   .ai-sector-chip.active{ background:rgba(61,127,224,.2); color:#81adff; font-weight:800; }
-  .ai-leader-columns,.ai-leader-row{ display:grid; grid-template-columns:112px minmax(235px,.9fr) minmax(320px,1.4fr) minmax(120px,.55fr); gap:12px; align-items:center; }
+  .ai-leader-columns,.ai-leader-row{ display:grid; grid-template-columns:112px minmax(235px,.9fr) minmax(320px,1.4fr) minmax(190px,.75fr); gap:12px; align-items:center; }
   .ai-leader-columns{ padding:8px 10px; border-bottom:1px solid var(--line); color:var(--text-dim); font-size:9px; }
   .ai-leader-row{ min-height:64px; padding:10px; border-bottom:1px solid var(--line); cursor:pointer; transition:background .15s; }
   .ai-leader-row:hover{ background:rgba(255,255,255,.025); }.ai-leader-row:last-child{ border-bottom:0; }
@@ -141,6 +141,7 @@
   .ai-wall-marker span{ position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap; font:700 8px/1.25 'JetBrains Mono',monospace; }
   .ai-wall-marker.put span,.ai-wall-marker.call span{ bottom:16px; }.ai-wall-marker.spot span{ top:16px; }
   .ai-row-decision{ justify-self:end; padding:6px 8px; border:1px solid currentColor; border-radius:6px; font-size:10px; font-weight:800; text-align:center; }
+  .ai-row-actions{ display:flex; justify-content:flex-end; align-items:center; gap:7px; }
   .ai-map-empty{ padding:24px; color:var(--text-dim); text-align:center; font-size:12px; }
   .wcard{
     background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px;
@@ -408,7 +409,7 @@
     .ai-phase-tabs{ grid-template-columns:1fr; }.ai-phase-tab{ padding:10px; }
     .ai-leader-columns{ display:none; }
     .ai-leader-row{ grid-template-columns:1fr auto; gap:9px; padding:12px 7px; }
-    .ai-leader-symbol{ grid-column:1; }.ai-row-decision{ grid-column:2; grid-row:1; }
+    .ai-leader-symbol{ grid-column:1; }.ai-row-actions{ grid-column:2; grid-row:1; }.ai-row-decision{ justify-self:auto; }
     .ai-stage-track,.ai-wall-rail{ grid-column:1/-1; }.ai-wall-rail{ margin:25px 16px 24px; }
     .interest-card{ min-height:142px; padding:14px 48px 14px 14px; }
     .interest-remove{ top:6px; right:6px; width:36px; height:36px; font-size:20px; }
@@ -638,7 +639,7 @@
   .oigex-legend-item .line{width:12px;height:2px;display:inline-block;background:var(--gold);}
   .oigex-empty{color:var(--text-dim);font-size:12px;padding:20px;text-align:center;}
   .journal-trade-note{ font-size:11px; color:var(--text-dim); font-style:italic; }
-</style></head>
+</style><script src="/watchlist-actions.js" defer></script></head>
 <body>
 <header>
   <div class="logo">
@@ -661,7 +662,7 @@
     <a class="home-btn" href="/ai-leader-roadmap.html#aiLeaderMap" style="border-color:#55e6b5; color:#55e6b5;">🧭 AI 주도주 로드맵</a>
     <a class="home-btn" href="/industry-leaders.html" style="border-color:#81adff; color:#81adff;">🏭 산업별 주도주</a>
     <a class="home-btn" href="/momentum-top-100.html">모멘텀 TOP 100</a>
-    <a class="home-btn" href="/etf-market-leader.html">대형주 ETF</a>
+    <a class="home-btn" href="/etf-market-leader.html">성장성 ETF</a>
     <a class="home-btn" href="/unusual-options.html">거래량 급증주</a>
     <a class="home-btn" href="/today-buy-signal.html" style="border-color:#e0a838; color:#e0a838;">🎯 오늘의 매수 신호</a>
     <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#future-leaders-core" target="_blank" rel="noopener" style="border-color:#55e6b5; color:#55e6b5;">장기보유 운용</a>
@@ -680,7 +681,7 @@
     <div class="member-hero-copy">
       <h1 id="memberHeroTitle">좋은 주식은 오래 보유하고,<br><em>옵션으로 수익을 보호하며<br>매월 수익을 만드세요</em></h1>
       <p>Call Wall에서 자산을 보호하고, Put Wall에서 월세형 현금흐름을 만듭니다.<br>옵션을 잘 몰라도 정해진 가격과 원칙만 따라가면 되는 기록 기반 트레이딩 시스템입니다.</p>
-      <div class="member-hero-actions"><button class="member-cta" id="memberHeroSignup" type="button">무료로 시작하기 →</button><button class="member-demo-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="member-holdings-btn" id="memberHeroHoldings" type="button">📊 내 종목</button></div>
+      <div class="member-hero-actions"><button class="member-cta" id="memberHeroSignup" type="button">내 관심종목 보기 →</button><button class="member-demo-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="member-holdings-btn" id="memberHeroHoldings" type="button">📊 내 종목</button></div>
       <div class="member-holdings-note">관심종목 중 실제 보유종목의 수량 · 평균단가 · 투자금액 · 평가손익 · 수익률을 확인합니다.</div>
     </div>
     <div class="hero-rail-card"><div class="hero-rail-title">GEX OPTION · OPTIONS PRICE MAP</div><div class="hero-rail"><i class="hero-rail-point" style="left:20%;background:var(--down);box-shadow:0 0 12px var(--down)"><span style="color:#66a1fa">Put Wall<br>170</span></i><i class="hero-rail-point" style="left:57%;background:var(--gold);box-shadow:0 0 12px var(--gold)"><span style="color:var(--gold)">현재가<br>177.64</span></i><i class="hero-rail-point" style="left:78%;background:var(--up);box-shadow:0 0 12px var(--up)"><span style="color:#ff7278">Call Wall<br>180</span></i></div></div>
@@ -722,7 +723,7 @@
     <div class="ai-strategy-note"><span class="icon">🛡</span><span>좋은 주식은 오래 보유하고, <b class="call">Call Wall</b>에서는 자산을 보호하고, <b class="put">Put Wall</b>에서는 <b class="income">월세형 옵션 현금흐름</b>을 만듭니다.</span></div>
     <div class="ai-phase-tabs" id="aiPhaseTabs"></div>
     <div class="ai-sector-chips" id="aiSectorChips"></div>
-    <div class="ai-leader-columns"><span>종목 · 현재가</span><span>WEINSTEIN STAGE</span><span>이번 주 PUT WALL · 현재가 · 이번 주 CALL WALL</span><span>현재 판단</span></div>
+    <div class="ai-leader-columns"><span>종목 · 현재가</span><span>WEINSTEIN STAGE</span><span>이번 주 PUT WALL · 현재가 · 이번 주 CALL WALL</span><span>현재 판단 · 관심종목</span></div>
     <div id="aiLeaderRows"><div class="ai-map-empty">AI 리더 데이터를 불러오는 중...</div></div>
   </section>
   <section id="interestSection" aria-labelledby="interestTitle">
@@ -1432,13 +1433,13 @@ function aiWallRailHTML(d){
   </div>`;
 }
 function aiLeaderRowHTML(ticker,d){
-  if(!d || d.error) return `<div class="ai-leader-row" data-ticker="${ticker}"><div class="ai-leader-symbol"><b>${ticker}</b></div><div class="ai-map-empty" style="padding:0">데이터를 불러오지 못했습니다</div></div>`;
+  if(!d || d.error) return `<div class="ai-leader-row" data-ticker="${ticker}"><div class="ai-leader-symbol"><b>${ticker}</b></div><div class="ai-map-empty" style="padding:0">데이터를 불러오지 못했습니다</div><div></div><div class="ai-row-actions"><button type="button" data-watch-add="${ticker}">☆ 관심추가</button></div></div>`;
   const stage=Number(d.stage), stageLabels=['1 · 바닥','2 · 상승','3 · 고점','4 · 하락'], decision=aiDecision(d);
   return `<div class="ai-leader-row" data-ticker="${ticker}">
     <div class="ai-leader-symbol"><b>${ticker}</b><span>$${fmtNum(d.spot)}</span></div>
     <div class="ai-stage-track">${stageLabels.map((label,i)=>`<span class="ai-stage-step stage-${i+1}${stage===i+1?' active':''}">${label}</span>`).join('')}</div>
     ${aiWallRailHTML(d)}
-    <span class="ai-row-decision" style="color:${decision.color}">${decision.label}</span>
+    <div class="ai-row-actions"><span class="ai-row-decision" style="color:${decision.color}">${decision.label}</span><button type="button" data-watch-add="${ticker}">☆ 관심추가</button></div>
   </div>`;
 }
 async function loadAiSectorRows(){
@@ -2056,7 +2057,7 @@ function updateAccountUI(){
   if(refreshButton) refreshButton.style.display = currentUser ? 'inline-flex' : 'none';
   const heroButton = document.getElementById('memberHeroSignup');
   const previewButton = document.getElementById('nvdaSignupBtn');
-  if(heroButton) heroButton.textContent = currentUser ? '내 관심종목 보기 →' : '무료로 시작하기 →';
+  if(heroButton) heroButton.textContent = '내 관심종목 보기 →';
   if(previewButton) previewButton.textContent = currentUser ? '내 관심종목 보기' : '무료 회원가입';
 }
 async function mergeCloudWatchlist(sessionVersion = authSessionVersion){
