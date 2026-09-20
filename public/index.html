@@ -160,7 +160,7 @@
   .paper-setup-form input,.paper-trade-field input{ min-width:0; background:var(--panel-2); border:1px solid var(--line); color:var(--text); border-radius:7px; padding:10px 12px; font:700 14px 'JetBrains Mono',monospace; }
   .paper-setup-form input{ flex:1; }.paper-primary{ border:0; border-radius:7px; padding:10px 15px; background:var(--gold); color:#111; font-weight:900; cursor:pointer; white-space:nowrap; }
   .paper-table-wrap{ margin-top:9px; overflow-x:auto; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); scrollbar-width:thin; }
-  .paper-table{ width:100%; min-width:970px; border-collapse:collapse; table-layout:fixed; }
+  .paper-table{ width:100%; min-width:1180px; border-collapse:collapse; table-layout:auto; }
   .paper-table th,.paper-table td{ padding:7px 8px; border-right:1px solid var(--line); text-align:center; white-space:nowrap; }
   .paper-table th:last-child,.paper-table td:last-child{ border-right:0; }
   .paper-table th{ color:var(--text-dim); font-size:9px; font-weight:600; border-bottom:1px solid var(--line); }
@@ -172,9 +172,13 @@
   .paper-position-actions{ display:flex; justify-content:center; margin-top:10px; }
   .paper-position-trade-btn{ padding:8px 16px; border:1px solid #55e6b5; border-radius:7px; background:rgba(85,230,181,.08); color:#55e6b5; font-size:11px; font-weight:800; cursor:pointer; }
   .paper-position-trade-btn:hover{ background:rgba(85,230,181,.15); }
+  .paper-inline-trade{ margin-top:10px; padding:14px; border:1px solid rgba(85,230,181,.34); border-radius:9px; background:#0d1219; }
+  .paper-inline-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .paper-inline-close{ border:0; background:transparent; color:var(--text-dim); font-size:20px; cursor:pointer; }
+  .paper-option-recommendation{ margin:10px 0; padding:10px 12px; border-left:3px solid var(--gold); border-radius:6px; background:rgba(224,168,56,.08); color:var(--text-dim); font-size:11px; line-height:1.55; }
   .paper-trade-card{ max-width:430px; }.paper-trade-quote{ display:flex; justify-content:space-between; gap:10px; margin:14px 0; padding:13px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); }
   .paper-trade-symbol{ font:800 18px 'JetBrains Mono',monospace; }.paper-trade-price{ font:800 18px 'JetBrains Mono',monospace; color:var(--gold); }
-  .paper-trade-modes{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:12px 0; }
+  .paper-trade-modes{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:12px 0; }
   .paper-trade-mode{ padding:8px 5px; border:1px solid var(--line); border-radius:6px; background:var(--panel-2); color:var(--text-dim); font-size:11px; font-weight:800; cursor:pointer; }
   .paper-trade-mode.active{ border-color:var(--gold); background:rgba(224,168,56,.12); color:var(--gold); }
   .paper-cc-fields{ display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:10px; }
@@ -303,6 +307,8 @@
     .paper-setup-form{ flex-direction:column; }
     .paper-setup-form input,.paper-setup-form button{ min-height:44px; width:100%; }
     .paper-table-wrap{ margin-right:-2px; }
+    .paper-trade-modes{ grid-template-columns:1fr 1fr; }
+    .paper-cc-fields{ grid-template-columns:1fr; }
     .paper-trade-actions{ grid-template-columns:1fr; }
   }
   .hero{ text-align:center; padding: 40px 20px 32px; border-bottom: 1px solid var(--line); }
@@ -526,6 +532,22 @@
           </table>
         </div>
         <div class="paper-position-actions"><button class="paper-position-trade-btn" id="paperPositionTradeBtn" type="button">✎ 포지션 거래</button></div>
+        <div class="paper-inline-trade" id="paperTradePanel" hidden>
+          <div class="paper-inline-head"><div><div class="modal-title" id="paperTradeTitle">모의 주식 매수</div><div class="modal-sub">이 자리에서 바로 모의 거래를 실행합니다.</div></div><button class="paper-inline-close" id="paperTradeCloseBtn" type="button" aria-label="닫기">&times;</button></div>
+          <div class="paper-trade-quote"><span class="paper-trade-symbol" id="paperTradeTicker">—</span><span class="paper-trade-price" id="paperTradePrice">—</span></div>
+          <div class="paper-trade-modes"><button class="paper-trade-mode active" type="button" data-paper-mode="BUY">주식 매수</button><button class="paper-trade-mode" type="button" data-paper-mode="SELL">주식 매도</button><button class="paper-trade-mode" type="button" data-paper-mode="CC">CC 매도</button><button class="paper-trade-mode" type="button" data-paper-mode="HEDGE">헤지 Put</button></div>
+          <div class="paper-option-recommendation" id="paperOptionRecommendation" hidden></div>
+          <div class="paper-trade-field"><label for="paperTradeQuantity" id="paperTradeQuantityLabel">매수 수량</label><input id="paperTradeQuantity" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
+          <div class="paper-cc-fields" id="paperCcFields" hidden>
+            <div class="paper-trade-field"><label for="paperCcStrike">자동 추천 행사가</label><input id="paperCcStrike" type="number" min="0.01" step="0.01" inputmode="decimal" readonly></div>
+            <div class="paper-trade-field"><label for="paperCcExpiry">자동 추천 만기일</label><input id="paperCcExpiry" type="date" readonly></div>
+            <div class="paper-trade-field"><label for="paperCcPremium">프리미엄(주당)</label><input id="paperCcPremium" type="number" min="0.01" step="0.01" inputmode="decimal" readonly></div>
+          </div>
+          <div class="paper-trade-note" id="paperTradeNote">표시된 현재가로 즉시 모의 체결됩니다.</div>
+          <div class="paper-trade-cost"><span id="paperTradeAmountLabel">예상 주문금액</span><b id="paperTradeCost">—</b></div>
+          <div class="paper-trade-cost"><span>주문 후 예상 현금</span><b id="paperTradeCashAfter">—</b></div>
+          <div class="paper-trade-actions"><button class="auth-secondary" id="paperTradeCancelBtn" type="button">취소</button><button class="paper-primary" id="paperTradeConfirmBtn" type="button">모의 매수 실행</button></div>
+        </div>
       </div>
     </section>
     <div class="decision-dashboard" id="decisionDashboard" aria-live="polite"></div>
@@ -698,25 +720,6 @@
       <p id="authUserEmail" style="margin-top:18px; color:var(--text);"></p>
       <button class="auth-secondary" id="signOutBtn" type="button" style="width:100%; margin-top:16px;">로그아웃</button>
     </div>
-  </div>
-</div>
-<div class="modal-overlay" id="paperTradeModal" role="dialog" aria-modal="true" aria-labelledby="paperTradeTitle">
-  <div class="modal-box paper-trade-card">
-    <button class="modal-close" id="paperTradeCloseBtn" type="button" aria-label="닫기">&times;</button>
-    <div class="modal-title" id="paperTradeTitle">모의 주식 매수</div>
-    <div class="modal-sub">실제 주문이 아닌 연습 거래이며 표시 가격을 기준으로 즉시 체결됩니다.</div>
-    <div class="paper-trade-quote"><span class="paper-trade-symbol" id="paperTradeTicker">—</span><span class="paper-trade-price" id="paperTradePrice">—</span></div>
-    <div class="paper-trade-modes"><button class="paper-trade-mode active" type="button" data-paper-mode="BUY">주식 매수</button><button class="paper-trade-mode" type="button" data-paper-mode="SELL">주식 매도</button><button class="paper-trade-mode" type="button" data-paper-mode="CC">CC 매도</button></div>
-    <div class="paper-trade-field"><label for="paperTradeQuantity" id="paperTradeQuantityLabel">매수 수량</label><input id="paperTradeQuantity" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
-    <div class="paper-cc-fields" id="paperCcFields" hidden>
-      <div class="paper-trade-field"><label for="paperCcStrike">행사가</label><input id="paperCcStrike" type="number" min="0.01" step="0.01" inputmode="decimal"></div>
-      <div class="paper-trade-field"><label for="paperCcExpiry">만기일</label><input id="paperCcExpiry" type="date"></div>
-      <div class="paper-trade-field"><label for="paperCcPremium">프리미엄(주당)</label><input id="paperCcPremium" type="number" min="0.01" step="0.01" inputmode="decimal"></div>
-    </div>
-    <div class="paper-trade-note" id="paperTradeNote">표시된 현재가로 즉시 모의 체결됩니다.</div>
-    <div class="paper-trade-cost"><span id="paperTradeAmountLabel">예상 주문금액</span><b id="paperTradeCost">—</b></div>
-    <div class="paper-trade-cost"><span>주문 후 예상 현금</span><b id="paperTradeCashAfter">—</b></div>
-    <div class="paper-trade-actions"><button class="auth-secondary" id="paperTradeCancelBtn" type="button">취소</button><button class="paper-primary" id="paperTradeConfirmBtn" type="button">모의 매수 실행</button></div>
   </div>
 </div>
 <script>
@@ -1300,11 +1303,16 @@ function renderPaperAccount(){
   if(!account) return;
   const positions=Object.values(account.positions||{}).filter(p=>Number(p.quantity)>0);
   document.getElementById('paperPositions').innerHTML=positions.length?positions.map(p=>{
-    const last=Number(p.lastPrice||p.avgPrice), pnl=(last-Number(p.avgPrice))*Number(p.quantity), pct=Number(p.avgPrice)>0?(last/Number(p.avgPrice)-1)*100:0;
+    const last=Number(p.lastPrice||p.avgPrice), stockPnl=(last-Number(p.avgPrice))*Number(p.quantity);
     const calls=Array.isArray(p.coveredCalls)?p.coveredCalls:[], contracts=calls.reduce((sum,c)=>sum+(Number(c.contracts)||0),0), latestCall=calls[0];
-    const cc=contracts&&latestCall?`${contracts}계약 · $${fmtNum(latestCall.strike)} · ${String(latestCall.expiry||'').slice(5)}`:(p.ccStatus||'미보유');
-    const csp=p.cspStatus||'미보유', hedge=p.hedgeStatus||'없음';
-    return `<tr><td>${p.ticker}</td><td>$${fmtNum(last)}</td><td>${fmtNum(p.quantity,0)}주</td><td>$${fmtNum(p.avgPrice)}</td><td>${cc}</td><td>${csp}</td><td>${hedge}</td><td style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td>$${fmtNum(last*Number(p.quantity))}</td><td><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">관리</button></td></tr>`;
+    const hedges=Array.isArray(p.hedges)?p.hedges:[], hedgeContracts=hedges.reduce((sum,h)=>sum+(Number(h.contracts)||0),0), latestHedge=hedges[0];
+    const ccPremium=calls.reduce((sum,c)=>sum+(Number(c.premium)||0)*100*(Number(c.contracts)||0),0);
+    const hedgeCost=hedges.reduce((sum,h)=>sum+(Number(h.premium)||0)*100*(Number(h.contracts)||0),0);
+    const pnl=stockPnl+ccPremium-hedgeCost, costBasis=Number(p.avgPrice)*Number(p.quantity), pct=costBasis>0?pnl/costBasis*100:0;
+    const cc=contracts&&latestCall?`${String(latestCall.expiry||'').slice(5)} · $${fmtNum(latestCall.strike)}C · Δ${Number(latestCall.delta).toFixed(2)} · $${fmtNum(latestCall.premium)}`:(p.ccStatus||'미보유');
+    const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · Δ${Number(latestHedge.delta).toFixed(2)} · $${fmtNum(latestHedge.premium)}`:(p.hedgeStatus||'없음');
+    const csp=p.cspStatus||'미보유';
+    return `<tr><td>${p.ticker}</td><td>$${fmtNum(last)}</td><td>${fmtNum(p.quantity,0)}주</td><td>$${fmtNum(p.avgPrice)}</td><td title="${cc}">${cc}</td><td>${csp}</td><td title="${hedge}">${hedge}</td><td style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td>$${fmtNum(last*Number(p.quantity))}</td><td><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>`;
   }).join(''):'<tr><td class="paper-table-empty" colspan="10">관심종목을 선택하고 ‘모의 매수’를 눌러 첫 포지션을 만들어보세요.</td></tr>';
 }
 
@@ -1341,37 +1349,69 @@ function openPaperTrade(mode='BUY', requestedTicker=''){
   document.getElementById('paperTradeTicker').textContent=ticker;
   document.getElementById('paperTradePrice').textContent=`$${fmtNum(price)}`;
   document.getElementById('paperTradeQuantity').value='1';
-  const callWall=Number(data?.call_wall);
-  document.getElementById('paperCcStrike').value=Number.isFinite(callWall)?callWall.toFixed(2):price.toFixed(2);
+  document.getElementById('paperCcStrike').value='';
   document.getElementById('paperCcPremium').value='';
-  document.getElementById('paperCcExpiry').min=new Date().toISOString().slice(0,10);
   document.getElementById('paperCcExpiry').value='';
   setPaperTradeMode(mode);
-  document.getElementById('paperTradeModal').classList.add('open');
+  const panel=document.getElementById('paperTradePanel');
+  panel.hidden=false;
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function closePaperTrade(){ document.getElementById('paperTradeModal').classList.remove('open'); paperTradeDraft=null; }
+function closePaperTrade(){ document.getElementById('paperTradePanel').hidden=true; paperTradeDraft=null; }
 function setPaperTradeMode(mode){
   if(!paperTradeDraft) return;
-  const allowed=['BUY','SELL','CC'];
+  const allowed=['BUY','SELL','CC','HEDGE'];
   paperTradeDraft.mode=allowed.includes(mode)?mode:'BUY';
   document.querySelectorAll('[data-paper-mode]').forEach(btn=>btn.classList.toggle('active',btn.dataset.paperMode===paperTradeDraft.mode));
-  const isCc=paperTradeDraft.mode==='CC', isSell=paperTradeDraft.mode==='SELL';
-  document.getElementById('paperCcFields').hidden=!isCc;
-  document.getElementById('paperTradeTitle').textContent=isCc?'모의 Covered Call 매도':isSell?'모의 주식 매도':'모의 주식 매수';
-  document.getElementById('paperTradeQuantityLabel').textContent=isCc?'계약 수 (1계약 = 100주)':isSell?'매도 수량':'매수 수량';
-  document.getElementById('paperTradeAmountLabel').textContent=isCc?'받을 예상 프리미엄':isSell?'예상 매도금액':'예상 주문금액';
-  document.getElementById('paperTradeConfirmBtn').textContent=isCc?'CC 모의 매도 실행':isSell?'모의 매도 실행':'모의 매수 실행';
+  const isOption=['CC','HEDGE'].includes(paperTradeDraft.mode), isCc=paperTradeDraft.mode==='CC', isHedge=paperTradeDraft.mode==='HEDGE', isSell=paperTradeDraft.mode==='SELL';
+  document.getElementById('paperCcFields').hidden=!isOption;
+  document.getElementById('paperOptionRecommendation').hidden=!isOption;
+  document.getElementById('paperTradeTitle').textContent=isCc?'모의 Covered Call 매도':isHedge?'모의 헤지 Put 매수':isSell?'모의 주식 매도':'모의 주식 매수';
+  document.getElementById('paperTradeQuantityLabel').textContent=isOption?'계약 수 (1계약 = 100주)':isSell?'매도 수량':'매수 수량';
+  document.getElementById('paperTradeAmountLabel').textContent=isCc?'받을 예상 프리미엄':isHedge?'지불할 예상 헤지비용':isSell?'예상 매도금액':'예상 주문금액';
+  document.getElementById('paperTradeConfirmBtn').textContent=isCc?'CC 모의 매도 실행':isHedge?'헤지 Put 모의 매수 실행':isSell?'모의 매도 실행':'모의 매수 실행';
+  if(!isOption) document.getElementById('paperTradeConfirmBtn').disabled=false;
   const account=getPaperAccount(), position=account?.positions?.[paperTradeDraft.ticker], held=Number(position?.quantity)||0;
-  document.getElementById('paperTradeNote').textContent=isCc?`보유 ${fmtNum(held,0)}주 · CC 1계약마다 미담보 주식 100주가 필요합니다.`:isSell?`현재 ${fmtNum(held,0)}주를 보유하고 있습니다.`:'표시된 현재가로 즉시 모의 체결됩니다.';
+  document.getElementById('paperTradeNote').textContent=isCc?`보유 ${fmtNum(held,0)}주 · CC 1계약마다 미담보 주식 100주가 필요합니다.`:isHedge?`보유주식 100주당 Δ-0.30 Put 1계약을 기본 헤지로 연습합니다.`:isSell?`현재 ${fmtNum(held,0)}주를 보유하고 있습니다.`:'표시된 현재가로 즉시 모의 체결됩니다.';
+  if(isOption) loadPaperOptionRecommendation();
   updatePaperTradeEstimate();
+}
+async function loadPaperOptionRecommendation(){
+  if(!paperTradeDraft || !['CC','HEDGE'].includes(paperTradeDraft.mode)) return;
+  const {ticker,mode}=paperTradeDraft, box=document.getElementById('paperOptionRecommendation'), confirm=document.getElementById('paperTradeConfirmBtn');
+  box.textContent=mode==='CC'?'Δ+0.15 Covered Call을 찾는 중...':'Δ-0.30 헤지 Put을 찾는 중...';
+  confirm.disabled=true;
+  try{
+    if(!paperTradeDraft.optionRecommendations){
+      const response=await fetch(`/api/search?mode=paper_options&ticker=${encodeURIComponent(ticker)}`);
+      const result=await response.json();
+      if(!response.ok || result.error) throw new Error(result.error||'옵션 추천 오류');
+      if(!paperTradeDraft || paperTradeDraft.ticker!==ticker) return;
+      paperTradeDraft.optionRecommendations=result;
+    }
+    if(!paperTradeDraft || paperTradeDraft.ticker!==ticker || paperTradeDraft.mode!==mode) return;
+    const option=mode==='CC'?paperTradeDraft.optionRecommendations.cc:paperTradeDraft.optionRecommendations.hedge;
+    if(!option) throw new Error(mode==='CC'?'Δ+0.15 Call 계약을 찾지 못했습니다':'Δ-0.30 Put 계약을 찾지 못했습니다');
+    paperTradeDraft.selectedOption=option;
+    document.getElementById('paperCcStrike').value=option.strike;
+    document.getElementById('paperCcExpiry').value=option.expiry;
+    document.getElementById('paperCcPremium').value=option.premium;
+    box.innerHTML=`자동 추천 · <b>${option.expiry}</b> · $${fmtNum(option.strike)} ${mode==='CC'?'Call':'Put'} · Δ${Number(option.delta).toFixed(2)} · Bid $${fmtNum(option.bid)} / Ask $${fmtNum(option.ask)} · 모의체결 $${fmtNum(option.premium)} <span style="color:var(--gold)">(${paperTradeDraft.optionRecommendations.pricing_delay})</span>`;
+    confirm.disabled=false;
+    updatePaperTradeEstimate();
+  }catch(error){
+    box.textContent=`자동 추천을 불러오지 못했습니다: ${error.message}`;
+    document.getElementById('paperCcStrike').value=''; document.getElementById('paperCcExpiry').value=''; document.getElementById('paperCcPremium').value='';
+    updatePaperTradeEstimate();
+  }
 }
 function updatePaperTradeEstimate(){
   const account=getPaperAccount(), quantity=Math.floor(Number(document.getElementById('paperTradeQuantity').value));
   if(!paperTradeDraft){ return; }
-  const mode=paperTradeDraft.mode, premium=Number(document.getElementById('paperCcPremium').value);
-  const amount=quantity>0?(mode==='CC'?(Number.isFinite(premium)?premium*100*quantity:0):paperTradeDraft.price*quantity):0;
+  const mode=paperTradeDraft.mode, premium=Number(document.getElementById('paperCcPremium').value), isOption=['CC','HEDGE'].includes(mode);
+  const amount=quantity>0?(isOption?(Number.isFinite(premium)?premium*100*quantity:0):paperTradeDraft.price*quantity):0;
   document.getElementById('paperTradeCost').textContent=amount?`$${fmtNum(amount)}`:'—';
-  const after=account?(mode==='BUY'?account.cash-amount:account.cash+amount):NaN;
+  const after=account?(mode==='BUY'||mode==='HEDGE'?account.cash-amount:account.cash+amount):NaN;
   document.getElementById('paperTradeCashAfter').textContent=Number.isFinite(after)?`$${fmtNum(after)}`:'—';
   document.getElementById('paperTradeCashAfter').style.color=after<0?DOWN:'var(--text)';
 }
@@ -1397,16 +1437,27 @@ function executePaperTrade(){
     if(newQty===0) delete account.positions[ticker]; else account.positions[ticker]={...old,quantity:newQty,lastPrice:price,updatedAt:new Date().toISOString()};
     account.trades.unshift({id:`${Date.now()}_${ticker}`,side:'SELL',ticker,quantity,price,amount:proceeds,createdAt:new Date().toISOString()});
     message=`${ticker} ${quantity}주 모의 매도 완료`;
-  }else{
+  }else if(mode==='CC'){
     const strike=Number(document.getElementById('paperCcStrike').value), premium=Number(document.getElementById('paperCcPremium').value), expiry=document.getElementById('paperCcExpiry').value;
     if(!Number.isFinite(strike)||strike<=0||!Number.isFinite(premium)||premium<=0||!expiry){ showToast('CC 행사가·만기일·프리미엄을 확인해주세요'); return; }
     const calls=Array.isArray(old.coveredCalls)?old.coveredCalls:[], covered=calls.reduce((sum,c)=>sum+(Number(c.contracts)||0)*100,0), available=oldQty-covered;
     if(quantity*100>available){ showToast(`CC ${quantity}계약에는 미담보 주식 ${quantity*100}주가 필요합니다`); return; }
-    const premiumTotal=premium*100*quantity, call={id:`${Date.now()}_${ticker}_CC`,contracts:quantity,strike,expiry,premium,openedAt:new Date().toISOString()};
+    const option=paperTradeDraft.selectedOption||{}, premiumTotal=premium*100*quantity, call={id:`${Date.now()}_${ticker}_CC`,contracts:quantity,strike,expiry,premium,delta:Number(option.delta)||0.15,bid:option.bid,ask:option.ask,contractTicker:option.ticker,openedAt:new Date().toISOString()};
     account.positions[ticker]={...old,coveredCalls:[call,...calls],lastPrice:price,updatedAt:new Date().toISOString()};
     account.cash+=premiumTotal;
     account.trades.unshift({id:call.id,side:'CC_SELL',ticker,quantity,price:premium,amount:premiumTotal,strike,expiry,createdAt:call.openedAt});
     message=`${ticker} CC ${quantity}계약 모의 매도 완료 · 프리미엄 $${fmtNum(premiumTotal)}`;
+  }else{
+    const strike=Number(document.getElementById('paperCcStrike').value), premium=Number(document.getElementById('paperCcPremium').value), expiry=document.getElementById('paperCcExpiry').value;
+    if(!Number.isFinite(strike)||strike<=0||!Number.isFinite(premium)||premium<=0||!expiry){ showToast('헤지 Put 자동 추천값을 확인해주세요'); return; }
+    if(quantity*100>oldQty){ showToast(`헤지 Put ${quantity}계약에는 보유주식 ${quantity*100}주가 필요합니다`); return; }
+    const hedgeCost=premium*100*quantity;
+    if(hedgeCost>account.cash){ showToast('헤지 Put을 매수할 모의계좌 현금이 부족합니다'); return; }
+    const option=paperTradeDraft.selectedOption||{}, hedges=Array.isArray(old.hedges)?old.hedges:[], hedge={id:`${Date.now()}_${ticker}_HEDGE`,contracts:quantity,strike,expiry,premium,delta:Number(option.delta)||-0.30,bid:option.bid,ask:option.ask,contractTicker:option.ticker,openedAt:new Date().toISOString()};
+    account.positions[ticker]={...old,hedges:[hedge,...hedges],lastPrice:price,updatedAt:new Date().toISOString()};
+    account.cash-=hedgeCost;
+    account.trades.unshift({id:hedge.id,side:'HEDGE_BUY',ticker,quantity,price:premium,amount:hedgeCost,strike,expiry,createdAt:hedge.openedAt});
+    message=`${ticker} 헤지 Put ${quantity}계약 모의 매수 완료 · 비용 $${fmtNum(hedgeCost)}`;
   }
   account.updatedAt=new Date().toISOString();
   if(savePaperAccount(account)){ closePaperTrade(); renderPaperAccount(); document.getElementById('paperTradingSection').scrollIntoView({behavior:'smooth',block:'start'}); showToast(message); }
@@ -2536,7 +2587,6 @@ document.getElementById('paperTradeConfirmBtn').addEventListener('click', execut
 document.getElementById('paperTradeQuantity').addEventListener('input', updatePaperTradeEstimate);
 document.getElementById('paperCcPremium').addEventListener('input', updatePaperTradeEstimate);
 document.querySelectorAll('[data-paper-mode]').forEach(btn=>btn.addEventListener('click',()=>setPaperTradeMode(btn.dataset.paperMode)));
-document.getElementById('paperTradeModal').addEventListener('click', event => { if(event.target.id==='paperTradeModal') closePaperTrade(); });
 document.addEventListener('DOMContentLoaded', () => {
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   if(!scrollTopBtn) return;
