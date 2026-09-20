@@ -1,7 +1,6 @@
 (function(){
   const items=[
-    {href:'/',label:'🏠 홈',match:(p,q)=>(p==='/'||p==='/index.html')&&!q.has('view')},
-    {href:'/?view=watchlist#interestSection',label:'⭐ 나의 관심종목',match:(p,q)=>q.get('view')==='watchlist',tone:'#e0a838'},
+    {href:'/',label:'🏠 홈',match:p=>p==='/'||p==='/index.html'},
     {href:'/ai-leader-roadmap.html#aiLeaderMap',label:'🧭 AI 주도주 로드맵',match:p=>p==='/ai-leader-roadmap.html',tone:'#55e6b5'},
     {href:'/industry-leaders.html',label:'🏭 산업별 주도주',match:p=>p==='/industry-leaders.html',tone:'#81adff'},
     {href:'/momentum-top-100.html',label:'모멘텀 TOP 100',match:p=>p==='/momentum-top-100.html'},
@@ -14,10 +13,10 @@
   const style=document.createElement('style');
   style.textContent=`
     .shared-category-nav{border-bottom:1px solid #252b36;background:#10141b;overflow-x:auto;position:relative;z-index:8}
-    .shared-category-inner{max-width:1180px;margin:0 auto;padding:9px 20px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+    .shared-category-inner{max-width:1180px;margin:0 auto;padding:9px 12px 9px 28px;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
     .shared-category-link{display:inline-flex;align-items:center;gap:4px;padding:8px 10px;border:1px solid #252b36;border-radius:6px;background:#151a22;color:#e7e5df;text-decoration:none;font:600 12px Arial,"Noto Sans KR",sans-serif;white-space:nowrap}
     .shared-category-link:hover{border-color:#e0a838;color:#e0a838}.shared-category-link.active{background:#1a2230;box-shadow:inset 0 -2px 0 currentColor}
-    @media(max-width:600px){.shared-category-inner{padding:8px 12px}.shared-category-link{min-height:40px}}
+    @media(max-width:900px){.shared-category-inner{justify-content:flex-start;padding:8px 12px}.shared-category-link{min-height:40px}}
   `;
   document.head.appendChild(style);
   const path=location.pathname,query=new URLSearchParams(location.search);
