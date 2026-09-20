@@ -232,6 +232,33 @@
     header{ flex-direction:column; align-items:stretch; }
     .searchbar{ max-width:none; }
     .header-actions{ justify-content:center; flex-wrap:wrap; gap:8px; }
+    main{ padding:16px 12px 72px; }
+    body.watchlist-view main{ padding-top:16px; }
+    .watchlist-page-title{ margin-bottom:14px; padding-bottom:13px; }
+    .watchlist-page-title h1{ font-size:21px; }
+    .interest-head{ align-items:flex-start; flex-wrap:wrap; margin-top:18px; }
+    .interest-actions{ width:100%; justify-content:space-between; }
+    .interest-refresh{ min-width:44px; min-height:40px; }
+    .interest-quick-add{ max-width:none; width:100%; }
+    .interest-quick-add input,
+    .interest-quick-add button{ min-height:44px; font-size:16px; }
+    .watchlist-grid{ grid-template-columns:1fr; gap:9px; }
+    .interest-card{ min-height:142px; padding:14px 48px 14px 14px; }
+    .interest-remove{ top:6px; right:6px; width:36px; height:36px; font-size:20px; }
+    .decision-dashboard{ margin-top:14px; padding:12px; }
+    .decision-top{ align-items:flex-start; flex-direction:column; gap:9px; }
+    .decision-symbol{ font-size:18px; }
+    .decision-price{ font-size:22px; }
+    .decision-badge{ width:100%; padding:9px 10px; text-align:center; font-size:12px; }
+    .decision-rail-wrap{ margin-top:12px; padding:12px 8px 8px; }
+    .decision-rail{ margin:48px 13px 48px; }
+    .decision-marker span{ font-size:8px; line-height:1.35; }
+    .decision-marker:nth-child(even) span{ top:17px; bottom:auto; }
+    .decision-response{ padding:13px 12px; }
+    .decision-actions-grid{ grid-template-columns:1fr; }
+    .decision-action{ padding:12px; }
+    .decision-detail-btn,.decision-close-btn{ width:100%; min-height:44px; }
+    .auth-actions{ grid-template-columns:1fr; }
   }
   .hero{ text-align:center; padding: 40px 20px 32px; border-bottom: 1px solid var(--line); }
   .hero-brand{ font-family:'JetBrains Mono',monospace; font-size:13px; color: var(--gold); letter-spacing:0.06em; font-weight:700; }
@@ -314,6 +341,10 @@
   #candleChart{ width:100%; height:420px; }
   .chart-legend{ display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; font-size:11px; color:var(--text-dim); }
   .chart-legend .sw{ display:inline-block; width:14px; height:2px; margin-right:5px; vertical-align:middle; }
+  @media(max-width:560px){
+    .modal-overlay{ padding:10px; }
+    .modal-box{ max-height:calc(100vh - 20px); overflow:auto; padding:16px 13px; }
+  }
     .market-float{
     display: none;
   }
@@ -2261,16 +2292,13 @@ document.getElementById('authModal').addEventListener('click', event => { if(eve
 document.getElementById('signInBtn').addEventListener('click', () => submitAuth('signin'));
 document.getElementById('signUpBtn').addEventListener('click', () => submitAuth('signup'));
 document.getElementById('signOutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); const quickInput=document.getElementById('interestTickerInput'); if(quickInput) quickInput.value=''; await loadPersonalWatchlist(); closeAuthModal(); showToast('로그아웃했습니다'); });
+document.addEventListener('DOMContentLoaded', () => {
   const scrollTopBtn = document.getElementById('scrollTopBtn');
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 300) {
-    scrollTopBtn.classList.add('show');
-  } else {
-    scrollTopBtn.classList.remove('show');
-  }
-});
-scrollTopBtn.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if(!scrollTopBtn) return;
+  const updateScrollTopButton = () => scrollTopBtn.classList.toggle('show', window.scrollY > 300);
+  window.addEventListener('scroll', updateScrollTopButton, { passive:true });
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+  updateScrollTopButton();
 });
 </script>
 <!-- ============================================================ -->
