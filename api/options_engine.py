@@ -139,6 +139,126 @@ def _fetch_full_options_chain(ticker: str, max_expiries: Optional[int] = None) -
     return all_results
 
 
+def recommend_paper_option_contracts(
+    ticker: str,
+    call_delta_target: float = 0.15,
+    hedge_delta_target: float = 0.30,
+) -> dict:
+    """모의투자용 CC/보호 Put 계약을 실제 체인에서 자동 추천한다.
+
+    오늘 만기는 제외하고, 실제 상장된 가까운 금요일 만기를 우선한다. 델타는
+    행사가 선택 기준이며 모의 체결가는 bid/ask 중간값을 우선 사용한다.
+    """
+    ticker = ticker.upper().strip()
+    raw_results = _fetch_full_options_chain(ticker, max_expiries=4)
+    chain_price = None
+    contracts: list[dict] = []
+
+    for item in raw_results:
+        details = item.get("details") or {}
+        expiry = details.get("expiration_date")
+        strike = details.get("strike_price")
+        contract_type = details.get("contract_type")
+        if not expiry or strike is None or contract_type not in ("call", "put"):
+            continue
+        if chain_price is None:
+            chain_price = (item.get("underlying_asset") or {}).get("price")
+
+        delta = (item.get("greeks") or {}).get("delta")
+        if delta is None:
+            continue
+        quote = item.get("last_quote") or {}
+        bid = quote.get("bid")
+        ask = quote.get("ask")
+        try:
+            bid = float(bid) if bid is not None else None
+            ask = float(ask) if ask is not None else None
+        except (TypeError, ValueError):
+            bid, ask = None, None
+
+        price_source = "mid"
+        if bid is not None and ask is not None and bid >= 0 and ask >= bid and ask > 0:
+            premium = round((bid + ask) / 2, 2)
+        else:
+            last_price = (item.get("last_trade") or {}).get("price")
+            day_close = (item.get("day") or {}).get("close")
+            fallback = last_price if last_price is not None else day_close
+            try:
+                premium = round(float(fallback), 2) if fallback is not None else None
+            except (TypeError, ValueError):
+                premium = None
+            price_source = "last"
+
+        contracts.append({
+            "ticker": details.get("ticker"),
+            "type": contract_type,
+            "expiry": expiry,
+            "strike": float(strike),
+            "delta": float(delta),
+            "bid": bid,
+            "ask": ask,
+            "premium": premium,
+            "price_source": price_source,
+            "open_interest": float(item.get("open_interest") or 0),
+        })
+
+    spot, is_stale_price, _ = _resolve_spot(ticker, chain_price)
+    if spot is None:
+        raise ValueError(f"{ticker}: 현재가를 가져오지 못했습니다")
+
+    today = date.today()
+    future_expiries = sorted({
+        c["expiry"] for c in contracts
+        if datetime.strptime(c["expiry"], "%Y-%m-%d").date() > today
+    })
+    if not future_expiries:
+        raise ValueError(f"{ticker}: 다음 만기 옵션을 찾지 못했습니다")
+    friday_expiries = [e for e in future_expiries if datetime.strptime(e, "%Y-%m-%d").date().weekday() == 4]
+    ordered_expiries = friday_expiries + [e for e in future_expiries if e not in friday_expiries]
+
+    def choose(side: str, target: float, expiry: str) -> Optional[dict]:
+        candidates = []
+        for contract in contracts:
+            if contract["expiry"] != expiry or contract["type"] != side or not contract["premium"]:
+                continue
+            if side == "call" and not (contract["strike"] > spot and contract["delta"] > 0):
+                continue
+            if side == "put" and not (contract["strike"] < spot and contract["delta"] < 0):
+                continue
+            bid, ask = contract["bid"], contract["ask"]
+            spread_ratio = ((ask - bid) / max((ask + bid) / 2, 0.01)) if bid is not None and ask is not None else 1.0
+            liquidity_penalty = min(max(spread_ratio, 0), 2) * 0.03 + (0.03 if contract["open_interest"] <= 0 else 0)
+            contract = dict(contract)
+            contract["delta_distance"] = round(abs(abs(contract["delta"]) - target), 4)
+            contract["score"] = contract["delta_distance"] + liquidity_penalty
+            candidates.append(contract)
+        if not candidates:
+            return None
+        best = min(candidates, key=lambda c: (c["score"], -c["open_interest"]))
+        best.pop("score", None)
+        return best
+
+    selected_expiry = ordered_expiries[0]
+    cc = hedge = None
+    for expiry in ordered_expiries:
+        cc_candidate = choose("call", call_delta_target, expiry)
+        hedge_candidate = choose("put", hedge_delta_target, expiry)
+        if cc_candidate or hedge_candidate:
+            selected_expiry, cc, hedge = expiry, cc_candidate, hedge_candidate
+            if cc_candidate and hedge_candidate:
+                break
+
+    return {
+        "ticker": ticker,
+        "spot": float(spot),
+        "is_stale_price": is_stale_price,
+        "expiry": selected_expiry,
+        "pricing_delay": "15분 지연",
+        "cc": cc,
+        "hedge": hedge,
+    }
+
+
 def _fetch_prev_bar(ticker: str) -> Optional[dict]:
     """전일(가장 최근 완결된 거래일) 일봉의 시가/종가/거래량을 반환한다.
     주의: 이건 "오늘"이 아니라 "어제"(또는 가장 최근 완결된 거래일) 값이다.
