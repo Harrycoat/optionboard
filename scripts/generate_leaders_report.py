@@ -59,6 +59,7 @@ from options_engine import (
     MASSIVE_API_BASE,
     MASSIVE_API_KEY,
 )
+from dev_reentry_scanner import build_dev_reentry_signals
 WATCHLIST_PATH = os.path.join(os.path.dirname(__file__), "leaders_watchlist.txt")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "public", "leaders_report.json")
 UNIVERSE_PATH = os.path.join(os.path.dirname(__file__), "sp500_nasdaq100_universe.txt")
@@ -964,6 +965,25 @@ def build_report():
 
     active_universe_tickers = load_or_build_active_universe()
 
+    # ---- Today's Buy Signal (신규 추세 + Hull21 눌림 재진입) ----
+    # 전용 페이지와 홈 요약이 같은 결과를 사용하도록 한 번만 계산한다.
+    try:
+        buy_signals = build_dev_reentry_signals(active_universe_tickers)
+    except Exception as exc:
+        print(f"오늘의 매수 신호 계산 실패: {exc}")
+        buy_signals = {
+            "top_pick": previous_report.get("dev_reentry_top_pick"),
+            "trend_candidates": previous_report.get("dev_reentry_trend", []),
+            "hull_entries": previous_report.get("dev_reentry_hull", []),
+            "watch_candidates": previous_report.get("dev_reentry_watch", []),
+            "long_reentry": previous_report.get("dev_reentry_long", []),
+        }
+    report["dev_reentry_top_pick"] = buy_signals.get("top_pick")
+    report["dev_reentry_trend"] = buy_signals.get("trend_candidates", [])
+    report["dev_reentry_hull"] = buy_signals.get("hull_entries", [])
+    report["dev_reentry_watch"] = buy_signals.get("watch_candidates", [])
+    report["dev_reentry_long"] = buy_signals.get("long_reentry", [])
+
     # ---- Call Wall 거래량 돌파 스캔 (수동 스윙 트레이딩용) ----
     report["call_wall_breakouts"] = build_call_wall_breakout_scan(
         active_universe_tickers, previous_report
@@ -985,6 +1005,7 @@ def build_report():
     print(f"Wall Shift Radar: {len(report['wall_shift_radar'])}개")
     print(f"Call Wall 거래량 돌파 후보: {len(report['call_wall_breakouts'])}개")
     print(f"이상 옵션 거래: {len(report['unusual_options_activity'])}개")
+    print(f"오늘의 매수 신호: {len(report['dev_reentry_long'])}개")
 
 
 if __name__ == "__main__":

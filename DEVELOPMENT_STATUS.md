@@ -10,6 +10,10 @@
 - Supabase email sign-up/login UI
 - Signed-in watchlist synchronization across devices
 - Row Level Security schema for private per-user watchlists
+- AI Industry Leader Map with Phase 1/2/3 sector filters
+- CNN Fear & Greed market-climate proxy endpoint
+- One-line Weinstein Stage 1-4 + Put Wall/current price/Call Wall view
+- Automatic response label: observe, entry review, hold, hedge review, or breakout check
 
 ## Activation steps
 
@@ -23,7 +27,8 @@ Without these variables, the existing site and browser-only watchlist continue t
 
 ## Next
 
-- Improve the watchlist into a compact GEX Radar table
+- Connect the AI Leader Map universe to an admin-managed ticker list
+- Add daily Stage/Wall snapshots for historical change comparison
 - Add stock volume plus call/put option volume
 - Add Korean/English language switch
 - Build a ticker detail layout with chart, GEX, option volume, and news

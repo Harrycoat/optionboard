@@ -96,6 +96,39 @@
   .watchlist-grid{
     display:grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap:10px;
   }
+  .ai-leader-map{ margin:20px 0 26px; padding:18px; border:1px solid var(--line); border-radius:12px; background:var(--panel); }
+  .ai-market-bar{ display:grid; grid-template-columns:minmax(210px,.8fr) minmax(260px,1.2fr) minmax(230px,1fr); gap:14px; align-items:center; padding:14px; border:1px solid rgba(224,168,56,.25); border-radius:9px; background:rgba(224,168,56,.07); }
+  .ai-fear-label{ color:var(--text-dim); font-size:10px; }
+  .ai-fear-value{ margin-top:4px; font:800 18px 'JetBrains Mono',monospace; color:var(--gold); }
+  .ai-fear-scale{ display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
+  .ai-fear-step{ padding:7px 3px; border-radius:5px; background:var(--panel-2); color:var(--text-dim); text-align:center; font-size:9px; line-height:1.25; }
+  .ai-fear-step.active{ color:#111; background:var(--gold); font-weight:800; }
+  .ai-market-response small{ display:block; color:var(--gold); font-weight:800; margin-bottom:4px; }
+  .ai-market-response span{ color:var(--text-dim); font-size:11px; line-height:1.45; }
+  .ai-map-head{ display:flex; align-items:end; justify-content:space-between; gap:12px; margin:18px 0 12px; }
+  .ai-map-head h2{ margin:0; font-size:21px; }.ai-map-head p{ margin:5px 0 0; color:var(--text-dim); font-size:11px; }
+  .ai-map-source{ color:var(--text-dim); font-size:10px; white-space:nowrap; }
+  .ai-phase-tabs{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .ai-phase-tab{ border:1px solid var(--line); border-radius:8px; background:var(--panel-2); color:var(--text); padding:11px 12px; text-align:left; cursor:pointer; }
+  .ai-phase-tab b{ display:block; font-size:12px; }.ai-phase-tab span{ display:block; margin-top:5px; color:var(--text-dim); font-size:9px; }
+  .ai-phase-tab.active{ border-color:var(--gold); background:rgba(224,168,56,.12); color:var(--gold); }
+  .ai-sector-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 12px; }
+  .ai-sector-chip{ border:0; border-radius:999px; background:var(--panel-2); color:var(--text-dim); padding:7px 10px; font-size:10px; cursor:pointer; }
+  .ai-sector-chip.active{ background:rgba(61,127,224,.2); color:#81adff; font-weight:800; }
+  .ai-leader-columns,.ai-leader-row{ display:grid; grid-template-columns:112px minmax(235px,.9fr) minmax(320px,1.4fr) minmax(120px,.55fr); gap:12px; align-items:center; }
+  .ai-leader-columns{ padding:8px 10px; border-bottom:1px solid var(--line); color:var(--text-dim); font-size:9px; }
+  .ai-leader-row{ min-height:64px; padding:10px; border-bottom:1px solid var(--line); cursor:pointer; transition:background .15s; }
+  .ai-leader-row:hover{ background:rgba(255,255,255,.025); }.ai-leader-row:last-child{ border-bottom:0; }
+  .ai-leader-symbol b{ font:800 14px 'JetBrains Mono',monospace; }.ai-leader-symbol span{ margin-left:7px; color:var(--text-dim); font:11px 'JetBrains Mono',monospace; }
+  .ai-stage-track{ display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
+  .ai-stage-step{ padding:7px 3px; border-radius:5px; background:var(--panel-2); color:var(--text-dim); text-align:center; font-size:9px; white-space:nowrap; }
+  .ai-stage-step.active.stage-1{ color:#c5a5ff; background:rgba(145,93,229,.23); }.ai-stage-step.active.stage-2{ color:#55e6b5; background:rgba(85,230,181,.18); }.ai-stage-step.active.stage-3{ color:var(--gold); background:rgba(224,168,56,.18); }.ai-stage-step.active.stage-4{ color:#ff7a7f; background:rgba(229,72,77,.2); }
+  .ai-wall-rail{ position:relative; height:7px; margin:24px 12px 23px; border-radius:8px; background:linear-gradient(90deg,#3579d5,#55e6b5 55%,#e5484d); }
+  .ai-wall-marker{ position:absolute; top:50%; width:13px; height:13px; border:2px solid var(--panel); border-radius:50%; transform:translate(-50%,-50%); }
+  .ai-wall-marker span{ position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap; font:700 8px/1.25 'JetBrains Mono',monospace; }
+  .ai-wall-marker.put span,.ai-wall-marker.call span{ bottom:16px; }.ai-wall-marker.spot span{ top:16px; }
+  .ai-row-decision{ justify-self:end; padding:6px 8px; border:1px solid currentColor; border-radius:6px; font-size:10px; font-weight:800; text-align:center; }
+  .ai-map-empty{ padding:24px; color:var(--text-dim); text-align:center; font-size:12px; }
   .wcard{
     background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px;
     cursor:pointer; transition: border-color .15s;
@@ -352,6 +385,14 @@
     .interest-quick-add input,
     .interest-quick-add button{ min-height:44px; font-size:16px; }
     .watchlist-grid{ grid-template-columns:1fr; gap:9px; }
+    .ai-leader-map{ margin:14px 0 22px; padding:12px 10px; }
+    .ai-market-bar{ grid-template-columns:1fr; gap:10px; padding:12px; }
+    .ai-map-head{ align-items:flex-start; flex-direction:column; }.ai-map-head h2{ font-size:19px; }
+    .ai-phase-tabs{ grid-template-columns:1fr; }.ai-phase-tab{ padding:10px; }
+    .ai-leader-columns{ display:none; }
+    .ai-leader-row{ grid-template-columns:1fr auto; gap:9px; padding:12px 7px; }
+    .ai-leader-symbol{ grid-column:1; }.ai-row-decision{ grid-column:2; grid-row:1; }
+    .ai-stage-track,.ai-wall-rail{ grid-column:1/-1; }.ai-wall-rail{ margin:25px 16px 24px; }
     .interest-card{ min-height:142px; padding:14px 48px 14px 14px; }
     .interest-remove{ top:6px; right:6px; width:36px; height:36px; font-size:20px; }
     .decision-dashboard{ margin-top:14px; padding:12px; }
@@ -469,6 +510,7 @@
   body.watchlist-view .nvda-preview,
   body.watchlist-view .market-float,
   body.watchlist-view #marketStatusBanner,
+  body.watchlist-view #aiLeaderMap,
   body.watchlist-view #todayBuySignalSection{ display:none; }
   body.watchlist-view #searchAdSlot{ display:none !important; min-height:0 !important; margin:0 !important; }
   body.watchlist-view #detailSection{ margin-top:12px; }
@@ -484,6 +526,7 @@
   body.holdings-view .nvda-preview,
   body.holdings-view .market-float,
   body.holdings-view #marketStatusBanner,
+  body.holdings-view #aiLeaderMap,
   body.holdings-view #todayBuySignalSection,
   body.holdings-view #searchAdSlot,
   body.holdings-view .watchlist-page-title,
@@ -590,13 +633,13 @@
   <nav aria-label="메인 카테고리" style="border-bottom:1px solid var(--line); background:var(--panel); overflow-x:auto;">
   <div style="max-width:1100px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; gap:8px; white-space:nowrap;">
     <a class="home-btn" href="/" aria-label="메인 홈으로 이동" style="border-color:var(--text-dim); color:var(--text);">🏠 HOME</a>
+    <a class="home-btn" href="/today-buy-signal.html" style="border-color:#e0a838; color:#e0a838;">🎯 Today’s Buy Signal</a>
     <a class="home-btn" href="/?view=holdings#paperTradingSection" style="border-color:#55e6b5; color:#55e6b5;">📊 현재 보유종목</a>
     <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#future-leaders-core" style="border-color:#55e6b5; color:#55e6b5;">Future Leaders</a>
     <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#premium-swing" style="border-color:#e0a838; color:#e0a838;">Swing Trade</a>
     <a class="home-btn" href="/momentum-top-100.html">모멘텀 TOP 100</a>
     <a class="home-btn" href="/etf-market-leader.html">ETF Market Leader</a>
-   <a class="home-btn" href="/unusual-options.html">Unusual Options</a>
-    <a class="home-btn" href="#today-buy-signal" onclick="event.preventDefault(); document.getElementById('today-buy-signal')?.scrollIntoView({behavior:'smooth', block:'start'});">Today’s Buy Signal</a>
+    <a class="home-btn" href="/unusual-options.html">Unusual Options</a>
   </div>
 </nav>
 <a class="mijoostock-side-banner" href="https://mijoostock.com" target="_blank" rel="noopener" aria-label="미주스탁 바로가기">
@@ -638,6 +681,18 @@
     </div>
   </section>
   <div id="marketStatusBanner" style="margin-bottom:20px;"></div>
+  <section class="ai-leader-map" id="aiLeaderMap" aria-labelledby="aiLeaderMapTitle">
+    <div class="ai-market-bar">
+      <div><div class="ai-fear-label">전체 시장 · CNN Fear &amp; Greed</div><div class="ai-fear-value" id="aiFearValue">불러오는 중...</div></div>
+      <div class="ai-fear-scale" id="aiFearScale" aria-label="공포 탐욕 단계"></div>
+      <div class="ai-market-response"><small>시장 대응</small><span id="aiMarketResponse">시장 심리를 확인하고 있습니다.</span></div>
+    </div>
+    <div class="ai-map-head"><div><h2 id="aiLeaderMapTitle">AI 산업 리더 맵</h2><p>산업 발전 단계 · Weinstein 장기 추세 · 이번 주 Put/Call Wall 위치</p></div><span class="ai-map-source" id="aiMapUpdated">데이터 준비 중</span></div>
+    <div class="ai-phase-tabs" id="aiPhaseTabs"></div>
+    <div class="ai-sector-chips" id="aiSectorChips"></div>
+    <div class="ai-leader-columns"><span>종목 · 현재가</span><span>WEINSTEIN STAGE</span><span>이번 주 PUT WALL · 현재가 · CALL WALL</span><span>현재 판단</span></div>
+    <div id="aiLeaderRows"><div class="ai-map-empty">AI 리더 데이터를 불러오는 중...</div></div>
+  </section>
   <section id="interestSection" aria-labelledby="interestTitle">
     <div class="interest-head">
       <div class="section-title" id="interestTitle">⭐ 나의 관심종목</div>
@@ -1242,6 +1297,153 @@ const STAGE_META = {
   3: { label: '고점권', color: GOLD },
   4: { label: '하락',   color: DOWN },
 };
+const AI_PHASES = {
+  phase1: {
+    label:'PHASE 1', name:'AI STACK',
+    sectors:[
+      {label:'AI 반도체', tickers:['NVDA','AMD','AVGO','MU','SNDK']},
+      {label:'파운드리·장비', tickers:['TSM','ASML','AMAT','LRCX']},
+      {label:'광학·네트워크', tickers:['ANET','AVGO','COHR','LITE']},
+      {label:'데이터센터', tickers:['VRT','DELL','SMCI']},
+      {label:'서버·스토리지', tickers:['DELL','HPE','SNDK']},
+      {label:'AI 클라우드', tickers:['MSFT','GOOGL','AMZN','ORCL']},
+      {label:'사이버보안', tickers:['CRWD','PANW','FTNT','NET']},
+    ],
+  },
+  phase2: {
+    label:'PHASE 2', name:'POWER',
+    sectors:[
+      {label:'전력 생산', tickers:['CEG','VST','NRG']},
+      {label:'전력망·장비', tickers:['GEV','ETN','PWR']},
+      {label:'냉각·인프라', tickers:['VRT','JCI','TT']},
+      {label:'원전·연료', tickers:['CCJ','OKLO','SMR']},
+    ],
+  },
+  phase3: {
+    label:'PHASE 3', name:'PHYSICAL AI',
+    sectors:[
+      {label:'AI 플랫폼', tickers:['NVDA','TSLA','PLTR']},
+      {label:'로봇·자동화', tickers:['ISRG','TER','SYM']},
+      {label:'자율주행', tickers:['GOOGL','MBLY','UBER']},
+      {label:'산업 자동화', tickers:['ROK','EMR','HON']},
+    ],
+  },
+};
+let activeAiPhase = 'phase1';
+let activeAiSector = 0;
+let aiReportData = null;
+const aiLeaderCache = new Map();
+
+function fearGreedBand(score){
+  if(score < 25) return {index:0,label:'EXTREME FEAR',response:'극도의 공포 구간 · 신규 진입 규모를 줄이고 Put Wall 지지를 먼저 확인'};
+  if(score < 45) return {index:1,label:'FEAR',response:'공포 구간 · Stage 2 종목을 선별하고 Put Wall 반등 확인 후 진입'};
+  if(score < 56) return {index:2,label:'NEUTRAL',response:'중립 구간 · Stage와 Wall 신호가 일치하는 종목만 선택'};
+  if(score < 75) return {index:3,label:'GREED',response:'탐욕 구간 · 보유는 가능하지만 Call Wall 접근 시 수익 보호 준비'};
+  return {index:4,label:'EXTREME GREED',response:'극도의 탐욕 구간 · 추격매수보다 Call Wall 저항과 헤지를 우선 확인'};
+}
+async function loadAiFearGreed(){
+  const value=document.getElementById('aiFearValue'), scale=document.getElementById('aiFearScale'), response=document.getElementById('aiMarketResponse');
+  const labels=['극도의 공포','공포','중립','탐욕','극도의 탐욕'];
+  try{
+    const res=await fetch('/api/search?mode=fear_greed',{cache:'no-store'}), data=await res.json();
+    if(!res.ok || data.error || !Number.isFinite(Number(data.score))) throw new Error(data.error||'데이터 없음');
+    const score=Number(data.score), band=fearGreedBand(score);
+    value.textContent=`${score.toFixed(0)} · ${band.label}`;
+    scale.innerHTML=labels.map((label,i)=>`<span class="ai-fear-step${i===band.index?' active':''}">${label}</span>`).join('');
+    response.textContent=band.response;
+  }catch(e){
+    value.textContent='일시적으로 확인 불가';
+    scale.innerHTML=labels.map(label=>`<span class="ai-fear-step">${label}</span>`).join('');
+    response.textContent='시장 지수와 개별 종목의 Stage·Wall 위치를 함께 확인하세요.';
+  }
+}
+function aiReportIndex(report){
+  const index=new Map();
+  if(!report || typeof report!=='object') return index;
+  const visit=value=>{
+    if(Array.isArray(value)){ value.forEach(visit); return; }
+    if(!value || typeof value!=='object') return;
+    if(value.ticker && value.spot!=null) index.set(String(value.ticker).toUpperCase(),value);
+    Object.values(value).forEach(visit);
+  };
+  visit(report.categories||{});
+  ['top_gainers','gamma_squeeze_candidates','vanna_squeeze_candidates','charm_squeeze_candidates'].forEach(key=>visit(report[key]||[]));
+  return index;
+}
+function renderAiControls(){
+  const tabs=document.getElementById('aiPhaseTabs'), chips=document.getElementById('aiSectorChips'), phase=AI_PHASES[activeAiPhase];
+  tabs.innerHTML=Object.entries(AI_PHASES).map(([key,item])=>`<button class="ai-phase-tab${key===activeAiPhase?' active':''}" type="button" data-ai-phase="${key}"><b>${item.label}</b><span>${item.name}</span></button>`).join('');
+  chips.innerHTML=phase.sectors.map((item,i)=>`<button class="ai-sector-chip${i===activeAiSector?' active':''}" type="button" data-ai-sector="${i}">${item.label}</button>`).join('');
+}
+function aiDecision(d){
+  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall), stage=Number(d.stage);
+  if(![spot,put,call].every(Number.isFinite)) return {label:'데이터 확인',color:'var(--text-dim)'};
+  const putGap=(spot-put)/spot*100, callGap=(call-spot)/spot*100;
+  if(spot<put || stage===4) return {label:'위험 관리',color:DOWN};
+  if(spot>=call) return {label:'돌파 확인',color:UP};
+  if(callGap<=1 || stage===3) return {label:'헤지 검토',color:UP};
+  if(putGap<=1.5) return {label:'진입 검토',color:'#81adff'};
+  if(stage===2) return {label:'보유·관찰',color:'#55e6b5'};
+  return {label:'관찰',color:GOLD};
+}
+function aiWallRailHTML(d){
+  const put=Number(d.put_wall), spot=Number(d.spot), call=Number(d.call_wall);
+  if(![put,spot,call].every(Number.isFinite) || call<=put) return '<div class="ai-map-empty" style="padding:8px">Wall 데이터 확인 중</div>';
+  const pad=Math.max((call-put)*.15,1), min=Math.min(put,spot)-pad, max=Math.max(call,spot)+pad;
+  const left=value=>Math.max(3,Math.min(97,(value-min)/(max-min)*100));
+  return `<div class="ai-wall-rail">
+    <i class="ai-wall-marker put" style="left:${left(put)}%;background:#3579d5"><span style="color:#81adff">Put $${fmtNum(put,1)}</span></i>
+    <i class="ai-wall-marker spot" style="left:${left(spot)}%;background:#55e6b5"><span style="color:#55e6b5">현재 $${fmtNum(spot)}</span></i>
+    <i class="ai-wall-marker call" style="left:${left(call)}%;background:#e5484d"><span style="color:#ff7a7f">Call $${fmtNum(call,1)}</span></i>
+  </div>`;
+}
+function aiLeaderRowHTML(ticker,d){
+  if(!d || d.error) return `<div class="ai-leader-row" data-ticker="${ticker}"><div class="ai-leader-symbol"><b>${ticker}</b></div><div class="ai-map-empty" style="padding:0">데이터를 불러오지 못했습니다</div></div>`;
+  const stage=Number(d.stage), stageLabels=['1 · 바닥','2 · 상승','3 · 고점','4 · 하락'], decision=aiDecision(d);
+  return `<div class="ai-leader-row" data-ticker="${ticker}">
+    <div class="ai-leader-symbol"><b>${ticker}</b><span>$${fmtNum(d.spot)}</span></div>
+    <div class="ai-stage-track">${stageLabels.map((label,i)=>`<span class="ai-stage-step stage-${i+1}${stage===i+1?' active':''}">${label}</span>`).join('')}</div>
+    ${aiWallRailHTML(d)}
+    <span class="ai-row-decision" style="color:${decision.color}">${decision.label}</span>
+  </div>`;
+}
+async function loadAiSectorRows(){
+  const rows=document.getElementById('aiLeaderRows'), phase=AI_PHASES[activeAiPhase], sector=phase.sectors[activeAiSector];
+  if(!rows || !sector) return;
+  rows.innerHTML='<div class="ai-map-empty">Stage와 이번 주 Wall을 계산하고 있습니다...</div>';
+  const reportIndex=aiReportIndex(aiReportData);
+  const results=await Promise.all(sector.tickers.map(async ticker=>{
+    if(aiLeaderCache.has(ticker)) return aiLeaderCache.get(ticker);
+    let data=reportIndex.get(ticker);
+    if(!data || data.stage==null || data.put_wall==null || data.call_wall==null){
+      data=await fetch(`/api/search?ticker=${encodeURIComponent(ticker)}`).then(r=>r.ok?r.json():null).catch(()=>null);
+    }
+    if(data && !data.error) aiLeaderCache.set(ticker,data);
+    return data;
+  }));
+  rows.innerHTML=sector.tickers.map((ticker,i)=>aiLeaderRowHTML(ticker,results[i])).join('');
+  rows.querySelectorAll('.ai-leader-row[data-ticker]').forEach(row=>row.addEventListener('click',()=>searchTicker(row.dataset.ticker)));
+  const updated=document.getElementById('aiMapUpdated');
+  if(updated) updated.textContent=`${sector.label} · ${new Date().toLocaleTimeString('ko-KR')} 기준`;
+}
+async function loadAiLeaderMap(){
+  const root=document.getElementById('aiLeaderMap'); if(!root) return;
+  renderAiControls();
+  document.getElementById('aiPhaseTabs').addEventListener('click',event=>{
+    const button=event.target.closest('[data-ai-phase]'); if(!button) return;
+    activeAiPhase=button.dataset.aiPhase; activeAiSector=0; renderAiControls(); loadAiSectorRows();
+  });
+  document.getElementById('aiSectorChips').addEventListener('click',event=>{
+    const button=event.target.closest('[data-ai-sector]'); if(!button) return;
+    activeAiSector=Number(button.dataset.aiSector)||0; renderAiControls(); loadAiSectorRows();
+  });
+  const [,report]=await Promise.all([
+    loadAiFearGreed(),
+    fetch('/leaders_report.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null),
+  ]);
+  aiReportData=report;
+  await loadAiSectorRows();
+}
 function myBoardRowHTML(r, nameMap){
   const etfName = nameMap && nameMap[r.ticker];
   const sm = STAGE_META[r.stage] || { label: r.stage_label || 'N/A', color: '#8b93a1' };
@@ -2839,11 +3041,14 @@ if(!isWatchlistView()&&!isHoldingsView()){
   loadMarketFloat();
   loadNvdaPreview();
   loadMarketStatusBanner();
+  loadAiLeaderMap();
   loadTradingJournal();
   loadReentrySignals();
   setInterval(loadMarketFloat, 60000);
 }
 initMemberAccount();
+const initialTicker = validWatchTicker(new URLSearchParams(location.search).get('ticker'));
+if(initialTicker) searchTicker(initialTicker);
 document.getElementById('memberHeroSignup').addEventListener('click', openWatchlistView);
 document.getElementById('nvdaSignupBtn').addEventListener('click', openWatchlistView);
 document.getElementById('memberHeroSearch').addEventListener('click', () => { document.getElementById('tickerInput').focus(); window.scrollTo({top:0,behavior:'smooth'}); });

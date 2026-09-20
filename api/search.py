@@ -3,6 +3,7 @@ Vercel Python Serverless Function
 GET /api/search?ticker=AAPL
 GET /api/search?mode=earnings_scan&watchlist=AAPL,NVDA,ANET
 GET /api/search?mode=symbol_search&q=broad
+GET /api/search?mode=fear_greed
 """
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -22,6 +23,41 @@ from earnings_engine import (  # noqa: E402
 FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY", "")
 
 ALLOWED_EXCHANGES = {"US"}
+
+CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+
+
+def _fetch_cnn_fear_greed():
+    """CNN 공식 Fear & Greed 피드에서 현재 점수만 작게 정규화한다."""
+    try:
+        resp = requests.get(
+            CNN_FEAR_GREED_URL,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/153.0.0.0 Safari/537.36"
+                ),
+                "Accept": "application/json, text/plain, */*",
+                "Referer": "https://www.cnn.com/markets/fear-and-greed",
+                "Origin": "https://www.cnn.com",
+            },
+            timeout=8,
+        )
+        resp.raise_for_status()
+        current = (resp.json() or {}).get("fear_and_greed") or {}
+        score = current.get("score")
+        if score is None:
+            raise ValueError("CNN 응답에 score가 없습니다.")
+        return {
+            "score": round(float(score), 1),
+            "rating": str(current.get("rating") or "").lower(),
+            "timestamp": current.get("timestamp"),
+            "previous_close": current.get("previous_close"),
+            "source": "CNN Fear & Greed Index",
+        }
+    except Exception as exc:
+        return {"error": f"CNN Fear & Greed 조회 실패: {exc}"}
 
 
 def _finnhub_symbol_search(query):
@@ -70,7 +106,9 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
-        if view == "summary":
+        if mode == "fear_greed":
+            self.send_header("Cache-Control", "public, s-maxage=300, stale-while-revalidate=900")
+        elif view == "summary":
             self.send_header("Cache-Control", "public, s-maxage=300, stale-while-revalidate=900")
         else:
             self.send_header("Cache-Control", "no-store")
@@ -82,6 +120,10 @@ class handler(BaseHTTPRequestHandler):
 
         if mode == "symbol_search":
             self._handle_symbol_search(query)
+            return
+
+        if mode == "fear_greed":
+            self.wfile.write(json.dumps(_fetch_cnn_fear_greed(), ensure_ascii=False).encode())
             return
 
         if mode == "config":
