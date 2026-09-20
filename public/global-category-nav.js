@@ -1,6 +1,7 @@
 (function(){
   const items=[
-    {href:'/',label:'🏠 홈',match:p=>p==='/'||p==='/index.html'},
+    {href:'/',label:'🏠 홈',match:(p,q)=>(p==='/'||p==='/index.html')&&!q.has('view')},
+    {href:'/?view=watchlist#interestSection',label:'⭐ 나의 관심종목',match:(p,q)=>q.get('view')==='watchlist',tone:'#e0a838'},
     {href:'/ai-leader-roadmap.html#aiLeaderMap',label:'🧭 AI 주도주 로드맵',match:p=>p==='/ai-leader-roadmap.html',tone:'#55e6b5'},
     {href:'/industry-leaders.html',label:'🏭 산업별 주도주',match:p=>p==='/industry-leaders.html',tone:'#81adff'},
     {href:'/momentum-top-100.html',label:'모멘텀 TOP 100',match:p=>p==='/momentum-top-100.html'},
@@ -19,11 +20,11 @@
     @media(max-width:600px){.shared-category-inner{padding:8px 12px}.shared-category-link{min-height:40px}}
   `;
   document.head.appendChild(style);
-  const path=location.pathname;
+  const path=location.pathname,query=new URLSearchParams(location.search);
   const nav=document.createElement('nav');
   nav.className='shared-category-nav';nav.setAttribute('aria-label','메인 카테고리');
   nav.innerHTML=`<div class="shared-category-inner">${items.map(item=>{
-    const active=item.match&&item.match(path),attrs=item.external?' target="_blank" rel="noopener"':'';
+    const active=item.match&&item.match(path,query),attrs=item.external?' target="_blank" rel="noopener"':'';
     return `<a class="shared-category-link${active?' active':''}" href="${item.href}"${attrs} style="${item.tone?`border-color:${item.tone};color:${item.tone}`:''}">${item.label}</a>`;
   }).join('')}</div>`;
   const header=document.querySelector('body > header, header');
