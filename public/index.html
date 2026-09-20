@@ -74,7 +74,7 @@
     text-decoration:none; white-space:nowrap;
   }
   .home-btn:hover{ border-color: var(--gold); color: var(--gold); }
-  .main-category-nav .main-category-inner{ max-width:1180px; margin:0 auto; padding:9px 20px; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+  .main-category-nav .main-category-inner{ max-width:1180px; margin:0 auto; padding:9px 12px 9px 28px; display:flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap; }
   .main-category-nav .home-btn{ gap:4px; padding:8px 10px; font-size:12px; }
   .header-actions{ display:flex; align-items:center; gap:18px; }
   .scroll-top-btn{
@@ -514,7 +514,8 @@
   .member-hero-inner{ position:relative; overflow:hidden; display:grid; grid-template-columns:1.15fr .85fr; gap:28px; padding:34px; border:1px solid rgba(224,168,56,.38); border-radius:14px; background:radial-gradient(circle at 92% 10%,rgba(224,168,56,.15),transparent 34%),linear-gradient(135deg,#101720,#0b1017); box-shadow:0 18px 55px rgba(0,0,0,.25); }
   .member-hero-copy h1{ font-size:clamp(26px,3.5vw,42px); line-height:1.18; letter-spacing:-.035em; margin:0 0 14px; }.member-hero-copy h1 em{ color:var(--gold); font-style:normal; }
   .member-hero-copy p{ color:var(--text-dim); font-size:14px; line-height:1.7; }.member-hero-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
-  .member-cta,.member-demo-btn{ border-radius:7px; padding:12px 20px; font-weight:800; cursor:pointer; font-family:inherit; }.member-cta{ border:0; background:var(--gold); color:#111; box-shadow:0 7px 24px rgba(224,168,56,.22); }.member-demo-btn{ border:1px solid var(--gold); background:transparent; color:var(--text); }
+  .member-cta,.member-demo-btn,.member-holdings-btn{ border-radius:7px; padding:12px 20px; font-weight:800; cursor:pointer; font-family:inherit; }.member-cta{ border:0; background:var(--gold); color:#111; box-shadow:0 7px 24px rgba(224,168,56,.22); }.member-demo-btn{ border:1px solid var(--gold); background:transparent; color:var(--text); }.member-holdings-btn{ border:1px solid #55e6b5; background:rgba(85,230,181,.05); color:#55e6b5; }
+  .member-holdings-note{ margin-top:10px; color:var(--text-dim); font-size:11px; line-height:1.55; }
   .hero-rail-card{ align-self:center; background:rgba(10,13,18,.72); border:1px solid var(--line); border-radius:11px; padding:22px 18px 16px; }.hero-rail-title{ font-size:11px; color:var(--text-dim); letter-spacing:.08em; }.hero-rail{ position:relative; height:5px; border-radius:6px; background:linear-gradient(90deg,var(--down),#65748d 50%,var(--up)); margin:54px 16px 38px; }
   .hero-rail-point{ position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; border:2px solid var(--panel); }.hero-rail-point span{ position:absolute; left:50%; bottom:17px; transform:translateX(-50%); white-space:nowrap; font:700 11px 'JetBrains Mono',monospace; text-align:center; line-height:1.5; }
   .member-benefits{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }.member-benefit{ display:flex; gap:12px; align-items:center; padding:15px 17px; background:var(--panel); border:1px solid var(--line); border-radius:9px; }.member-benefit-icon{ display:grid; place-items:center; width:42px; height:42px; flex:0 0 42px; border:1px solid rgba(224,168,56,.45); border-radius:9px; color:var(--gold); font-size:20px; }.member-benefit b{ display:block; font-size:14px; }.member-benefit span{ display:block; color:var(--text-dim); font-size:11px; margin-top:4px; line-height:1.4; }
@@ -568,7 +569,7 @@
   .paper-summary-card.pnl b.positive{ color:#55e6b5; }
   .paper-summary-card.pnl b.negative{ color:var(--up); }
   @media(max-width:1450px){.mijoostock-side-banner{display:none}}
-  @media(max-width:900px){.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:900px){.main-category-nav .main-category-inner{justify-content:flex-start;padding:8px 12px}.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
   .chart-btn{
     display:inline-flex; align-items:center; gap:6px;
     background: var(--panel-2); color: var(--text); border:1px solid var(--line);
@@ -657,7 +658,6 @@
   <nav class="main-category-nav" aria-label="메인 카테고리" style="border-bottom:1px solid var(--line); background:var(--panel); overflow-x:auto;">
   <div class="main-category-inner">
     <a class="home-btn" href="/" aria-label="메인 홈으로 이동" style="border-color:var(--text-dim); color:var(--text);">🏠 홈</a>
-    <a class="home-btn" href="/?view=watchlist#interestSection" style="border-color:#e0a838; color:#e0a838;">⭐ 나의 관심종목</a>
     <a class="home-btn" href="/ai-leader-roadmap.html#aiLeaderMap" style="border-color:#55e6b5; color:#55e6b5;">🧭 AI 주도주 로드맵</a>
     <a class="home-btn" href="/industry-leaders.html" style="border-color:#81adff; color:#81adff;">🏭 산업별 주도주</a>
     <a class="home-btn" href="/momentum-top-100.html">모멘텀 TOP 100</a>
@@ -680,7 +680,8 @@
     <div class="member-hero-copy">
       <h1 id="memberHeroTitle">좋은 주식은 오래 보유하고,<br><em>옵션으로 수익을 보호하며<br>매월 수익을 만드세요</em></h1>
       <p>Call Wall에서 자산을 보호하고, Put Wall에서 월세형 현금흐름을 만듭니다.<br>옵션을 잘 몰라도 정해진 가격과 원칙만 따라가면 되는 기록 기반 트레이딩 시스템입니다.</p>
-      <div class="member-hero-actions"><button class="member-cta" id="memberHeroSignup" type="button">무료로 시작하기 →</button><button class="member-demo-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button></div>
+      <div class="member-hero-actions"><button class="member-cta" id="memberHeroSignup" type="button">무료로 시작하기 →</button><button class="member-demo-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="member-holdings-btn" id="memberHeroHoldings" type="button">📊 내 종목</button></div>
+      <div class="member-holdings-note">관심종목 중 실제 보유종목의 수량 · 평균단가 · 투자금액 · 평가손익 · 수익률을 확인합니다.</div>
     </div>
     <div class="hero-rail-card"><div class="hero-rail-title">GEX OPTION · OPTIONS PRICE MAP</div><div class="hero-rail"><i class="hero-rail-point" style="left:20%;background:var(--down);box-shadow:0 0 12px var(--down)"><span style="color:#66a1fa">Put Wall<br>170</span></i><i class="hero-rail-point" style="left:57%;background:var(--gold);box-shadow:0 0 12px var(--gold)"><span style="color:var(--gold)">현재가<br>177.64</span></i><i class="hero-rail-point" style="left:78%;background:var(--up);box-shadow:0 0 12px var(--up)"><span style="color:#ff7278">Call Wall<br>180</span></i></div></div>
   </div>
@@ -697,7 +698,7 @@
 </div>
 <main>
   <div class="watchlist-page-title"><h1>⭐ 나의 관심종목</h1><p>내가 저장한 종목의 현재가와 Put Wall · Call Wall을 한 화면에서 확인합니다.</p></div>
-  <div class="holdings-page-title"><h1>📊 현재 나의 보유종목</h1><p>모의투자 종목의 수량·매입금액·평가금액·통합손익을 한 페이지에서 확인합니다.</p></div>
+  <div class="holdings-page-title"><h1>📊 내 종목</h1><p>보유종목의 수량·평균단가·투자금액·평가금액·손익을 한 페이지에서 확인합니다.</p></div>
   <div class="industry-page-title"><h1>🧭 AI 주도주 로드맵</h1><p>AI 발전 단계별 핵심 산업과 대표 주도주의 Weinstein Stage 및 이번 주 Wall 위치를 비교합니다.</p></div>
   <section class="nvda-preview" aria-labelledby="nvdaPreviewTitle">
     <div class="nvda-preview-top"><div class="nvda-preview-title" id="nvdaPreviewTitle">⌕ NVDA 검색 결과 미리보기</div><div class="nvda-preview-label">실제 검색 데이터 · 옵션 15분 지연</div></div>
@@ -3073,6 +3074,13 @@ function openWatchlistView(){
   history.pushState({view:'watchlist'}, '', '/?view=watchlist#interestSection');
   document.getElementById('interestSection').scrollIntoView({behavior:'smooth', block:'start'});
 }
+function openHoldingsView(){
+  document.body.classList.remove('watchlist-view');
+  document.body.classList.add('holdings-view');
+  history.pushState({view:'holdings'}, '', '/?view=holdings#paperTradingSection');
+  renderPaperAccount();
+  document.getElementById('paperTradingSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
 syncAccountViewClasses();
 window.addEventListener('popstate',syncAccountViewClasses);
 if(isIndustryView()){
@@ -3092,6 +3100,7 @@ if(initialTicker) searchTicker(initialTicker);
 document.getElementById('memberHeroSignup').addEventListener('click', openWatchlistView);
 document.getElementById('nvdaSignupBtn').addEventListener('click', openWatchlistView);
 document.getElementById('memberHeroSearch').addEventListener('click', () => { document.getElementById('tickerInput').focus(); window.scrollTo({top:0,behavior:'smooth'}); });
+document.getElementById('memberHeroHoldings').addEventListener('click', openHoldingsView);
 document.getElementById('accountBtn').addEventListener('click', openAuthModal);
 document.getElementById('authCloseBtn').addEventListener('click', closeAuthModal);
 document.getElementById('authModal').addEventListener('click', event => { if(event.target.id === 'authModal') closeAuthModal(); });
