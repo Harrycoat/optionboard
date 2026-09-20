@@ -1168,13 +1168,16 @@ function getPersonalWatchlist(){
 function savePersonalWatchlist(tickers){
   const storageKey = activeWatchlistKey();
   if(!storageKey) return;
-  try{ localStorage.setItem(storageKey, JSON.stringify(tickers)); }catch(e){}
+  const clean = [...new Set((tickers || []).map(validWatchTicker).filter(Boolean))].slice(0, PERSONAL_WATCHLIST_LIMIT);
+  try{ localStorage.setItem(storageKey, JSON.stringify(clean)); }catch(e){}
   updateInterestButton();
   if(currentUser){
-    const snapshot = [...tickers];
+    const snapshot = [...clean];
+    const syncUserId = currentUser.id;
+    const syncSessionVersion = authSessionVersion;
     watchlistSyncQueue = watchlistSyncQueue
       .catch(() => {})
-      .then(() => syncWatchlistToCloud(snapshot));
+      .then(() => syncWatchlistToCloud(snapshot, syncUserId, syncSessionVersion));
   }
 }
 async function initMemberAccount(){
@@ -1202,14 +1205,6 @@ async function applyAuthSession(session){
   try{
     if(currentUser?.id){
       localStorage.setItem(ACTIVE_WATCHLIST_USER_KEY, currentUser.id);
-      const accountKey = activeWatchlistKey();
-      const legacy = JSON.parse(localStorage.getItem(PERSONAL_WATCHLIST_KEY) || '[]');
-      const account = JSON.parse(localStorage.getItem(accountKey) || '[]');
-      if(Array.isArray(legacy) && legacy.length){
-        const migrated = [...new Set([...account, ...legacy].map(validWatchTicker).filter(Boolean))].slice(0, PERSONAL_WATCHLIST_LIMIT);
-        localStorage.setItem(accountKey, JSON.stringify(migrated));
-        localStorage.removeItem(PERSONAL_WATCHLIST_KEY);
-      }
     }else{
       localStorage.removeItem(ACTIVE_WATCHLIST_USER_KEY);
     }
@@ -1242,7 +1237,11 @@ function updateAccountUI(){
 async function mergeCloudWatchlist(sessionVersion = authSessionVersion){
   if(!supabaseClient || !currentUser) return;
   const userId = currentUser.id;
-  const local = getPersonalWatchlist();
+  let legacy = [];
+  try{
+    const parsed = JSON.parse(localStorage.getItem(PERSONAL_WATCHLIST_KEY) || '[]');
+    if(Array.isArray(parsed)) legacy = parsed.map(validWatchTicker).filter(Boolean);
+  }catch(e){}
   const { data, error } = await supabaseClient.from('user_watchlists').select('ticker').eq('user_id', userId).order('created_at', { ascending:false });
   if(sessionVersion !== authSessionVersion || currentUser?.id !== userId) return;
   if(error){
@@ -1252,24 +1251,73 @@ async function mergeCloudWatchlist(sessionVersion = authSessionVersion){
     return;
   }
   const cloud = (data || []).map(row => validWatchTicker(row.ticker)).filter(Boolean);
-  const merged = [...new Set([...cloud, ...local])].slice(0, PERSONAL_WATCHLIST_LIMIT);
+  // Once signed in, the cloud is authoritative. Only the old, unscoped guest key
+  // is migrated once; account-scoped browser data can be stale on another device.
+  const merged = [...new Set([...cloud, ...legacy])].slice(0, PERSONAL_WATCHLIST_LIMIT);
   const storageKey = activeWatchlistKey();
   if(storageKey){ try{ localStorage.setItem(storageKey, JSON.stringify(merged)); }catch(e){} }
   await loadPersonalWatchlist();
-  watchlistSyncQueue = watchlistSyncQueue
-    .catch(() => {})
-    .then(() => syncWatchlistToCloud(merged));
+  if(legacy.length){
+    watchlistSyncQueue = watchlistSyncQueue
+      .catch(() => {})
+      .then(async () => {
+        const saved = await syncWatchlistToCloud(merged, userId, sessionVersion);
+        if(saved && sessionVersion === authSessionVersion && currentUser?.id === userId){
+          try{ localStorage.removeItem(PERSONAL_WATCHLIST_KEY); }catch(e){}
+        }
+      });
+  }
 }
-async function syncWatchlistToCloud(tickers){
-  if(!supabaseClient || !currentUser) return;
-  const userId = currentUser.id;
+async function syncWatchlistToCloud(tickers, userId = currentUser?.id, sessionVersion = authSessionVersion){
+  if(!supabaseClient || !userId || currentUser?.id !== userId || sessionVersion !== authSessionVersion) return false;
   const clean = [...new Set((tickers || []).map(validWatchTicker).filter(Boolean))].slice(0, PERSONAL_WATCHLIST_LIMIT);
-  const { error:deleteError } = await supabaseClient.from('user_watchlists').delete().eq('user_id', userId);
-  if(deleteError){ console.warn('관심종목 서버 정리 실패:', deleteError.message); return; }
-  if(!clean.length) return;
-  const rows = clean.map(ticker => ({ user_id:userId, ticker }));
-  const { error } = await supabaseClient.from('user_watchlists').insert(rows);
-  if(error) console.warn('관심종목 저장 실패:', error.message);
+  const { data, error:loadError } = await supabaseClient.from('user_watchlists').select('ticker').eq('user_id', userId);
+  if(currentUser?.id !== userId || sessionVersion !== authSessionVersion) return false;
+  if(loadError){
+    console.warn('관심종목 서버 상태 확인 실패:', loadError.message);
+    showToast('관심종목은 기기에 저장됐지만 서버 동기화가 지연되고 있습니다');
+    return false;
+  }
+  const cloud = [...new Set((data || []).map(row => validWatchTicker(row.ticker)).filter(Boolean))];
+  const wanted = new Set(clean);
+  const existing = new Set(cloud);
+  const toAdd = clean.filter(ticker => !existing.has(ticker));
+  const toRemove = cloud.filter(ticker => !wanted.has(ticker));
+
+  // Add first so a temporary insert failure never wipes the existing cloud list.
+  if(toAdd.length){
+    const rows = toAdd.map(ticker => ({ user_id:userId, ticker }));
+    const { error:addError } = await supabaseClient
+      .from('user_watchlists')
+      .upsert(rows, { onConflict:'user_id,ticker', ignoreDuplicates:true });
+    if(addError){
+      console.warn('관심종목 서버 추가 실패:', addError.message);
+      showToast('관심종목은 기기에 저장됐지만 서버 동기화가 지연되고 있습니다');
+      return false;
+    }
+  }
+  if(currentUser?.id !== userId || sessionVersion !== authSessionVersion) return false;
+  if(toRemove.length){
+    const { error:removeError } = await supabaseClient
+      .from('user_watchlists')
+      .delete()
+      .eq('user_id', userId)
+      .in('ticker', toRemove);
+    if(removeError){
+      console.warn('관심종목 서버 삭제 실패:', removeError.message);
+      showToast('삭제 내용의 서버 동기화가 지연되고 있습니다');
+      return false;
+    }
+  }
+  return true;
+}
+
+async function refreshPersonalWatchlist(){
+  if(!currentUser) return;
+  const refresh = document.getElementById('interestRefreshBtn');
+  if(refresh) refresh.disabled = true;
+  await mergeCloudWatchlist(authSessionVersion);
+  if(refresh) refresh.disabled = false;
 }
 function openAuthModal(){
   if(!supabaseClient){ showToast('회원 기능 설정이 아직 완료되지 않았습니다'); return; }
@@ -2124,7 +2172,7 @@ document.getElementById('searchBtn').addEventListener('click', ()=>searchTicker(
 document.getElementById('tickerInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') searchTicker();
 });
-document.getElementById('interestRefreshBtn').addEventListener('click', loadPersonalWatchlist);
+document.getElementById('interestRefreshBtn').addEventListener('click', refreshPersonalWatchlist);
 document.getElementById('decisionCloseBtn').addEventListener('click', closeSelectedDecisionDetail);
 document.getElementById('interestQuickAddBtn').addEventListener('click', quickAddPersonalWatchlist);
 document.getElementById('interestTickerInput').addEventListener('keydown', (e)=>{
