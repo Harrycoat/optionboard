@@ -259,6 +259,53 @@ def recommend_paper_option_contracts(
     }
 
 
+def quote_paper_option_contracts(ticker: str, contract_tickers: list[str]) -> dict:
+    """보유 중인 모의 옵션의 15분 지연 현재가를 반환한다.
+
+    bid/ask가 모두 유효하면 중간값, 아니면 최근 체결가/당일 종가를 사용한다.
+    """
+    ticker = ticker.upper().strip()
+    wanted = {str(symbol).upper().strip() for symbol in contract_tickers if symbol}
+    if not wanted:
+        return {"ticker": ticker, "pricing_delay": "15분 지연", "quotes": {}}
+
+    raw_results = _fetch_full_options_chain(ticker, max_expiries=4)
+    quotes: dict[str, dict] = {}
+    for item in raw_results:
+        details = item.get("details") or {}
+        symbol = str(details.get("ticker") or "").upper()
+        if symbol not in wanted:
+            continue
+        quote = item.get("last_quote") or {}
+        bid, ask = quote.get("bid"), quote.get("ask")
+        try:
+            bid = float(bid) if bid is not None else None
+            ask = float(ask) if ask is not None else None
+        except (TypeError, ValueError):
+            bid, ask = None, None
+        source = "mid"
+        if bid is not None and ask is not None and bid >= 0 and ask >= bid and ask > 0:
+            premium = round((bid + ask) / 2, 2)
+        else:
+            last_price = (item.get("last_trade") or {}).get("price")
+            day_close = (item.get("day") or {}).get("close")
+            fallback = last_price if last_price is not None else day_close
+            try:
+                premium = round(float(fallback), 2) if fallback is not None else None
+            except (TypeError, ValueError):
+                premium = None
+            source = "last"
+        if premium is not None:
+            quotes[symbol] = {
+                "premium": premium,
+                "bid": bid,
+                "ask": ask,
+                "price_source": source,
+            }
+
+    return {"ticker": ticker, "pricing_delay": "15분 지연", "quotes": quotes}
+
+
 def _fetch_prev_bar(ticker: str) -> Optional[dict]:
     """전일(가장 최근 완결된 거래일) 일봉의 시가/종가/거래량을 반환한다.
     주의: 이건 "오늘"이 아니라 "어제"(또는 가장 최근 완결된 거래일) 값이다.
