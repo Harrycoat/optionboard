@@ -5,6 +5,12 @@
     "api/earnings_scan.py": { "maxDuration": 30 },
     "api/config.py": { "maxDuration": 10 }
   },
+  "rewrites": [
+    {
+      "source": "/industry-leaders.html",
+      "destination": "/index.html"
+    }
+  ],
   "redirects": [
     {
       "source": "/future-leaders.html",
