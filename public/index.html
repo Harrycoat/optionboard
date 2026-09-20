@@ -220,6 +220,9 @@
   .paper-table th{ color:var(--text-dim); font-size:9px; font-weight:600; border-bottom:1px solid var(--line); }
   .paper-table td{ font:700 10px 'JetBrains Mono',monospace; }
   .paper-table td:first-child{ color:var(--text); font-weight:900; }
+  .paper-table td.paper-option-cell{ transition:background .15s,color .15s; }
+  .paper-table td.paper-option-sell{ background:rgba(224,168,56,.09); color:#f2bd4c; box-shadow:inset 3px 0 0 rgba(224,168,56,.58); }
+  .paper-table td.paper-option-buy{ background:rgba(61,127,224,.10); color:#81adff; box-shadow:inset 3px 0 0 rgba(61,127,224,.62); }
   .paper-table .paper-guide-cell{ padding:0 8px 10px; border-right:0; white-space:normal; overflow:visible; text-overflow:clip; text-align:left; }
   .paper-position-guide{ padding:11px 12px; border:1px solid var(--line); border-radius:7px; background:#0d1219; }
   .paper-position-guide > summary{ position:relative; display:grid; grid-template-columns:auto auto 1fr; align-items:center; gap:9px; min-height:24px; cursor:pointer; list-style:none; }
@@ -1932,7 +1935,8 @@ function renderPaperAccount(){
     const cc=contracts&&latestCall?`${String(latestCall.expiry||'').slice(5)} · $${fmtNum(latestCall.strike)}C · 매도 $${fmtNum(latestCall.premium)} → 현재 $${fmtNum(latestCall.currentPremium??latestCall.premium)}`:(calls.length?'종료':'미보유');
     const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · 매입 $${fmtNum(latestHedge.premium)} → 현재 $${fmtNum(latestHedge.currentPremium??latestHedge.premium)}`:(hedges.length?'종료':'없음');
     const csp=p.cspStatus||'미보유';
-    return `<tr class="paper-position-row"><td data-label="종목">${p.ticker}</td><td data-label="현재가">$${fmtNum(last)}</td><td data-label="보유수량">${fmtNum(p.quantity,0)}주</td><td data-label="평균매입가">$${fmtNum(p.avgPrice)}</td><td data-label="CC 현황" title="${cc}">${cc}</td><td data-label="CSP 현황">${csp}</td><td data-label="Put 헤지" title="${hedge}">${hedge}</td><td data-label="통합손익" style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td data-label="현재 평가금액">$${fmtNum(netMarketValue)}</td><td data-label="관리"><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
+    const hasCsp=!['미보유','없음','종료'].includes(String(csp).trim());
+    return `<tr class="paper-position-row"><td data-label="종목">${p.ticker}</td><td data-label="현재가">$${fmtNum(last)}</td><td data-label="보유수량">${fmtNum(p.quantity,0)}주</td><td data-label="평균매입가">$${fmtNum(p.avgPrice)}</td><td class="paper-option-cell${contracts&&latestCall?' paper-option-sell':''}" data-label="CC 현황" title="${cc}">${cc}</td><td class="paper-option-cell${hasCsp?' paper-option-sell':''}" data-label="CSP 현황">${csp}</td><td class="paper-option-cell${hedgeContracts&&latestHedge?' paper-option-buy':''}" data-label="Put 헤지" title="${hedge}">${hedge}</td><td data-label="통합손익" style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td data-label="현재 평가금액">$${fmtNum(netMarketValue)}</td><td data-label="관리"><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
   }).join(''):'<tr><td class="paper-table-empty" colspan="10">관심종목을 선택하고 ‘모의 매수’를 눌러 첫 포지션을 만들어보세요.</td></tr>';
   const summaryValues={paperTotalCost:totalCost,paperMarketValue:totalMarketValue,paperCashBalance:Number(account.cash)||0,paperTotalEquity:(Number(account.cash)||0)+totalMarketValue};
   Object.entries(summaryValues).forEach(([id,value])=>{ const el=document.getElementById(id); if(el) el.textContent=`$${fmtNum(value)}`; });
