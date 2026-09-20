@@ -177,6 +177,12 @@
   .paper-level-current span{ bottom:auto; top:13px; }
   .paper-guide-bottom{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   .paper-guide-advice{ color:var(--text-dim); font-size:10px; line-height:1.45; }
+  .paper-option-summary{ margin-top:10px; padding:9px 10px; border:1px solid rgba(85,230,181,.24); border-radius:6px; background:rgba(85,230,181,.035); }
+  .paper-option-summary-title{ display:flex; justify-content:space-between; gap:8px; margin-bottom:7px; color:#55e6b5; font-size:9px; font-weight:900; }
+  .paper-option-summary-title span{ color:var(--text-dim); font-weight:500; }
+  .paper-option-statuses{ display:flex; gap:6px; flex-wrap:wrap; }
+  .paper-option-status{ padding:6px 8px; border:1px solid var(--line); border-radius:5px; background:var(--panel-2); color:var(--text-dim); font:700 9px/1.45 'JetBrains Mono',monospace; }
+  .paper-option-status b{ color:var(--text); }.paper-option-status .positive{ color:#55e6b5; }.paper-option-status .negative{ color:var(--up); }
   .paper-guide-actions{ display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end; }
   .paper-guide-action{ padding:6px 8px; border:1px solid var(--line); border-radius:5px; background:var(--panel-2); color:var(--text-dim); font-size:9px; font-weight:800; cursor:pointer; }
   .paper-guide-action.recommended{ border-color:#55e6b5; color:#55e6b5; background:rgba(85,230,181,.08); }
@@ -555,7 +561,7 @@
       <div id="paperAccountDashboard" hidden>
         <div class="paper-table-wrap">
           <table class="paper-table">
-            <thead><tr><th>종목</th><th>현재가</th><th>보유수량</th><th>평균매입가</th><th>CC 현황</th><th>CSP 현황</th><th>헤지</th><th>평가손익</th><th>평가금액</th><th>관리</th></tr></thead>
+            <thead><tr><th>종목</th><th>현재가</th><th>보유수량</th><th>평균매입가</th><th>CC 현황</th><th>CSP 현황</th><th>헤지</th><th>통합손익</th><th>순평가액</th><th>관리</th></tr></thead>
             <tbody id="paperPositions"></tbody>
           </table>
         </div>
@@ -1324,9 +1330,17 @@ function paperPositionGuideHTML(position,last){
   const raw=personalWatchData.get(ticker)||getCachedWatchData(ticker);
   const data=raw?.ticker===ticker?raw:null;
   const spot=Number(data?.spot)||Number(last);
+  const calls=Array.isArray(position.coveredCalls)?position.coveredCalls:[], hedges=Array.isArray(position.hedges)?position.hedges:[];
+  const optionStatus=[...calls.map(option=>{
+    const current=Number(option.currentPremium??option.premium), entry=Number(option.premium), pnl=(entry-current)*100*Number(option.contracts||0);
+    return `<div class="paper-option-status"><b>CC ${option.contracts}계약</b> · ${String(option.expiry||'').slice(5)} $${fmtNum(option.strike)}C · 매도 $${fmtNum(entry)} → 현재 $${fmtNum(current)} · <span class="${pnl>=0?'positive':'negative'}">${pnl>=0?'+':''}$${fmtNum(pnl)}</span></div>`;
+  }),...hedges.map(option=>{
+    const current=Number(option.currentPremium??option.premium), entry=Number(option.premium), pnl=(current-entry)*100*Number(option.contracts||0);
+    return `<div class="paper-option-status"><b>Put 헤지 ${option.contracts}계약</b> · ${String(option.expiry||'').slice(5)} $${fmtNum(option.strike)}P · 매입 $${fmtNum(entry)} → 현재 $${fmtNum(current)} · <span class="${pnl>=0?'positive':'negative'}">${pnl>=0?'+':''}$${fmtNum(pnl)}</span></div>`;
+  })].join('');
   const put=Number(data?.put_wall), call=Number(data?.call_wall);
   if(!Number.isFinite(put)||!Number.isFinite(call)||call<=put){
-    return `<tr class="paper-guide-row"><td class="paper-guide-cell" colspan="10"><div class="paper-position-guide" data-ticker="${ticker}"><div class="paper-guide-top"><b>${ticker} 레벨 가이드</b><span>Put Wall·Call Wall 데이터 갱신 후 위치를 안내합니다.</span></div><div class="paper-guide-bottom"><div class="paper-guide-advice">↻ 갱신을 누르면 현재 대응 위치를 계산합니다.</div><div class="paper-guide-actions"><button class="paper-guide-action" type="button" onclick="openPaperTrade('BUY','${ticker}')">100주 매수</button><button class="paper-guide-action" type="button" onclick="openPaperTrade('SELL','${ticker}')">주식 매도</button><button class="paper-guide-action" type="button" onclick="openPaperTrade('CC','${ticker}')">CC 매도</button><button class="paper-guide-action" type="button" onclick="openPaperTrade('HEDGE','${ticker}')">Put 헤지</button></div></div><div class="paper-guide-trade-slot"></div></div></td></tr>`;
+    return `<tr class="paper-guide-row"><td class="paper-guide-cell" colspan="10"><div class="paper-position-guide" data-ticker="${ticker}"><div class="paper-guide-top"><b>${ticker} 레벨 가이드</b><span>Put Wall·Call Wall 데이터 갱신 후 위치를 안내합니다.</span></div><div class="paper-guide-bottom"><div class="paper-guide-advice">↻ 갱신을 누르면 현재 대응 위치를 계산합니다.</div><div class="paper-guide-actions"><button class="paper-guide-action" type="button" onclick="openPaperTrade('BUY','${ticker}')">100주 매수</button><button class="paper-guide-action" type="button" onclick="openPaperTrade('SELL','${ticker}')">주식 매도</button><button class="paper-guide-action" type="button" onclick="openPaperTrade('CC','${ticker}')">CC 매도</button><button class="paper-guide-action" type="button" onclick="openPaperTrade('HEDGE','${ticker}')">Put 헤지</button></div></div><div class="paper-option-summary"><div class="paper-option-summary-title">옵션 헤지 손익 <span>프리미엄 15분 지연 평가</span></div><div class="paper-option-statuses">${optionStatus||'<div class="paper-option-status">보유 중인 CC·Put 헤지가 없습니다.</div>'}</div></div><div class="paper-guide-trade-slot"></div></div></td></tr>`;
   }
   const currentPct=Math.max(4,Math.min(96,(spot-put)/(call-put)*100));
   const putGap=(spot-put)/spot*100, callGap=(call-spot)/spot*100;
@@ -1336,7 +1350,7 @@ function paperPositionGuideHTML(position,last){
   else if(spot>=call){ state='Call Wall 돌파 확인 구간'; advice='돌파한 Call Wall이 지지로 전환되는지 확인한 뒤 재진입을 검토하세요.'; recommended=['BUY']; }
   else if(callGap<=1){ state='Call Wall 저항 확인 구간'; advice='저항이 확인되면 CC 또는 Put 헤지를 검토하고 추격매수는 피하세요.'; recommended=['CC','HEDGE']; }
   const button=(mode,label)=>`<button class="paper-guide-action${recommended.includes(mode)?' recommended':''}" type="button" onclick="openPaperTrade('${mode}','${ticker}')">${label}</button>`;
-  return `<tr class="paper-guide-row"><td class="paper-guide-cell" colspan="10"><div class="paper-position-guide" data-ticker="${ticker}"><div class="paper-guide-top"><b>${ticker} 레벨 가이드</b><span>옵션 데이터 15분 지연</span></div><div class="paper-level-rail"><i class="paper-level-point" style="left:0;color:${DOWN};background:${DOWN}"><span>Put Wall<br>$${fmtNum(put)}</span></i><i class="paper-level-point paper-level-current" style="left:${currentPct}%;color:#55e6b5;background:#55e6b5"><span>현재가<br>$${fmtNum(spot)}</span></i><i class="paper-level-point" style="left:100%;color:${UP};background:${UP}"><span>Call Wall<br>$${fmtNum(call)}</span></i></div><div class="paper-guide-bottom"><div class="paper-guide-advice"><b>${state}</b><br>${advice}</div><div class="paper-guide-actions">${button('BUY','100주 매수')}${button('SELL','주식 매도')}${button('CC','CC 매도')}${button('HEDGE','Put 헤지')}</div></div><div class="paper-guide-trade-slot"></div></div></td></tr>`;
+  return `<tr class="paper-guide-row"><td class="paper-guide-cell" colspan="10"><div class="paper-position-guide" data-ticker="${ticker}"><div class="paper-guide-top"><b>${ticker} 레벨 가이드</b><span>옵션 데이터 15분 지연</span></div><div class="paper-level-rail"><i class="paper-level-point" style="left:0;color:${DOWN};background:${DOWN}"><span>Put Wall<br>$${fmtNum(put)}</span></i><i class="paper-level-point paper-level-current" style="left:${currentPct}%;color:#55e6b5;background:#55e6b5"><span>현재가<br>$${fmtNum(spot)}</span></i><i class="paper-level-point" style="left:100%;color:${UP};background:${UP}"><span>Call Wall<br>$${fmtNum(call)}</span></i></div><div class="paper-guide-bottom"><div class="paper-guide-advice"><b>${state}</b><br>${advice}</div><div class="paper-guide-actions">${button('BUY','100주 매수')}${button('SELL','주식 매도')}${button('CC','CC 매도')}${button('HEDGE','Put 헤지')}</div></div><div class="paper-option-summary"><div class="paper-option-summary-title">옵션 헤지 손익 <span>프리미엄 15분 지연 평가</span></div><div class="paper-option-statuses">${optionStatus||'<div class="paper-option-status">보유 중인 CC·Put 헤지가 없습니다.</div>'}</div></div><div class="paper-guide-trade-slot"></div></div></td></tr>`;
 }
 function renderPaperAccount(){
   const section=document.getElementById('paperTradingSection');
@@ -1356,13 +1370,15 @@ function renderPaperAccount(){
     const last=Number(p.lastPrice||p.avgPrice), stockPnl=(last-Number(p.avgPrice))*Number(p.quantity);
     const calls=Array.isArray(p.coveredCalls)?p.coveredCalls:[], contracts=calls.reduce((sum,c)=>sum+(Number(c.contracts)||0),0), latestCall=calls[0];
     const hedges=Array.isArray(p.hedges)?p.hedges:[], hedgeContracts=hedges.reduce((sum,h)=>sum+(Number(h.contracts)||0),0), latestHedge=hedges[0];
-    const ccPremium=calls.reduce((sum,c)=>sum+(Number(c.premium)||0)*100*(Number(c.contracts)||0),0);
-    const hedgeCost=hedges.reduce((sum,h)=>sum+(Number(h.premium)||0)*100*(Number(h.contracts)||0),0);
-    const pnl=stockPnl+ccPremium-hedgeCost, costBasis=Number(p.avgPrice)*Number(p.quantity), pct=costBasis>0?pnl/costBasis*100:0;
-    const cc=contracts&&latestCall?`${String(latestCall.expiry||'').slice(5)} · $${fmtNum(latestCall.strike)}C · Δ${Number(latestCall.delta).toFixed(2)} · $${fmtNum(latestCall.premium)}`:(p.ccStatus||'미보유');
-    const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · Δ${Number(latestHedge.delta).toFixed(2)} · $${fmtNum(latestHedge.premium)}`:(p.hedgeStatus||'없음');
+    const ccPnl=calls.reduce((sum,c)=>sum+((Number(c.premium)||0)-(Number(c.currentPremium??c.premium)||0))*100*(Number(c.contracts)||0),0);
+    const hedgePnl=hedges.reduce((sum,h)=>sum+((Number(h.currentPremium??h.premium)||0)-(Number(h.premium)||0))*100*(Number(h.contracts)||0),0);
+    const ccLiability=calls.reduce((sum,c)=>sum+(Number(c.currentPremium??c.premium)||0)*100*(Number(c.contracts)||0),0);
+    const hedgeValue=hedges.reduce((sum,h)=>sum+(Number(h.currentPremium??h.premium)||0)*100*(Number(h.contracts)||0),0);
+    const pnl=stockPnl+ccPnl+hedgePnl, costBasis=Number(p.avgPrice)*Number(p.quantity), pct=costBasis>0?pnl/costBasis*100:0;
+    const cc=contracts&&latestCall?`${String(latestCall.expiry||'').slice(5)} · $${fmtNum(latestCall.strike)}C · 매도 $${fmtNum(latestCall.premium)} → 현재 $${fmtNum(latestCall.currentPremium??latestCall.premium)}`:(p.ccStatus||'미보유');
+    const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · 매입 $${fmtNum(latestHedge.premium)} → 현재 $${fmtNum(latestHedge.currentPremium??latestHedge.premium)}`:(p.hedgeStatus||'없음');
     const csp=p.cspStatus||'미보유';
-    return `<tr><td>${p.ticker}</td><td>$${fmtNum(last)}</td><td>${fmtNum(p.quantity,0)}주</td><td>$${fmtNum(p.avgPrice)}</td><td title="${cc}">${cc}</td><td>${csp}</td><td title="${hedge}">${hedge}</td><td style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td>$${fmtNum(last*Number(p.quantity))}</td><td><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
+    return `<tr><td>${p.ticker}</td><td>$${fmtNum(last)}</td><td>${fmtNum(p.quantity,0)}주</td><td>$${fmtNum(p.avgPrice)}</td><td title="${cc}">${cc}</td><td>${csp}</td><td title="${hedge}">${hedge}</td><td style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td>$${fmtNum(last*Number(p.quantity)+hedgeValue-ccLiability)}</td><td><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
   }).join(''):'<tr><td class="paper-table-empty" colspan="10">관심종목을 선택하고 ‘모의 매수’를 눌러 첫 포지션을 만들어보세요.</td></tr>';
   if(!positions.length && tradePanel) closePaperTrade();
 }
@@ -1379,10 +1395,23 @@ async function refreshPaperAccountPrices(){
   const button=document.getElementById('paperRefreshBtn'); if(button) button.disabled=true;
   const positions=Object.values(account.positions||{}).filter(p=>Number(p.quantity)>0);
   await Promise.allSettled(positions.map(async p=>{
-    const cached=personalWatchData.get(p.ticker)||getCachedWatchData(p.ticker);
-    let data=cached;
-    if(!data){ const response=await fetch(`/api/search?ticker=${encodeURIComponent(p.ticker)}&view=summary`); data=response.ok?await response.json():null; }
-    if(data && !data.error && Number.isFinite(Number(data.spot))) account.positions[p.ticker].lastPrice=Number(data.spot);
+    const contracts=[...(p.coveredCalls||[]),...(p.hedges||[])].map(option=>option.contractTicker).filter(Boolean);
+    const [summaryResponse,quotesResponse]=await Promise.all([
+      fetch(`/api/search?ticker=${encodeURIComponent(p.ticker)}&view=summary`),
+      contracts.length?fetch(`/api/search?mode=paper_option_quotes&ticker=${encodeURIComponent(p.ticker)}&contracts=${encodeURIComponent(contracts.join(','))}`):Promise.resolve(null),
+    ]);
+    const data=summaryResponse.ok?await summaryResponse.json():null;
+    if(data && !data.error && Number.isFinite(Number(data.spot))){
+      account.positions[p.ticker].lastPrice=Number(data.spot);
+      personalWatchData.set(p.ticker,data); saveCachedWatchData(p.ticker,data);
+    }
+    if(quotesResponse?.ok){
+      const result=await quotesResponse.json(), quotes=result.quotes||{}, updatedAt=new Date().toISOString();
+      for(const key of ['coveredCalls','hedges']) account.positions[p.ticker][key]=(account.positions[p.ticker][key]||[]).map(option=>{
+        const quote=quotes[String(option.contractTicker||'').toUpperCase()];
+        return quote?{...option,currentPremium:Number(quote.premium),currentBid:quote.bid,currentAsk:quote.ask,quoteUpdatedAt:updatedAt}:option;
+      });
+    }
   }));
   account.updatedAt=new Date().toISOString(); savePaperAccount(account); renderPaperAccount();
   if(button) button.disabled=false;
@@ -1522,7 +1551,7 @@ function executePaperTrade(){
     if(!Number.isFinite(strike)||strike<=0||!Number.isFinite(premium)||premium<=0||!expiry){ showToast('CC 행사가·만기일·프리미엄을 확인해주세요'); return; }
     const calls=Array.isArray(old.coveredCalls)?old.coveredCalls:[], covered=calls.reduce((sum,c)=>sum+(Number(c.contracts)||0)*100,0), available=oldQty-covered;
     if(quantity*100>available){ showToast(`CC ${quantity}계약에는 미담보 주식 ${quantity*100}주가 필요합니다`); return; }
-    const option=paperTradeDraft.selectedOption||{}, premiumTotal=premium*100*quantity, call={id:`${Date.now()}_${ticker}_CC`,contracts:quantity,strike,expiry,premium,delta:Number(option.delta)||0.15,bid:option.bid,ask:option.ask,contractTicker:option.ticker,openedAt:new Date().toISOString()};
+    const option=paperTradeDraft.selectedOption||{}, premiumTotal=premium*100*quantity, call={id:`${Date.now()}_${ticker}_CC`,contracts:quantity,strike,expiry,premium,currentPremium:premium,delta:Number(option.delta)||0.15,bid:option.bid,ask:option.ask,contractTicker:option.ticker,openedAt:new Date().toISOString()};
     account.positions[ticker]={...old,coveredCalls:[call,...calls],lastPrice:price,updatedAt:new Date().toISOString()};
     account.cash+=premiumTotal;
     account.trades.unshift({id:call.id,side:'CC_SELL',ticker,quantity,price:premium,amount:premiumTotal,strike,expiry,createdAt:call.openedAt});
@@ -1533,7 +1562,7 @@ function executePaperTrade(){
     if(quantity*100>oldQty){ showToast(`헤지 Put ${quantity}계약에는 보유주식 ${quantity*100}주가 필요합니다`); return; }
     const hedgeCost=premium*100*quantity;
     if(hedgeCost>account.cash){ showToast('헤지 Put을 매수할 모의계좌 현금이 부족합니다'); return; }
-    const option=paperTradeDraft.selectedOption||{}, hedges=Array.isArray(old.hedges)?old.hedges:[], hedge={id:`${Date.now()}_${ticker}_HEDGE`,contracts:quantity,strike,expiry,premium,delta:Number(option.delta)||-0.30,bid:option.bid,ask:option.ask,contractTicker:option.ticker,openedAt:new Date().toISOString()};
+    const option=paperTradeDraft.selectedOption||{}, hedges=Array.isArray(old.hedges)?old.hedges:[], hedge={id:`${Date.now()}_${ticker}_HEDGE`,contracts:quantity,strike,expiry,premium,currentPremium:premium,delta:Number(option.delta)||-0.30,bid:option.bid,ask:option.ask,contractTicker:option.ticker,openedAt:new Date().toISOString()};
     account.positions[ticker]={...old,hedges:[hedge,...hedges],lastPrice:price,updatedAt:new Date().toISOString()};
     account.cash-=hedgeCost;
     account.trades.unshift({id:hedge.id,side:'HEDGE_BUY',ticker,quantity,price:premium,amount:hedgeCost,strike,expiry,createdAt:hedge.openedAt});
