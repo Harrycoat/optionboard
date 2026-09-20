@@ -99,7 +99,8 @@
     display:grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap:10px;
   }
   .ai-leader-map{ margin:20px 0 26px; padding:18px; border:1px solid var(--line); border-radius:12px; background:var(--panel); }
-  .global-market-position{ max-width:1100px; margin:18px auto 12px; padding:0 20px; }
+  .global-market-position{ display:none; max-width:1100px; margin:18px auto 12px; padding:0 20px; }
+  body.industry-view .global-market-position{ display:block; }
   .ai-market-bar{ padding:16px; border:1px solid var(--gold); border-radius:12px; background:linear-gradient(135deg,rgba(224,168,56,.09),rgba(14,20,28,.96) 52%); box-shadow:0 10px 26px rgba(0,0,0,.2); }
   .ai-market-head{ display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:14px; }
   .ai-market-head h2{ margin:0; color:#ffd45f; font-size:22px; letter-spacing:-.02em; }
