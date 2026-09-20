@@ -169,10 +169,10 @@
   .paper-table td:first-child{ color:var(--text); font-weight:900; }
   .paper-table .paper-guide-cell{ padding:0 8px 10px; border-right:0; white-space:normal; overflow:visible; text-overflow:clip; text-align:left; }
   .paper-position-guide{ padding:11px 12px; border:1px solid var(--line); border-radius:7px; background:#0d1219; }
-  .paper-position-guide > summary{ display:grid; grid-template-columns:auto auto 1fr auto; align-items:center; gap:9px; cursor:pointer; list-style:none; }
+  .paper-position-guide > summary{ position:relative; display:grid; grid-template-columns:auto auto 1fr; align-items:center; gap:9px; min-height:24px; cursor:pointer; list-style:none; }
   .paper-position-guide > summary::-webkit-details-marker{ display:none; }
-  .paper-position-guide > summary::after{ content:'펼치기 ▼'; color:var(--text-dim); font-size:8px; font-weight:700; }
-  .paper-position-guide[open] > summary::after{ content:'접기 ▲'; }
+  .paper-position-guide > summary::after{ content:'상세 펼치기 ▼'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); color:var(--text-dim); font-size:9px; font-weight:800; white-space:nowrap; }
+  .paper-position-guide[open] > summary::after{ content:'상세 접기 ▲'; }
   .paper-position-guide[open] > summary{ margin-bottom:10px; padding-bottom:9px; border-bottom:1px solid var(--line); }
   .paper-guide-summary-ticker{ color:var(--text); font-size:11px; font-weight:900; }.paper-guide-summary-stage{ padding:3px 6px; border-radius:4px; background:rgba(224,168,56,.13); color:var(--gold); font-size:8px; font-weight:900; }
   .paper-guide-summary-price{ color:#55e6b5; font:800 10px 'JetBrains Mono',monospace; text-align:right; }
@@ -377,7 +377,7 @@
     .paper-guide-actions{ justify-content:flex-start; }
     .paper-wall-actions{ grid-template-columns:1fr; }
     .paper-coach-status{ grid-template-columns:1fr; align-items:start; }
-    .paper-position-guide > summary{ grid-template-columns:auto 1fr auto; }.paper-guide-summary-price{ display:none; }
+    .paper-position-guide > summary{ grid-template-columns:auto 1fr; padding-bottom:22px; }.paper-position-guide > summary::after{ top:auto; bottom:1px; transform:translateX(-50%); }.paper-guide-summary-price{ display:none; }
     .paper-coach-caution{ white-space:normal; }
     .paper-lesson-grid{ grid-template-columns:1fr; }
     .paper-trade-actions{ grid-template-columns:1fr; }
