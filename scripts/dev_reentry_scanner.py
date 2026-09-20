@@ -27,6 +27,9 @@ MIN_VOLUME_RATIO = 1.2
 MAX_ENTRY_RESULTS = 10
 MAX_WATCH_RESULTS = 10
 MAX_GEX_LOOKUPS = 10
+RECENT_SIGNAL_LOOKBACK = 5
+NEAR_TREND_GAP_PCT = 1.0
+NEAR_HULL_BAND_GAP_PCT = 1.0
 
 PER_TICKER_DELAY_SECONDS = 0.4
 GEX_TICKER_DELAY_SECONDS = 0.5
@@ -38,6 +41,7 @@ SIGNAL_LABELS = {
     "trend_cross": "MA50/100 신규추세",
     "hull_reentry": "Hull21 눌림 재진입",
     "watch": "오늘의 관찰 후보",
+    "near": "신호 임박",
 }
 
 
@@ -123,8 +127,8 @@ def _round_or_none(value, digits=2):
     return None if value is None else round(float(value), digits)
 
 
-def compute_technical_signal(ticker, bars):
-    """오늘 발생한 신규추세 또는 Hull21 재진입 이벤트를 계산한다."""
+def _compute_signal_at_end(ticker, bars, signal_age=0):
+    """주어진 마지막 일봉에서 발생한 신규추세·Hull21 재진입 이벤트를 계산한다."""
     if not bars or len(bars) < 105:
         return None
 
@@ -236,7 +240,87 @@ def compute_technical_signal(ticker, bars):
         "volume_ratio": round(volume_ratio, 2),
         "avg_dollar_volume": round(avg_dollar_volume),
         "liquidity_confirmed": liquid,
+        "signal_age": signal_age,
+        "signal_date": bars[-1].get("time"),
     }
+
+
+def _compute_near_signal(ticker, bars):
+    """신규 돌파·재진입 직전까지 접근한 유동성 종목을 관찰 후보로 반환한다."""
+    if not bars or len(bars) < 105:
+        return None
+    closes = [float(bar["close"]) for bar in bars]
+    volumes = [float(bar.get("volume") or 0) for bar in bars]
+    spot = closes[-1]
+    hull = hull_ma_series(closes)
+    sma50 = _sma_series(closes, 50)
+    sma100 = _sma_series(closes, 100)
+    required = (hull[-1], hull[-4], sma50[-1], sma50[-6], sma100[-1])
+    if any(value is None for value in required):
+        return None
+    dev_pct = [None if value is None else (close-value)/value*100 for close,value in zip(closes,hull)]
+    lower_band, upper_band = _rolling_dev_bands(dev_pct)
+    if dev_pct[-1] is None or lower_band[-1] is None:
+        return None
+    previous_volumes = volumes[-21:-1]
+    avg_volume_20 = statistics.fmean(previous_volumes) if previous_volumes else 0
+    volume_ratio = volumes[-1] / avg_volume_20 if avg_volume_20 > 0 else 0
+    avg_dollar_volume = avg_volume_20 * spot
+    liquid = spot >= MIN_PRICE and avg_dollar_volume >= MIN_AVG_DOLLAR_VOLUME
+    if not liquid:
+        return None
+
+    ma_gap_pct = (sma100[-1] - sma50[-1]) / sma100[-1] * 100 if sma100[-1] else 999
+    trend_near = 0 <= ma_gap_pct <= NEAR_TREND_GAP_PCT and sma50[-1] > sma50[-6] and spot > sma50[-1]
+    trend_active = sma50[-1] > sma100[-1] and sma50[-1] > sma50[-6]
+    hull_band_gap = dev_pct[-1] - lower_band[-1]
+    hull_near = trend_active and -0.5 <= hull_band_gap <= NEAR_HULL_BAND_GAP_PCT and spot >= hull[-1] * 0.985
+    if not trend_near and not hull_near:
+        return None
+
+    now_hull_slope = (hull[-1] - hull[-1-SLOPE_LOOKBACK]) / SLOPE_LOOKBACK
+    previous_hull_slope = (hull[-1-SLOPE_LOOKBACK] - hull[-1-SLOPE_LOOKBACK*2]) / SLOPE_LOOKBACK
+    hull_rising = now_hull_slope > 0 and now_hull_slope > previous_hull_slope
+    closeness = min(abs(ma_gap_pct) if trend_near else 99, abs(hull_band_gap) if hull_near else 99)
+    score = 25 + max(0, 10-closeness*10) + min(volume_ratio, 3.0)/3.0*10
+    return {
+        "ticker": ticker,
+        "spot": round(spot, 2),
+        "signal_type": "near",
+        "signal_label": SIGNAL_LABELS["near"],
+        "stage": 1,
+        "stage_label": SIGNAL_LABELS["near"],
+        "score": round(score, 1),
+        "hull21": round(hull[-1], 2),
+        "dev_pct": round(dev_pct[-1], 2),
+        "band_upper": _round_or_none(upper_band[-1]),
+        "band_lower": _round_or_none(lower_band[-1]),
+        "ma50": round(sma50[-1], 2),
+        "ma100": round(sma100[-1], 2),
+        "trend_cross": False,
+        "trend_active": trend_active,
+        "hull_reentry": False,
+        "above_hull21": spot > hull[-1],
+        "hull_rising": hull_rising,
+        "slope_accelerating": hull_rising,
+        "volume_confirmed": volume_ratio >= MIN_VOLUME_RATIO,
+        "volume_ratio": round(volume_ratio, 2),
+        "avg_dollar_volume": round(avg_dollar_volume),
+        "liquidity_confirmed": True,
+        "near_reason": "MA50/100 돌파 임박" if trend_near else "Hull21 하단밴드 재진입 임박",
+        "signal_age": 0,
+        "signal_date": bars[-1].get("time"),
+    }
+
+
+def compute_technical_signal(ticker, bars):
+    """오늘 신호를 우선하고, 없으면 최근 5거래일 신호와 임박 후보를 찾는다."""
+    for signal_age in range(RECENT_SIGNAL_LOOKBACK):
+        snapshot = bars if signal_age == 0 else bars[:-signal_age]
+        signal = _compute_signal_at_end(ticker, snapshot, signal_age=signal_age)
+        if signal:
+            return signal
+    return _compute_near_signal(ticker, bars)
 
 
 def _add_gex_context(candidate):
@@ -263,6 +347,8 @@ def _add_gex_context(candidate):
             gex_score += 3
 
         enriched.update({
+            "signal_spot": candidate.get("spot"),
+            "spot": round(spot, 2),
             "put_wall": _round_or_none(put_wall),
             "call_wall": _round_or_none(call_wall),
             "gamma_flip": _round_or_none(gamma_flip),
@@ -299,18 +385,18 @@ def build_dev_reentry_signals(tickers):
 
     entries = sorted(
         (candidate for candidate in candidates if candidate["stage"] == 2),
-        key=lambda candidate: -candidate["score"],
+        key=lambda candidate: (candidate.get("signal_age", 0), -candidate["score"]),
     )
     watches = sorted(
         (candidate for candidate in candidates if candidate["stage"] == 1),
-        key=lambda candidate: -candidate["score"],
+        key=lambda candidate: (candidate.get("signal_age", 0), -candidate["score"]),
     )
 
     enriched_entries = []
     for candidate in entries[:MAX_GEX_LOOKUPS]:
         enriched_entries.append(_add_gex_context(candidate))
         time.sleep(GEX_TICKER_DELAY_SECONDS)
-    enriched_entries.sort(key=lambda candidate: -candidate["score"])
+    enriched_entries.sort(key=lambda candidate: (candidate.get("signal_age", 0), -candidate["score"]))
 
     top_pick = enriched_entries[0] if enriched_entries else None
     trend_candidates = [

@@ -1145,9 +1145,12 @@ function reentrySignalRowHTML(r){
   const devColor = r.dev_pct >= 0 ? UP : DOWN;
   const devText = `${r.dev_pct >= 0 ? '+' : ''}${fmtNum(r.dev_pct,2)}%`;
   const stageColor = STAGE_COLORS[r.stage] || GOLD;
+  const signalAge = Number(r.signal_age) || 0;
+  const ageLabel = signalAge === 0 ? '오늘' : `D-${signalAge}`;
   return `
     <div class="leader-card" data-ticker="${r.ticker}">
       <span class="leader-ticker">${r.ticker}</span>
+      <span style="font-size:9px; font-weight:800; color:${signalAge===0?UP:'#81adff'};">${ageLabel}</span>
       <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
       <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${stageColor}22; color:${stageColor};">${r.stage_label}</span>
       <span class="mono" style="font-size:11px; color:var(--text-dim);">Hull21 <b style="color:${GOLD}">${fmtNum(r.hull21,2)}</b></span>
@@ -1173,7 +1176,7 @@ async function loadReentrySignals(){
   }
   const longList = report.dev_reentry_long || [];
   if(!longList.length){
-    boardEl.innerHTML = '<div class="leader-empty">오늘 매수 신호가 없습니다</div>';
+    boardEl.innerHTML = '<div class="leader-empty">최근 5거래일 신호와 임박 후보가 없습니다</div>';
     note.textContent = '';
     return;
   }

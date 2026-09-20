@@ -1,5 +1,10 @@
 name: Intraday Options Report Update
 on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/dev_reentry_scanner.py"
+      - "scripts/generate_leaders_report.py"
   schedule:
     # 장중 스냅샷용 — 블로그 포스팅은 하지 않고 대시보드 데이터(리포트)만 갱신한다.
     # 블로그 포스팅(감마 요약/종목 딥다이브)은 daily-update.yml 이 장마감 후 하루 1번만 그대로 담당한다.
