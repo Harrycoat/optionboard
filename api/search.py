@@ -12,7 +12,7 @@ import os
 import requests
 
 sys.path.insert(0, os.path.dirname(__file__))
-from options_engine import analyze_ticker_cached  # noqa: E402
+from options_engine import analyze_ticker_cached, recommend_paper_option_contracts  # noqa: E402
 from earnings_engine import (  # noqa: E402
     scan_earnings_movers,
     scan_earnings_movers_from_watchlist,
@@ -94,6 +94,14 @@ class handler(BaseHTTPRequestHandler):
         ticker = (query.get("ticker", [""])[0]).strip()
         if not ticker:
             self.wfile.write(json.dumps({"error": "ticker 파라미터가 필요합니다. 예: /api/search?ticker=AAPL"}, ensure_ascii=False).encode())
+            return
+
+        if mode == "paper_options":
+            try:
+                result = recommend_paper_option_contracts(ticker)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
             return
 
         try:
