@@ -328,6 +328,24 @@
   .leader-card:hover{ opacity:0.8; }
   .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); min-width:56px; }
   .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
+  .reentry-current-signal{ margin:14px 0 6px; border:1px solid rgba(224,168,56,.48); border-radius:10px; background:linear-gradient(135deg,rgba(224,168,56,.10),rgba(13,18,25,.96) 48%); overflow:hidden; }
+  .reentry-current-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:15px 16px 12px; }
+  .reentry-current-kicker{ color:var(--gold); font-size:10px; font-weight:900; letter-spacing:.08em; }
+  .reentry-current-title{ margin-top:5px; color:var(--text); font-size:18px; font-weight:900; }
+  .reentry-current-title b{ color:var(--gold); font-family:'JetBrains Mono',monospace; }
+  .reentry-current-badges{ display:flex; justify-content:flex-end; flex-wrap:wrap; gap:6px; }
+  .reentry-current-badge{ padding:4px 7px; border:1px solid var(--line); border-radius:5px; color:var(--text-dim); background:rgba(9,13,19,.75); font-size:9px; font-weight:800; white-space:nowrap; }
+  .reentry-current-body{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr); gap:10px; padding:0 16px 15px; }
+  .reentry-current-copy,.reentry-current-action{ padding:11px 12px; border:1px solid var(--line); border-radius:7px; background:rgba(9,13,19,.72); font-size:11px; line-height:1.65; }
+  .reentry-current-copy strong,.reentry-current-action strong{ display:block; margin-bottom:3px; color:var(--text); font-size:11px; }
+  .reentry-current-copy span,.reentry-current-action span{ color:var(--text-dim); }
+  .reentry-current-action{ border-color:rgba(85,230,181,.28); }
+  .reentry-current-action strong{ color:#55e6b5; }
+  .reentry-current-levels{ display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid rgba(224,168,56,.22); }
+  .reentry-current-level{ padding:10px 12px; text-align:center; }
+  .reentry-current-level small{ display:block; color:var(--text-dim); font-size:8px; font-weight:800; letter-spacing:.05em; }
+  .reentry-current-level b{ display:block; margin-top:3px; font:900 12px 'JetBrains Mono',monospace; }
+  .reentry-current-level.put b{ color:var(--down); }.reentry-current-level.spot b{ color:var(--gold); }.reentry-current-level.call b{ color:var(--up); }
   .detail{ background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px; margin-top:16px; }
   .detail-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
   .detail-head h2{ font-size:22px; font-family:'JetBrains Mono',monospace; }
@@ -415,6 +433,8 @@
     .ai-leader-columns{ display:none; }
     .ai-leader-row{ grid-template-columns:1fr auto; gap:9px; padding:12px 7px; }
     .ai-leader-symbol{ grid-column:1; }.ai-row-actions{ grid-column:2; grid-row:1; }.ai-row-decision{ justify-self:auto; }
+    .reentry-current-head{ flex-direction:column; padding:13px 12px 10px; }.reentry-current-title{ font-size:16px; }.reentry-current-badges{ justify-content:flex-start; }
+    .reentry-current-body{ grid-template-columns:1fr; padding:0 12px 12px; }.reentry-current-level{ padding:9px 5px; }
     .ai-stage-track,.ai-wall-rail{ grid-column:1/-1; }.ai-wall-rail{ margin:25px 16px 24px; }
     .interest-card{ min-height:142px; padding:14px 48px 14px 14px; }
     .interest-remove{ top:6px; right:6px; width:36px; height:36px; font-size:20px; }
@@ -804,6 +824,7 @@
   <div class="section-title" id="today-buy-signal">🎯 오늘의 매수 신호</div>
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">Hull21 이동평균 기준 Dev% 밴드 되돌림 스캐너입니다 — 눌림목에서 되돌아왔는지(HULL 스테이지1 관찰타이밍), 상승 전환과 모멘텀까지 확인됐는지(HULL 스테이지2 진입타이밍)를 보여드립니다.</p>
   <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
+  <div id="reentryCurrentSignal" class="reentry-current-signal" aria-live="polite"><div class="leader-empty" style="padding:14px 16px;">현재 신호를 분석하고 있습니다.</div></div>
   <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
 </section>
   <div id="detailSection" style="display:none;">
@@ -1165,9 +1186,60 @@ function reentrySignalRowHTML(r){
     </div>
   `;
 }
+function reentryCurrentSignalHTML(r, isConfirmed){
+  if(!r) return `<div class="leader-empty" style="padding:14px 16px;">현재 조건을 충족한 신호와 관찰 후보가 없습니다.</div>`;
+  const signalType = r.signal_type || '';
+  const isTrend = signalType === 'trend_cross' || r.trend_cross;
+  const isHull = signalType === 'hull_reentry' || r.hull_reentry;
+  const signalTitle = isTrend
+    ? 'MA50/100 신규 상승추세'
+    : isHull ? 'Hull21 눌림목 재진입' : (r.signal_label || r.stage_label || '신호 임박 · 관찰 후보');
+  const meaning = isTrend
+    ? '50일 이동평균선이 100일 이동평균선을 상향 돌파해 중기 상승추세 전환이 확인된 신호입니다.'
+    : isHull
+      ? 'Dev%가 하단 밴드 아래에서 다시 올라오고 Hull21 상승 조건이 확인된 눌림목 재진입 신호입니다.'
+      : '아직 진입 조건이 모두 확인된 매수 신호는 아닙니다. Hull21·추세·거래량 조건이 완성되는지 관찰하는 후보입니다.';
+  const spot = Number(r.spot);
+  const put = Number(r.put_wall);
+  const call = Number(r.call_wall);
+  const hasSpot = Number.isFinite(spot);
+  const hasPut = Number.isFinite(put);
+  const hasCall = Number.isFinite(call);
+  let action = '가격 구조와 거래량 확인 전에는 신규 진입을 서두르지 않습니다.';
+  if(hasSpot && hasPut && hasCall){
+    if(spot < put) action = `현재가가 Put Wall $${fmtNum(put)} 아래입니다. Put Wall 회복이 확인되기 전까지 신규 진입을 보류합니다.`;
+    else if(spot >= call) action = `현재가가 Call Wall $${fmtNum(call)}에 도달했습니다. 돌파 후 지지 전환을 확인하고 보유 또는 진입을 판단합니다.`;
+    else action = `Put Wall $${fmtNum(put)} 지지를 유지하면 진입을 검토하고, Call Wall $${fmtNum(call)} 접근 시 추격매수보다 돌파·저항 반응을 확인합니다.`;
+  }else if(hasSpot && hasPut){
+    action = spot >= put
+      ? `Put Wall $${fmtNum(put)} 지지 유지 여부를 확인하며 진입을 검토합니다.`
+      : `Put Wall $${fmtNum(put)} 회복이 확인되기 전까지 신규 진입을 보류합니다.`;
+  }
+  const badges = [
+    r.stage ? `STAGE ${r.stage}` : '',
+    r.volume_confirmed ? `거래량 ${r.volume_ratio ? fmtNum(r.volume_ratio,2)+'배' : '확인'}` : '',
+    r.gex_confirmed ? 'GEX 확인' : '',
+    !isConfirmed ? '관찰 후보' : ''
+  ].filter(Boolean).map(v=>`<span class="reentry-current-badge">${v}</span>`).join('');
+  return `
+    <div class="reentry-current-head">
+      <div><div class="reentry-current-kicker">${isConfirmed ? '현재 최우선 신호' : '현재 최우선 관찰 후보'}</div><div class="reentry-current-title"><b>${r.ticker}</b> · ${signalTitle}</div></div>
+      <div class="reentry-current-badges">${badges}</div>
+    </div>
+    <div class="reentry-current-body">
+      <div class="reentry-current-copy"><strong>왜 표시됐나요?</strong><span>${meaning}</span></div>
+      <div class="reentry-current-action"><strong>현재 대응</strong><span>${action}</span></div>
+    </div>
+    <div class="reentry-current-levels">
+      <div class="reentry-current-level put"><small>PUT WALL · 하방 지지</small><b>${hasPut ? '$'+fmtNum(put) : '—'}</b></div>
+      <div class="reentry-current-level spot"><small>현재가</small><b>${hasSpot ? '$'+fmtNum(spot) : '—'}</b></div>
+      <div class="reentry-current-level call"><small>CALL WALL · 상방 저항</small><b>${hasCall ? '$'+fmtNum(call) : '—'}</b></div>
+    </div>`;
+}
 async function loadReentrySignals(){
   const boardEl = document.getElementById('reentrySignalBoard');
   const note = document.getElementById('reentryUpdatedNote');
+  const currentSignalEl = document.getElementById('reentryCurrentSignal');
   boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
   let report;
   try{
@@ -1176,13 +1248,22 @@ async function loadReentrySignals(){
     report = await res.json();
   }catch(e){
     boardEl.innerHTML = '<div class="leader-empty">매수 신호 데이터를 불러오지 못했습니다</div>';
+    currentSignalEl.innerHTML = '<div class="leader-empty" style="padding:14px 16px;">현재 신호를 확인하지 못했습니다.</div>';
     note.textContent = '';
     return;
   }
   const longList = report.dev_reentry_long || [];
+  const confirmedList = [
+    ...(report.dev_reentry_trend || []),
+    ...(report.dev_reentry_hull || [])
+  ];
+  const topPick = report.dev_reentry_top_pick || confirmedList[0] || longList[0] || null;
+  const isConfirmed = Boolean(topPick && (report.dev_reentry_top_pick || confirmedList.some(r=>r.ticker === topPick.ticker)));
+  currentSignalEl.innerHTML = reentryCurrentSignalHTML(topPick, isConfirmed);
   if(!longList.length){
     boardEl.innerHTML = '<div class="leader-empty">최근 5거래일 신호와 임박 후보가 없습니다</div>';
-    note.textContent = '';
+    const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
+    note.textContent = generatedAt ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}` : '매일 장마감 후 자동 계산';
     return;
   }
   boardEl.innerHTML =
