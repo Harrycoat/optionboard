@@ -146,25 +146,29 @@
   @media(max-width:760px){ .decision-actions-grid{ grid-template-columns:1fr 1fr; }.decision-dashboard{ padding:14px; }.decision-marker span{ font-size:8px; } }
   .interest-status{ display:inline-block; margin-top:8px; padding:3px 7px; border-radius:4px; font-size:10px; font-weight:800; }
   .interest-loading{ opacity:.65; pointer-events:none; }
-  .paper-section{ margin-top:22px; padding:20px; border:1px solid rgba(224,168,56,.42); border-radius:12px; background:linear-gradient(145deg,rgba(224,168,56,.08),var(--panel) 44%); }
-  .paper-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .paper-head h2{ margin:0; font-size:18px; }.paper-head p{ margin:6px 0 0; color:var(--text-dim); font-size:11px; line-height:1.5; }
-  .paper-badge{ padding:6px 9px; border:1px solid var(--gold); border-radius:20px; color:var(--gold); font-size:10px; font-weight:800; white-space:nowrap; }
+  .paper-section{ margin-top:14px; padding:12px 14px; border:1px solid rgba(224,168,56,.34); border-radius:10px; background:linear-gradient(145deg,rgba(224,168,56,.055),var(--panel) 48%); }
+  .paper-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .paper-head-main{ display:flex; align-items:center; gap:9px; min-width:0; }
+  .paper-head h2{ margin:0; font-size:15px; white-space:nowrap; }
+  .paper-head-actions{ display:flex; align-items:center; gap:7px; }
+  .paper-badge{ padding:5px 8px; border:1px solid var(--gold); border-radius:20px; color:var(--gold); font-size:9px; font-weight:800; white-space:nowrap; }
+  .paper-new-trade{ padding:6px 10px; border:1px solid var(--gold); border-radius:6px; background:transparent; color:var(--gold); font-size:10px; font-weight:800; cursor:pointer; white-space:nowrap; }
+  .paper-new-trade:hover{ background:rgba(224,168,56,.12); }
   .paper-setup{ margin-top:16px; padding:18px; border:1px dashed var(--line); border-radius:9px; text-align:center; }
   .paper-setup b{ display:block; margin-bottom:6px; }.paper-setup span{ color:var(--text-dim); font-size:11px; }
   .paper-setup-form{ display:flex; justify-content:center; gap:8px; max-width:430px; margin:14px auto 0; }
   .paper-setup-form input,.paper-trade-field input{ min-width:0; background:var(--panel-2); border:1px solid var(--line); color:var(--text); border-radius:7px; padding:10px 12px; font:700 14px 'JetBrains Mono',monospace; }
   .paper-setup-form input{ flex:1; }.paper-primary{ border:0; border-radius:7px; padding:10px 15px; background:var(--gold); color:#111; font-weight:900; cursor:pointer; white-space:nowrap; }
-  .paper-summary{ display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-top:16px; }
-  .paper-kpi{ padding:13px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); }
-  .paper-kpi small{ display:block; color:var(--text-dim); font-size:10px; }.paper-kpi b{ display:block; margin-top:6px; font:800 17px 'JetBrains Mono',monospace; }
-  .paper-subhead{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:18px 0 9px; font-weight:800; font-size:13px; }
-  .paper-refresh{ border:1px solid var(--line); border-radius:6px; padding:7px 9px; background:var(--panel-2); color:var(--text); cursor:pointer; }
-  .paper-positions{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:9px; }
-  .paper-position{ padding:14px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); }
-  .paper-position-top{ display:flex; justify-content:space-between; gap:8px; }.paper-position-ticker{ font:800 16px 'JetBrains Mono',monospace; }.paper-position-pnl{ font:800 12px 'JetBrains Mono',monospace; }
-  .paper-position-grid{ display:grid; grid-template-columns:1fr 1fr; gap:7px 12px; margin-top:11px; font-size:11px; }.paper-position-grid span{ color:var(--text-dim); }.paper-position-grid b{ display:block; margin-top:3px; font-family:'JetBrains Mono',monospace; }
-  .paper-trades{ display:grid; gap:6px; }.paper-trade-row{ display:grid; grid-template-columns:70px 1fr 1fr 1fr; gap:8px; padding:9px 10px; border-bottom:1px solid var(--line); font-size:11px; }.paper-trade-row span{ color:var(--text-dim); }.paper-trade-row b{ font-family:'JetBrains Mono',monospace; }
+  .paper-table-wrap{ margin-top:9px; overflow-x:auto; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); scrollbar-width:thin; }
+  .paper-table{ width:100%; min-width:970px; border-collapse:collapse; table-layout:fixed; }
+  .paper-table th,.paper-table td{ padding:7px 8px; border-right:1px solid var(--line); text-align:center; white-space:nowrap; }
+  .paper-table th:last-child,.paper-table td:last-child{ border-right:0; }
+  .paper-table th{ color:var(--text-dim); font-size:9px; font-weight:600; border-bottom:1px solid var(--line); }
+  .paper-table td{ font:700 10px 'JetBrains Mono',monospace; }
+  .paper-table td:first-child{ color:var(--text); font-weight:900; }
+  .paper-table-empty{ padding:13px !important; color:var(--text-dim); text-align:left !important; font-family:'Pretendard',sans-serif !important; font-weight:400 !important; }
+  .paper-manage{ padding:4px 8px; border:1px solid rgba(224,168,56,.55); border-radius:5px; background:rgba(224,168,56,.08); color:var(--gold); font-size:9px; font-weight:800; cursor:pointer; }
+  .paper-refresh{ border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--panel-2); color:var(--text-dim); cursor:pointer; font-size:10px; }
   .paper-trade-card{ max-width:430px; }.paper-trade-quote{ display:flex; justify-content:space-between; gap:10px; margin:14px 0; padding:13px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); }
   .paper-trade-symbol{ font:800 18px 'JetBrains Mono',monospace; }.paper-trade-price{ font:800 18px 'JetBrains Mono',monospace; color:var(--gold); }
   .paper-trade-field label{ display:block; margin-bottom:6px; color:var(--text-dim); font-size:11px; }.paper-trade-field input{ width:100%; font-size:16px; }
@@ -285,12 +289,12 @@
     .decision-detail-btn,.decision-close-btn,.decision-paper-btn{ width:100%; min-height:44px; }
     .decision-trade-buttons{ display:grid; grid-template-columns:1fr; }
     .auth-actions{ grid-template-columns:1fr; }
-    .paper-section{ padding:14px 12px; }
-    .paper-summary{ grid-template-columns:1fr 1fr; }
+    .paper-section{ padding:12px 10px; }
+    .paper-head{ align-items:flex-start; }
+    .paper-head-actions{ flex-wrap:wrap; justify-content:flex-end; }
     .paper-setup-form{ flex-direction:column; }
     .paper-setup-form input,.paper-setup-form button{ min-height:44px; width:100%; }
-    .paper-positions{ grid-template-columns:1fr; }
-    .paper-trade-row{ grid-template-columns:58px 1fr 1fr; }.paper-trade-row .paper-trade-time{ display:none; }
+    .paper-table-wrap{ margin-right:-2px; }
     .paper-trade-actions{ grid-template-columns:1fr; }
   }
   .hero{ text-align:center; padding: 40px 20px 32px; border-bottom: 1px solid var(--line); }
@@ -497,24 +501,25 @@
     <div class="watchlist-grid" id="personalWatchlist">
       <div class="empty" style="grid-column:1/-1;">아직 관심종목이 없습니다. 위 검색창에서 종목을 조회해 추가해보세요.</div>
     </div>
+    <section class="paper-section" id="paperTradingSection" hidden aria-labelledby="paperTradingTitle">
+      <div class="paper-head">
+        <div class="paper-head-main"><h2 id="paperTradingTitle">🧪 모의투자 포지션</h2><button class="paper-refresh" id="paperRefreshBtn" type="button" title="현재가 갱신">↻ 갱신</button></div>
+        <div class="paper-head-actions"><span class="paper-badge">연습 전용 · 기기 저장</span><button class="paper-new-trade" id="paperNewTradeBtn" type="button">+ 모의거래</button></div>
+      </div>
+      <div class="paper-setup" id="paperAccountSetup">
+        <b>연습계좌를 만들어보세요</b><span>시작금액은 만든 뒤 첫 거래부터 현금과 평가금액에 반영됩니다.</span>
+        <div class="paper-setup-form"><input id="paperInitialCash" type="number" min="1000" max="10000000" step="1000" value="100000" aria-label="모의투자 시작금액"><button class="paper-primary" id="paperCreateBtn" type="button">계좌 시작</button></div>
+      </div>
+      <div id="paperAccountDashboard" hidden>
+        <div class="paper-table-wrap">
+          <table class="paper-table">
+            <thead><tr><th>종목</th><th>현재가</th><th>보유수량</th><th>평균매입가</th><th>CC 현황</th><th>CSP 현황</th><th>헤지</th><th>평가손익</th><th>평가금액</th><th>관리</th></tr></thead>
+            <tbody id="paperPositions"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
     <div class="decision-dashboard" id="decisionDashboard" aria-live="polite"></div>
-  </section>
-  <section class="paper-section" id="paperTradingSection" hidden aria-labelledby="paperTradingTitle">
-    <div class="paper-head">
-      <div><h2 id="paperTradingTitle">🧪 모의투자 연습계좌</h2><p>실제 주문 없이 관심종목의 매수·추가매수와 손익을 연습합니다.</p></div>
-      <span class="paper-badge">연습 전용 · 기기 저장</span>
-    </div>
-    <div class="paper-setup" id="paperAccountSetup">
-      <b>연습계좌를 만들어보세요</b><span>시작금액은 만든 뒤 첫 거래부터 현금과 평가금액에 반영됩니다.</span>
-      <div class="paper-setup-form"><input id="paperInitialCash" type="number" min="1000" max="10000000" step="1000" value="100000" aria-label="모의투자 시작금액"><button class="paper-primary" id="paperCreateBtn" type="button">계좌 시작</button></div>
-    </div>
-    <div id="paperAccountDashboard" hidden>
-      <div class="paper-summary" id="paperSummary"></div>
-      <div class="paper-subhead"><span>보유종목</span><button class="paper-refresh" id="paperRefreshBtn" type="button">↻ 현재가 갱신</button></div>
-      <div class="paper-positions" id="paperPositions"></div>
-      <div class="paper-subhead"><span>최근 거래</span></div>
-      <div class="paper-trades" id="paperTrades"></div>
-    </div>
   </section>
  <div style="display:none;">
   <div class="section-title">📈 나의 Put Wall 스윙 저널</div>
@@ -1278,21 +1283,20 @@ function renderPaperAccount(){
   setup.hidden=Boolean(account); dashboard.hidden=!account;
   if(!account) return;
   const positions=Object.values(account.positions||{}).filter(p=>Number(p.quantity)>0);
-  const marketValue=positions.reduce((sum,p)=>sum+Number(p.quantity)*Number(p.lastPrice||p.avgPrice),0);
-  const costBasis=positions.reduce((sum,p)=>sum+Number(p.quantity)*Number(p.avgPrice),0);
-  const unrealized=marketValue-costBasis;
-  const equity=account.cash+marketValue;
-  const pnlColor=unrealized>=0?UP:DOWN;
-  document.getElementById('paperSummary').innerHTML=`
-    <div class="paper-kpi"><small>총 평가금액</small><b>$${fmtNum(equity)}</b></div>
-    <div class="paper-kpi"><small>보유 현금</small><b>$${fmtNum(account.cash)}</b></div>
-    <div class="paper-kpi"><small>주식 평가액</small><b>$${fmtNum(marketValue)}</b></div>
-    <div class="paper-kpi"><small>평가손익</small><b style="color:${pnlColor}">${unrealized>=0?'+':''}$${fmtNum(unrealized)}</b></div>`;
   document.getElementById('paperPositions').innerHTML=positions.length?positions.map(p=>{
     const last=Number(p.lastPrice||p.avgPrice), pnl=(last-Number(p.avgPrice))*Number(p.quantity), pct=Number(p.avgPrice)>0?(last/Number(p.avgPrice)-1)*100:0;
-    return `<article class="paper-position"><div class="paper-position-top"><span class="paper-position-ticker">${p.ticker}</span><span class="paper-position-pnl" style="color:${pnl>=0?UP:DOWN}">${pnl>=0?'+':''}${pct.toFixed(2)}%</span></div><div class="paper-position-grid"><div><span>수량</span><b>${fmtNum(p.quantity,0)}주</b></div><div><span>평균단가</span><b>$${fmtNum(p.avgPrice)}</b></div><div><span>현재가</span><b>$${fmtNum(last)}</b></div><div><span>평가금액</span><b>$${fmtNum(last*Number(p.quantity))}</b></div></div></article>`;
-  }).join(''):'<div class="empty" style="grid-column:1/-1;">관심종목 카드를 선택한 뒤 ‘모의 매수’를 눌러 첫 거래를 시작하세요.</div>';
-  document.getElementById('paperTrades').innerHTML=account.trades.length?account.trades.slice(0,8).map(t=>`<div class="paper-trade-row"><b>${t.side==='BUY'?'매수':'거래'}</b><b>${t.ticker} ${fmtNum(t.quantity,0)}주</b><b>$${fmtNum(t.price)}</b><span class="paper-trade-time">${new Date(t.createdAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span></div>`).join(''):'<div class="empty">아직 모의 거래 기록이 없습니다.</div>';
+    const cc=p.ccStatus||'미보유', csp=p.cspStatus||'미보유', hedge=p.hedgeStatus||'없음';
+    return `<tr><td>${p.ticker}</td><td>$${fmtNum(last)}</td><td>${fmtNum(p.quantity,0)}주</td><td>$${fmtNum(p.avgPrice)}</td><td>${cc}</td><td>${csp}</td><td>${hedge}</td><td style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td>$${fmtNum(last*Number(p.quantity))}</td><td><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">관리</button></td></tr>`;
+  }).join(''):'<tr><td class="paper-table-empty" colspan="10">관심종목을 선택하고 ‘모의 매수’를 눌러 첫 포지션을 만들어보세요.</td></tr>';
+}
+
+function startPaperTrade(){
+  if(!selectedDecisionData){ showToast('먼저 관심종목 카드에서 거래할 종목을 선택해주세요'); return; }
+  openPaperTrade();
+}
+async function managePaperPosition(ticker){
+  await openWatchlistDecision(ticker);
+  showToast(`${ticker} 투자판단에서 모의거래를 관리할 수 있습니다`);
 }
 async function refreshPaperAccountPrices(){
   const account=getPaperAccount(); if(!account) return;
@@ -2460,6 +2464,7 @@ document.getElementById('signUpBtn').addEventListener('click', () => submitAuth(
 document.getElementById('signOutBtn').addEventListener('click', async () => { await supabaseClient.auth.signOut(); const quickInput=document.getElementById('interestTickerInput'); if(quickInput) quickInput.value=''; await loadPersonalWatchlist(); closeAuthModal(); showToast('로그아웃했습니다'); });
 document.getElementById('paperCreateBtn').addEventListener('click', createPaperAccount);
 document.getElementById('paperRefreshBtn').addEventListener('click', refreshPaperAccountPrices);
+document.getElementById('paperNewTradeBtn').addEventListener('click', startPaperTrade);
 document.getElementById('paperTradeCloseBtn').addEventListener('click', closePaperTrade);
 document.getElementById('paperTradeCancelBtn').addEventListener('click', closePaperTrade);
 document.getElementById('paperTradeConfirmBtn').addEventListener('click', executePaperBuy);
