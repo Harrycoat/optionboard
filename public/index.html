@@ -633,13 +633,13 @@
   <nav aria-label="메인 카테고리" style="border-bottom:1px solid var(--line); background:var(--panel); overflow-x:auto;">
   <div style="max-width:1100px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; gap:8px; white-space:nowrap;">
     <a class="home-btn" href="/" aria-label="메인 홈으로 이동" style="border-color:var(--text-dim); color:var(--text);">🏠 HOME</a>
+    <a class="home-btn" href="/today-buy-signal.html" style="border-color:#e0a838; color:#e0a838;">🎯 Today’s Buy Signal</a>
     <a class="home-btn" href="/?view=holdings#paperTradingSection" style="border-color:#55e6b5; color:#55e6b5;">📊 현재 보유종목</a>
     <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#future-leaders-core" style="border-color:#55e6b5; color:#55e6b5;">Future Leaders</a>
     <a class="home-btn" href="https://gex-future-leaders.harryahn.chatgpt.site/#premium-swing" style="border-color:#e0a838; color:#e0a838;">Swing Trade</a>
     <a class="home-btn" href="/momentum-top-100.html">모멘텀 TOP 100</a>
     <a class="home-btn" href="/etf-market-leader.html">ETF Market Leader</a>
-   <a class="home-btn" href="/unusual-options.html">Unusual Options</a>
-    <a class="home-btn" href="#today-buy-signal" onclick="event.preventDefault(); document.getElementById('today-buy-signal')?.scrollIntoView({behavior:'smooth', block:'start'});">Today’s Buy Signal</a>
+    <a class="home-btn" href="/unusual-options.html">Unusual Options</a>
   </div>
 </nav>
 <a class="mijoostock-side-banner" href="https://mijoostock.com" target="_blank" rel="noopener" aria-label="미주스탁 바로가기">
@@ -3047,6 +3047,8 @@ if(!isWatchlistView()&&!isHoldingsView()){
   setInterval(loadMarketFloat, 60000);
 }
 initMemberAccount();
+const initialTicker = validWatchTicker(new URLSearchParams(location.search).get('ticker'));
+if(initialTicker) searchTicker(initialTicker);
 document.getElementById('memberHeroSignup').addEventListener('click', openWatchlistView);
 document.getElementById('nvdaSignupBtn').addEventListener('click', openWatchlistView);
 document.getElementById('memberHeroSearch').addEventListener('click', () => { document.getElementById('tickerInput').focus(); window.scrollTo({top:0,behavior:'smooth'}); });
