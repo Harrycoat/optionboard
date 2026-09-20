@@ -142,6 +142,8 @@
   .ai-wall-marker.put span,.ai-wall-marker.call span{ bottom:16px; }.ai-wall-marker.spot span{ top:16px; }
   .ai-row-decision{ justify-self:end; padding:6px 8px; border:1px solid currentColor; border-radius:6px; font-size:10px; font-weight:800; text-align:center; }
   .ai-row-actions{ display:flex; justify-content:flex-end; align-items:center; gap:7px; }
+  .ai-row-actions [data-ai-watch]{ min-height:30px; padding:6px 9px; border:1px solid var(--gold); border-radius:6px; background:rgba(224,168,56,.08); color:#f2bd4c; font-size:11px; font-weight:800; white-space:nowrap; cursor:pointer; }
+  .ai-row-actions [data-ai-watch]:hover{ background:rgba(224,168,56,.18); }.ai-row-actions [data-ai-watch].is-saved{ border-color:#55e6b5; background:rgba(85,230,181,.1); color:#55e6b5; }
   .ai-map-empty{ padding:24px; color:var(--text-dim); text-align:center; font-size:12px; }
   .wcard{
     background: var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px;
@@ -639,7 +641,7 @@
   .oigex-legend-item .line{width:12px;height:2px;display:inline-block;background:var(--gold);}
   .oigex-empty{color:var(--text-dim);font-size:12px;padding:20px;text-align:center;}
   .journal-trade-note{ font-size:11px; color:var(--text-dim); font-style:italic; }
-</style><script src="/watchlist-actions.js" defer></script></head>
+</style></head>
 <body>
 <header>
   <div class="logo">
@@ -1433,14 +1435,23 @@ function aiWallRailHTML(d){
   </div>`;
 }
 function aiLeaderRowHTML(ticker,d){
-  if(!d || d.error) return `<div class="ai-leader-row" data-ticker="${ticker}"><div class="ai-leader-symbol"><b>${ticker}</b></div><div class="ai-map-empty" style="padding:0">데이터를 불러오지 못했습니다</div><div></div><div class="ai-row-actions"><button type="button" data-watch-add="${ticker}">☆ 관심추가</button></div></div>`;
+  const watchButton=`<button type="button" data-ai-watch="${ticker}">${getPersonalWatchlist().includes(ticker)?'★ 관심종목':'☆ 관심추가'}</button>`;
+  if(!d || d.error) return `<div class="ai-leader-row" data-ticker="${ticker}"><div class="ai-leader-symbol"><b>${ticker}</b></div><div class="ai-map-empty" style="padding:0">데이터를 불러오지 못했습니다</div><div></div><div class="ai-row-actions">${watchButton}</div></div>`;
   const stage=Number(d.stage), stageLabels=['1 · 바닥','2 · 상승','3 · 고점','4 · 하락'], decision=aiDecision(d);
   return `<div class="ai-leader-row" data-ticker="${ticker}">
     <div class="ai-leader-symbol"><b>${ticker}</b><span>$${fmtNum(d.spot)}</span></div>
     <div class="ai-stage-track">${stageLabels.map((label,i)=>`<span class="ai-stage-step stage-${i+1}${stage===i+1?' active':''}">${label}</span>`).join('')}</div>
     ${aiWallRailHTML(d)}
-    <div class="ai-row-actions"><span class="ai-row-decision" style="color:${decision.color}">${decision.label}</span><button type="button" data-watch-add="${ticker}">☆ 관심추가</button></div>
+    <div class="ai-row-actions"><span class="ai-row-decision" style="color:${decision.color}">${decision.label}</span>${watchButton}</div>
   </div>`;
+}
+function refreshAiWatchButtons(){
+  const saved=new Set(getPersonalWatchlist());
+  document.querySelectorAll('[data-ai-watch]').forEach(button=>{
+    const active=saved.has(validWatchTicker(button.dataset.aiWatch));
+    button.textContent=active?'★ 관심종목':'☆ 관심추가';
+    button.classList.toggle('is-saved',active);
+  });
 }
 async function loadAiSectorRows(){
   const rows=document.getElementById('aiLeaderRows'), phase=AI_PHASES[activeAiPhase], sector=phase.sectors[activeAiSector];
@@ -1457,6 +1468,11 @@ async function loadAiSectorRows(){
     return data;
   }));
   rows.innerHTML=sector.tickers.map((ticker,i)=>aiLeaderRowHTML(ticker,results[i])).join('');
+  rows.querySelectorAll('[data-ai-watch]').forEach(button=>button.addEventListener('click',event=>{
+    event.preventDefault(); event.stopPropagation();
+    togglePersonalWatchlist(button.dataset.aiWatch);
+    refreshAiWatchButtons();
+  }));
   rows.querySelectorAll('.ai-leader-row[data-ticker]').forEach(row=>row.addEventListener('click',()=>{
     if(isIndustryView()) location.href=`/?ticker=${encodeURIComponent(row.dataset.ticker)}`;
     else searchTicker(row.dataset.ticker);
@@ -1995,6 +2011,7 @@ function savePersonalWatchlist(tickers){
   const clean = [...new Set((tickers || []).map(validWatchTicker).filter(Boolean))].slice(0, PERSONAL_WATCHLIST_LIMIT);
   try{ localStorage.setItem(storageKey, JSON.stringify(clean)); }catch(e){}
   updateInterestButton();
+  refreshAiWatchButtons();
   if(currentUser){
     const snapshot = [...clean];
     const syncUserId = currentUser.id;
