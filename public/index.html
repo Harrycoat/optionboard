@@ -328,6 +328,11 @@
   .leader-card:hover{ opacity:0.8; }
   .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); min-width:56px; }
   .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
+  .reentry-row-actions{ display:flex; align-items:center; gap:6px; margin-left:auto; }
+  .reentry-row-actions button{ min-height:30px; padding:6px 9px; border:1px solid var(--line); border-radius:6px; background:var(--panel-2); color:var(--text-dim); font-size:10px; font-weight:800; white-space:nowrap; cursor:pointer; }
+  .reentry-row-actions [data-reentry-watch]{ border-color:var(--gold); color:#f2bd4c; background:rgba(224,168,56,.08); }
+  .reentry-row-actions [data-reentry-watch].is-saved{ border-color:#55e6b5; color:#55e6b5; background:rgba(85,230,181,.1); }
+  .reentry-row-actions [data-reentry-gex]:hover{ border-color:#81adff; color:#81adff; }
   .reentry-current-signal{ margin:14px 0 6px; border:1px solid rgba(224,168,56,.48); border-radius:10px; background:linear-gradient(135deg,rgba(224,168,56,.10),rgba(13,18,25,.96) 48%); overflow:hidden; }
   .reentry-current-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:15px 16px 12px; }
   .reentry-current-kicker{ color:var(--gold); font-size:10px; font-weight:900; letter-spacing:.08em; }
@@ -444,6 +449,7 @@
     .reentry-current-head{ flex-direction:column; padding:13px 12px 10px; }.reentry-current-title{ font-size:16px; }.reentry-current-badges{ justify-content:flex-start; }
     .reentry-current-body{ grid-template-columns:1fr; padding:0 12px 12px; }.reentry-current-level{ padding:9px 5px; }
     .reentry-trend-chart{ padding:10px 8px 6px; }.reentry-trend-status{ grid-template-columns:1fr 1fr; padding:0 8px 10px; }
+    .reentry-row-actions{ width:100%; margin-left:0; }.reentry-row-actions button{ flex:1; min-height:40px; }
     .ai-stage-track,.ai-wall-rail{ grid-column:1/-1; }.ai-wall-rail{ margin:25px 16px 24px; }
     .interest-card{ min-height:142px; padding:14px 48px 14px 14px; }
     .interest-remove{ top:6px; right:6px; width:36px; height:36px; font-size:20px; }
@@ -1193,8 +1199,17 @@ function reentrySignalRowHTML(r){
       <span class="mono" style="font-size:11px; color:${devColor};">Dev% <b>${devText}</b></span>
       ${r.volume_confirmed ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GREEN_OK}22; color:${GREEN_OK};">거래량 확인</span>` : ''}
       ${r.slope_accelerating ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GOLD}22; color:${GOLD};">기울기 가속</span>` : ''}
+      <span class="reentry-row-actions"><button type="button" data-reentry-watch="${r.ticker}">${getPersonalWatchlist().includes(r.ticker)?'★ 관심종목':'☆ 관심추가'}</button><button type="button" data-reentry-gex="${r.ticker}">GEX 조회</button></span>
     </div>
   `;
+}
+function refreshReentryWatchButtons(){
+  const saved=new Set(getPersonalWatchlist());
+  document.querySelectorAll('[data-reentry-watch]').forEach(button=>{
+    const active=saved.has(validWatchTicker(button.dataset.reentryWatch));
+    button.textContent=active?'★ 관심종목':'☆ 관심추가';
+    button.classList.toggle('is-saved',active);
+  });
 }
 function reentryTrendChartHTML(r){
   const points = (r.trend_chart || []).map(p=>({
@@ -1322,6 +1337,15 @@ async function loadReentrySignals(){
   boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
+  boardEl.querySelectorAll('[data-reentry-watch]').forEach(button=>button.addEventListener('click',event=>{
+    event.preventDefault(); event.stopPropagation();
+    togglePersonalWatchlist(button.dataset.reentryWatch);
+    refreshReentryWatchButtons();
+  }));
+  boardEl.querySelectorAll('[data-reentry-gex]').forEach(button=>button.addEventListener('click',event=>{
+    event.preventDefault(); event.stopPropagation();
+    searchTicker(button.dataset.reentryGex);
+  }));
   const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
   note.textContent = generatedAt
     ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
@@ -2149,6 +2173,7 @@ function savePersonalWatchlist(tickers){
   try{ localStorage.setItem(storageKey, JSON.stringify(clean)); }catch(e){}
   updateInterestButton();
   refreshAiWatchButtons();
+  refreshReentryWatchButtons();
   if(currentUser){
     const snapshot = [...clean];
     const syncUserId = currentUser.id;
