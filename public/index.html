@@ -1084,7 +1084,10 @@ function nvdaMarkerHTML(left, color, label, value){
 }
 async function loadNvdaPreview(){
   try{
-    const response = await fetch('/api/search?ticker=NVDA', { cache:'no-store' });
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),20000);
+    const response = await fetch('/api/search?ticker=NVDA', { cache:'no-store', signal:controller.signal });
+    clearTimeout(timeout);
     const d = response.ok ? await response.json() : null;
     if(!d || d.error) throw new Error('NVDA 데이터 없음');
     document.getElementById('nvdaPreviewPrice').textContent = `$${fmtNum(d.spot)}`;
@@ -3337,12 +3340,14 @@ window.addEventListener('popstate',syncAccountViewClasses);
 if(isIndustryView()){
   loadAiLeaderMap();
 }else if(!isWatchlistView()&&!isHoldingsView()){
-  loadMarketFloat();
-  loadNvdaPreview();
-  loadMarketStatusBanner();
-  loadAiLeaderMap();
+  const nvdaFirst=loadNvdaPreview();
   loadTradingJournal();
   loadReentrySignals();
+  Promise.resolve(nvdaFirst).finally(()=>{
+    loadMarketStatusBanner();
+    setTimeout(loadAiLeaderMap,350);
+    setTimeout(loadMarketFloat,900);
+  });
   setInterval(loadMarketFloat, 60000);
 }
 initMemberAccount();
