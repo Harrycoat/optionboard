@@ -8,16 +8,16 @@
   <style>
     :root{--bg:#090e15;--panel:#111824;--panel2:#151e2b;--line:#273244;--text:#f2f6fc;--muted:#8ea0b8;--gold:#efb334;--green:#42e4ad;--red:#ff626e;--blue:#55a4ff;--yellow:#f2bf45}
     *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,#1b2738 0,#090e15 42%);color:var(--text);font-family:Inter,Pretendard,"Noto Sans KR",system-ui,sans-serif;min-height:100vh}.wrap{width:min(980px,calc(100% - 28px));margin:auto;padding:24px 0 56px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.brand{font-weight:900;font-size:18px}.brand i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold);margin-right:9px}.beta{font-size:12px;color:#ffd36e;border:1px solid #8b691e;background:#2a2110;padding:7px 10px;border-radius:999px}.card{background:rgba(17,24,36,.95);border:1px solid var(--line);border-radius:17px;padding:18px;margin-top:12px;box-shadow:0 16px 50px rgba(0,0,0,.2)}.search{display:grid;grid-template-columns:1fr auto;gap:9px}.search input{min-width:0;background:#0c121b;border:1px solid #344258;color:#fff;border-radius:11px;padding:14px 15px;font-size:18px;font-weight:800;text-transform:uppercase}.search button,.action{border:0;border-radius:11px;background:var(--gold);color:#17120a;font-weight:900;padding:0 22px;cursor:pointer}.meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:11px}.pulse{display:inline-flex;align-items:center;gap:7px}.pulse:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.metric{background:#0c131d;border:1px solid #253144;border-radius:12px;padding:12px}.metric small{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em}.metric b{display:block;margin-top:5px;font:800 19px ui-monospace,SFMono-Regular,monospace}.metric.call b{color:var(--red)}.metric.vwap b{color:var(--blue)}.decision{border-width:1px 1px 1px 6px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:15px}.decision-icon{font-size:34px}.decision h1{font-size:24px;margin:0 0 4px}.decision p{margin:0;color:#bdc8d6;line-height:1.55;font-size:14px}.decision.green{border-color:var(--green);background:linear-gradient(110deg,rgba(31,126,93,.2),rgba(17,24,36,.96) 50%)}.decision.red{border-color:var(--red);background:linear-gradient(110deg,rgba(145,39,52,.2),rgba(17,24,36,.96) 50%)}.decision.blue{border-color:var(--blue);background:linear-gradient(110deg,rgba(40,92,159,.22),rgba(17,24,36,.96) 50%)}.decision.yellow{border-color:var(--yellow);background:linear-gradient(110deg,rgba(135,100,20,.18),rgba(17,24,36,.96) 50%)}.railbox{padding:26px 14px 30px}.rail{height:6px;border-radius:8px;background:linear-gradient(90deg,#3c88ed,#768eac 52%,#ef5261);position:relative}.dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--gold);border:3px solid #171d26;box-shadow:0 0 10px var(--gold)}.dot span{position:absolute;top:18px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;color:var(--gold);font-weight:800}.ends{display:flex;justify-content:space-between;font:700 11px ui-monospace,SFMono-Regular;color:var(--muted);margin-bottom:10px}.ends b:first-child{color:var(--blue)}.ends b:last-child{color:var(--red)}.flow-head{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:12px}.flow-head h2{font-size:17px;margin:0}.flow-head span{font-size:11px;color:var(--muted)}.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.flow label{display:block;background:#0c131d;border:1px solid #263246;border-radius:12px;padding:11px}.flow small{display:block;color:var(--muted);margin-bottom:7px}.flow input{width:100%;background:transparent;border:0;border-bottom:1px solid #3a485c;color:white;font:800 22px ui-monospace,SFMono-Regular;outline:none}.flow label:nth-child(1) input{color:var(--green)}.flow label:nth-child(2) input{color:var(--red)}.flow label:nth-child(3) input{color:var(--yellow)}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.check{border:1px solid #2b3748;border-radius:10px;padding:10px;color:var(--muted);font-size:11px}.check b{display:block;color:#eef3fa;margin-top:3px;font-size:13px}.check.ok{border-color:#247d61;background:#10271f}.check.no{border-color:#6e3440;background:#29151a}.log-head{display:flex;align-items:center;justify-content:space-between}.log-head h2{font-size:16px;margin:0}.ghost{background:transparent;border:1px solid #3a4658;color:#b4c0d0;border-radius:8px;padding:7px 10px;cursor:pointer}.logs{display:grid;gap:7px;margin-top:10px;max-height:190px;overflow:auto}.log{display:grid;grid-template-columns:65px 80px 1fr;gap:8px;font-size:12px;border-bottom:1px solid #202a38;padding:7px 0;color:#b9c4d2}.log strong{color:white}.notice{color:#9cabbf;font-size:11px;line-height:1.55;padding:4px 2px}.error{color:#ff8c94}.loading{opacity:.6;pointer-events:none}
-    .flow.market{grid-template-columns:repeat(4,1fr);margin-top:9px}.manual-head{margin:18px 0 4px;font-size:14px}.manual-head span{display:block;color:var(--muted);font-size:10px;font-weight:400;margin-top:4px}
+    .auto-note{margin-top:12px;border:1px solid #2d4666;background:#0d1a2a;border-radius:11px;padding:11px 12px;color:#9fc5f3;font-size:12px;line-height:1.55}.auto-note b{color:#fff}.optional{margin-top:14px;border-top:1px solid #263246;padding-top:12px}.optional summary{cursor:pointer;color:#aebbd0;font-size:13px;font-weight:800}.optional .flow{margin-top:11px}
     @media(max-width:680px){.wrap{width:min(100% - 18px,980px);padding-top:13px}.top{align-items:flex-start}.beta{font-size:10px}.card{padding:14px;border-radius:14px}.grid4{grid-template-columns:repeat(2,1fr)}.flow,.flow.market{grid-template-columns:1fr 1fr}.checks{grid-template-columns:repeat(2,1fr)}.decision h1{font-size:20px}.decision p{font-size:13px}.search input{font-size:16px}.search button{padding:0 17px}.log{grid-template-columns:55px 68px 1fr}}
   </style>
 </head>
 <body>
 <main class="wrap">
-  <div class="top"><div class="brand"><i></i>GEX OPTION · CALL WALL MONITOR</div><span class="beta">BETA · 15분 지연 · 자동주문 아님</span></div>
+  <div class="top"><div class="brand"><i></i>GEX OPTION · CALL WALL MONITOR</div><span class="beta">BETA · 15분 지연 분석 · 자동주문 아님</span></div>
   <section class="card">
     <form class="search" id="searchForm"><input id="ticker" value="SNDK" maxlength="10" aria-label="티커"><button type="submit">분석 시작</button></form>
-    <div class="meta"><span class="pulse" id="heartbeat">10초마다 판단 갱신</span><span id="updated">아직 조회하지 않음</span></div>
+    <div class="meta"><span class="pulse" id="heartbeat">60초마다 지연 데이터 확인</span><span id="updated">아직 조회하지 않음</span></div>
   </section>
 
   <section class="card grid4">
@@ -33,63 +33,60 @@
   </section>
 
   <section class="card decision yellow" id="decision">
-    <div class="decision-icon" id="decisionIcon">🟡</div><div><h1 id="decisionTitle">판단 대기</h1><p id="decisionCopy">티커를 조회하고 TOS에서 확인한 Ask·Bid·Mid 체결량을 입력하세요.</p></div>
+    <div class="decision-icon" id="decisionIcon">🟡</div><div><h1 id="decisionTitle">판단 대기</h1><p id="decisionCopy">티커를 조회하면 15분 지연 주가·5분봉·VWAP으로 자동 분석합니다.</p></div>
   </section>
 
   <section class="card">
-    <div class="flow-head"><div><h2>Call Wall 체결량 입력</h2><span>동일 만기 · Call Wall 행사가 · 같은 집계 구간</span></div><span>첫 테스트는 TOS 수동 입력</span></div>
-    <div class="flow">
-      <label><small>ASK 체결량 · 매수 우위 후보</small><input id="askVol" type="number" inputmode="numeric" min="0" value="0"></label>
-      <label><small>BID 체결량 · 매도 우위 후보</small><input id="bidVol" type="number" inputmode="numeric" min="0" value="0"></label>
-      <label><small>MID / SPREAD 체결량</small><input id="midVol" type="number" inputmode="numeric" min="0" value="0"></label>
-    </div>
-    <h3 class="manual-head">5분봉 확인값 <span>현재 운영 데이터에서는 자동 5분봉을 지원하지 않아 TOS 값을 입력합니다.</span></h3>
-    <div class="flow market">
-      <label><small>5분봉 종가</small><input id="manualClose" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Close"></label>
-      <label><small>5분봉 고가</small><input id="manualHigh" type="number" inputmode="decimal" min="0" step="0.01" placeholder="High"></label>
-      <label><small>5분봉 저가</small><input id="manualLow" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Low"></label>
-      <label><small>VWAP</small><input id="manualVwap" type="number" inputmode="decimal" min="0" step="0.01" placeholder="VWAP"></label>
-    </div>
+    <div class="flow-head"><div><h2>15분 지연 자동 확인값</h2><span>Stock API · 완료된 5분봉 · 정규장 세션 VWAP</span></div><span id="barStamp">데이터 대기</span></div>
+    <div class="auto-note"><b>입력할 필요가 없습니다.</b> 현재가, 5분봉 OHLC·거래량과 VWAP을 같은 지연 데이터에서 자동으로 맞춰 판단합니다.</div>
     <div class="checks">
-      <div class="check" id="askCheck">ASK 우위<b>—</b></div><div class="check" id="priceCheck">Wall 위치<b>—</b></div><div class="check" id="barCheck">5분봉 확정<b>—</b></div><div class="check" id="vwapCheck">VWAP 확인<b>—</b></div>
+      <div class="check" id="volumeCheck">5분 거래량<b>—</b></div><div class="check" id="priceCheck">Wall 위치<b>—</b></div><div class="check" id="barCheck">5분봉 확정<b>—</b></div><div class="check" id="vwapCheck">VWAP 확인<b>—</b></div>
     </div>
+    <details class="optional"><summary>옵션 체결량 보조 확인(선택사항)</summary><div class="flow">
+      <label><small>ASK 체결량</small><input id="askVol" type="number" inputmode="numeric" min="0" value="0"></label>
+      <label><small>BID 체결량</small><input id="bidVol" type="number" inputmode="numeric" min="0" value="0"></label>
+      <label><small>MID / SPREAD 체결량</small><input id="midVol" type="number" inputmode="numeric" min="0" value="0"></label>
+    </div></details>
   </section>
 
   <section class="card">
     <div class="log-head"><h2>판단 기록</h2><button class="ghost" id="clearLog" type="button">기록 지우기</button></div><div class="logs" id="logs"><div class="notice">상태가 바뀌면 이 기기에 자동 기록됩니다.</div></div>
   </section>
-  <p class="notice">이 화면은 판단 규칙 검증용 베타입니다. 옵션 데이터는 15분 지연되며 체결 방향은 TOS 값을 수동 입력합니다. 표시 결과는 투자 권유나 자동 주문 신호가 아닙니다.</p>
+  <p class="notice">이 화면은 15분 지연 데이터로 판단 규칙을 검증하는 베타입니다. 실시간 진입 신호나 자동 주문이 아니며, 실제 매매 전에 실시간 차트로 다시 확인해야 합니다.</p>
 </main>
 <script>
-const $=id=>document.getElementById(id), money=v=>Number.isFinite(+v)?'$'+(+v).toLocaleString(undefined,{maximumFractionDigits:2}):'—';
-let data=null,timer=null,lastState='',busy=false;
+const $=id=>document.getElementById(id), number=v=>(v===null||v===undefined||v==='')?NaN:+v, money=v=>Number.isFinite(number(v))?'$'+number(v).toLocaleString(undefined,{maximumFractionDigits:2}):'—';
+let data=null,timer=null,lastLogKey='',busy=false;
 const logKey='gexCallWallBetaLog';
 function nums(){return {ask:Math.max(0,+$('askVol').value||0),bid:Math.max(0,+$('bidVol').value||0),mid:Math.max(0,+$('midVol').value||0)}}
-function entered(id){const v=+$(id).value;return v>0?v:NaN}
 function setCheck(id,label,value,kind=''){const n=$(id);n.className='check '+kind;n.childNodes[0].nodeValue=label;n.querySelector('b').textContent=value}
 function classify(){
   if(!data||!Number.isFinite(+data.call_wall))return {key:'WAIT',icon:'🟡',title:'판단 대기',copy:'Call Wall 데이터를 먼저 불러오세요.',tone:'yellow'};
-  const {ask,bid,mid}=nums(), total=ask+bid+mid, directional=ask+bid, wall=+data.call_wall, spot=+data.spot;
-  const close=entered('manualClose'),high=entered('manualHigh'),low=entered('manualLow'),vwap=entered('manualVwap'),hasBar=[close,high,low].every(Number.isFinite);
+  const bars=data.bars||[], bar=data.latest_bar||bars.at(-1)||{}, prior=bars.at(-2)||{};
+  const {ask,bid,mid}=nums(), total=ask+bid+mid, directional=ask+bid, wall=+data.call_wall;
+  const close=number(bar.close),high=number(bar.high),low=number(bar.low),vwap=number(data.session_vwap),hasBar=[close,high,low].every(Number.isFinite);
+  if(!hasBar)return {key:'NO_BAR',icon:'🟡',title:'5분봉 데이터 대기',copy:'15분 지연 Stock API에서 완료된 5분봉을 아직 받지 못했습니다.',tone:'yellow'};
   const tol=Math.max(.05,wall*.0015), askDom=directional>=10&&ask>=bid*1.25&&ask/directional>=.55, bidDom=directional>=10&&bid>=ask*1.25&&bid/directional>=.55, midHeavy=total>0&&mid/total>=.45;
-  const above=spot>wall&&close>wall, below=spot<wall&&close<wall, barAbove=Number.isFinite(close)&&close>wall, vwapOk=Number.isFinite(vwap)&&spot>=vwap;
-  const retest=hasBar&&spot>wall&&low<=wall+tol&&close>wall;
+  const above=close>wall, below=close<wall, barAbove=close>wall, vwapOk=Number.isFinite(vwap)&&close>=vwap;
+  const crossed=Number.isFinite(+prior.close)&&+prior.close<=wall&&close>wall;
+  const retest=Number.isFinite(+prior.close)&&+prior.close>wall&&low<=wall+tol&&close>wall;
   const rejected=hasBar&&high>=wall-tol&&close<wall;
-  setCheck('askCheck','체결 방향',midHeavy?'MID/SPREAD 많음':askDom?'ASK 우위':bidDom?'BID 우위':total?'혼조':'입력 필요',askDom?'ok':bidDom?'no':'');
+  setCheck('volumeCheck','5분 거래량',Number(bar.volume||0).toLocaleString()+'주',bar.volume>0?'ok':'');
   setCheck('priceCheck','Wall 위치',above?'Wall 위':below?'Wall 아래':'Wall 접촉',above?'ok':below?'no':'');
-  setCheck('barCheck','5분봉 확정',!Number.isFinite(close)?'입력 필요':barAbove?'Wall 위 종가':'Wall 아래 종가',!Number.isFinite(close)?'':barAbove?'ok':'no');
-  setCheck('vwapCheck','VWAP 확인',!Number.isFinite(vwap)?'입력 필요':vwapOk?'VWAP 위':'VWAP 아래',!Number.isFinite(vwap)?'':vwapOk?'ok':'no');
-  if(retest&&!bidDom&&!midHeavy)return {key:'RETEST',icon:'🔵',title:'지지 전환 재시험',copy:'Wall 위 돌파 후 재접촉에서도 5분봉이 위에서 마감했습니다. 성공 여부를 다음 봉과 거래량으로 확인하세요.',tone:'blue'};
-  if(askDom&&above&&vwapOk)return {key:'BREAKOUT',icon:'🟢',title:'돌파 우위',copy:'ASK 체결 우위와 Call Wall 위 5분봉 마감, VWAP 상단 유지가 함께 확인됐습니다. 성급한 헤지는 보류하고 Wall 지지를 관찰합니다.',tone:'green'};
-  if(bidDom&&below&&rejected)return {key:'REJECT',icon:'🔴',title:'저항 확인',copy:'BID 체결 우위와 Call Wall 아래 복귀가 확인됐습니다. 보유 위험과 1차 헤지 필요성을 검토합니다.',tone:'red'};
-  if(midHeavy)return {key:'WAIT_MID',icon:'🟡',title:'판단 보류',copy:'MID·스프레드 체결 비중이 높아 방향을 단정하기 어렵습니다. 다음 5분봉을 확인하세요.',tone:'yellow'};
-  return {key:'WAIT',icon:'🟡',title:'다음 확인 대기',copy:total<10?'체결 표본이 부족합니다. 같은 구간의 Ask·Bid·Mid 체결량을 더 입력하세요.':'가격·5분봉·체결 방향이 아직 한쪽으로 일치하지 않습니다.',tone:'yellow'};
+  setCheck('barCheck','5분봉 확정',barAbove?'Wall 위 종가':'Wall 아래 종가',barAbove?'ok':'no');
+  setCheck('vwapCheck','VWAP 확인',!Number.isFinite(vwap)?'데이터 없음':vwapOk?'VWAP 위':'VWAP 아래',vwapOk?'ok':Number.isFinite(vwap)?'no':'');
+  const flowNote=total<10?'옵션 체결 보조값 미입력':midHeavy?'옵션 체결은 중립':askDom?'옵션 체결 ASK 우위':bidDom?'옵션 체결 BID 우위':'옵션 체결 혼조';
+  if(retest&&!bidDom)return {key:'RETEST',icon:'🔵',title:'지지 전환 재시험',copy:'Call Wall 재접촉 후 5분봉이 Wall 위에서 마감했습니다. '+flowNote+' · 실시간 차트에서 지지 유지 여부를 다시 확인하세요.',tone:'blue'};
+  if(crossed&&vwapOk&&!bidDom)return {key:'BREAKOUT',icon:'🟢',title:'돌파 우위 후보',copy:'5분봉이 Call Wall을 상향 돌파하고 VWAP 위에서 마감했습니다. '+flowNote+' · 15분 지연 판단이므로 실시간 재확인이 필요합니다.',tone:'green'};
+  if(above&&vwapOk&&!bidDom)return {key:'HOLD_ABOVE',icon:'🟢',title:'Wall 위 유지',copy:'Call Wall 위 종가와 VWAP 상단을 유지하고 있습니다. '+flowNote+' · 다음 봉의 Wall 지지를 확인하세요.',tone:'green'};
+  if(rejected)return {key:'REJECT',icon:'🔴',title:'저항 확인 후보',copy:'Call Wall을 시험한 뒤 5분봉이 Wall 아래에서 마감했습니다. '+flowNote+' · 실시간 차트에서 재돌파 실패 여부를 확인하세요.',tone:'red'};
+  return {key:'WAIT',icon:'🟡',title:'다음 5분봉 대기',copy:'가격이 Call Wall 아래이거나 VWAP 조건이 일치하지 않습니다. '+flowNote+' · 지연 데이터이므로 관찰용으로만 사용하세요.',tone:'yellow'};
 }
-function saveLog(state){if(!data||state.key===lastState)return;lastState=state.key;const items=JSON.parse(localStorage.getItem(logKey)||'[]');items.unshift({time:new Date().toISOString(),ticker:data.ticker,state:state.title,spot:data.spot,wall:data.call_wall});localStorage.setItem(logKey,JSON.stringify(items.slice(0,30)));renderLog()}
-function renderLog(){const items=JSON.parse(localStorage.getItem(logKey)||'[]');$('logs').innerHTML=items.length?items.map(x=>`<div class="log"><span>${new Date(x.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</span><strong>${x.state}</strong><span>${x.ticker} ${money(x.spot)} · Wall ${money(x.wall)}</span></div>`).join(''):'<div class="notice">아직 기록이 없습니다.</div>'}
-function render(){if(!data)return;const wall=+data.call_wall,put=+data.put_wall,spot=+data.spot,close=entered('manualClose'),vwap=entered('manualVwap');$('spot').textContent=money(spot);$('wall').textContent=money(wall);$('close5').textContent=money(close);$('vwap').textContent=money(vwap);$('putLabel').textContent='PUT WALL '+money(put);$('callLabel').textContent='CALL WALL '+money(wall);const lo=Math.min(put,wall),hi=Math.max(put,wall),pct=hi>lo?Math.max(0,Math.min(100,(spot-lo)/(hi-lo)*100)):50;$('spotDot').style.left=pct+'%';const s=classify(),box=$('decision');box.className='card decision '+s.tone;$('decisionIcon').textContent=s.icon;$('decisionTitle').textContent=s.title;$('decisionCopy').textContent=s.copy;saveLog(s)}
-async function load(){if(busy)return;busy=true;document.body.classList.add('loading');const ticker=$('ticker').value.trim().toUpperCase();try{const res=await fetch('/api/search?ticker='+encodeURIComponent(ticker)+'&view=summary',{cache:'no-store'}),json=await res.json();if(json.error)throw new Error(json.error);data=json;render();$('updated').textContent='최근 수신 '+new Date().toLocaleTimeString()+' · 옵션 약 15분 지연 · 5분봉 TOS 입력';$('heartbeat').textContent='10초마다 가격·판단 갱신'}catch(e){$('updated').innerHTML='<span class="error">'+e.message+'</span>'}finally{busy=false;document.body.classList.remove('loading')}}
-$('searchForm').addEventListener('submit',e=>{e.preventDefault();lastState='';load();clearInterval(timer);timer=setInterval(load,10000)});['askVol','bidVol','midVol','manualClose','manualHigh','manualLow','manualVwap'].forEach(id=>$(id).addEventListener('input',render));$('clearLog').onclick=()=>{localStorage.removeItem(logKey);renderLog()};renderLog();load();timer=setInterval(load,10000);
+function saveLog(state){if(!data||!data.latest_bar)return;const key=data.ticker+'|'+data.latest_bar.time+'|'+state.key;if(key===lastLogKey)return;lastLogKey=key;const items=JSON.parse(localStorage.getItem(logKey)||'[]');items.unshift({time:data.latest_bar.time,ticker:data.ticker,state:state.title,spot:data.latest_bar.close,wall:data.call_wall,vwap:data.session_vwap,volume:data.latest_bar.volume});localStorage.setItem(logKey,JSON.stringify(items.slice(0,40)));renderLog()}
+function renderLog(){const items=JSON.parse(localStorage.getItem(logKey)||'[]');$('logs').innerHTML=items.length?items.map(x=>`<div class="log"><span>${new Date(x.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span><strong>${x.state}</strong><span>${x.ticker} ${money(x.spot)} · Wall ${money(x.wall)} · Vol ${Number(x.volume||0).toLocaleString()}</span></div>`).join(''):'<div class="notice">아직 기록이 없습니다.</div>'}
+function render(){if(!data)return;const wall=number(data.call_wall),put=number(data.put_wall),bar=data.latest_bar||{},spot=number(bar.close),vwap=number(data.session_vwap);$('spot').textContent=money(spot);$('wall').textContent=money(wall);$('close5').textContent=money(bar.close);$('vwap').textContent=money(vwap);$('putLabel').textContent='PUT WALL '+money(put);$('callLabel').textContent='CALL WALL '+money(wall);$('barStamp').textContent=bar.time?'5분봉 '+new Date(bar.time).toLocaleString():'5분봉 없음';const lo=Math.min(put,wall),hi=Math.max(put,wall),pct=Number.isFinite(spot)&&Number.isFinite(lo)&&Number.isFinite(hi)&&hi>lo?Math.max(0,Math.min(100,(spot-lo)/(hi-lo)*100)):50;$('spotDot').style.left=pct+'%';const s=classify(),box=$('decision');box.className='card decision '+s.tone;$('decisionIcon').textContent=s.icon;$('decisionTitle').textContent=s.title;$('decisionCopy').textContent=s.copy;saveLog(s)}
+async function load(){if(busy)return;busy=true;document.body.classList.add('loading');const ticker=$('ticker').value.trim().toUpperCase();try{const res=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(ticker),{cache:'no-store'}),json=await res.json();if(json.error)throw new Error(json.error);data=json;render();const t=json.latest_bar?.time?new Date(json.latest_bar.time).toLocaleString():'없음';$('updated').textContent='5분봉 '+t+' · 약 '+json.delay_minutes+'분 지연';$('heartbeat').textContent='60초마다 지연 데이터 확인'}catch(e){$('updated').innerHTML='<span class="error">'+e.message+'</span>'}finally{busy=false;document.body.classList.remove('loading')}}
+$('searchForm').addEventListener('submit',e=>{e.preventDefault();lastLogKey='';load();clearInterval(timer);timer=setInterval(load,60000)});['askVol','bidVol','midVol'].forEach(id=>$(id).addEventListener('input',render));$('clearLog').onclick=()=>{localStorage.removeItem(logKey);lastLogKey='';renderLog()};renderLog();load();timer=setInterval(load,60000);
 </script>
 </body>
 </html>

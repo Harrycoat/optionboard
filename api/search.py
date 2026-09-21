@@ -7,13 +7,21 @@ GET /api/search?mode=fear_greed
 """
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+from datetime import date, datetime, timedelta, timezone
 import json
 import sys
 import os
 import requests
+from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.dirname(__file__))
-from options_engine import analyze_ticker_cached, quote_paper_option_contracts, recommend_paper_option_contracts  # noqa: E402
+from options_engine import (  # noqa: E402
+    MASSIVE_API_BASE,
+    _massive_get,
+    analyze_ticker_cached,
+    quote_paper_option_contracts,
+    recommend_paper_option_contracts,
+)
 from earnings_engine import (  # noqa: E402
     scan_earnings_movers,
     scan_earnings_movers_from_watchlist,
@@ -25,6 +33,88 @@ FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY", "")
 ALLOWED_EXCHANGES = {"US"}
 
 CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+EASTERN = ZoneInfo("America/New_York")
+
+
+def _intraday_five_minute_bars(ticker):
+    """Return delayed 5-minute stock aggregates from the existing Stock API."""
+    end = date.today()
+    start = end - timedelta(days=7)
+    data = _massive_get(
+        f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/5/minute/{start}/{end}",
+        {"adjusted": "true", "sort": "asc", "limit": 5000},
+    )
+    bars = []
+    for row in data.get("results") or []:
+        try:
+            bars.append({
+                "time": int(row["t"]),
+                "open": float(row["o"]),
+                "high": float(row["h"]),
+                "low": float(row["l"]),
+                "close": float(row["c"]),
+                "volume": float(row.get("v") or 0),
+                "vwap": float(row.get("vw") or row["c"]),
+                "transactions": int(row.get("n") or 0),
+            })
+        except (KeyError, TypeError, ValueError):
+            continue
+    return bars
+
+
+def _regular_session_vwap(bars):
+    """Volume-weight the returned 5-minute VWAP values for the latest ET session."""
+    if not bars:
+        return None
+    latest_day = datetime.fromtimestamp(bars[-1]["time"] / 1000, timezone.utc).astimezone(EASTERN).date()
+    session = []
+    for bar in bars:
+        stamp = datetime.fromtimestamp(bar["time"] / 1000, timezone.utc).astimezone(EASTERN)
+        after_open = stamp.hour > 9 or (stamp.hour == 9 and stamp.minute >= 30)
+        if stamp.date() == latest_day and after_open and stamp.hour < 16:
+            session.append(bar)
+    total_volume = sum(bar["volume"] for bar in session)
+    if total_volume <= 0:
+        return None
+    return sum(bar["vwap"] * bar["volume"] for bar in session) / total_volume
+
+
+def _latest_regular_session_bars(bars):
+    """Keep regular-hours bars from the most recent ET trading date only."""
+    if not bars:
+        return []
+    regular = []
+    for bar in bars:
+        stamp = datetime.fromtimestamp(bar["time"] / 1000, timezone.utc).astimezone(EASTERN)
+        after_open = stamp.hour > 9 or (stamp.hour == 9 and stamp.minute >= 30)
+        if after_open and stamp.hour < 16:
+            regular.append((stamp.date(), bar))
+    if not regular:
+        return []
+    latest_day = regular[-1][0]
+    return [bar for trading_day, bar in regular if trading_day == latest_day]
+
+
+def _call_wall_monitor_payload(ticker):
+    gex = analyze_ticker_cached(ticker, ttl=300, skip_stage=True)
+    bars = _latest_regular_session_bars(_intraday_five_minute_bars(ticker))
+    latest = bars[-1] if bars else None
+    return {
+        "ticker": ticker.upper(),
+        "spot": gex.get("spot"),
+        "call_wall": gex.get("call_wall"),
+        "put_wall": gex.get("put_wall"),
+        "gamma_flip": gex.get("gamma_flip"),
+        "expiry_used": gex.get("expiry_used"),
+        "bars": bars[-12:],
+        "latest_bar": latest,
+        "session_vwap": _regular_session_vwap(bars),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "data_mode": "15_minute_delayed",
+        "delay_minutes": 15,
+        "flow_source": "optional_manual_confirmation",
+        "is_stale_price": bool(gex.get("is_stale_price")),
+    }
 
 
 def _fetch_cnn_fear_greed():
@@ -150,6 +240,14 @@ class handler(BaseHTTPRequestHandler):
             try:
                 contracts = [item.strip() for item in (query.get("contracts", [""])[0]).split(",") if item.strip()]
                 result = quote_paper_option_contracts(ticker, contracts)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
+            return
+
+        if mode == "call_wall_monitor":
+            try:
+                result = _call_wall_monitor_payload(ticker)
                 self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
