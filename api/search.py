@@ -79,6 +79,47 @@ def _regular_session_vwap(bars):
     return sum(bar["vwap"] * bar["volume"] for bar in session) / total_volume
 
 
+
+def _regular_session_bars_all(bars):
+    """Keep all regular-hours bars across the fetched window."""
+    regular = []
+    for bar in bars or []:
+        stamp = datetime.fromtimestamp(bar["time"] / 1000, timezone.utc).astimezone(EASTERN)
+        after_open = stamp.hour > 9 or (stamp.hour == 9 and stamp.minute >= 30)
+        if after_open and stamp.hour < 16:
+            regular.append(bar)
+    return regular
+
+
+def _wma(values, period):
+    """Weighted moving average for the last period values."""
+    if period <= 0 or len(values) < period:
+        return None
+    window = values[-period:]
+    weights = list(range(1, period + 1))
+    denom = sum(weights)
+    return sum(v * w for v, w in zip(window, weights)) / denom
+
+
+def _hull_series(values, period=21):
+    """Return HMA series aligned to values; None until enough history exists."""
+    if not values:
+        return []
+    half = max(1, period // 2)
+    sqrt_p = max(1, int(period ** 0.5))
+    raw = []
+    out = [None] * len(values)
+    for i in range(len(values)):
+        seq = values[: i + 1]
+        w_full = _wma(seq, period)
+        w_half = _wma(seq, half)
+        raw.append(None if w_full is None or w_half is None else 2 * w_half - w_full)
+        valid_raw = [x for x in raw if x is not None]
+        if len(valid_raw) >= sqrt_p:
+            out[i] = _wma(valid_raw, sqrt_p)
+    return out
+
+
 def _latest_regular_session_bars(bars):
     """Keep regular-hours bars from the most recent ET trading date only."""
     if not bars:
@@ -97,8 +138,24 @@ def _latest_regular_session_bars(bars):
 
 def _call_wall_monitor_payload(ticker):
     gex = analyze_ticker_cached(ticker, ttl=300, skip_stage=True)
-    bars = _latest_regular_session_bars(_intraday_five_minute_bars(ticker))
+    all_bars = _intraday_five_minute_bars(ticker)
+    bars = _latest_regular_session_bars(all_bars)
+    regular_all = _regular_session_bars_all(all_bars)
     latest = bars[-1] if bars else None
+
+    closes = [float(bar["close"]) for bar in regular_all]
+    hull_series = _hull_series(closes, 21)
+    hull21 = hull_series[-1] if hull_series else None
+    hull21_prev = hull_series[-2] if len(hull_series) > 1 else None
+    hull21_slope_pct = None
+    if hull21 is not None and hull21_prev not in (None, 0):
+        hull21_slope_pct = (hull21 - hull21_prev) / hull21_prev * 100
+
+    close = float(latest["close"]) if latest else None
+    hull21_distance_pct = None
+    if close is not None and hull21 not in (None, 0):
+        hull21_distance_pct = (close - hull21) / hull21 * 100
+
     return {
         "ticker": ticker.upper(),
         "spot": gex.get("spot"),
@@ -109,6 +166,11 @@ def _call_wall_monitor_payload(ticker):
         "bars": bars[-12:],
         "latest_bar": latest,
         "session_vwap": _regular_session_vwap(bars),
+        "hull21": hull21,
+        "hull21_prev": hull21_prev,
+        "hull21_slope_pct": hull21_slope_pct,
+        "hull21_distance_pct": hull21_distance_pct,
+        "hull21_timeframe": "5m",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "data_mode": "15_minute_delayed",
         "delay_minutes": 15,
