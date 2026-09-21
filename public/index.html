@@ -280,6 +280,13 @@
   .paper-guide-trade-slot .paper-inline-trade{ margin-top:11px; }
   .paper-table-empty{ padding:13px !important; color:var(--text-dim); text-align:left !important; font-family:'Pretendard',sans-serif !important; font-weight:400 !important; }
   .paper-manage{ padding:4px 8px; border:1px solid rgba(224,168,56,.55); border-radius:5px; background:rgba(224,168,56,.08); color:var(--gold); font-size:9px; font-weight:800; cursor:pointer; }
+  .paper-mobile-actions{ display:none; }
+  .paper-quick-action{ min-height:42px; border:1px solid var(--line); border-radius:7px; background:var(--panel); color:var(--text); font-size:12px; font-weight:900; cursor:pointer; }
+  .paper-quick-action.buy{ border-color:rgba(85,230,181,.55); background:rgba(85,230,181,.09); color:#55e6b5; }
+  .paper-quick-action.sell{ border-color:rgba(255,91,105,.55); background:rgba(255,91,105,.09); color:#ff7884; }
+  .paper-quick-action.cc{ border-color:rgba(224,168,56,.6); background:rgba(224,168,56,.1); color:var(--gold); }
+  .paper-quick-action.hedge{ border-color:rgba(68,139,255,.55); background:rgba(68,139,255,.1); color:#70a5ff; }
+  .paper-quick-action:active{ transform:translateY(1px); filter:brightness(1.15); }
   .paper-refresh{ border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--panel-2); color:var(--text-dim); cursor:pointer; font-size:10px; }
   .paper-position-actions{ display:flex; justify-content:center; margin-top:10px; }
   .paper-position-trade-btn{ padding:8px 16px; border:1px solid #55e6b5; border-radius:7px; background:rgba(85,230,181,.08); color:#55e6b5; font-size:11px; font-weight:800; cursor:pointer; }
@@ -494,7 +501,9 @@
     .paper-position-row td:nth-child(1),.paper-position-row td:nth-child(2){ font-size:15px; }
     .paper-position-row td:nth-child(5),.paper-position-row td:nth-child(7),.paper-position-row td:nth-child(10){ grid-column:1 / -1; border-right:0; }
     .paper-position-row td:nth-child(10){ align-items:stretch; min-height:54px; border-bottom:0; }
-    .paper-position-row .paper-manage{ width:100%; min-height:38px; font-size:12px; }
+    .paper-position-row .paper-manage{ display:none; }
+    .paper-position-row .paper-mobile-actions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; }
+    .paper-position-row .paper-quick-action{ width:100%; min-height:44px; padding:8px 6px; }
     .paper-guide-row{ display:block; width:100%; }
     .paper-table .paper-guide-cell{ display:block; width:100%; padding:8px 0 12px; }
     .paper-setup-form{ flex-direction:column; }
@@ -1936,7 +1945,7 @@ function renderPaperAccount(){
     const hedge=hedgeContracts&&latestHedge?`${String(latestHedge.expiry||'').slice(5)} · $${fmtNum(latestHedge.strike)}P · 매입 $${fmtNum(latestHedge.premium)} → 현재 $${fmtNum(latestHedge.currentPremium??latestHedge.premium)}`:(hedges.length?'종료':'없음');
     const csp=p.cspStatus||'미보유';
     const hasCsp=!['미보유','없음','종료'].includes(String(csp).trim());
-    return `<tr class="paper-position-row"><td data-label="종목">${p.ticker}</td><td data-label="현재가">$${fmtNum(last)}</td><td data-label="보유수량">${fmtNum(p.quantity,0)}주</td><td data-label="평균매입가">$${fmtNum(p.avgPrice)}</td><td class="paper-option-cell${contracts&&latestCall?' paper-option-sell':''}" data-label="CC 현황" title="${cc}">${cc}</td><td class="paper-option-cell${hasCsp?' paper-option-sell':''}" data-label="CSP 현황">${csp}</td><td class="paper-option-cell${hedgeContracts&&latestHedge?' paper-option-buy':''}" data-label="Put 헤지" title="${hedge}">${hedge}</td><td data-label="통합손익" style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td data-label="현재 평가금액">$${fmtNum(netMarketValue)}</td><td data-label="관리"><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button></td></tr>${paperPositionGuideHTML(p,last)}`;
+    return `<tr class="paper-position-row"><td data-label="종목">${p.ticker}</td><td data-label="현재가">$${fmtNum(last)}</td><td data-label="보유수량">${fmtNum(p.quantity,0)}주</td><td data-label="평균매입가">$${fmtNum(p.avgPrice)}</td><td class="paper-option-cell${contracts&&latestCall?' paper-option-sell':''}" data-label="CC 현황" title="${cc}">${cc}</td><td class="paper-option-cell${hasCsp?' paper-option-sell':''}" data-label="CSP 현황">${csp}</td><td class="paper-option-cell${hedgeContracts&&latestHedge?' paper-option-buy':''}" data-label="Put 헤지" title="${hedge}">${hedge}</td><td data-label="통합손익" style="color:${pnl>=0?GREEN_OK:UP}">${pnl>=0?'+':''}$${fmtNum(pnl)} (${pnl>=0?'+':''}${pct.toFixed(2)}%)</td><td data-label="현재 평가금액">$${fmtNum(netMarketValue)}</td><td data-label="빠른 거래"><button class="paper-manage" type="button" onclick="managePaperPosition('${p.ticker}')">거래</button><div class="paper-mobile-actions" aria-label="${p.ticker} 빠른 거래"><button class="paper-quick-action buy" type="button" onclick="openPaperTrade('BUY','${p.ticker}')">＋ 추가매수</button><button class="paper-quick-action sell" type="button" onclick="openPaperTrade('SELL','${p.ticker}')">－ 주식매도</button><button class="paper-quick-action cc" type="button" onclick="openPaperTrade('CC','${p.ticker}')">CC 매도</button><button class="paper-quick-action hedge" type="button" onclick="openPaperTrade('HEDGE','${p.ticker}')">Put 헤지</button></div></td></tr>${paperPositionGuideHTML(p,last)}`;
   }).join(''):'<tr><td class="paper-table-empty" colspan="10">관심종목을 선택하고 ‘모의 매수’를 눌러 첫 포지션을 만들어보세요.</td></tr>';
   const summaryValues={paperTotalCost:totalCost,paperMarketValue:totalMarketValue,paperCashBalance:Number(account.cash)||0,paperTotalEquity:(Number(account.cash)||0)+totalMarketValue};
   Object.entries(summaryValues).forEach(([id,value])=>{ const el=document.getElementById(id); if(el) el.textContent=`$${fmtNum(value)}`; });
@@ -2002,7 +2011,7 @@ function openPaperTrade(mode='BUY', requestedTicker='', shouldScroll=true){
   if(slot){ const guide=slot.closest('.paper-position-guide'); if(guide) guide.open=true; slot.appendChild(panel); }
   else document.getElementById('paperAccountDashboard').appendChild(panel);
   panel.hidden=false;
-  if(shouldScroll) panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(shouldScroll) panel.scrollIntoView({behavior:'smooth',block:window.innerWidth<=760?'start':'nearest'});
 }
 function closePaperTrade(){ document.getElementById('paperTradePanel').hidden=true; paperTradeDraft=null; }
 function resetPaperTrade(){ if(paperTradeDraft) openPaperTrade('BUY',paperTradeDraft.ticker,false); }
