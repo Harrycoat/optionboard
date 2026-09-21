@@ -596,6 +596,17 @@
   .member-hero-copy p{ color:var(--text-dim); font-size:14px; line-height:1.7; }.member-hero-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
   .member-cta,.member-demo-btn,.member-holdings-btn{ border-radius:7px; padding:12px 20px; font-weight:800; cursor:pointer; font-family:inherit; }.member-cta{ border:0; background:var(--gold); color:#111; box-shadow:0 7px 24px rgba(224,168,56,.22); }.member-demo-btn{ border:1px solid var(--gold); background:transparent; color:var(--text); }.member-holdings-btn{ border:1px solid #55e6b5; background:rgba(85,230,181,.05); color:#55e6b5; }
   .member-holdings-note{ margin-top:10px; color:var(--text-dim); font-size:11px; line-height:1.55; }
+  .youtube-shorts-section{ margin:0 0 20px; padding:18px; border:1px solid rgba(255,90,101,.28); border-radius:12px; background:linear-gradient(145deg,rgba(255,90,101,.06),var(--panel) 44%); }
+  .youtube-shorts-head{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px; }
+  .youtube-shorts-head h2{ margin:0; color:var(--text); font-size:21px; }.youtube-shorts-head h2 span{ color:#ff5a65; }
+  .youtube-shorts-head p{ margin:5px 0 0; color:var(--text-dim); font-size:11px; line-height:1.5; }
+  .youtube-channel-btn{ flex:0 0 auto; padding:8px 12px; border:1px solid #ff5a65; border-radius:7px; color:#ff7a83; background:rgba(255,90,101,.07); font-size:11px; font-weight:900; text-decoration:none; }
+  .youtube-shorts-body{ display:grid; grid-template-columns:minmax(230px,310px) minmax(0,1fr); gap:18px; align-items:center; }
+  .youtube-short-player{ position:relative; width:100%; max-width:310px; aspect-ratio:9/16; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#05080d; box-shadow:0 14px 34px rgba(0,0,0,.28); }
+  .youtube-short-player iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .youtube-shorts-copy{ padding:8px 4px; }.youtube-shorts-copy strong{ display:block; color:var(--gold); font-size:16px; }
+  .youtube-shorts-copy p{ margin:10px 0 0; color:var(--text-dim); font-size:13px; line-height:1.7; }
+  .youtube-shorts-points{ display:grid; gap:8px; margin-top:15px; }.youtube-shorts-points span{ padding:10px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); color:var(--text); font-size:11px; font-weight:700; }
   .hero-rail-card{ align-self:center; background:rgba(10,13,18,.72); border:1px solid var(--line); border-radius:11px; padding:22px 18px 16px; }.hero-rail-title{ font-size:11px; color:var(--text-dim); letter-spacing:.08em; }.hero-rail{ position:relative; height:5px; border-radius:6px; background:linear-gradient(90deg,var(--down),#65748d 50%,var(--up)); margin:54px 16px 38px; }
   .hero-rail-point{ position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; border:2px solid var(--panel); }.hero-rail-point span{ position:absolute; left:50%; bottom:17px; transform:translateX(-50%); white-space:nowrap; font:700 11px 'JetBrains Mono',monospace; text-align:center; line-height:1.5; }
   .member-benefits{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }.member-benefit{ display:flex; gap:12px; align-items:center; padding:15px 17px; background:var(--panel); border:1px solid var(--line); border-radius:9px; }.member-benefit-icon{ display:grid; place-items:center; width:42px; height:42px; flex:0 0 42px; border:1px solid rgba(224,168,56,.45); border-radius:9px; color:var(--gold); font-size:20px; }.member-benefit b{ display:block; font-size:14px; }.member-benefit span{ display:block; color:var(--text-dim); font-size:11px; margin-top:4px; line-height:1.4; }
@@ -615,6 +626,7 @@
   body.watchlist-view .nvda-preview,
   body.watchlist-view .market-float,
   body.watchlist-view #marketStatusBanner,
+  body.watchlist-view #youtubeShortsSection,
   body.watchlist-view #aiLeaderMap,
   body.watchlist-view #todayBuySignalSection{ display:none; }
   body.watchlist-view #searchAdSlot{ display:none !important; min-height:0 !important; margin:0 !important; }
@@ -631,6 +643,7 @@
   body.holdings-view .nvda-preview,
   body.holdings-view .market-float,
   body.holdings-view #marketStatusBanner,
+  body.holdings-view #youtubeShortsSection,
   body.holdings-view #aiLeaderMap,
   body.holdings-view #todayBuySignalSection,
   body.holdings-view #searchAdSlot,
@@ -649,7 +662,8 @@
   .paper-summary-card.pnl b.positive{ color:#55e6b5; }
   .paper-summary-card.pnl b.negative{ color:var(--up); }
   @media(max-width:1450px){.mijoostock-side-banner{display:none}}
-  @media(max-width:900px){.main-category-nav .main-category-inner{justify-content:flex-start;padding:8px 12px}.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:900px){.main-category-nav .main-category-inner{justify-content:flex-start;padding:8px 12px}.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.youtube-shorts-body{grid-template-columns:1fr}.youtube-short-player{margin:0 auto}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:600px){.youtube-shorts-section{padding:14px 12px}.youtube-shorts-head{align-items:flex-start;flex-direction:column}.youtube-shorts-head h2{font-size:18px}.youtube-channel-btn{width:100%;text-align:center}.youtube-shorts-copy{text-align:center}.youtube-shorts-points{text-align:left}}
   .chart-btn{
     display:inline-flex; align-items:center; gap:6px;
     background: var(--panel-2); color: var(--text); border:1px solid var(--line);
@@ -787,6 +801,13 @@
   </div>
 </div>
 <main>
+  <section class="youtube-shorts-section" id="youtubeShortsSection" aria-labelledby="youtubeShortsTitle">
+    <div class="youtube-shorts-head"><div><h2 id="youtubeShortsTitle"><span>▶</span> 오늘의 실전 대응 영상</h2><p>실제 차트에서 Call Wall과 Put Wall을 어떻게 활용했는지 짧게 확인합니다.</p></div><a class="youtube-channel-btn" href="https://www.youtube.com/@gexoption_daily/shorts" target="_blank" rel="noopener">YouTube에서 더 보기 →</a></div>
+    <div class="youtube-shorts-body">
+      <div class="youtube-short-player"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UUmu9jOYqUQ08n6ZkVLqp19g" title="GEX옵션 감마봇 데일리 최신 Shorts" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+      <div class="youtube-shorts-copy"><strong>테슬라 하락에도 원금 방어와 추가 수익</strong><p>Call Wall $370에서 두 차례 보험 Put으로 보유 주식을 보호하고, Put Wall $360의 지지와 반등을 확인한 뒤 청산한 실제 대응 사례입니다.</p><div class="youtube-shorts-points"><span>① Call Wall $370 · 두 차례 저항 확인</span><span>② 보유 주식 보호를 위한 보험 Put 2회</span><span>③ Put Wall $360 · 반등 확인 후 청산</span></div></div>
+    </div>
+  </section>
   <div class="watchlist-page-title"><h1>⭐ 나의 관심종목</h1><p>내가 저장한 종목의 현재가와 Put Wall · Call Wall을 한 화면에서 확인합니다.</p></div>
   <div class="holdings-page-title"><h1>📊 내 종목</h1><p>보유종목의 수량·평균단가·투자금액·평가금액·손익을 한 페이지에서 확인합니다.</p></div>
   <div class="industry-page-title"><h1>🧭 AI 주도주 로드맵</h1><p>AI 발전 단계별 핵심 산업과 대표 주도주의 Weinstein Stage 및 이번 주 Wall 위치를 비교합니다.</p></div>
