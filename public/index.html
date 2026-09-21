@@ -728,7 +728,7 @@
   .oigex-legend-item .line{width:12px;height:2px;display:inline-block;background:var(--gold);}
   .oigex-empty{color:var(--text-dim);font-size:12px;padding:20px;text-align:center;}
   .journal-trade-note{ font-size:11px; color:var(--text-dim); font-style:italic; }
-</style><script src="/site-language.js" defer></script></head>
+</style></head>
 <body>
 <header>
   <div class="logo">
@@ -1084,10 +1084,7 @@ function nvdaMarkerHTML(left, color, label, value){
 }
 async function loadNvdaPreview(){
   try{
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),20000);
-    const response = await fetch('/api/search?ticker=NVDA', { cache:'no-store', signal:controller.signal });
-    clearTimeout(timeout);
+    const response = await fetch('/api/search?ticker=NVDA', { cache:'no-store' });
     const d = response.ok ? await response.json() : null;
     if(!d || d.error) throw new Error('NVDA 데이터 없음');
     document.getElementById('nvdaPreviewPrice').textContent = `$${fmtNum(d.spot)}`;
@@ -3340,14 +3337,12 @@ window.addEventListener('popstate',syncAccountViewClasses);
 if(isIndustryView()){
   loadAiLeaderMap();
 }else if(!isWatchlistView()&&!isHoldingsView()){
-  const nvdaFirst=loadNvdaPreview();
+  loadMarketFloat();
+  loadNvdaPreview();
+  loadMarketStatusBanner();
+  loadAiLeaderMap();
   loadTradingJournal();
   loadReentrySignals();
-  Promise.resolve(nvdaFirst).finally(()=>{
-    loadMarketStatusBanner();
-    setTimeout(loadAiLeaderMap,350);
-    setTimeout(loadMarketFloat,900);
-  });
   setInterval(loadMarketFloat, 60000);
 }
 initMemberAccount();
