@@ -7,8 +7,10 @@
   <title>Profit Protection Monitor | GEX Option</title>
   <style>
     :root{--bg:#090e15;--panel:#111824;--panel2:#151e2b;--line:#273244;--text:#f2f6fc;--muted:#8ea0b8;--gold:#efb334;--green:#42e4ad;--red:#ff626e;--blue:#55a4ff;--yellow:#f2bf45}
-    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,#1b2738 0,#090e15 42%);color:var(--text);font-family:Inter,Pretendard,"Noto Sans KR",system-ui,sans-serif;min-height:100vh}.wrap{width:min(980px,calc(100% - 28px));margin:auto;padding:24px 0 56px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.brand{font-weight:900;font-size:18px}.brand i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold);margin-right:9px}.beta{font-size:12px;color:#ffd36e;border:1px solid #8b691e;background:#2a2110;padding:7px 10px;border-radius:999px}.card{background:rgba(17,24,36,.95);border:1px solid var(--line);border-radius:17px;padding:18px;margin-top:12px;box-shadow:0 16px 50px rgba(0,0,0,.2)}.search{display:grid;grid-template-columns:1fr auto;gap:9px}.search input{min-width:0;background:#0c121b;border:1px solid #344258;color:#fff;border-radius:11px;padding:14px 15px;font-size:18px;font-weight:800;text-transform:uppercase}.search button,.action{border:0;border-radius:11px;background:var(--gold);color:#17120a;font-weight:900;padding:0 22px;cursor:pointer}.meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:11px}.pulse{display:inline-flex;align-items:center;gap:7px}.pulse:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.metric{background:#0c131d;border:1px solid #253144;border-radius:12px;padding:12px}.metric small{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em}.metric b{display:block;margin-top:5px;font:800 19px ui-monospace,SFMono-Regular,monospace}.metric.call b{color:var(--red)}.metric.vwap b{color:var(--blue)}.decision{border-width:1px 1px 1px 6px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:15px}.decision-icon{font-size:34px}.decision h1{font-size:24px;margin:0 0 4px}.decision p{margin:0;color:#bdc8d6;line-height:1.55;font-size:14px}.decision.green{border-color:var(--green);background:linear-gradient(110deg,rgba(31,126,93,.2),rgba(17,24,36,.96) 50%)}.decision.red{border-color:var(--red);background:linear-gradient(110deg,rgba(145,39,52,.2),rgba(17,24,36,.96) 50%)}.decision.blue{border-color:var(--blue);background:linear-gradient(110deg,rgba(40,92,159,.22),rgba(17,24,36,.96) 50%)}.decision.yellow{border-color:var(--yellow);background:linear-gradient(110deg,rgba(135,100,20,.18),rgba(17,24,36,.96) 50%)}.railbox{padding:26px 14px 30px}.rail{height:6px;border-radius:8px;background:linear-gradient(90deg,#3c88ed,#768eac 52%,#ef5261);position:relative}.dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--gold);border:3px solid #171d26;box-shadow:0 0 10px var(--gold)}.dot span{position:absolute;top:18px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;color:var(--gold);font-weight:800}.ends{display:flex;justify-content:space-between;font:700 11px ui-monospace,SFMono-Regular;color:var(--muted);margin-bottom:10px}.ends b:first-child{color:var(--blue)}.ends b:last-child{color:var(--red)}.flow-head{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:12px}.flow-head h2{font-size:17px;margin:0}.flow-head span{font-size:11px;color:var(--muted)}.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.flow label{display:block;background:#0c131d;border:1px solid #263246;border-radius:12px;padding:11px}.flow small{display:block;color:var(--muted);margin-bottom:7px}.flow input{width:100%;background:transparent;border:0;border-bottom:1px solid #3a485c;color:white;font:800 22px ui-monospace,SFMono-Regular;outline:none}.flow label:nth-child(1) input{color:var(--green)}.flow label:nth-child(2) input{color:var(--red)}.flow label:nth-child(3) input{color:var(--yellow)}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.check{border:1px solid #2b3748;border-radius:10px;padding:10px;color:var(--muted);font-size:11px}.check b{display:block;color:#eef3fa;margin-top:3px;font-size:13px}.check.ok{border-color:#247d61;background:#10271f}.check.no{border-color:#6e3440;background:#29151a}.log-head{display:flex;align-items:center;justify-content:space-between}.log-head h2{font-size:16px;margin:0}.ghost{background:transparent;border:1px solid #3a4658;color:#b4c0d0;border-radius:8px;padding:7px 10px;cursor:pointer}.logs{display:grid;gap:7px;margin-top:10px;max-height:190px;overflow:auto}.log{display:grid;grid-template-columns:65px 80px 1fr;gap:8px;font-size:12px;border-bottom:1px solid #202a38;padding:7px 0;color:#b9c4d2}.log strong{color:white}.notice{color:#9cabbf;font-size:11px;line-height:1.55;padding:4px 2px}.error{color:#ff8c94}.loading{opacity:.6;pointer-events:none}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,#1b2738 0,#090e15 42%);color:var(--text);font-family:Inter,Pretendard,"Noto Sans KR",system-ui,sans-serif;min-height:100vh}.wrap{width:min(980px,calc(100% - 28px));margin:auto;padding:24px 0 56px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.brand{font-weight:900;font-size:18px}.brand i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold);margin-right:9px}.beta{font-size:12px;color:#ffd36e;border:1px solid #8b691e;background:#2a2110;padding:7px 10px;border-radius:999px}.card{background:rgba(17,24,36,.95);border:1px solid var(--line);border-radius:17px;padding:18px;margin-top:12px;box-shadow:0 16px 50px rgba(0,0,0,.2)}.search{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:9px}.search input{min-width:0;background:#0c121b;border:1px solid #344258;color:#fff;border-radius:11px;padding:14px 15px;font-size:18px;font-weight:800;text-transform:uppercase}.search button,.action{border:0;border-radius:11px;background:var(--gold);color:#17120a;font-weight:900;padding:0 22px;cursor:pointer}.meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:11px}.pulse{display:inline-flex;align-items:center;gap:7px}.pulse:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.metric{background:#0c131d;border:1px solid #253144;border-radius:12px;padding:12px}.metric small{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em}.metric b{display:block;margin-top:5px;font:800 19px ui-monospace,SFMono-Regular,monospace}.metric.call b{color:var(--red)}.metric.vwap b{color:var(--blue)}.decision{border-width:1px 1px 1px 6px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:15px}.decision-icon{font-size:34px}.decision h1{font-size:24px;margin:0 0 4px}.decision p{margin:0;color:#bdc8d6;line-height:1.55;font-size:14px}.decision.green{border-color:var(--green);background:linear-gradient(110deg,rgba(31,126,93,.2),rgba(17,24,36,.96) 50%)}.decision.red{border-color:var(--red);background:linear-gradient(110deg,rgba(145,39,52,.2),rgba(17,24,36,.96) 50%)}.decision.blue{border-color:var(--blue);background:linear-gradient(110deg,rgba(40,92,159,.22),rgba(17,24,36,.96) 50%)}.decision.yellow{border-color:var(--yellow);background:linear-gradient(110deg,rgba(135,100,20,.18),rgba(17,24,36,.96) 50%)}.railbox{padding:26px 14px 30px}.rail{height:6px;border-radius:8px;background:linear-gradient(90deg,#3c88ed,#768eac 52%,#ef5261);position:relative}.dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--gold);border:3px solid #171d26;box-shadow:0 0 10px var(--gold)}.dot span{position:absolute;top:18px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;color:var(--gold);font-weight:800}.ends{display:flex;justify-content:space-between;font:700 11px ui-monospace,SFMono-Regular;color:var(--muted);margin-bottom:10px}.ends b:first-child{color:var(--blue)}.ends b:last-child{color:var(--red)}.flow-head{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:12px}.flow-head h2{font-size:17px;margin:0}.flow-head span{font-size:11px;color:var(--muted)}.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.flow label{display:block;background:#0c131d;border:1px solid #263246;border-radius:12px;padding:11px}.flow small{display:block;color:var(--muted);margin-bottom:7px}.flow input{width:100%;background:transparent;border:0;border-bottom:1px solid #3a485c;color:white;font:800 22px ui-monospace,SFMono-Regular;outline:none}.flow label:nth-child(1) input{color:var(--green)}.flow label:nth-child(2) input{color:var(--red)}.flow label:nth-child(3) input{color:var(--yellow)}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.check{border:1px solid #2b3748;border-radius:10px;padding:10px;color:var(--muted);font-size:11px}.check b{display:block;color:#eef3fa;margin-top:3px;font-size:13px}.check.ok{border-color:#247d61;background:#10271f}.check.no{border-color:#6e3440;background:#29151a}.log-head{display:flex;align-items:center;justify-content:space-between}.log-head h2{font-size:16px;margin:0}.ghost{background:transparent;border:1px solid #3a4658;color:#b4c0d0;border-radius:8px;padding:7px 10px;cursor:pointer}.logs{display:grid;gap:7px;margin-top:10px;max-height:190px;overflow:auto}.log{display:grid;grid-template-columns:65px 80px 1fr;gap:8px;font-size:12px;border-bottom:1px solid #202a38;padding:7px 0;color:#b9c4d2}.log strong{color:white}.notice{color:#9cabbf;font-size:11px;line-height:1.55;padding:4px 2px}.error{color:#ff8c94}.loading{opacity:.6;pointer-events:none}
+    .portfolio-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.portfolio-item{background:#0c131d;border:1px solid #253144;border-radius:12px;padding:12px;cursor:pointer;min-width:0}.portfolio-item:hover{border-color:#4b6383}.portfolio-item.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(239,179,52,.2)}.portfolio-item .ticker{font-weight:900;font-size:15px}.portfolio-item .status{font-weight:900;font-size:12px;margin-top:8px}.portfolio-item .row{display:flex;justify-content:space-between;gap:6px;color:var(--muted);font-size:11px;margin-top:5px}.portfolio-item .row b{color:#eef3fa;font-family:ui-monospace,SFMono-Regular,monospace}.portfolio-item.green .status{color:var(--green)}.portfolio-item.red .status{color:var(--red)}.portfolio-item.blue .status{color:var(--blue)}.portfolio-item.yellow .status{color:var(--yellow)}.portfolio-empty{color:var(--muted);font-size:12px;padding:6px 0}
     .auto-note{margin-top:12px;border:1px solid #2d4666;background:#0d1a2a;border-radius:11px;padding:11px 12px;color:#9fc5f3;font-size:12px;line-height:1.55}.auto-note b{color:#fff}.optional{margin-top:14px;border-top:1px solid #263246;padding-top:12px}.optional summary{cursor:pointer;color:#aebbd0;font-size:13px;font-weight:800}.optional .flow{margin-top:11px}
+    @media(max-width:820px){.search{grid-template-columns:repeat(2,minmax(0,1fr))}.search button{min-height:46px}.portfolio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:680px){.wrap{width:min(100% - 18px,980px);padding-top:13px}.top{align-items:flex-start}.beta{font-size:10px}.card{padding:14px;border-radius:14px}.grid4{grid-template-columns:repeat(2,1fr)}.flow,.flow.market{grid-template-columns:1fr 1fr}.checks{grid-template-columns:repeat(2,1fr)}.decision h1{font-size:20px}.decision p{font-size:13px}.search input{font-size:16px}.search button{padding:0 17px}.log{grid-template-columns:55px 68px 1fr}}
   </style>
 </head>
@@ -16,8 +18,20 @@
 <main class="wrap">
   <div class="top"><div class="brand"><i></i>GEX OPTION · PROFIT PROTECTION MONITOR</div><span class="beta">BETA · 15분 지연 분석 · 자동주문 아님</span></div>
   <section class="card">
-    <form class="search" id="searchForm"><input id="ticker" value="SNDK" maxlength="10" aria-label="티커"><button type="submit">분석 시작</button></form>
-    <div class="meta"><span class="pulse" id="heartbeat">60초마다 지연 데이터 확인</span><span id="updated">아직 조회하지 않음</span></div>
+    <form class="search" id="searchForm">
+      <input class="tickerInput" value="SNDK" maxlength="10" aria-label="보유종목 1" placeholder="종목 1">
+      <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 2" placeholder="종목 2">
+      <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 3" placeholder="종목 3">
+      <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 4" placeholder="종목 4">
+      <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 5" placeholder="종목 5">
+      <button type="submit">5종목 분석</button>
+    </form>
+    <div class="meta"><span class="pulse" id="heartbeat">60초마다 5종목 지연 데이터 확인</span><span id="updated">아직 조회하지 않음</span></div>
+  </section>
+
+  <section class="card">
+    <div class="flow-head"><div><h2>MY 5 STOCKS · 한눈에 보기</h2><span>종목을 클릭하면 아래 상세 보호 전략이 바뀝니다.</span></div><span id="portfolioStamp">데이터 대기</span></div>
+    <div class="portfolio-grid" id="portfolioGrid"><div class="portfolio-empty">위에 보유종목을 최대 5개 입력하고 분석하세요.</div></div>
   </section>
 
   <section class="card grid4">
@@ -56,52 +70,109 @@
   <p class="notice">이 화면은 15분 지연 데이터로 수익 보호 규칙을 검증하는 베타입니다. Put/Put Spread는 보험 비용과 만기·IV 위험이 있으므로 자동 주문하지 않으며, 실제 매매 전 실시간 차트와 옵션 가격을 다시 확인해야 합니다.</p>
 </main>
 <script>
-const $=id=>document.getElementById(id), number=v=>(v===null||v===undefined||v==='')?NaN:+v, money=v=>Number.isFinite(number(v))?'$'+number(v).toLocaleString(undefined,{maximumFractionDigits:2}):'—';
-let data=null,timer=null,lastLogKey='',busy=false;
-const logKey='gexCallWallBetaLog';
+const $=id=>document.getElementById(id);
+const number=v=>(v===null||v===undefined||v==='')?NaN:+v;
+const money=v=>Number.isFinite(number(v))?'$'+number(v).toLocaleString(undefined,{maximumFractionDigits:2}):'—';
+let data=null,dataMap={},selectedTicker='',timer=null,lastLogKey='',busy=false;
+const logKey='gexCallWallBetaLog', tickerKey='gexProtectionFiveTickers';
+
+function tickerInputs(){return [...document.querySelectorAll('.tickerInput')]}
+function getTickers(){return [...new Set(tickerInputs().map(i=>i.value.trim().toUpperCase()).filter(Boolean))].slice(0,5)}
+function saveTickers(){localStorage.setItem(tickerKey,JSON.stringify(tickerInputs().map(i=>i.value.trim().toUpperCase())))}
+function restoreTickers(){try{const a=JSON.parse(localStorage.getItem(tickerKey)||'[]');if(Array.isArray(a)&&a.length){tickerInputs().forEach((i,n)=>i.value=a[n]||'')}}catch(e){}}
 function nums(){return {ask:Math.max(0,+$('askVol').value||0),bid:Math.max(0,+$('bidVol').value||0),mid:Math.max(0,+$('midVol').value||0)}}
 function setCheck(id,label,value,kind=''){const n=$(id);n.className='check '+kind;n.childNodes[0].nodeValue=label;n.querySelector('b').textContent=value}
-function classify(){
-  if(!data||!Number.isFinite(+data.call_wall))return {key:'WAIT',icon:'🟡',title:'보호 전략 대기',copy:'Call Wall 데이터를 먼저 불러오세요.',tone:'yellow'};
-  const bars=data.bars||[], bar=data.latest_bar||bars.at(-1)||{}, prior=bars.at(-2)||{};
-  const {ask,bid,mid}=nums(), total=ask+bid+mid, directional=ask+bid, wall=+data.call_wall, put=number(data.put_wall);
-  const close=number(bar.close),high=number(bar.high),low=number(bar.low),vwap=number(data.session_vwap),hull=number(data.hull21),hullSlope=number(data.hull21_slope_pct),hasBar=[close,high,low].every(Number.isFinite);
-  if(!hasBar)return {key:'NO_BAR',icon:'🟡',title:'5분봉 데이터 대기',copy:'15분 지연 Stock API에서 완료된 5분봉을 아직 받지 못했습니다.',tone:'yellow'};
 
-  const wallDist=(wall-close)/wall*100;
-  const absDist=Math.abs(wallDist);
-  const tol=Math.max(.05,wall*.0015);
-  const askDom=directional>=10&&ask>=bid*1.25&&ask/directional>=.55, bidDom=directional>=10&&bid>=ask*1.25&&bid/directional>=.55, midHeavy=total>0&&mid/total>=.45;
-  const vwapOk=Number.isFinite(vwap)&&close>=vwap;
-  const hullAbove=Number.isFinite(hull)&&close>=hull;
-  const hullWeak=Number.isFinite(hull)&&(!hullAbove || (Number.isFinite(hullSlope)&&hullSlope<=0));
-  const crossed=Number.isFinite(+prior.close)&&+prior.close<=wall&&close>wall;
-  const retest=Number.isFinite(+prior.close)&&+prior.close>wall&&low<=wall+tol&&close>wall;
-  const rejected=high>=wall-tol&&close<wall;
-  const nearPut=Number.isFinite(put)&&close<=put*1.01;
-
-  setCheck('volumeCheck','5분 거래량',Math.round(Number(bar.volume||0)).toLocaleString()+'주',bar.volume>0?'ok':'');
-  setCheck('priceCheck','Call Wall 거리',(wallDist>=0?wallDist.toFixed(2)+'% 아래':Math.abs(wallDist).toFixed(2)+'% 위'),absDist<=1?'no':absDist<=3?'':'ok');
-  setCheck('barCheck','HULL21 상태',!Number.isFinite(hull)?'데이터 부족':hullWeak?'약화/이탈':'상승 유지',hullWeak?'no':'ok');
-  setCheck('vwapCheck','VWAP 확인',!Number.isFinite(vwap)?'데이터 없음':vwapOk?'VWAP 위':'VWAP 아래',vwapOk?'ok':Number.isFinite(vwap)?'no':'');
-  const flowNote=total<10?'옵션 체결 보조값 미입력':midHeavy?'옵션 체결 중립':askDom?'옵션 체결 ASK 우위':bidDom?'옵션 체결 BID 우위':'옵션 체결 혼조';
-
-  if(nearPut)return {key:'PUT_WALL',icon:'💰',title:'PUT WALL · 보험 이익 관리',copy:'가격이 Put Wall 1% 이내입니다. 기존 Put/Put Spread가 수익이라면 일부 실현을 검토하고, 주식은 실제 반등 확인 후 판단하세요. '+flowNote,tone:'blue'};
-  if(retest&&vwapOk&&!bidDom)return {key:'RELEASE',icon:'🟢',title:'BREAKOUT · 헤지 축소 후보',copy:'Call Wall 돌파 후 재시험을 버티고 VWAP 위를 유지합니다. 기존 보험은 단계적으로 축소하거나 해제할 수 있는 구간입니다. '+flowNote+' · 실시간 확인 필수.',tone:'green'};
-  if(crossed&&vwapOk&&hullAbove&&!bidDom)return {key:'BREAKOUT',icon:'🚀',title:'CALL WALL 돌파 · 상승 재개 후보',copy:'5분봉이 Call Wall을 돌파하고 VWAP·HULL21 위를 유지합니다. 새 Put 추격매수보다 기존 헤지 축소 여부를 검토하세요. '+flowNote,tone:'green'};
-  if(rejected)return {key:'HEDGE_ON',icon:'🛡️',title:'HEDGE ON · 수익 보호',copy:'Call Wall을 시험한 뒤 아래에서 마감했습니다. 보유 수익 보호를 위해 Put 또는 Put Debit Spread를 검토하는 구간입니다. '+flowNote+' · 자동주문 아님.',tone:'red'};
-  if(wallDist>=0&&wallDist<=1.0)return {key:'PRE_HEDGE_1',icon:'🛡️',title:'PRE-HEDGE · Call Wall 임박',copy:'Call Wall까지 '+wallDist.toFixed(2)+'% 남았습니다. HULL21 '+(hullWeak?'약화가 확인되어 보험을 앞당겨 검토합니다.':'상승은 유지 중이지만 Put/Put Spread를 준비할 구간입니다.')+' '+flowNote,tone:hullWeak?'red':'yellow'};
-  if(wallDist>1.0&&wallDist<=3.0&&hullWeak)return {key:'PRE_HEDGE_HULL',icon:'⚠️',title:'EARLY HEDGE · HULL21 경고',copy:'Call Wall 도착 전이지만 거리 '+wallDist.toFixed(2)+'%에서 HULL21이 둔화/이탈했습니다. 수익이 큰 보유분은 소규모 Put 또는 Put Debit Spread로 선제 방어를 검토합니다. '+flowNote,tone:'yellow'};
-  if(wallDist>1.0&&wallDist<=3.0)return {key:'WATCH_CLOSE',icon:'👀',title:'WATCH · 보험 준비',copy:'Call Wall까지 '+wallDist.toFixed(2)+'%입니다. 새 추격매수보다 HULL21·VWAP 약화 여부를 감시하고 보험 주문을 준비합니다. '+flowNote,tone:'blue'};
-  if(wallDist>3.0&&wallDist<=5.0)return {key:'WATCH',icon:'👀',title:'WATCH · Call Wall 접근',copy:'Call Wall까지 '+wallDist.toFixed(2)+'%입니다. 상승은 열어두되 수익 보호 계획을 준비하세요. HULL21이 약해지면 Pre-Hedge 단계로 전환합니다.',tone:'blue'};
-  if(close>wall&&vwapOk)return {key:'ABOVE',icon:'🟢',title:'Wall 위 유지 · Hedge 최소화',copy:'현재 Call Wall 위와 VWAP 위를 유지하고 있습니다. 돌파 실패 신호가 나오기 전까지 상승 여지를 열어두는 구간입니다.',tone:'green'};
-  return {key:'HOLD',icon:'🟡',title:'HOLD · 수익을 열어두기',copy:'Call Wall까지 여유가 있습니다. 지금은 보험을 서두르기보다 상승을 열어두고 Wall 접근과 HULL21 약화를 기다립니다.',tone:'yellow'};
+function stateFor(d,withFlow=false){
+  if(!d||!Number.isFinite(+d.call_wall))return {key:'WAIT',icon:'🟡',title:'WAIT',copy:'Call Wall 데이터 대기',tone:'yellow'};
+  const bars=d.bars||[],bar=d.latest_bar||bars.at(-1)||{},prior=bars.at(-2)||{};
+  const wall=+d.call_wall,put=number(d.put_wall),close=number(bar.close),high=number(bar.high),low=number(bar.low),vwap=number(d.session_vwap),hull=number(d.hull21),hullSlope=number(d.hull21_slope_pct);
+  if(![close,high,low].every(Number.isFinite))return {key:'NO_BAR',icon:'🟡',title:'DATA WAIT',copy:'5분봉 데이터 대기',tone:'yellow'};
+  const wallDist=(wall-close)/wall*100,tol=Math.max(.05,wall*.0015),vwapOk=Number.isFinite(vwap)&&close>=vwap,hullAbove=Number.isFinite(hull)&&close>=hull,hullWeak=Number.isFinite(hull)&&(!hullAbove||(Number.isFinite(hullSlope)&&hullSlope<=0));
+  const crossed=Number.isFinite(+prior.close)&&+prior.close<=wall&&close>wall,retest=Number.isFinite(+prior.close)&&+prior.close>wall&&low<=wall+tol&&close>wall,rejected=high>=wall-tol&&close<wall,nearPut=Number.isFinite(put)&&close<=put*1.01;
+  let flowNote='';
+  if(withFlow){const {ask,bid,mid}=nums(),total=ask+bid+mid,directional=ask+bid,askDom=directional>=10&&ask>=bid*1.25&&ask/directional>=.55,bidDom=directional>=10&&bid>=ask*1.25&&bid/directional>=.55,midHeavy=total>0&&mid/total>=.45;flowNote=total<10?'옵션 체결 보조값 미입력':midHeavy?'옵션 체결 중립':askDom?'옵션 체결 ASK 우위':bidDom?'옵션 체결 BID 우위':'옵션 체결 혼조'}
+  if(nearPut)return {key:'PUT_WALL',icon:'💰',title:'PUT WALL',copy:'Put Wall 1% 이내 · 보험 이익 실현과 반등 확인 구간'+(flowNote?' · '+flowNote:''),tone:'blue'};
+  if(retest&&vwapOk)return {key:'RELEASE',icon:'🟢',title:'RELEASE',copy:'Call Wall 돌파 후 재시험 지지 · 기존 헤지 축소/해제 후보'+(flowNote?' · '+flowNote:''),tone:'green'};
+  if(crossed&&vwapOk&&hullAbove)return {key:'BREAKOUT',icon:'🚀',title:'BREAKOUT',copy:'Call Wall 돌파 + VWAP/HULL21 유지 · 상승 여지 우선'+(flowNote?' · '+flowNote:''),tone:'green'};
+  if(rejected)return {key:'HEDGE_ON',icon:'🛡️',title:'HEDGE ON',copy:'Call Wall 시험 후 거절 · Put 또는 Put Debit Spread로 수익 보호 검토'+(flowNote?' · '+flowNote:''),tone:'red'};
+  if(wallDist>=0&&wallDist<=1)return {key:'PRE_HEDGE_1',icon:'🛡️',title:'PRE-HEDGE',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · '+(hullWeak?'HULL21 약화, 보험을 앞당겨 검토':'보험 준비 구간')+(flowNote?' · '+flowNote:''),tone:hullWeak?'red':'yellow'};
+  if(wallDist>1&&wallDist<=3&&hullWeak)return {key:'PRE_HEDGE_HULL',icon:'⚠️',title:'EARLY HEDGE',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 + HULL21 약화 · 선제 Put/Spread 검토'+(flowNote?' · '+flowNote:''),tone:'yellow'};
+  if(wallDist>1&&wallDist<=3)return {key:'WATCH_CLOSE',icon:'👀',title:'WATCH',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · 보험 주문 준비'+(flowNote?' · '+flowNote:''),tone:'blue'};
+  if(wallDist>3&&wallDist<=5)return {key:'WATCH',icon:'👀',title:'WATCH',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · HULL21 약화 감시',tone:'blue'};
+  if(close>wall&&vwapOk)return {key:'ABOVE',icon:'🟢',title:'HOLD ABOVE',copy:'Call Wall 위 + VWAP 위 · Hedge 최소화',tone:'green'};
+  return {key:'HOLD',icon:'🟡',title:'HOLD',copy:'Call Wall까지 여유 · 상승을 열어두고 관찰',tone:'yellow'};
 }
+
+function classify(){
+  const s=stateFor(data,true);
+  if(!data||!data.latest_bar)return s;
+  const bar=data.latest_bar,wall=number(data.call_wall),close=number(bar.close),vwap=number(data.session_vwap),hull=number(data.hull21),hullSlope=number(data.hull21_slope_pct),wallDist=(wall-close)/wall*100;
+  const hullWeak=Number.isFinite(hull)&&(!(close>=hull)||(Number.isFinite(hullSlope)&&hullSlope<=0));
+  setCheck('volumeCheck','5분 거래량',Math.round(Number(bar.volume||0)).toLocaleString()+'주',bar.volume>0?'ok':'');
+  setCheck('priceCheck','Call Wall 거리',Number.isFinite(wallDist)?(wallDist>=0?wallDist.toFixed(2)+'% 아래':Math.abs(wallDist).toFixed(2)+'% 위'):'—',Math.abs(wallDist)<=1?'no':Math.abs(wallDist)<=3?'':'ok');
+  setCheck('barCheck','HULL21 상태',!Number.isFinite(hull)?'데이터 부족':hullWeak?'약화/이탈':'상승 유지',hullWeak?'no':'ok');
+  setCheck('vwapCheck','VWAP 확인',!Number.isFinite(vwap)?'데이터 없음':close>=vwap?'VWAP 위':'VWAP 아래',Number.isFinite(vwap)&&close>=vwap?'ok':Number.isFinite(vwap)?'no':'');
+  return s;
+}
+
+function renderPortfolio(){
+  const grid=$('portfolioGrid'),tickers=getTickers();
+  if(!tickers.length){grid.innerHTML='<div class="portfolio-empty">보유종목을 최대 5개 입력하세요.</div>';return}
+  grid.innerHTML=tickers.map(t=>{
+    const d=dataMap[t];
+    if(!d)return '<div class="portfolio-item"><div class="ticker">'+t+'</div><div class="status">LOADING…</div></div>';
+    if(d.error)return '<div class="portfolio-item red"><div class="ticker">'+t+'</div><div class="status">ERROR</div><div class="row"><span>'+d.error+'</span></div></div>';
+    const s=stateFor(d,false),bar=d.latest_bar||{},spot=number(bar.close),wall=number(d.call_wall),hull=number(d.hull21),dist=Number.isFinite(spot)&&Number.isFinite(wall)&&wall?(wall-spot)/wall*100:NaN;
+    return '<div class="portfolio-item '+s.tone+(t===selectedTicker?' active':'')+'" data-ticker="'+t+'"><div class="ticker">'+t+'</div><div class="status">'+s.icon+' '+s.title+'</div><div class="row"><span>Price</span><b>'+money(spot)+'</b></div><div class="row"><span>Call Wall</span><b>'+money(wall)+'</b></div><div class="row"><span>Wall Dist</span><b>'+(Number.isFinite(dist)?dist.toFixed(2)+'%':'—')+'</b></div><div class="row"><span>HULL21</span><b>'+money(hull)+'</b></div></div>'
+  }).join('');
+  grid.querySelectorAll('.portfolio-item[data-ticker]').forEach(el=>el.onclick=()=>selectTicker(el.dataset.ticker));
+}
+
+function selectTicker(t){
+  if(!dataMap[t]||dataMap[t].error)return;
+  selectedTicker=t;data=dataMap[t];lastLogKey='';render();renderPortfolio();
+}
+
 function saveLog(state){if(!data||!data.latest_bar)return;const key=data.ticker+'|'+data.latest_bar.time+'|'+state.key;if(key===lastLogKey)return;lastLogKey=key;const items=JSON.parse(localStorage.getItem(logKey)||'[]');items.unshift({time:data.latest_bar.time,ticker:data.ticker,state:state.title,spot:data.latest_bar.close,wall:data.call_wall,vwap:data.session_vwap,volume:data.latest_bar.volume});localStorage.setItem(logKey,JSON.stringify(items.slice(0,40)));renderLog()}
-function renderLog(){const items=JSON.parse(localStorage.getItem(logKey)||'[]');$('logs').innerHTML=items.length?items.map(x=>`<div class="log"><span>${new Date(x.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span><strong>${x.state}</strong><span>${x.ticker} ${money(x.spot)} · Wall ${money(x.wall)} · Vol ${Number(x.volume||0).toLocaleString()}</span></div>`).join(''):'<div class="notice">아직 기록이 없습니다.</div>'}
-function render(){if(!data)return;const wall=number(data.call_wall),put=number(data.put_wall),bar=data.latest_bar||{},spot=number(bar.close),vwap=number(data.session_vwap),hull=number(data.hull21);$('spot').textContent=money(spot);$('wall').textContent=money(wall);const wallDist=Number.isFinite(spot)&&Number.isFinite(wall)&&wall?((wall-spot)/wall*100):NaN;$('wallDist').textContent=Number.isFinite(wallDist)?(wallDist>=0?wallDist.toFixed(2)+'% ↓':Math.abs(wallDist).toFixed(2)+'% ↑'):'—';$('hull21').textContent=money(hull);$('putLabel').textContent='PUT WALL '+money(put);$('callLabel').textContent='CALL WALL '+money(wall);$('barStamp').textContent=bar.time?'5분봉 '+new Date(bar.time).toLocaleString():'5분봉 없음';const lo=Math.min(put,wall),hi=Math.max(put,wall),pct=Number.isFinite(spot)&&Number.isFinite(lo)&&Number.isFinite(hi)&&hi>lo?Math.max(0,Math.min(100,(spot-lo)/(hi-lo)*100)):50;$('spotDot').style.left=pct+'%';const s=classify(),box=$('decision');box.className='card decision '+s.tone;$('decisionIcon').textContent=s.icon;$('decisionTitle').textContent=s.title;$('decisionCopy').textContent=s.copy;saveLog(s)}
-async function load(){if(busy)return;busy=true;document.body.classList.add('loading');const ticker=$('ticker').value.trim().toUpperCase();try{const res=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(ticker),{cache:'no-store'}),json=await res.json();if(json.error)throw new Error(json.error);data=json;render();const t=json.latest_bar?.time?new Date(json.latest_bar.time).toLocaleString():'없음';$('updated').textContent='5분봉 '+t+' · 약 '+json.delay_minutes+'분 지연';$('heartbeat').textContent='60초마다 지연 데이터 확인'}catch(e){$('updated').innerHTML='<span class="error">'+e.message+'</span>'}finally{busy=false;document.body.classList.remove('loading')}}
-$('searchForm').addEventListener('submit',e=>{e.preventDefault();lastLogKey='';load();clearInterval(timer);timer=setInterval(load,60000)});['askVol','bidVol','midVol'].forEach(id=>$(id).addEventListener('input',render));$('clearLog').onclick=()=>{localStorage.removeItem(logKey);lastLogKey='';renderLog()};renderLog();load();timer=setInterval(load,60000);
+function renderLog(){const items=JSON.parse(localStorage.getItem(logKey)||'[]');$('logs').innerHTML=items.length?items.map(x=>'<div class="log"><span>'+new Date(x.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</span><strong>'+x.state+'</strong><span>'+x.ticker+' '+money(x.spot)+' · Wall '+money(x.wall)+' · Vol '+Number(x.volume||0).toLocaleString()+'</span></div>').join(''):'<div class="notice">아직 기록이 없습니다.</div>'}
+
+function render(){
+  if(!data)return;
+  const wall=number(data.call_wall),put=number(data.put_wall),bar=data.latest_bar||{},spot=number(bar.close),hull=number(data.hull21);
+  $('spot').textContent=money(spot);$('wall').textContent=money(wall);
+  const wallDist=Number.isFinite(spot)&&Number.isFinite(wall)&&wall?((wall-spot)/wall*100):NaN;
+  $('wallDist').textContent=Number.isFinite(wallDist)?(wallDist>=0?wallDist.toFixed(2)+'% ↓':Math.abs(wallDist).toFixed(2)+'% ↑'):'—';
+  $('hull21').textContent=money(hull);$('putLabel').textContent='PUT WALL '+money(put);$('callLabel').textContent='CALL WALL '+money(wall);
+  $('barStamp').textContent=(data.ticker||'')+' · '+(bar.time?'5분봉 '+new Date(bar.time).toLocaleString():'5분봉 없음');
+  const lo=Math.min(put,wall),hi=Math.max(put,wall),pct=Number.isFinite(spot)&&Number.isFinite(lo)&&Number.isFinite(hi)&&hi>lo?Math.max(0,Math.min(100,(spot-lo)/(hi-lo)*100)):50;
+  $('spotDot').style.left=pct+'%';
+  const s=classify(),box=$('decision');box.className='card decision '+s.tone;$('decisionIcon').textContent=s.icon;$('decisionTitle').textContent=(data.ticker?data.ticker+' · ':'')+s.title;$('decisionCopy').textContent=s.copy;saveLog(s)
+}
+
+async function fetchTicker(t){try{const res=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'}),json=await res.json();return json.error?{ticker:t,error:json.error}:json}catch(e){return {ticker:t,error:e.message}}}
+async function load(){
+  if(busy)return;const tickers=getTickers();if(!tickers.length)return;
+  busy=true;document.body.classList.add('loading');saveTickers();
+  try{
+    $('heartbeat').textContent='5종목 데이터 확인 중…';
+    const results=await Promise.all(tickers.map(fetchTicker));
+    results.forEach((d,i)=>dataMap[tickers[i]]=d);
+    if(!selectedTicker||!tickers.includes(selectedTicker)||dataMap[selectedTicker]?.error)selectedTicker=tickers.find(t=>dataMap[t]&&!dataMap[t].error)||'';
+    if(selectedTicker){data=dataMap[selectedTicker];render()}
+    renderPortfolio();
+    const good=results.filter(x=>!x.error),latest=good.map(x=>x.latest_bar?.time).filter(Boolean).sort().at(-1);
+    $('updated').textContent=good.length+'/'+tickers.length+' 종목 확인 · 약 '+(good[0]?.delay_minutes||15)+'분 지연';
+    $('portfolioStamp').textContent=latest?'최근 5분봉 '+new Date(latest).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'데이터 확인';
+    $('heartbeat').textContent='60초마다 '+tickers.length+'종목 지연 데이터 확인';
+  }finally{busy=false;document.body.classList.remove('loading')}
+}
+restoreTickers();
+$('searchForm').addEventListener('submit',e=>{e.preventDefault();lastLogKey='';selectedTicker='';load();clearInterval(timer);timer=setInterval(load,60000)});
+tickerInputs().forEach(i=>i.addEventListener('change',()=>{i.value=i.value.trim().toUpperCase();saveTickers()}));
+['askVol','bidVol','midVol'].forEach(id=>$(id).addEventListener('input',render));
+$('clearLog').onclick=()=>{localStorage.removeItem(logKey);lastLogKey='';renderLog()};
+renderLog();load();timer=setInterval(load,60000);
 </script>
 </body>
 </html>
