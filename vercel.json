@@ -2,6 +2,7 @@
   "functions": {
     "api/search.py": { "maxDuration": 30 },
     "api/candles.py": { "maxDuration": 30 },
+    "api/call_wall_monitor.py": { "maxDuration": 30 },
     "api/earnings_scan.py": { "maxDuration": 30 },
     "api/config.py": { "maxDuration": 10 }
   },
