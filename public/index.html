@@ -594,19 +594,17 @@
   .member-hero-inner{ position:relative; overflow:hidden; display:grid; grid-template-columns:1.15fr .85fr; gap:28px; padding:34px; border:1px solid rgba(224,168,56,.38); border-radius:14px; background:radial-gradient(circle at 92% 10%,rgba(224,168,56,.15),transparent 34%),linear-gradient(135deg,#101720,#0b1017); box-shadow:0 18px 55px rgba(0,0,0,.25); }
   .member-hero-copy h1{ font-size:clamp(26px,3.5vw,42px); line-height:1.18; letter-spacing:-.035em; margin:0 0 14px; }.member-hero-copy h1 em{ color:var(--gold); font-style:normal; }
   .member-hero-copy p{ color:var(--text-dim); font-size:14px; line-height:1.7; }.member-hero-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
-  .member-cta,.member-demo-btn,.member-holdings-btn{ border-radius:7px; padding:12px 20px; font-weight:800; cursor:pointer; font-family:inherit; }.member-cta{ border:0; background:var(--gold); color:#111; box-shadow:0 7px 24px rgba(224,168,56,.22); }.member-demo-btn{ border:1px solid var(--gold); background:transparent; color:var(--text); }.member-holdings-btn{ border:1px solid #55e6b5; background:rgba(85,230,181,.05); color:#55e6b5; }
+  .member-cta,.member-demo-btn,.member-holdings-btn,.member-video-btn{ border-radius:7px; padding:12px 20px; font-weight:800; cursor:pointer; font-family:inherit; }.member-cta{ border:0; background:var(--gold); color:#111; box-shadow:0 7px 24px rgba(224,168,56,.22); }.member-demo-btn{ border:1px solid var(--gold); background:transparent; color:var(--text); }.member-holdings-btn{ border:1px solid #55e6b5; background:rgba(85,230,181,.05); color:#55e6b5; }.member-video-btn{ border:1px solid #ff5a65; background:rgba(255,90,101,.07); color:#ff8b92; }
   .member-holdings-note{ margin-top:10px; color:var(--text-dim); font-size:11px; line-height:1.55; }
-  .youtube-shorts-section{ margin:0 0 20px; padding:18px; border:1px solid rgba(255,90,101,.28); border-radius:12px; background:linear-gradient(145deg,rgba(255,90,101,.06),var(--panel) 44%); }
-  .youtube-shorts-head{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px; }
-  .youtube-shorts-head h2{ margin:0; color:var(--text); font-size:21px; }.youtube-shorts-head h2 span{ color:#ff5a65; }
-  .youtube-shorts-head p{ margin:5px 0 0; color:var(--text-dim); font-size:11px; line-height:1.5; }
-  .youtube-channel-btn{ flex:0 0 auto; padding:8px 12px; border:1px solid #ff5a65; border-radius:7px; color:#ff7a83; background:rgba(255,90,101,.07); font-size:11px; font-weight:900; text-decoration:none; }
-  .youtube-shorts-body{ display:grid; grid-template-columns:minmax(230px,310px) minmax(0,1fr); gap:18px; align-items:center; }
-  .youtube-short-player{ position:relative; width:100%; max-width:310px; aspect-ratio:9/16; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#05080d; box-shadow:0 14px 34px rgba(0,0,0,.28); }
-  .youtube-short-player iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-  .youtube-shorts-copy{ padding:8px 4px; }.youtube-shorts-copy strong{ display:block; color:var(--gold); font-size:16px; }
-  .youtube-shorts-copy p{ margin:10px 0 0; color:var(--text-dim); font-size:13px; line-height:1.7; }
-  .youtube-shorts-points{ display:grid; gap:8px; margin-top:15px; }.youtube-shorts-points span{ padding:10px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); color:var(--text); font-size:11px; font-weight:700; }
+  .response-video-modal[hidden]{ display:none; }
+  .response-video-modal{ position:fixed; inset:0; z-index:10000; display:grid; place-items:center; padding:20px; background:rgba(2,5,9,.82); backdrop-filter:blur(5px); }
+  .response-video-dialog{ position:relative; display:grid; grid-template-columns:minmax(220px,290px) minmax(0,1fr); gap:22px; width:min(760px,100%); max-height:calc(100vh - 40px); overflow:auto; padding:22px; border:1px solid rgba(255,90,101,.45); border-radius:14px; background:linear-gradient(145deg,rgba(255,90,101,.08),#101720 42%); box-shadow:0 24px 70px rgba(0,0,0,.62); }
+  .response-video-player{ position:relative; width:100%; aspect-ratio:9/16; overflow:hidden; border:1px solid var(--line); border-radius:11px; background:#05080d; }
+  .response-video-player iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .response-video-copy{ align-self:center; padding-right:8px; }.response-video-copy h2{ margin:0; color:var(--text); font-size:23px; }.response-video-copy h2 span{ color:#ff5a65; }.response-video-copy strong{ display:block; margin-top:18px; color:var(--gold); font-size:16px; }.response-video-copy p{ margin:10px 0 0; color:var(--text-dim); font-size:13px; line-height:1.7; }
+  .response-video-points{ display:grid; gap:8px; margin-top:16px; }.response-video-points span{ padding:10px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); color:var(--text); font-size:11px; font-weight:700; }
+  .response-video-link{ display:inline-block; margin-top:16px; padding:9px 12px; border:1px solid #ff5a65; border-radius:7px; color:#ff8b92; font-size:11px; font-weight:900; text-decoration:none; }
+  .response-video-close{ position:absolute; top:10px; right:10px; z-index:2; width:34px; height:34px; border:1px solid var(--line); border-radius:50%; background:#151b24; color:var(--text); font-size:20px; cursor:pointer; }
   .hero-rail-card{ align-self:center; background:rgba(10,13,18,.72); border:1px solid var(--line); border-radius:11px; padding:22px 18px 16px; }.hero-rail-title{ font-size:11px; color:var(--text-dim); letter-spacing:.08em; }.hero-rail{ position:relative; height:5px; border-radius:6px; background:linear-gradient(90deg,var(--down),#65748d 50%,var(--up)); margin:54px 16px 38px; }
   .hero-rail-point{ position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; border:2px solid var(--panel); }.hero-rail-point span{ position:absolute; left:50%; bottom:17px; transform:translateX(-50%); white-space:nowrap; font:700 11px 'JetBrains Mono',monospace; text-align:center; line-height:1.5; }
   .member-benefits{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }.member-benefit{ display:flex; gap:12px; align-items:center; padding:15px 17px; background:var(--panel); border:1px solid var(--line); border-radius:9px; }.member-benefit-icon{ display:grid; place-items:center; width:42px; height:42px; flex:0 0 42px; border:1px solid rgba(224,168,56,.45); border-radius:9px; color:var(--gold); font-size:20px; }.member-benefit b{ display:block; font-size:14px; }.member-benefit span{ display:block; color:var(--text-dim); font-size:11px; margin-top:4px; line-height:1.4; }
@@ -626,7 +624,6 @@
   body.watchlist-view .nvda-preview,
   body.watchlist-view .market-float,
   body.watchlist-view #marketStatusBanner,
-  body.watchlist-view #youtubeShortsSection,
   body.watchlist-view #aiLeaderMap,
   body.watchlist-view #todayBuySignalSection{ display:none; }
   body.watchlist-view #searchAdSlot{ display:none !important; min-height:0 !important; margin:0 !important; }
@@ -643,7 +640,6 @@
   body.holdings-view .nvda-preview,
   body.holdings-view .market-float,
   body.holdings-view #marketStatusBanner,
-  body.holdings-view #youtubeShortsSection,
   body.holdings-view #aiLeaderMap,
   body.holdings-view #todayBuySignalSection,
   body.holdings-view #searchAdSlot,
@@ -662,8 +658,8 @@
   .paper-summary-card.pnl b.positive{ color:#55e6b5; }
   .paper-summary-card.pnl b.negative{ color:var(--up); }
   @media(max-width:1450px){.mijoostock-side-banner{display:none}}
-  @media(max-width:900px){.main-category-nav .main-category-inner{justify-content:flex-start;padding:8px 12px}.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.youtube-shorts-body{grid-template-columns:1fr}.youtube-short-player{margin:0 auto}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
-  @media(max-width:600px){.youtube-shorts-section{padding:14px 12px}.youtube-shorts-head{align-items:flex-start;flex-direction:column}.youtube-shorts-head h2{font-size:18px}.youtube-channel-btn{width:100%;text-align:center}.youtube-shorts-copy{text-align:center}.youtube-shorts-points{text-align:left}}
+  @media(max-width:900px){.main-category-nav .main-category-inner{justify-content:flex-start;padding:8px 12px}.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:600px){.member-video-btn{width:100%}.response-video-modal{padding:10px}.response-video-dialog{grid-template-columns:1fr;gap:16px;padding:16px}.response-video-player{max-width:260px;margin:0 auto}.response-video-copy{text-align:center;padding:0}.response-video-copy h2{font-size:19px}.response-video-points{text-align:left}}
   .chart-btn{
     display:inline-flex; align-items:center; gap:6px;
     background: var(--panel-2); color: var(--text); border:1px solid var(--line);
@@ -784,13 +780,20 @@
     <div class="member-hero-copy">
       <h1 id="memberHeroTitle">좋은 주식은 오래 보유하고,<br><em>옵션으로 수익을 보호하며<br>매월 수익을 만드세요</em></h1>
       <p>Call Wall에서 자산을 보호하고, Put Wall에서 월세형 현금흐름을 만듭니다.<br>옵션을 잘 몰라도 정해진 가격과 원칙만 따라가면 되는 기록 기반 트레이딩 시스템입니다.</p>
-      <div class="member-hero-actions"><button class="member-cta" id="memberHeroSignup" type="button">내 관심종목 보기 →</button><button class="member-demo-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="member-holdings-btn" id="memberHeroHoldings" type="button">📊 내 종목</button></div>
+      <div class="member-hero-actions"><button class="member-cta" id="memberHeroSignup" type="button">내 관심종목 보기 →</button><button class="member-demo-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="member-holdings-btn" id="memberHeroHoldings" type="button">📊 내 종목</button><button class="member-video-btn" id="memberHeroVideo" type="button">🎬 실전 대응 영상 · 매일 업데이트</button></div>
       <div class="member-holdings-note">관심종목 중 실제 보유종목의 수량 · 평균단가 · 투자금액 · 평가손익 · 수익률을 확인합니다.</div>
     </div>
     <div class="hero-rail-card"><div class="hero-rail-title">GEX OPTION · OPTIONS PRICE MAP</div><div class="hero-rail"><i class="hero-rail-point" style="left:20%;background:var(--down);box-shadow:0 0 12px var(--down)"><span style="color:#66a1fa">Put Wall<br>170</span></i><i class="hero-rail-point" style="left:57%;background:var(--gold);box-shadow:0 0 12px var(--gold)"><span style="color:var(--gold)">현재가<br>177.64</span></i><i class="hero-rail-point" style="left:78%;background:var(--up);box-shadow:0 0 12px var(--up)"><span style="color:#ff7278">Call Wall<br>180</span></i></div></div>
   </div>
   <div class="member-benefits"><div class="member-benefit"><div class="member-benefit-icon">★</div><div><b>관심종목 저장</b><span>PC와 휴대전화에서 동일하게 확인</span></div></div><div class="member-benefit"><div class="member-benefit-icon">▥</div><div><b>핵심 가격 자동 표시</b><span>Put Wall · Call Wall · Gamma Flip</span></div></div><div class="member-benefit"><div class="member-benefit-icon">↻</div><div><b>매일 업데이트</b><span>시장 국면과 관심종목 변화를 빠르게 확인</span></div></div></div>
 </section>
+<div class="response-video-modal" id="responseVideoModal" role="dialog" aria-modal="true" aria-labelledby="responseVideoTitle" hidden>
+  <div class="response-video-dialog">
+    <button class="response-video-close" id="responseVideoClose" type="button" aria-label="영상 창 닫기">×</button>
+    <div class="response-video-player"><iframe id="responseVideoFrame" data-src="https://www.youtube-nocookie.com/embed/videoseries?list=UUmu9jOYqUQ08n6ZkVLqp19g" title="GEX옵션 감마봇 데일리 최신 Shorts" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+    <div class="response-video-copy"><h2 id="responseVideoTitle"><span>▶</span> 실전 대응 영상</h2><strong>매일 새로운 대응 사례 업데이트</strong><p>Call Wall과 Put Wall을 실제 차트에서 어떻게 활용했는지 짧게 확인합니다.</p><div class="response-video-points"><span>① Call Wall $370 · 두 차례 저항 확인</span><span>② 보유 주식 보호를 위한 보험 Put 2회</span><span>③ Put Wall $360 · 반등 확인 후 청산</span></div><a class="response-video-link" href="https://www.youtube.com/@gexoption_daily/shorts" target="_blank" rel="noopener">YouTube에서 더 보기 →</a></div>
+  </div>
+</div>
 <div class="market-float" id="marketFloat">
   <div class="market-float-head">
     <span>📍 시장</span>
@@ -801,13 +804,6 @@
   </div>
 </div>
 <main>
-  <section class="youtube-shorts-section" id="youtubeShortsSection" aria-labelledby="youtubeShortsTitle">
-    <div class="youtube-shorts-head"><div><h2 id="youtubeShortsTitle"><span>▶</span> 오늘의 실전 대응 영상</h2><p>실제 차트에서 Call Wall과 Put Wall을 어떻게 활용했는지 짧게 확인합니다.</p></div><a class="youtube-channel-btn" href="https://www.youtube.com/@gexoption_daily/shorts" target="_blank" rel="noopener">YouTube에서 더 보기 →</a></div>
-    <div class="youtube-shorts-body">
-      <div class="youtube-short-player"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UUmu9jOYqUQ08n6ZkVLqp19g" title="GEX옵션 감마봇 데일리 최신 Shorts" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
-      <div class="youtube-shorts-copy"><strong>테슬라 하락에도 원금 방어와 추가 수익</strong><p>Call Wall $370에서 두 차례 보험 Put으로 보유 주식을 보호하고, Put Wall $360의 지지와 반등을 확인한 뒤 청산한 실제 대응 사례입니다.</p><div class="youtube-shorts-points"><span>① Call Wall $370 · 두 차례 저항 확인</span><span>② 보유 주식 보호를 위한 보험 Put 2회</span><span>③ Put Wall $360 · 반등 확인 후 청산</span></div></div>
-    </div>
-  </section>
   <div class="watchlist-page-title"><h1>⭐ 나의 관심종목</h1><p>내가 저장한 종목의 현재가와 Put Wall · Call Wall을 한 화면에서 확인합니다.</p></div>
   <div class="holdings-page-title"><h1>📊 내 종목</h1><p>보유종목의 수량·평균단가·투자금액·평가금액·손익을 한 페이지에서 확인합니다.</p></div>
   <div class="industry-page-title"><h1>🧭 AI 주도주 로드맵</h1><p>AI 발전 단계별 핵심 산업과 대표 주도주의 Weinstein Stage 및 이번 주 Wall 위치를 비교합니다.</p></div>
@@ -3356,6 +3352,23 @@ document.getElementById('memberHeroSignup').addEventListener('click', openWatchl
 document.getElementById('nvdaSignupBtn').addEventListener('click', openWatchlistView);
 document.getElementById('memberHeroSearch').addEventListener('click', () => { document.getElementById('tickerInput').focus(); window.scrollTo({top:0,behavior:'smooth'}); });
 document.getElementById('memberHeroHoldings').addEventListener('click', openHoldingsView);
+const responseVideoModal=document.getElementById('responseVideoModal');
+const responseVideoFrame=document.getElementById('responseVideoFrame');
+function openResponseVideo(){
+  responseVideoFrame.src=responseVideoFrame.dataset.src;
+  responseVideoModal.hidden=false;
+  document.body.style.overflow='hidden';
+  document.getElementById('responseVideoClose').focus();
+}
+function closeResponseVideo(){
+  responseVideoModal.hidden=true;
+  responseVideoFrame.src='';
+  document.body.style.overflow='';
+}
+document.getElementById('memberHeroVideo').addEventListener('click',openResponseVideo);
+document.getElementById('responseVideoClose').addEventListener('click',closeResponseVideo);
+responseVideoModal.addEventListener('click',event=>{ if(event.target===responseVideoModal) closeResponseVideo(); });
+document.addEventListener('keydown',event=>{ if(event.key==='Escape'&&!responseVideoModal.hidden) closeResponseVideo(); });
 document.getElementById('accountBtn').addEventListener('click', openAuthModal);
 document.getElementById('authCloseBtn').addEventListener('click', closeAuthModal);
 document.getElementById('authModal').addEventListener('click', event => { if(event.target.id === 'authModal') closeAuthModal(); });
