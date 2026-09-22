@@ -9,7 +9,7 @@
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#0a1320 45%,#08111d);color:var(--text);font-family:Arial,sans-serif}
 .wrap{max-width:1180px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:28px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:5px}.links a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:9px 12px;border-radius:8px;margin-left:6px}
 .card{background:rgba(13,23,36,.94);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 14px 35px rgba(0,0,0,.2)}
-.controls{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:8px}.controls input{background:#0a1420;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{background:var(--gold);border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}
+.controls{display:grid;grid-template-columns:repeat(5,1fr) auto auto;gap:8px}.controls input{background:#0a1420;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{background:var(--gold);border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}.controls #autoBtn{background:var(--green)}
 .note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.status{margin:12px 0;color:var(--muted);font-size:12px}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.bucket h2{font-size:14px;margin:0 0 10px}.bucket small{color:var(--muted)}.bucket .body{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .item{background:#0a1420;border:1px solid var(--line);border-radius:10px;padding:11px}.item .head{display:flex;justify-content:space-between;align-items:center;gap:8px}.ticker{font-weight:900;font-size:16px}.badge{font-size:10px;padding:4px 7px;border-radius:999px;border:1px solid currentColor}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
@@ -28,9 +28,9 @@
   <div class="card">
     <div class="controls">
       <input id="t1" value="NVDA"><input id="t2" value="TSLA"><input id="t3" value="PLTR"><input id="t4" value="AMZN"><input id="t5" placeholder="TICKER">
-      <button id="scanBtn">SCAN</button>
+      <button id="scanBtn">SCAN</button><button id="autoBtn">AUTO MARKET</button>
     </div>
-    <div class="note">1차 개발: 입력한 종목을 실시간 주가 + 5분/15분 구조로 분류합니다. 이후 시장 전체 자동 검색으로 확장할 수 있습니다.</div>
+    <div class="note">입력 종목 SCAN 또는 AUTO MARKET으로 당일 강세 후보를 자동 발굴한 뒤 5분/15분 구조를 분석합니다.</div>
     <div class="status" id="status">준비</div>
   </div>
 
@@ -87,6 +87,21 @@ function render(arr){
   $('mini').innerHTML=arr.filter(x=>x.minervini5m && x.minervini5m.stage!=='WAIT').sort((a,b)=>(b.minervini5m.score||0)-(a.minervini5m.score||0)).map(x=>item(x,'mini')).join('')||'<div class="empty">조건 종목 없음</div>';
   $('allRows').innerHTML=arr.map(d=>'<div class="scanrow"><b>'+d.ticker+'</b><span>'+pct(d.day_change_pct)+'</span><span>'+mult(d.volume5_ratio)+'</span><span>'+mult(d.volume15_ratio)+'</span><span class="'+(d.breakout15?'green':'')+'">'+(d.breakout15?'BREAKOUT':'—')+'</span><span>'+((d.minervini5m||{}).stage||'—')+'</span><span>'+pct((d.minervini5m||{}).pivot_distance_pct)+'</span><span class="signal">'+swingView(d)+'</span></div>').join('');
 }
+async function autoMarket(){
+  $('autoBtn').disabled=true;$('scanBtn').disabled=true;$('status').textContent='미국 시장 강세 후보 찾는 중…';
+  try{
+    const r=await fetch('/api/search?mode=option_swing_candidates&limit=8',{cache:'no-store'});
+    const j=await r.json();
+    if(j.error)throw new Error(j.error);
+    const c=(j.candidates||[]).slice(0,8);
+    if(!c.length){$('status').textContent='자동 후보를 찾지 못했습니다.';return}
+    const rows=await Promise.all(c.map(async x=>{try{const rr=await fetch('/api/search?mode=option_swing_setup&ticker='+encodeURIComponent(x.ticker),{cache:'no-store'});return await rr.json()}catch(e){return {ticker:x.ticker,error:e.message}}}));
+    const good=rows.filter(x=>!x.error);
+    render(good);
+    $('status').textContent='AUTO MARKET · '+good.length+'종목 분석 완료 · Top movers → 5M/15M 구조';
+  }catch(e){$('status').textContent='AUTO MARKET 오류 · '+e.message}
+  finally{$('autoBtn').disabled=false;$('scanBtn').disabled=false}
+}
 async function scan(){
   const ts=tickers(); if(!ts.length)return;
   $('scanBtn').disabled=true;$('status').textContent='스캔 중… '+ts.join(', ');
@@ -97,7 +112,7 @@ async function scan(){
     $('status').textContent=good.length+'/'+ts.length+' 종목 분석 완료 · 실시간 주가 + 5분/15분 구조';
   }finally{$('scanBtn').disabled=false}
 }
-$('scanBtn').onclick=scan;
+$('scanBtn').onclick=scan;$('autoBtn').onclick=autoMarket;
 ['t1','t2','t3','t4','t5'].forEach(id=>$(id).addEventListener('change',e=>e.target.value=e.target.value.trim().toUpperCase()));
 scan();
 </script>
