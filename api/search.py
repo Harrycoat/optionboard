@@ -843,7 +843,7 @@ def _option_swing_market_candidates(limit=12):
     # the cleanest institutional swing setups.
     relaxed = [
         x for x in parsed
-        if x["price"] >= 3
+        if x["price"] >= 5
         and 0.5 <= x["change_pct"] <= 80
         and x["day_volume"] >= 100000
         and x["dollar_volume"] >= 2_000_000
@@ -854,7 +854,7 @@ def _option_swing_market_candidates(limit=12):
     # They are still labeled by WHY and must pass the Trade Tracker before entry.
     discovery = [
         x for x in parsed
-        if x["price"] >= 0.5
+        if x["price"] >= 5
         and x["change_pct"] >= 0.10
         and x["day_volume"] >= 10000
         and x["dollar_volume"] >= 100000
@@ -900,14 +900,14 @@ def _option_swing_market_candidates(limit=12):
                 "min_dollar_volume": 20000000,
             },
             "fallback": {
-                "min_price": 3,
+                "min_price": 5,
                 "min_change_pct": 0.5,
                 "max_change_pct": 80,
                 "min_day_volume": 100000,
                 "min_dollar_volume": 2000000,
             },
             "discovery": {
-                "min_price": 0.5,
+                "min_price": 5,
                 "min_change_pct": 0.10,
                 "min_day_volume": 10000,
                 "min_dollar_volume": 100000,
