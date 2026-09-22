@@ -45,10 +45,10 @@
     <div class="ends"><b id="putLabel">PUT WALL —</b><b id="callLabel">CALL WALL —</b></div>
     <div class="rail"><i class="dot" id="spotDot" style="left:50%"><span>현재가</span></i></div>
     <div class="volume-gauge">
-      <div class="volume-gauge-head"><b>TRADING FLOW GAUGE</b><span id="flowVolume">5분 거래량 —</span></div>
+      <div class="volume-gauge-head"><b>BAR + VOLUME FLOW</b><span id="flowVolume">5분 거래량 —</span></div>
       <div class="volume-track"><i class="volume-marker" id="flowMarker" style="left:50%"></i></div>
       <div class="volume-labels"><span class="sell">SELL</span><span>NEUTRAL</span><span class="buy">BUY</span></div>
-      <div class="volume-status" id="flowStatus">체결 방향 데이터 연결 준비</div>
+      <div class="volume-status" id="flowStatus">캔들 방향 + 상대거래량 분석 대기</div>
     </div>
   </section>
 
@@ -144,9 +144,22 @@ function render(){
   $('wallDist').textContent=Number.isFinite(wallDist)?(wallDist>=0?wallDist.toFixed(2)+'% ↓':Math.abs(wallDist).toFixed(2)+'% ↑'):'—';
   $('hull21').textContent=money(hull);$('putLabel').textContent='PUT WALL '+money(put);$('callLabel').textContent='CALL WALL '+money(wall);
   $('barStamp').textContent=(data.ticker||'')+' · '+(bar.time?'5분봉 '+new Date(bar.time).toLocaleString():'5분봉 없음');
-  $('flowVolume').textContent='5분 거래량 '+(Number.isFinite(number(bar.volume))?Math.round(number(bar.volume)).toLocaleString()+'주':'—');
-  $('flowMarker').style.left='50%';
-  $('flowStatus').textContent='BUY/SELL 방향 데이터 연결 준비';
+  const bars=data.bars||[];
+  const curVol=number(bar.volume),o=number(bar.open),c=number(bar.close);
+  const prevVols=bars.slice(-6,-1).map(x=>number(x.volume)).filter(Number.isFinite);
+  const avgVol=prevVols.length?prevVols.reduce((a,b)=>a+b,0)/prevVols.length:NaN;
+  const volRatio=Number.isFinite(curVol)&&Number.isFinite(avgVol)&&avgVol>0?curVol/avgVol:NaN;
+  $('flowVolume').textContent='5분 거래량 '+(Number.isFinite(curVol)?Math.round(curVol).toLocaleString()+'주':'—')+(Number.isFinite(volRatio)?' · '+volRatio.toFixed(2)+'×':'');
+  let marker=50,status='중립 · 방향 확인 중';
+  if(Number.isFinite(o)&&Number.isFinite(c)&&c>o){
+    marker=Number.isFinite(volRatio)?Math.min(90,60+Math.max(0,volRatio-1)*20):65;
+    status='▲ UP BAR'+(Number.isFinite(volRatio)?' · Volume '+volRatio.toFixed(2)+'×':'')+(Number.isFinite(volRatio)&&volRatio>=1.3?' · 상승 압력 강화':'');
+  }else if(Number.isFinite(o)&&Number.isFinite(c)&&c<o){
+    marker=Number.isFinite(volRatio)?Math.max(10,40-Math.max(0,volRatio-1)*20):35;
+    status='▼ DOWN BAR'+(Number.isFinite(volRatio)?' · Volume '+volRatio.toFixed(2)+'×':'')+(Number.isFinite(volRatio)&&volRatio>=1.3?' · 하락 압력 강화':'');
+  }
+  $('flowMarker').style.left=marker+'%';
+  $('flowStatus').textContent=status;
   const lo=Math.min(put,wall),hi=Math.max(put,wall),pct=Number.isFinite(spot)&&Number.isFinite(lo)&&Number.isFinite(hi)&&hi>lo?Math.max(0,Math.min(100,(spot-lo)/(hi-lo)*100)):50;
   $('spotDot').style.left=pct+'%';
   const s=classify(),box=$('decision');box.className='card decision '+s.tone;$('decisionIcon').textContent=s.icon;$('decisionTitle').textContent=(data.ticker?data.ticker+' · ':'')+s.title;$('decisionCopy').textContent=s.copy;saveLog(s)
