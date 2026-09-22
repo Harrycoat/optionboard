@@ -1,34 +1,34 @@
 {
-  "generated_at": "2026-09-21T22:40:14.268183+00:00",
+  "generated_at": "2026-09-22T00:08:46.056703+00:00",
   "tickers": [
     {
       "ticker": "NVDA",
       "spot": 227.38,
-      "is_stale_price": false,
-      "price_change_pct": 3.66,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": 1.99,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-09-30"
       ],
-      "generated_at": "2026-09-21T22:39:10.685564+00:00",
+      "generated_at": "2026-09-22T00:07:50.724828+00:00",
       "max_pain": 217.5,
-      "call_wall": 227.5,
+      "call_wall": 230,
       "put_wall": 220,
-      "gamma_flip": 222.5,
+      "gamma_flip": 216.5,
       "max_oi_wall": 230,
-      "max_oi_wall_total_oi": 87627.0,
-      "max_oi_wall_call_oi": 83978.0,
-      "max_oi_wall_put_oi": 3649.0,
-      "net_gex_total": 991192346.3534151,
+      "max_oi_wall_total_oi": 81024.0,
+      "max_oi_wall_call_oi": 77406.0,
+      "max_oi_wall_put_oi": 3618.0,
+      "net_gex_total": 670886188.7708068,
       "regime": "positive",
       "oi_by_strike": [
         {
           "strike": 50,
           "call_oi": 0.0,
-          "put_oi": 4.0
+          "put_oi": 3.0
         },
         {
           "strike": 55,
@@ -43,7 +43,7 @@
         {
           "strike": 65,
           "call_oi": 0.0,
-          "put_oi": 11471.0
+          "put_oi": 766.0
         },
         {
           "strike": 70,
@@ -72,13 +72,13 @@
         },
         {
           "strike": 95,
-          "call_oi": 17.0,
+          "call_oi": 0.0,
           "put_oi": 655.0
         },
         {
           "strike": 100,
           "call_oi": 5.0,
-          "put_oi": 642.0
+          "put_oi": 639.0
         },
         {
           "strike": 105,
@@ -87,8 +87,8 @@
         },
         {
           "strike": 110,
-          "call_oi": 20.0,
-          "put_oi": 8335.0
+          "call_oi": 10.0,
+          "put_oi": 8329.0
         },
         {
           "strike": 115,
@@ -102,207 +102,207 @@
         },
         {
           "strike": 125,
-          "call_oi": 23.0,
-          "put_oi": 4772.0
+          "call_oi": 22.0,
+          "put_oi": 4775.0
         },
         {
           "strike": 130,
           "call_oi": 8.0,
-          "put_oi": 1515.0
+          "put_oi": 1513.0
         },
         {
           "strike": 135,
           "call_oi": 2.0,
-          "put_oi": 1237.0
+          "put_oi": 1246.0
         },
         {
           "strike": 140,
           "call_oi": 26.0,
-          "put_oi": 1800.0
+          "put_oi": 5811.0
         },
         {
           "strike": 145,
-          "call_oi": 16.0,
-          "put_oi": 2841.0
+          "call_oi": 13.0,
+          "put_oi": 2817.0
         },
         {
           "strike": 150,
           "call_oi": 71.0,
-          "put_oi": 5802.0
+          "put_oi": 5650.0
         },
         {
           "strike": 155,
-          "call_oi": 4.0,
-          "put_oi": 938.0
+          "call_oi": 3.0,
+          "put_oi": 920.0
         },
         {
           "strike": 160,
-          "call_oi": 24.0,
-          "put_oi": 4229.0
+          "call_oi": 23.0,
+          "put_oi": 4452.0
         },
         {
           "strike": 165,
           "call_oi": 53.0,
-          "put_oi": 12081.0
+          "put_oi": 12038.0
         },
         {
           "strike": 170,
           "call_oi": 94.0,
-          "put_oi": 3243.0
+          "put_oi": 2049.0
         },
         {
           "strike": 175,
-          "call_oi": 564.0,
-          "put_oi": 3781.0
+          "call_oi": 162.0,
+          "put_oi": 2726.0
         },
         {
           "strike": 180,
-          "call_oi": 469.0,
-          "put_oi": 14073.0
+          "call_oi": 427.0,
+          "put_oi": 7808.0
         },
         {
           "strike": 185,
-          "call_oi": 120.0,
-          "put_oi": 12405.0
+          "call_oi": 98.0,
+          "put_oi": 11867.0
         },
         {
           "strike": 187.5,
           "call_oi": 7.0,
-          "put_oi": 3905.0
+          "put_oi": 3935.0
         },
         {
           "strike": 190,
-          "call_oi": 484.0,
-          "put_oi": 33204.0
+          "call_oi": 435.0,
+          "put_oi": 31980.0
         },
         {
           "strike": 192.5,
-          "call_oi": 166.0,
-          "put_oi": 5308.0
+          "call_oi": 85.0,
+          "put_oi": 2806.0
         },
         {
           "strike": 195,
-          "call_oi": 652.0,
-          "put_oi": 16156.0
+          "call_oi": 530.0,
+          "put_oi": 14046.0
         },
         {
           "strike": 197.5,
-          "call_oi": 111.0,
-          "put_oi": 17031.0
+          "call_oi": 68.0,
+          "put_oi": 16156.0
         },
         {
           "strike": 200,
-          "call_oi": 1872.0,
-          "put_oi": 26214.0
+          "call_oi": 1638.0,
+          "put_oi": 17974.0
         },
         {
           "strike": 202.5,
-          "call_oi": 648.0,
-          "put_oi": 9445.0
+          "call_oi": 580.0,
+          "put_oi": 7743.0
         },
         {
           "strike": 205,
-          "call_oi": 2200.0,
-          "put_oi": 21871.0
+          "call_oi": 1795.0,
+          "put_oi": 19489.0
         },
         {
           "strike": 207.5,
-          "call_oi": 756.0,
-          "put_oi": 8882.0
+          "call_oi": 733.0,
+          "put_oi": 6398.0
         },
         {
           "strike": 210,
-          "call_oi": 8966.0,
-          "put_oi": 38910.0
+          "call_oi": 8009.0,
+          "put_oi": 34867.0
         },
         {
           "strike": 212.5,
-          "call_oi": 7730.0,
-          "put_oi": 12078.0
+          "call_oi": 5828.0,
+          "put_oi": 11233.0
         },
         {
           "strike": 215,
-          "call_oi": 11942.0,
-          "put_oi": 21045.0
+          "call_oi": 8761.0,
+          "put_oi": 14364.0
         },
         {
           "strike": 217.5,
-          "call_oi": 12057.0,
-          "put_oi": 15463.0
+          "call_oi": 6202.0,
+          "put_oi": 9722.0
         },
         {
           "strike": 220,
-          "call_oi": 43812.0,
-          "put_oi": 19113.0
+          "call_oi": 35695.0,
+          "put_oi": 15893.0
         },
         {
           "strike": 222.5,
-          "call_oi": 82753.0,
-          "put_oi": 3846.0
+          "call_oi": 70520.0,
+          "put_oi": 3163.0
         },
         {
           "strike": 225,
-          "call_oi": 67580.0,
-          "put_oi": 5388.0
+          "call_oi": 57675.0,
+          "put_oi": 4394.0
         },
         {
           "strike": 227.5,
-          "call_oi": 41153.0,
-          "put_oi": 1273.0
+          "call_oi": 36717.0,
+          "put_oi": 1147.0
         },
         {
           "strike": 230,
-          "call_oi": 83978.0,
-          "put_oi": 3649.0
+          "call_oi": 77406.0,
+          "put_oi": 3618.0
         },
         {
           "strike": 232.5,
-          "call_oi": 18821.0,
-          "put_oi": 856.0
+          "call_oi": 16474.0,
+          "put_oi": 715.0
         },
         {
           "strike": 235,
-          "call_oi": 19756.0,
-          "put_oi": 1316.0
+          "call_oi": 18223.0,
+          "put_oi": 1308.0
         },
         {
           "strike": 237.5,
-          "call_oi": 5822.0,
-          "put_oi": 20.0
+          "call_oi": 5402.0,
+          "put_oi": 19.0
         },
         {
           "strike": 240,
-          "call_oi": 30297.0,
-          "put_oi": 145.0
+          "call_oi": 24377.0,
+          "put_oi": 175.0
         },
         {
           "strike": 242.5,
-          "call_oi": 4575.0,
+          "call_oi": 3216.0,
           "put_oi": 12.0
         },
         {
           "strike": 245,
-          "call_oi": 13102.0,
+          "call_oi": 12789.0,
           "put_oi": 11.0
         },
         {
           "strike": 247.5,
-          "call_oi": 1352.0,
+          "call_oi": 1311.0,
           "put_oi": 2.0
         },
         {
           "strike": 250,
-          "call_oi": 16903.0,
-          "put_oi": 6.0
+          "call_oi": 16709.0,
+          "put_oi": 5.0
         },
         {
           "strike": 252.5,
-          "call_oi": 876.0,
+          "call_oi": 638.0,
           "put_oi": 1.0
         },
         {
           "strike": 255,
-          "call_oi": 5426.0,
+          "call_oi": 5353.0,
           "put_oi": 0.0
         },
         {
@@ -312,27 +312,27 @@
         },
         {
           "strike": 260,
-          "call_oi": 17916.0,
+          "call_oi": 17878.0,
           "put_oi": 6.0
         },
         {
           "strike": 265,
-          "call_oi": 2447.0,
+          "call_oi": 2435.0,
           "put_oi": 0.0
         },
         {
           "strike": 270,
-          "call_oi": 20242.0,
+          "call_oi": 20230.0,
           "put_oi": 0.0
         },
         {
           "strike": 275,
-          "call_oi": 9078.0,
+          "call_oi": 9077.0,
           "put_oi": 0.0
         },
         {
           "strike": 280,
-          "call_oi": 4884.0,
+          "call_oi": 4906.0,
           "put_oi": 0.0
         },
         {
@@ -342,22 +342,22 @@
         },
         {
           "strike": 290,
-          "call_oi": 3061.0,
+          "call_oi": 3060.0,
           "put_oi": 0.0
         },
         {
           "strike": 295,
-          "call_oi": 1434.0,
+          "call_oi": 1433.0,
           "put_oi": 0.0
         },
         {
           "strike": 300,
-          "call_oi": 1493.0,
+          "call_oi": 1433.0,
           "put_oi": 0.0
         },
         {
           "strike": 305,
-          "call_oi": 180.0,
+          "call_oi": 177.0,
           "put_oi": 0.0
         },
         {
@@ -426,17 +426,18 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": -112758134.96009375,
+      "cex_total": -1946824345.3756905,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 220 (-3.2%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 227.5 (+0.1%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 222.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 217.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -4.3%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 220~227.5 사이 박스권에서 움직이되, 옵션 만기 특성상 217.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 230 (+1.2%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 216.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 217.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -4.3%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 220~230 사이 박스권에서 움직이되, 옵션 만기 특성상 217.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
@@ -444,31 +445,31 @@
       "stage_slope_pct": 4.16,
       "stage_pos_pct": 11.82,
       "stage_prior_slope_pct": 2.66,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "MU",
       "spot": 1043.96,
-      "is_stale_price": false,
-      "price_change_pct": 6.02,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": -0.1,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-10-02"
       ],
-      "generated_at": "2026-09-21T22:39:16.783845+00:00",
-      "max_pain": 980,
-      "call_wall": 1045,
+      "generated_at": "2026-09-22T00:07:55.799466+00:00",
+      "max_pain": 985,
+      "call_wall": 1050,
       "put_wall": 1010,
-      "gamma_flip": 1000,
+      "gamma_flip": 994.37,
       "max_oi_wall": 600,
-      "max_oi_wall_total_oi": 24795.0,
-      "max_oi_wall_call_oi": 3.0,
-      "max_oi_wall_put_oi": 24792.0,
-      "net_gex_total": 581408724.8070538,
+      "max_oi_wall_total_oi": 25418.0,
+      "max_oi_wall_call_oi": 12.0,
+      "max_oi_wall_put_oi": 25406.0,
+      "net_gex_total": 308449001.2015476,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -568,8 +569,8 @@
         },
         {
           "strike": 100,
-          "call_oi": 0.0,
-          "put_oi": 12.0
+          "call_oi": 4.0,
+          "put_oi": 20.0
         },
         {
           "strike": 105,
@@ -584,11 +585,11 @@
         {
           "strike": 115,
           "call_oi": 0.0,
-          "put_oi": 1.0
+          "put_oi": 5.0
         },
         {
           "strike": 120,
-          "call_oi": 0.0,
+          "call_oi": 3.0,
           "put_oi": 0.0
         },
         {
@@ -598,13 +599,13 @@
         },
         {
           "strike": 130,
-          "call_oi": 0.0,
-          "put_oi": 1.0
+          "call_oi": 4.0,
+          "put_oi": 2.0
         },
         {
           "strike": 135,
-          "call_oi": 0.0,
-          "put_oi": 0.0
+          "call_oi": 20.0,
+          "put_oi": 2.0
         },
         {
           "strike": 140,
@@ -619,7 +620,7 @@
         {
           "strike": 150,
           "call_oi": 0.0,
-          "put_oi": 0.0
+          "put_oi": 2.0
         },
         {
           "strike": 155,
@@ -644,7 +645,7 @@
         {
           "strike": 175,
           "call_oi": 0.0,
-          "put_oi": 0.0
+          "put_oi": 5.0
         },
         {
           "strike": 180,
@@ -658,7 +659,7 @@
         },
         {
           "strike": 190,
-          "call_oi": 0.0,
+          "call_oi": 1.0,
           "put_oi": 11669.0
         },
         {
@@ -668,833 +669,883 @@
         },
         {
           "strike": 200,
-          "call_oi": 0.0,
-          "put_oi": 1594.0
+          "call_oi": 11.0,
+          "put_oi": 1696.0
         },
         {
           "strike": 205,
           "call_oi": 0.0,
-          "put_oi": 1004.0
+          "put_oi": 1056.0
         },
         {
           "strike": 210,
           "call_oi": 0.0,
-          "put_oi": 1000.0
+          "put_oi": 1453.0
         },
         {
           "strike": 215,
           "call_oi": 0.0,
-          "put_oi": 1000.0
+          "put_oi": 1142.0
         },
         {
           "strike": 220,
           "call_oi": 6.0,
-          "put_oi": 997.0
+          "put_oi": 1000.0
         },
         {
           "strike": 225,
           "call_oi": 0.0,
-          "put_oi": 1026.0
+          "put_oi": 1041.0
         },
         {
           "strike": 230,
           "call_oi": 0.0,
-          "put_oi": 1892.0
+          "put_oi": 1962.0
         },
         {
           "strike": 235,
           "call_oi": 0.0,
-          "put_oi": 374.0
+          "put_oi": 441.0
         },
         {
           "strike": 240,
           "call_oi": 0.0,
-          "put_oi": 342.0
+          "put_oi": 449.0
         },
         {
           "strike": 245,
           "call_oi": 0.0,
-          "put_oi": 333.0
+          "put_oi": 394.0
         },
         {
           "strike": 250,
           "call_oi": 0.0,
-          "put_oi": 291.0
+          "put_oi": 317.0
         },
         {
           "strike": 255,
           "call_oi": 0.0,
-          "put_oi": 243.0
+          "put_oi": 302.0
         },
         {
           "strike": 260,
           "call_oi": 0.0,
-          "put_oi": 667.0
+          "put_oi": 697.0
         },
         {
           "strike": 265,
           "call_oi": 0.0,
-          "put_oi": 526.0
+          "put_oi": 573.0
         },
         {
           "strike": 270,
           "call_oi": 0.0,
-          "put_oi": 565.0
+          "put_oi": 636.0
         },
         {
           "strike": 275,
           "call_oi": 3.0,
-          "put_oi": 298.0
+          "put_oi": 390.0
         },
         {
           "strike": 280,
           "call_oi": 2.0,
-          "put_oi": 198.0
+          "put_oi": 281.0
         },
         {
           "strike": 285,
           "call_oi": 0.0,
-          "put_oi": 328.0
+          "put_oi": 471.0
         },
         {
           "strike": 290,
           "call_oi": 1.0,
-          "put_oi": 293.0
+          "put_oi": 470.0
         },
         {
           "strike": 295,
           "call_oi": 0.0,
-          "put_oi": 365.0
+          "put_oi": 592.0
         },
         {
           "strike": 300,
-          "call_oi": 30.0,
-          "put_oi": 920.0
+          "call_oi": 31.0,
+          "put_oi": 1021.0
         },
         {
           "strike": 305,
           "call_oi": 0.0,
-          "put_oi": 247.0
+          "put_oi": 1437.0
         },
         {
           "strike": 310,
           "call_oi": 0.0,
-          "put_oi": 109.0
+          "put_oi": 344.0
         },
         {
           "strike": 315,
           "call_oi": 0.0,
-          "put_oi": 168.0
+          "put_oi": 268.0
         },
         {
           "strike": 320,
           "call_oi": 1.0,
-          "put_oi": 172.0
+          "put_oi": 336.0
         },
         {
           "strike": 325,
           "call_oi": 1.0,
-          "put_oi": 377.0
+          "put_oi": 463.0
         },
         {
           "strike": 330,
           "call_oi": 0.0,
-          "put_oi": 175.0
+          "put_oi": 351.0
         },
         {
           "strike": 335,
           "call_oi": 0.0,
-          "put_oi": 476.0
+          "put_oi": 550.0
         },
         {
           "strike": 340,
           "call_oi": 0.0,
-          "put_oi": 111.0
+          "put_oi": 488.0
         },
         {
           "strike": 345,
           "call_oi": 0.0,
-          "put_oi": 113.0
+          "put_oi": 202.0
         },
         {
           "strike": 350,
           "call_oi": 1.0,
-          "put_oi": 372.0
+          "put_oi": 589.0
         },
         {
           "strike": 355,
           "call_oi": 0.0,
-          "put_oi": 76.0
+          "put_oi": 142.0
         },
         {
           "strike": 360,
           "call_oi": 1.0,
-          "put_oi": 98.0
+          "put_oi": 275.0
         },
         {
           "strike": 365,
           "call_oi": 0.0,
-          "put_oi": 1555.0
+          "put_oi": 1618.0
         },
         {
           "strike": 370,
-          "call_oi": 2.0,
-          "put_oi": 66.0
+          "call_oi": 3.0,
+          "put_oi": 123.0
         },
         {
           "strike": 375,
           "call_oi": 0.0,
-          "put_oi": 76.0
+          "put_oi": 154.0
         },
         {
           "strike": 380,
-          "call_oi": 17.0,
-          "put_oi": 606.0
+          "call_oi": 18.0,
+          "put_oi": 713.0
         },
         {
           "strike": 385,
           "call_oi": 1.0,
-          "put_oi": 294.0
+          "put_oi": 338.0
         },
         {
           "strike": 390,
-          "call_oi": 2.0,
-          "put_oi": 422.0
+          "call_oi": 3.0,
+          "put_oi": 502.0
         },
         {
           "strike": 395,
           "call_oi": 0.0,
-          "put_oi": 277.0
+          "put_oi": 447.0
         },
         {
           "strike": 400,
-          "call_oi": 0.0,
-          "put_oi": 314.0
+          "call_oi": 2.0,
+          "put_oi": 346.0
         },
         {
           "strike": 405,
-          "call_oi": 5.0,
-          "put_oi": 51.0
+          "call_oi": 6.0,
+          "put_oi": 103.0
         },
         {
           "strike": 410,
           "call_oi": 0.0,
-          "put_oi": 67.0
+          "put_oi": 114.0
         },
         {
           "strike": 415,
           "call_oi": 2.0,
-          "put_oi": 291.0
+          "put_oi": 333.0
         },
         {
           "strike": 420,
           "call_oi": 0.0,
-          "put_oi": 62.0
+          "put_oi": 91.0
         },
         {
           "strike": 425,
           "call_oi": 0.0,
-          "put_oi": 49.0
+          "put_oi": 70.0
         },
         {
           "strike": 430,
-          "call_oi": 0.0,
-          "put_oi": 30.0
+          "call_oi": 3.0,
+          "put_oi": 50.0
         },
         {
           "strike": 435,
           "call_oi": 0.0,
-          "put_oi": 73.0
+          "put_oi": 97.0
         },
         {
           "strike": 440,
-          "call_oi": 1.0,
-          "put_oi": 59.0
+          "call_oi": 11.0,
+          "put_oi": 84.0
         },
         {
           "strike": 445,
           "call_oi": 0.0,
-          "put_oi": 60.0
+          "put_oi": 78.0
         },
         {
           "strike": 450,
-          "call_oi": 1.0,
-          "put_oi": 106.0
+          "call_oi": 2.0,
+          "put_oi": 374.0
         },
         {
           "strike": 455,
           "call_oi": 0.0,
-          "put_oi": 71.0
+          "put_oi": 92.0
         },
         {
           "strike": 460,
           "call_oi": 1.0,
-          "put_oi": 65.0
+          "put_oi": 95.0
         },
         {
           "strike": 465,
           "call_oi": 0.0,
-          "put_oi": 21.0
+          "put_oi": 105.0
         },
         {
           "strike": 470,
-          "call_oi": 0.0,
-          "put_oi": 55.0
+          "call_oi": 4.0,
+          "put_oi": 97.0
         },
         {
           "strike": 475,
-          "call_oi": 0.0,
-          "put_oi": 28.0
+          "call_oi": 1.0,
+          "put_oi": 57.0
         },
         {
           "strike": 480,
-          "call_oi": 3.0,
-          "put_oi": 172.0
+          "call_oi": 4.0,
+          "put_oi": 196.0
         },
         {
           "strike": 485,
           "call_oi": 0.0,
-          "put_oi": 73.0
+          "put_oi": 219.0
         },
         {
           "strike": 490,
-          "call_oi": 0.0,
-          "put_oi": 44.0
+          "call_oi": 4.0,
+          "put_oi": 145.0
         },
         {
           "strike": 495,
-          "call_oi": 1.0,
-          "put_oi": 723.0
+          "call_oi": 4.0,
+          "put_oi": 795.0
         },
         {
           "strike": 500,
-          "call_oi": 37.0,
-          "put_oi": 230.0
+          "call_oi": 76.0,
+          "put_oi": 1520.0
         },
         {
           "strike": 505,
-          "call_oi": 2.0,
-          "put_oi": 31.0
+          "call_oi": 28.0,
+          "put_oi": 196.0
         },
         {
           "strike": 510,
-          "call_oi": 1.0,
-          "put_oi": 219.0
+          "call_oi": 16.0,
+          "put_oi": 309.0
         },
         {
           "strike": 515,
           "call_oi": 0.0,
-          "put_oi": 81.0
+          "put_oi": 157.0
         },
         {
           "strike": 520,
-          "call_oi": 0.0,
-          "put_oi": 66.0
+          "call_oi": 8.0,
+          "put_oi": 89.0
         },
         {
           "strike": 525,
           "call_oi": 0.0,
-          "put_oi": 88.0
+          "put_oi": 156.0
         },
         {
           "strike": 530,
-          "call_oi": 0.0,
-          "put_oi": 77.0
+          "call_oi": 2.0,
+          "put_oi": 97.0
         },
         {
           "strike": 535,
           "call_oi": 1.0,
-          "put_oi": 136.0
+          "put_oi": 154.0
         },
         {
           "strike": 540,
-          "call_oi": 8.0,
-          "put_oi": 290.0
+          "call_oi": 18.0,
+          "put_oi": 364.0
         },
         {
           "strike": 545,
-          "call_oi": 0.0,
-          "put_oi": 361.0
+          "call_oi": 2.0,
+          "put_oi": 370.0
         },
         {
           "strike": 550,
-          "call_oi": 1.0,
-          "put_oi": 1637.0
+          "call_oi": 3.0,
+          "put_oi": 1714.0
         },
         {
           "strike": 555,
-          "call_oi": 0.0,
-          "put_oi": 8568.0
+          "call_oi": 1.0,
+          "put_oi": 8614.0
         },
         {
           "strike": 560,
           "call_oi": 1.0,
-          "put_oi": 365.0
+          "put_oi": 371.0
         },
         {
           "strike": 565,
           "call_oi": 0.0,
-          "put_oi": 19.0
+          "put_oi": 38.0
         },
         {
           "strike": 570,
-          "call_oi": 0.0,
-          "put_oi": 31.0
+          "call_oi": 2.0,
+          "put_oi": 46.0
         },
         {
           "strike": 575,
           "call_oi": 0.0,
-          "put_oi": 122.0
+          "put_oi": 369.0
         },
         {
           "strike": 580,
-          "call_oi": 5.0,
-          "put_oi": 145.0
+          "call_oi": 6.0,
+          "put_oi": 276.0
         },
         {
           "strike": 585,
-          "call_oi": 4.0,
-          "put_oi": 47.0
+          "call_oi": 5.0,
+          "put_oi": 561.0
         },
         {
           "strike": 590,
-          "call_oi": 4.0,
-          "put_oi": 389.0
+          "call_oi": 8.0,
+          "put_oi": 514.0
         },
         {
           "strike": 595,
           "call_oi": 4.0,
-          "put_oi": 8302.0
+          "put_oi": 8429.0
         },
         {
           "strike": 600,
-          "call_oi": 3.0,
-          "put_oi": 24792.0
+          "call_oi": 12.0,
+          "put_oi": 25406.0
         },
         {
           "strike": 605,
           "call_oi": 4.0,
-          "put_oi": 480.0
+          "put_oi": 520.0
         },
         {
           "strike": 610,
-          "call_oi": 3.0,
-          "put_oi": 818.0
+          "call_oi": 10.0,
+          "put_oi": 843.0
         },
         {
           "strike": 615,
           "call_oi": 4.0,
-          "put_oi": 1303.0
+          "put_oi": 1345.0
         },
         {
           "strike": 620,
-          "call_oi": 4.0,
-          "put_oi": 4136.0
+          "call_oi": 7.0,
+          "put_oi": 4321.0
         },
         {
           "strike": 625,
-          "call_oi": 5.0,
-          "put_oi": 145.0
+          "call_oi": 6.0,
+          "put_oi": 186.0
         },
         {
           "strike": 630,
-          "call_oi": 6.0,
-          "put_oi": 275.0
+          "call_oi": 7.0,
+          "put_oi": 321.0
         },
         {
           "strike": 635,
-          "call_oi": 5.0,
-          "put_oi": 89.0
+          "call_oi": 8.0,
+          "put_oi": 122.0
         },
         {
           "strike": 640,
           "call_oi": 2.0,
-          "put_oi": 193.0
+          "put_oi": 265.0
         },
         {
           "strike": 645,
           "call_oi": 0.0,
-          "put_oi": 353.0
+          "put_oi": 398.0
         },
         {
           "strike": 650,
-          "call_oi": 10.0,
-          "put_oi": 820.0
+          "call_oi": 46.0,
+          "put_oi": 1388.0
         },
         {
           "strike": 655,
           "call_oi": 3.0,
-          "put_oi": 42.0
+          "put_oi": 105.0
         },
         {
           "strike": 660,
-          "call_oi": 3.0,
-          "put_oi": 88.0
+          "call_oi": 4.0,
+          "put_oi": 172.0
         },
         {
           "strike": 665,
           "call_oi": 2.0,
-          "put_oi": 71.0
+          "put_oi": 2454.0
         },
         {
           "strike": 670,
-          "call_oi": 10.0,
-          "put_oi": 194.0
+          "call_oi": 11.0,
+          "put_oi": 373.0
         },
         {
           "strike": 675,
-          "call_oi": 1.0,
-          "put_oi": 209.0
+          "call_oi": 2.0,
+          "put_oi": 260.0
         },
         {
           "strike": 680,
-          "call_oi": 2.0,
-          "put_oi": 266.0
+          "call_oi": 3.0,
+          "put_oi": 482.0
         },
         {
           "strike": 685,
-          "call_oi": 2.0,
-          "put_oi": 319.0
+          "call_oi": 8.0,
+          "put_oi": 813.0
         },
         {
           "strike": 690,
           "call_oi": 1.0,
-          "put_oi": 233.0
+          "put_oi": 393.0
         },
         {
           "strike": 695,
-          "call_oi": 5.0,
-          "put_oi": 228.0
+          "call_oi": 7.0,
+          "put_oi": 360.0
         },
         {
           "strike": 700,
-          "call_oi": 41.0,
-          "put_oi": 3615.0
+          "call_oi": 54.0,
+          "put_oi": 4320.0
+        },
+        {
+          "strike": 702.5,
+          "call_oi": 0.0,
+          "put_oi": 2.0
         },
         {
           "strike": 705,
-          "call_oi": 1.0,
-          "put_oi": 162.0
+          "call_oi": 13.0,
+          "put_oi": 189.0
+        },
+        {
+          "strike": 707.5,
+          "call_oi": 0.0,
+          "put_oi": 11.0
         },
         {
           "strike": 710,
-          "call_oi": 4.0,
-          "put_oi": 228.0
+          "call_oi": 6.0,
+          "put_oi": 463.0
+        },
+        {
+          "strike": 712.5,
+          "call_oi": 0.0,
+          "put_oi": 0.0
         },
         {
           "strike": 715,
           "call_oi": 3.0,
-          "put_oi": 302.0
+          "put_oi": 435.0
+        },
+        {
+          "strike": 717.5,
+          "call_oi": 0.0,
+          "put_oi": 1.0
         },
         {
           "strike": 720,
-          "call_oi": 8.0,
-          "put_oi": 1162.0
+          "call_oi": 10.0,
+          "put_oi": 1900.0
+        },
+        {
+          "strike": 722.5,
+          "call_oi": 0.0,
+          "put_oi": 1.0
         },
         {
           "strike": 725,
-          "call_oi": 5.0,
-          "put_oi": 853.0
+          "call_oi": 13.0,
+          "put_oi": 910.0
+        },
+        {
+          "strike": 727.5,
+          "call_oi": 0.0,
+          "put_oi": 0.0
         },
         {
           "strike": 730,
           "call_oi": 29.0,
-          "put_oi": 906.0
+          "put_oi": 1139.0
+        },
+        {
+          "strike": 732.5,
+          "call_oi": 0.0,
+          "put_oi": 0.0
         },
         {
           "strike": 735,
           "call_oi": 10.0,
-          "put_oi": 175.0
+          "put_oi": 333.0
+        },
+        {
+          "strike": 737.5,
+          "call_oi": 0.0,
+          "put_oi": 0.0
         },
         {
           "strike": 740,
-          "call_oi": 13.0,
-          "put_oi": 525.0
+          "call_oi": 16.0,
+          "put_oi": 759.0
+        },
+        {
+          "strike": 742.5,
+          "call_oi": 0.0,
+          "put_oi": 0.0
         },
         {
           "strike": 745,
-          "call_oi": 10.0,
-          "put_oi": 161.0
+          "call_oi": 11.0,
+          "put_oi": 255.0
+        },
+        {
+          "strike": 747.5,
+          "call_oi": 0.0,
+          "put_oi": 3.0
         },
         {
           "strike": 750,
-          "call_oi": 47.0,
-          "put_oi": 2474.0
+          "call_oi": 395.0,
+          "put_oi": 3368.0
         },
         {
           "strike": 755,
           "call_oi": 7.0,
-          "put_oi": 178.0
+          "put_oi": 219.0
         },
         {
           "strike": 760,
-          "call_oi": 41.0,
-          "put_oi": 324.0
+          "call_oi": 42.0,
+          "put_oi": 507.0
         },
         {
           "strike": 765,
-          "call_oi": 77.0,
-          "put_oi": 150.0
+          "call_oi": 79.0,
+          "put_oi": 246.0
         },
         {
           "strike": 770,
-          "call_oi": 8.0,
-          "put_oi": 407.0
+          "call_oi": 7.0,
+          "put_oi": 628.0
         },
         {
           "strike": 775,
-          "call_oi": 21.0,
-          "put_oi": 591.0
+          "call_oi": 28.0,
+          "put_oi": 666.0
         },
         {
           "strike": 780,
-          "call_oi": 9.0,
-          "put_oi": 477.0
+          "call_oi": 27.0,
+          "put_oi": 760.0
         },
         {
           "strike": 785,
-          "call_oi": 3.0,
-          "put_oi": 159.0
+          "call_oi": 8.0,
+          "put_oi": 229.0
         },
         {
           "strike": 790,
-          "call_oi": 7.0,
-          "put_oi": 803.0
+          "call_oi": 12.0,
+          "put_oi": 1083.0
         },
         {
           "strike": 795,
-          "call_oi": 17.0,
-          "put_oi": 328.0
+          "call_oi": 26.0,
+          "put_oi": 627.0
         },
         {
           "strike": 800,
-          "call_oi": 3325.0,
-          "put_oi": 2034.0
+          "call_oi": 5700.0,
+          "put_oi": 3307.0
         },
         {
           "strike": 805,
-          "call_oi": 108.0,
-          "put_oi": 802.0
+          "call_oi": 114.0,
+          "put_oi": 465.0
         },
         {
           "strike": 810,
-          "call_oi": 35.0,
-          "put_oi": 1945.0
+          "call_oi": 1065.0,
+          "put_oi": 1080.0
         },
         {
           "strike": 815,
-          "call_oi": 17.0,
-          "put_oi": 697.0
+          "call_oi": 96.0,
+          "put_oi": 589.0
         },
         {
           "strike": 820,
-          "call_oi": 17.0,
-          "put_oi": 2121.0
+          "call_oi": 276.0,
+          "put_oi": 2129.0
         },
         {
           "strike": 825,
-          "call_oi": 43.0,
-          "put_oi": 928.0
+          "call_oi": 56.0,
+          "put_oi": 627.0
         },
         {
           "strike": 830,
-          "call_oi": 21.0,
-          "put_oi": 1738.0
+          "call_oi": 81.0,
+          "put_oi": 2396.0
         },
         {
           "strike": 835,
-          "call_oi": 12.0,
-          "put_oi": 1113.0
+          "call_oi": 16.0,
+          "put_oi": 594.0
         },
         {
           "strike": 840,
-          "call_oi": 49.0,
-          "put_oi": 967.0
+          "call_oi": 77.0,
+          "put_oi": 916.0
         },
         {
           "strike": 845,
-          "call_oi": 21.0,
-          "put_oi": 691.0
+          "call_oi": 159.0,
+          "put_oi": 439.0
         },
         {
           "strike": 850,
-          "call_oi": 356.0,
-          "put_oi": 4210.0
+          "call_oi": 493.0,
+          "put_oi": 4098.0
         },
         {
           "strike": 855,
-          "call_oi": 46.0,
-          "put_oi": 687.0
+          "call_oi": 70.0,
+          "put_oi": 789.0
         },
         {
           "strike": 860,
-          "call_oi": 69.0,
-          "put_oi": 1352.0
+          "call_oi": 76.0,
+          "put_oi": 1988.0
         },
         {
           "strike": 865,
-          "call_oi": 75.0,
-          "put_oi": 598.0
+          "call_oi": 196.0,
+          "put_oi": 653.0
         },
         {
           "strike": 870,
-          "call_oi": 251.0,
-          "put_oi": 913.0
+          "call_oi": 254.0,
+          "put_oi": 901.0
         },
         {
           "strike": 875,
-          "call_oi": 123.0,
-          "put_oi": 833.0
+          "call_oi": 143.0,
+          "put_oi": 1074.0
         },
         {
           "strike": 880,
-          "call_oi": 92.0,
-          "put_oi": 2134.0
+          "call_oi": 131.0,
+          "put_oi": 2073.0
         },
         {
           "strike": 885,
-          "call_oi": 60.0,
-          "put_oi": 823.0
+          "call_oi": 74.0,
+          "put_oi": 962.0
         },
         {
           "strike": 890,
-          "call_oi": 115.0,
-          "put_oi": 1326.0
+          "call_oi": 209.0,
+          "put_oi": 1870.0
         },
         {
           "strike": 895,
-          "call_oi": 105.0,
-          "put_oi": 3801.0
+          "call_oi": 155.0,
+          "put_oi": 2336.0
         },
         {
           "strike": 900,
-          "call_oi": 1858.0,
-          "put_oi": 5090.0
+          "call_oi": 3237.0,
+          "put_oi": 5756.0
         },
         {
           "strike": 905,
-          "call_oi": 367.0,
-          "put_oi": 1587.0
+          "call_oi": 316.0,
+          "put_oi": 1316.0
         },
         {
           "strike": 910,
-          "call_oi": 877.0,
-          "put_oi": 2785.0
+          "call_oi": 2040.0,
+          "put_oi": 2533.0
         },
         {
           "strike": 915,
-          "call_oi": 499.0,
-          "put_oi": 1402.0
+          "call_oi": 475.0,
+          "put_oi": 1239.0
         },
         {
           "strike": 920,
-          "call_oi": 695.0,
-          "put_oi": 2834.0
+          "call_oi": 1201.0,
+          "put_oi": 2507.0
         },
         {
           "strike": 925,
-          "call_oi": 704.0,
-          "put_oi": 1268.0
+          "call_oi": 1191.0,
+          "put_oi": 1319.0
         },
         {
           "strike": 930,
-          "call_oi": 2130.0,
-          "put_oi": 4190.0
+          "call_oi": 1885.0,
+          "put_oi": 4658.0
         },
         {
           "strike": 935,
-          "call_oi": 952.0,
-          "put_oi": 1292.0
+          "call_oi": 965.0,
+          "put_oi": 1137.0
         },
         {
           "strike": 940,
-          "call_oi": 844.0,
-          "put_oi": 5271.0
+          "call_oi": 1144.0,
+          "put_oi": 3204.0
         },
         {
           "strike": 945,
-          "call_oi": 592.0,
-          "put_oi": 1577.0
+          "call_oi": 582.0,
+          "put_oi": 503.0
         },
         {
           "strike": 950,
-          "call_oi": 4650.0,
-          "put_oi": 4823.0
+          "call_oi": 4103.0,
+          "put_oi": 3300.0
         },
         {
           "strike": 952.5,
-          "call_oi": 84.0,
-          "put_oi": 100.0
+          "call_oi": 91.0,
+          "put_oi": 113.0
         },
         {
           "strike": 955,
-          "call_oi": 924.0,
-          "put_oi": 1089.0
+          "call_oi": 1079.0,
+          "put_oi": 508.0
         },
         {
           "strike": 957.5,
-          "call_oi": 118.0,
-          "put_oi": 52.0
+          "call_oi": 147.0,
+          "put_oi": 97.0
         },
         {
           "strike": 960,
-          "call_oi": 2272.0,
-          "put_oi": 1920.0
+          "call_oi": 2372.0,
+          "put_oi": 1451.0
         },
         {
           "strike": 965,
-          "call_oi": 792.0,
-          "put_oi": 1122.0
+          "call_oi": 765.0,
+          "put_oi": 640.0
         },
         {
           "strike": 970,
-          "call_oi": 1069.0,
-          "put_oi": 4197.0
+          "call_oi": 2169.0,
+          "put_oi": 3194.0
         },
         {
           "strike": 975,
-          "call_oi": 1997.0,
-          "put_oi": 1351.0
+          "call_oi": 1145.0,
+          "put_oi": 1134.0
         },
         {
           "strike": 980,
-          "call_oi": 2907.0,
-          "put_oi": 5534.0
+          "call_oi": 3046.0,
+          "put_oi": 3819.0
         },
         {
           "strike": 985,
-          "call_oi": 1040.0,
-          "put_oi": 1044.0
+          "call_oi": 1032.0,
+          "put_oi": 909.0
         },
         {
           "strike": 990,
-          "call_oi": 1884.0,
-          "put_oi": 2054.0
+          "call_oi": 1933.0,
+          "put_oi": 1169.0
         },
         {
           "strike": 995,
-          "call_oi": 1712.0,
-          "put_oi": 1490.0
+          "call_oi": 1218.0,
+          "put_oi": 957.0
         },
         {
           "strike": 1000,
-          "call_oi": 8878.0,
-          "put_oi": 3332.0
+          "call_oi": 18724.0,
+          "put_oi": 2592.0
         },
         {
           "strike": 1005,
-          "call_oi": 1747.0,
-          "put_oi": 1109.0
+          "call_oi": 1203.0,
+          "put_oi": 712.0
         },
         {
           "strike": 1010,
-          "call_oi": 3367.0,
-          "put_oi": 5498.0
+          "call_oi": 3094.0,
+          "put_oi": 2614.0
         },
         {
           "strike": 1015,
-          "call_oi": 3110.0,
-          "put_oi": 391.0
+          "call_oi": 1693.0,
+          "put_oi": 301.0
         },
         {
           "strike": 1017.5,
@@ -1503,8 +1554,8 @@
         },
         {
           "strike": 1020,
-          "call_oi": 4065.0,
-          "put_oi": 473.0
+          "call_oi": 3923.0,
+          "put_oi": 661.0
         },
         {
           "strike": 1022.5,
@@ -1513,8 +1564,8 @@
         },
         {
           "strike": 1025,
-          "call_oi": 4890.0,
-          "put_oi": 199.0
+          "call_oi": 2789.0,
+          "put_oi": 200.0
         },
         {
           "strike": 1027.5,
@@ -1523,8 +1574,8 @@
         },
         {
           "strike": 1030,
-          "call_oi": 3191.0,
-          "put_oi": 399.0
+          "call_oi": 2574.0,
+          "put_oi": 384.0
         },
         {
           "strike": 1032.5,
@@ -1533,8 +1584,8 @@
         },
         {
           "strike": 1035,
-          "call_oi": 2383.0,
-          "put_oi": 190.0
+          "call_oi": 1146.0,
+          "put_oi": 184.0
         },
         {
           "strike": 1037.5,
@@ -1543,108 +1594,108 @@
         },
         {
           "strike": 1040,
-          "call_oi": 2561.0,
-          "put_oi": 123.0
+          "call_oi": 1708.0,
+          "put_oi": 102.0
         },
         {
           "strike": 1045,
-          "call_oi": 1471.0,
-          "put_oi": 50.0
+          "call_oi": 821.0,
+          "put_oi": 127.0
         },
         {
           "strike": 1050,
-          "call_oi": 7614.0,
-          "put_oi": 362.0
+          "call_oi": 7026.0,
+          "put_oi": 430.0
         },
         {
           "strike": 1055,
-          "call_oi": 1361.0,
-          "put_oi": 70.0
+          "call_oi": 923.0,
+          "put_oi": 80.0
         },
         {
           "strike": 1060,
-          "call_oi": 2234.0,
-          "put_oi": 43.0
+          "call_oi": 1882.0,
+          "put_oi": 59.0
         },
         {
           "strike": 1065,
-          "call_oi": 893.0,
-          "put_oi": 27.0
+          "call_oi": 606.0,
+          "put_oi": 39.0
         },
         {
           "strike": 1070,
-          "call_oi": 1256.0,
-          "put_oi": 82.0
+          "call_oi": 929.0,
+          "put_oi": 290.0
         },
         {
           "strike": 1075,
-          "call_oi": 1162.0,
-          "put_oi": 34.0
+          "call_oi": 1068.0,
+          "put_oi": 39.0
         },
         {
           "strike": 1080,
-          "call_oi": 2100.0,
-          "put_oi": 40.0
+          "call_oi": 2498.0,
+          "put_oi": 242.0
         },
         {
           "strike": 1085,
-          "call_oi": 815.0,
-          "put_oi": 10.0
+          "call_oi": 846.0,
+          "put_oi": 162.0
         },
         {
           "strike": 1090,
-          "call_oi": 1170.0,
-          "put_oi": 23.0
+          "call_oi": 981.0,
+          "put_oi": 69.0
         },
         {
           "strike": 1095,
-          "call_oi": 941.0,
-          "put_oi": 173.0
+          "call_oi": 988.0,
+          "put_oi": 188.0
         },
         {
           "strike": 1100,
-          "call_oi": 6776.0,
-          "put_oi": 112.0
+          "call_oi": 9784.0,
+          "put_oi": 294.0
         },
         {
           "strike": 1105,
-          "call_oi": 482.0,
-          "put_oi": 14.0
+          "call_oi": 514.0,
+          "put_oi": 31.0
         },
         {
           "strike": 1110,
-          "call_oi": 873.0,
-          "put_oi": 16.0
+          "call_oi": 1692.0,
+          "put_oi": 32.0
         },
         {
           "strike": 1115,
-          "call_oi": 379.0,
-          "put_oi": 30.0
+          "call_oi": 432.0,
+          "put_oi": 36.0
         },
         {
           "strike": 1120,
-          "call_oi": 644.0,
-          "put_oi": 234.0
+          "call_oi": 783.0,
+          "put_oi": 262.0
         },
         {
           "strike": 1125,
-          "call_oi": 442.0,
-          "put_oi": 11.0
+          "call_oi": 528.0,
+          "put_oi": 28.0
         },
         {
           "strike": 1130,
-          "call_oi": 925.0,
-          "put_oi": 218.0
+          "call_oi": 835.0,
+          "put_oi": 231.0
         },
         {
           "strike": 1135,
-          "call_oi": 670.0,
-          "put_oi": 7.0
+          "call_oi": 479.0,
+          "put_oi": 31.0
         },
         {
           "strike": 1140,
-          "call_oi": 1477.0,
-          "put_oi": 8.0
+          "call_oi": 1614.0,
+          "put_oi": 30.0
         },
         {
           "strike": 1145,
@@ -1653,118 +1704,118 @@
         },
         {
           "strike": 1150,
-          "call_oi": 2445.0,
-          "put_oi": 116.0
+          "call_oi": 3486.0,
+          "put_oi": 372.0
         },
         {
           "strike": 1155,
-          "call_oi": 257.0,
+          "call_oi": 100.0,
           "put_oi": 0.0
         },
         {
           "strike": 1160,
-          "call_oi": 1009.0,
-          "put_oi": 7.0
+          "call_oi": 1102.0,
+          "put_oi": 21.0
         },
         {
           "strike": 1165,
-          "call_oi": 248.0,
+          "call_oi": 183.0,
           "put_oi": 0.0
         },
         {
           "strike": 1170,
-          "call_oi": 236.0,
-          "put_oi": 12.0
+          "call_oi": 477.0,
+          "put_oi": 30.0
         },
         {
           "strike": 1175,
-          "call_oi": 49.0,
+          "call_oi": 72.0,
           "put_oi": 0.0
         },
         {
           "strike": 1180,
-          "call_oi": 493.0,
-          "put_oi": 3.0
+          "call_oi": 803.0,
+          "put_oi": 15.0
         },
         {
           "strike": 1185,
-          "call_oi": 198.0,
+          "call_oi": 147.0,
           "put_oi": 0.0
         },
         {
           "strike": 1190,
-          "call_oi": 356.0,
-          "put_oi": 3.0
+          "call_oi": 556.0,
+          "put_oi": 5.0
         },
         {
           "strike": 1195,
-          "call_oi": 46.0,
+          "call_oi": 35.0,
           "put_oi": 0.0
         },
         {
           "strike": 1200,
-          "call_oi": 3859.0,
-          "put_oi": 22.0
+          "call_oi": 5823.0,
+          "put_oi": 121.0
         },
         {
           "strike": 1205,
-          "call_oi": 25.0,
+          "call_oi": 22.0,
           "put_oi": 0.0
         },
         {
           "strike": 1210,
-          "call_oi": 1045.0,
+          "call_oi": 1265.0,
           "put_oi": 0.0
         },
         {
           "strike": 1215,
-          "call_oi": 177.0,
+          "call_oi": 167.0,
           "put_oi": 0.0
         },
         {
           "strike": 1220,
-          "call_oi": 1332.0,
-          "put_oi": 0.0
+          "call_oi": 1596.0,
+          "put_oi": 16.0
         },
         {
           "strike": 1225,
-          "call_oi": 506.0,
+          "call_oi": 505.0,
           "put_oi": 0.0
         },
         {
           "strike": 1230,
-          "call_oi": 673.0,
-          "put_oi": 0.0
+          "call_oi": 814.0,
+          "put_oi": 1.0
         },
         {
           "strike": 1235,
-          "call_oi": 64.0,
+          "call_oi": 52.0,
           "put_oi": 0.0
         },
         {
           "strike": 1240,
-          "call_oi": 1306.0,
-          "put_oi": 0.0
+          "call_oi": 988.0,
+          "put_oi": 6.0
         },
         {
           "strike": 1245,
-          "call_oi": 20.0,
+          "call_oi": 5.0,
           "put_oi": 0.0
         },
         {
           "strike": 1250,
-          "call_oi": 2245.0,
-          "put_oi": 0.0
+          "call_oi": 2878.0,
+          "put_oi": 7.0
         },
         {
           "strike": 1255,
-          "call_oi": 26.0,
+          "call_oi": 17.0,
           "put_oi": 0.0
         },
         {
           "strike": 1260,
-          "call_oi": 462.0,
-          "put_oi": 0.0
+          "call_oi": 1289.0,
+          "put_oi": 1.0
         },
         {
           "strike": 1265,
@@ -1773,8 +1824,8 @@
         },
         {
           "strike": 1270,
-          "call_oi": 435.0,
-          "put_oi": 0.0
+          "call_oi": 603.0,
+          "put_oi": 3.0
         },
         {
           "strike": 1275,
@@ -1783,8 +1834,8 @@
         },
         {
           "strike": 1280,
-          "call_oi": 230.0,
-          "put_oi": 0.0
+          "call_oi": 342.0,
+          "put_oi": 13.0
         },
         {
           "strike": 1285,
@@ -1793,8 +1844,8 @@
         },
         {
           "strike": 1290,
-          "call_oi": 269.0,
-          "put_oi": 0.0
+          "call_oi": 360.0,
+          "put_oi": 14.0
         },
         {
           "strike": 1295,
@@ -1803,8 +1854,8 @@
         },
         {
           "strike": 1300,
-          "call_oi": 1866.0,
-          "put_oi": 0.0
+          "call_oi": 2667.0,
+          "put_oi": 1.0
         },
         {
           "strike": 1305,
@@ -1813,7 +1864,7 @@
         },
         {
           "strike": 1310,
-          "call_oi": 346.0,
+          "call_oi": 476.0,
           "put_oi": 0.0
         },
         {
@@ -1823,7 +1874,7 @@
         },
         {
           "strike": 1320,
-          "call_oi": 157.0,
+          "call_oi": 313.0,
           "put_oi": 0.0
         },
         {
@@ -1833,7 +1884,7 @@
         },
         {
           "strike": 1330,
-          "call_oi": 82.0,
+          "call_oi": 256.0,
           "put_oi": 0.0
         },
         {
@@ -1843,7 +1894,7 @@
         },
         {
           "strike": 1340,
-          "call_oi": 92.0,
+          "call_oi": 205.0,
           "put_oi": 0.0
         },
         {
@@ -1853,211 +1904,212 @@
         },
         {
           "strike": 1350,
-          "call_oi": 301.0,
+          "call_oi": 898.0,
           "put_oi": 0.0
         },
         {
           "strike": 1360,
-          "call_oi": 126.0,
+          "call_oi": 230.0,
           "put_oi": 0.0
         },
         {
           "strike": 1370,
-          "call_oi": 185.0,
+          "call_oi": 814.0,
           "put_oi": 0.0
         },
         {
           "strike": 1380,
-          "call_oi": 81.0,
+          "call_oi": 204.0,
           "put_oi": 0.0
         },
         {
           "strike": 1390,
-          "call_oi": 116.0,
+          "call_oi": 158.0,
           "put_oi": 0.0
         },
         {
           "strike": 1400,
-          "call_oi": 1049.0,
+          "call_oi": 1720.0,
           "put_oi": 0.0
         },
         {
           "strike": 1410,
-          "call_oi": 147.0,
+          "call_oi": 265.0,
           "put_oi": 0.0
         },
         {
           "strike": 1420,
-          "call_oi": 269.0,
+          "call_oi": 304.0,
           "put_oi": 0.0
         },
         {
           "strike": 1430,
-          "call_oi": 255.0,
+          "call_oi": 357.0,
           "put_oi": 0.0
         },
         {
           "strike": 1440,
-          "call_oi": 79.0,
+          "call_oi": 166.0,
           "put_oi": 0.0
         },
         {
           "strike": 1450,
-          "call_oi": 85.0,
+          "call_oi": 250.0,
           "put_oi": 0.0
         },
         {
           "strike": 1460,
-          "call_oi": 88.0,
+          "call_oi": 171.0,
           "put_oi": 0.0
         },
         {
           "strike": 1470,
-          "call_oi": 55.0,
+          "call_oi": 134.0,
           "put_oi": 0.0
         },
         {
           "strike": 1480,
-          "call_oi": 217.0,
+          "call_oi": 255.0,
           "put_oi": 0.0
         },
         {
           "strike": 1490,
-          "call_oi": 82.0,
+          "call_oi": 153.0,
           "put_oi": 0.0
         },
         {
           "strike": 1500,
-          "call_oi": 1159.0,
+          "call_oi": 1861.0,
           "put_oi": 0.0
         },
         {
           "strike": 1510,
-          "call_oi": 109.0,
+          "call_oi": 438.0,
           "put_oi": 0.0
         },
         {
           "strike": 1520,
-          "call_oi": 86.0,
+          "call_oi": 259.0,
           "put_oi": 0.0
         },
         {
           "strike": 1530,
-          "call_oi": 42.0,
+          "call_oi": 78.0,
           "put_oi": 0.0
         },
         {
           "strike": 1540,
-          "call_oi": 97.0,
+          "call_oi": 153.0,
           "put_oi": 0.0
         },
         {
           "strike": 1550,
-          "call_oi": 390.0,
+          "call_oi": 508.0,
           "put_oi": 0.0
         },
         {
           "strike": 1560,
-          "call_oi": 83.0,
+          "call_oi": 206.0,
           "put_oi": 0.0
         },
         {
           "strike": 1570,
-          "call_oi": 13.0,
+          "call_oi": 40.0,
           "put_oi": 0.0
         },
         {
           "strike": 1580,
-          "call_oi": 12.0,
+          "call_oi": 60.0,
           "put_oi": 0.0
         },
         {
           "strike": 1590,
-          "call_oi": 30.0,
+          "call_oi": 59.0,
           "put_oi": 0.0
         },
         {
           "strike": 1600,
-          "call_oi": 553.0,
+          "call_oi": 661.0,
           "put_oi": 0.0
         },
         {
           "strike": 1610,
-          "call_oi": 19.0,
+          "call_oi": 31.0,
           "put_oi": 0.0
         },
         {
           "strike": 1620,
-          "call_oi": 81.0,
+          "call_oi": 92.0,
           "put_oi": 0.0
         },
         {
           "strike": 1630,
-          "call_oi": 17.0,
-          "put_oi": 0.0
-        },
-        {
-          "strike": 1640,
-          "call_oi": 25.0,
-          "put_oi": 0.0
-        },
-        {
-          "strike": 1650,
-          "call_oi": 24.0,
-          "put_oi": 0.0
-        },
-        {
-          "strike": 1660,
           "call_oi": 29.0,
           "put_oi": 0.0
         },
         {
+          "strike": 1640,
+          "call_oi": 33.0,
+          "put_oi": 0.0
+        },
+        {
+          "strike": 1650,
+          "call_oi": 44.0,
+          "put_oi": 0.0
+        },
+        {
+          "strike": 1660,
+          "call_oi": 75.0,
+          "put_oi": 0.0
+        },
+        {
           "strike": 1670,
-          "call_oi": 123.0,
+          "call_oi": 147.0,
           "put_oi": 0.0
         },
         {
           "strike": 1680,
-          "call_oi": 91.0,
+          "call_oi": 102.0,
           "put_oi": 0.0
         },
         {
           "strike": 1690,
-          "call_oi": 46.0,
+          "call_oi": 64.0,
           "put_oi": 0.0
         },
         {
           "strike": 1700,
-          "call_oi": 97.0,
+          "call_oi": 843.0,
           "put_oi": 0.0
         },
         {
           "strike": 1710,
-          "call_oi": 25.0,
+          "call_oi": 98.0,
           "put_oi": 0.0
         },
         {
           "strike": 1720,
-          "call_oi": 58.0,
+          "call_oi": 166.0,
           "put_oi": 0.0
         },
         {
           "strike": 1730,
-          "call_oi": 962.0,
+          "call_oi": 1635.0,
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": -230548585.54980028,
+      "cex_total": -4749379270.289535,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 1010 (-3.3%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1045 (+0.1%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 1000 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 980 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -6.1%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 1010~1045 사이 박스권에서 움직이되, 옵션 만기 특성상 980(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1050 (+0.6%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 994.4 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 985 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -5.6%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 1010~1050 사이 박스권에서 움직이되, 옵션 만기 특성상 985(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
@@ -2065,14 +2117,14 @@
       "stage_slope_pct": 24.97,
       "stage_pos_pct": 39.41,
       "stage_prior_slope_pct": 51.89,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "DELL",
       "spot": 575.31,
-      "is_stale_price": false,
-      "price_change_pct": -3.01,
+      "is_stale_price": true,
+      "price_change_pct": -1.95,
       "expiry_used": "2026-09-25",
       "expiries_included_in_gex": [
         "2026-09-25",
@@ -2080,16 +2132,16 @@
         "2026-10-09",
         "2026-10-16"
       ],
-      "generated_at": "2026-09-21T22:39:22.563486+00:00",
+      "generated_at": "2026-09-22T00:08:00.709252+00:00",
       "max_pain": 567.5,
       "call_wall": 600,
       "put_wall": 550,
-      "gamma_flip": 566.36,
+      "gamma_flip": 564.53,
       "max_oi_wall": 400,
       "max_oi_wall_total_oi": 6769.0,
       "max_oi_wall_call_oi": 348.0,
       "max_oi_wall_put_oi": 6421.0,
-      "net_gex_total": 34157886.07158737,
+      "net_gex_total": 37622219.63481753,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -3243,16 +3295,17 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 30675140.38293755,
-      "cex_total": -8679528625.640268,
-      "vanna_charm_expiry_days": 4,
+      "vex_total": 48662255.43898,
+      "cex_total": -9755358533.001648,
+      "vanna_charm_expiry_days": 3,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 550 (-4.4%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 600 (+4.3%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 566.4 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-25, D-3) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 567.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -1.4%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 감마 플립: 564.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-25, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 567.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -1.4%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 550~600 사이 박스권에서 움직이되, 옵션 만기 특성상 567.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
@@ -3261,31 +3314,31 @@
       "stage_slope_pct": 40.1,
       "stage_pos_pct": 77.07,
       "stage_prior_slope_pct": 46.53,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "AVGO",
       "spot": 362.66,
-      "is_stale_price": false,
-      "price_change_pct": 3.0,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": 1.12,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-09-30"
       ],
-      "generated_at": "2026-09-21T22:39:27.679543+00:00",
-      "max_pain": 352.5,
+      "generated_at": "2026-09-22T00:08:05.198434+00:00",
+      "max_pain": 355,
       "call_wall": 365,
       "put_wall": 350,
-      "gamma_flip": 365,
+      "gamma_flip": 355.61,
       "max_oi_wall": 365,
-      "max_oi_wall_total_oi": 9754.0,
-      "max_oi_wall_call_oi": 8869.0,
-      "max_oi_wall_put_oi": 885.0,
-      "net_gex_total": 91344986.43887657,
+      "max_oi_wall_total_oi": 8046.0,
+      "max_oi_wall_call_oi": 7269.0,
+      "max_oi_wall_put_oi": 777.0,
+      "net_gex_total": 76970170.36559391,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -3351,37 +3404,42 @@
         {
           "strike": 270,
           "call_oi": 1.0,
-          "put_oi": 1530.0
+          "put_oi": 1535.0
         },
         {
           "strike": 275,
           "call_oi": 0.0,
-          "put_oi": 148.0
+          "put_oi": 152.0
         },
         {
           "strike": 280,
           "call_oi": 1.0,
-          "put_oi": 102.0
+          "put_oi": 208.0
         },
         {
           "strike": 285,
           "call_oi": 0.0,
-          "put_oi": 239.0
+          "put_oi": 236.0
         },
         {
           "strike": 290,
           "call_oi": 1.0,
-          "put_oi": 629.0
+          "put_oi": 628.0
         },
         {
           "strike": 295,
           "call_oi": 0.0,
-          "put_oi": 503.0
+          "put_oi": 495.0
+        },
+        {
+          "strike": 297.5,
+          "call_oi": 0.0,
+          "put_oi": 1.0
         },
         {
           "strike": 300,
-          "call_oi": 29.0,
-          "put_oi": 1092.0
+          "call_oi": 28.0,
+          "put_oi": 982.0
         },
         {
           "strike": 302.5,
@@ -3391,246 +3449,246 @@
         {
           "strike": 305,
           "call_oi": 0.0,
-          "put_oi": 974.0
+          "put_oi": 859.0
         },
         {
           "strike": 307.5,
           "call_oi": 0.0,
-          "put_oi": 32.0
+          "put_oi": 17.0
         },
         {
           "strike": 310,
           "call_oi": 6.0,
-          "put_oi": 759.0
+          "put_oi": 601.0
         },
         {
           "strike": 312.5,
           "call_oi": 0.0,
-          "put_oi": 291.0
+          "put_oi": 266.0
         },
         {
           "strike": 315,
-          "call_oi": 1.0,
-          "put_oi": 1061.0
+          "call_oi": 2.0,
+          "put_oi": 1038.0
         },
         {
           "strike": 317.5,
           "call_oi": 0.0,
-          "put_oi": 223.0
+          "put_oi": 214.0
         },
         {
           "strike": 320,
-          "call_oi": 50.0,
-          "put_oi": 2229.0
+          "call_oi": 41.0,
+          "put_oi": 1993.0
         },
         {
           "strike": 322.5,
           "call_oi": 0.0,
-          "put_oi": 184.0
+          "put_oi": 156.0
         },
         {
           "strike": 325,
           "call_oi": 3.0,
-          "put_oi": 1742.0
+          "put_oi": 1157.0
         },
         {
           "strike": 327.5,
-          "call_oi": 6.0,
-          "put_oi": 461.0
+          "call_oi": 2.0,
+          "put_oi": 226.0
         },
         {
           "strike": 330,
-          "call_oi": 108.0,
-          "put_oi": 4092.0
+          "call_oi": 129.0,
+          "put_oi": 3608.0
         },
         {
           "strike": 332.5,
           "call_oi": 16.0,
-          "put_oi": 904.0
+          "put_oi": 728.0
         },
         {
           "strike": 335,
-          "call_oi": 561.0,
-          "put_oi": 2205.0
+          "call_oi": 582.0,
+          "put_oi": 1818.0
         },
         {
           "strike": 337.5,
-          "call_oi": 84.0,
-          "put_oi": 801.0
+          "call_oi": 74.0,
+          "put_oi": 676.0
         },
         {
           "strike": 340,
-          "call_oi": 1284.0,
-          "put_oi": 4580.0
+          "call_oi": 1373.0,
+          "put_oi": 4231.0
         },
         {
           "strike": 342.5,
-          "call_oi": 329.0,
-          "put_oi": 1255.0
+          "call_oi": 828.0,
+          "put_oi": 807.0
         },
         {
           "strike": 345,
-          "call_oi": 1156.0,
-          "put_oi": 4619.0
+          "call_oi": 1153.0,
+          "put_oi": 4542.0
         },
         {
           "strike": 347.5,
-          "call_oi": 686.0,
-          "put_oi": 1814.0
+          "call_oi": 692.0,
+          "put_oi": 1413.0
         },
         {
           "strike": 350,
-          "call_oi": 2887.0,
-          "put_oi": 4701.0
+          "call_oi": 1972.0,
+          "put_oi": 4497.0
         },
         {
           "strike": 352.5,
-          "call_oi": 962.0,
-          "put_oi": 1107.0
+          "call_oi": 481.0,
+          "put_oi": 497.0
         },
         {
           "strike": 355,
-          "call_oi": 3916.0,
-          "put_oi": 1471.0
+          "call_oi": 2512.0,
+          "put_oi": 1046.0
         },
         {
           "strike": 357.5,
-          "call_oi": 1824.0,
-          "put_oi": 877.0
+          "call_oi": 968.0,
+          "put_oi": 662.0
         },
         {
           "strike": 360,
-          "call_oi": 6695.0,
-          "put_oi": 2140.0
+          "call_oi": 5705.0,
+          "put_oi": 1848.0
         },
         {
           "strike": 362.5,
-          "call_oi": 1834.0,
-          "put_oi": 354.0
+          "call_oi": 966.0,
+          "put_oi": 227.0
         },
         {
           "strike": 365,
-          "call_oi": 8869.0,
-          "put_oi": 885.0
+          "call_oi": 7269.0,
+          "put_oi": 777.0
         },
         {
           "strike": 367.5,
-          "call_oi": 1590.0,
-          "put_oi": 241.0
+          "call_oi": 845.0,
+          "put_oi": 222.0
         },
         {
           "strike": 370,
-          "call_oi": 5676.0,
-          "put_oi": 1339.0
+          "call_oi": 4723.0,
+          "put_oi": 1278.0
         },
         {
           "strike": 372.5,
-          "call_oi": 1266.0,
-          "put_oi": 84.0
+          "call_oi": 750.0,
+          "put_oi": 83.0
         },
         {
           "strike": 375,
-          "call_oi": 5582.0,
-          "put_oi": 628.0
+          "call_oi": 4865.0,
+          "put_oi": 629.0
         },
         {
           "strike": 377.5,
-          "call_oi": 346.0,
-          "put_oi": 27.0
+          "call_oi": 280.0,
+          "put_oi": 26.0
         },
         {
           "strike": 380,
-          "call_oi": 2799.0,
-          "put_oi": 404.0
+          "call_oi": 2542.0,
+          "put_oi": 398.0
         },
         {
           "strike": 382.5,
-          "call_oi": 648.0,
-          "put_oi": 12.0
+          "call_oi": 617.0,
+          "put_oi": 9.0
         },
         {
           "strike": 385,
-          "call_oi": 1262.0,
+          "call_oi": 1240.0,
           "put_oi": 267.0
         },
         {
           "strike": 387.5,
-          "call_oi": 129.0,
-          "put_oi": 25.0
+          "call_oi": 92.0,
+          "put_oi": 17.0
         },
         {
           "strike": 390,
-          "call_oi": 2879.0,
-          "put_oi": 237.0
+          "call_oi": 2100.0,
+          "put_oi": 225.0
         },
         {
           "strike": 392.5,
-          "call_oi": 211.0,
+          "call_oi": 156.0,
           "put_oi": 10.0
         },
         {
           "strike": 395,
-          "call_oi": 793.0,
-          "put_oi": 150.0
+          "call_oi": 757.0,
+          "put_oi": 151.0
         },
         {
           "strike": 397.5,
-          "call_oi": 727.0,
+          "call_oi": 698.0,
           "put_oi": 1.0
         },
         {
           "strike": 400,
-          "call_oi": 5113.0,
-          "put_oi": 554.0
+          "call_oi": 4776.0,
+          "put_oi": 431.0
         },
         {
           "strike": 402.5,
-          "call_oi": 353.0,
-          "put_oi": 7.0
+          "call_oi": 259.0,
+          "put_oi": 2.0
         },
         {
           "strike": 405,
-          "call_oi": 913.0,
-          "put_oi": 100.0
+          "call_oi": 885.0,
+          "put_oi": 117.0
         },
         {
           "strike": 407.5,
-          "call_oi": 161.0,
+          "call_oi": 136.0,
           "put_oi": 3.0
         },
         {
           "strike": 410,
-          "call_oi": 558.0,
+          "call_oi": 533.0,
           "put_oi": 58.0
         },
         {
           "strike": 412.5,
-          "call_oi": 42.0,
-          "put_oi": 5.0
+          "call_oi": 34.0,
+          "put_oi": 0.0
         },
         {
           "strike": 415,
-          "call_oi": 637.0,
+          "call_oi": 546.0,
           "put_oi": 58.0
         },
         {
           "strike": 417.5,
-          "call_oi": 223.0,
+          "call_oi": 184.0,
           "put_oi": 0.0
         },
         {
           "strike": 420,
-          "call_oi": 630.0,
+          "call_oi": 559.0,
           "put_oi": 110.0
         },
         {
           "strike": 422.5,
-          "call_oi": 54.0,
+          "call_oi": 25.0,
           "put_oi": 0.0
         },
         {
           "strike": 425,
-          "call_oi": 879.0,
+          "call_oi": 845.0,
           "put_oi": 24.0
         },
         {
@@ -3640,7 +3698,7 @@
         },
         {
           "strike": 430,
-          "call_oi": 1253.0,
+          "call_oi": 1039.0,
           "put_oi": 13.0
         },
         {
@@ -3650,7 +3708,7 @@
         },
         {
           "strike": 435,
-          "call_oi": 317.0,
+          "call_oi": 314.0,
           "put_oi": 14.0
         },
         {
@@ -3660,12 +3718,12 @@
         },
         {
           "strike": 440,
-          "call_oi": 532.0,
+          "call_oi": 530.0,
           "put_oi": 4.0
         },
         {
           "strike": 445,
-          "call_oi": 173.0,
+          "call_oi": 175.0,
           "put_oi": 2.0
         },
         {
@@ -3794,17 +3852,18 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": 22385871.683005773,
+      "cex_total": -5928975736.259811,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 350 (-3.5%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 365 (+0.6%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 365 — 추세 변화의 기점이 되는 위치 (현재는 아래에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 352.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.8%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 350~365 사이 박스권에서 움직이되, 옵션 만기 특성상 352.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 감마 플립: 355.6 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 355 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.1%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 350~365 사이 박스권에서 움직이되, 옵션 만기 특성상 355(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 3,
       "stage_label": "천정권",
@@ -3812,14 +3871,14 @@
       "stage_slope_pct": 2.85,
       "stage_pos_pct": -3.72,
       "stage_prior_slope_pct": 2.02,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "SNDK",
       "spot": 1766.64,
-      "is_stale_price": false,
-      "price_change_pct": 8.7,
+      "is_stale_price": true,
+      "price_change_pct": -3.25,
       "expiry_used": "2026-09-25",
       "expiries_included_in_gex": [
         "2026-09-25",
@@ -3827,16 +3886,16 @@
         "2026-10-09",
         "2026-10-16"
       ],
-      "generated_at": "2026-09-21T22:39:34.189105+00:00",
+      "generated_at": "2026-09-22T00:08:10.418174+00:00",
       "max_pain": 1650,
       "call_wall": 1800,
       "put_wall": 1700,
-      "gamma_flip": 1668.6,
+      "gamma_flip": 1671.93,
       "max_oi_wall": 1600,
       "max_oi_wall_total_oi": 8178.0,
       "max_oi_wall_call_oi": 5860.0,
       "max_oi_wall_put_oi": 2318.0,
-      "net_gex_total": 113889063.18418072,
+      "net_gex_total": 116682150.15084605,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -5800,16 +5859,17 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -411834772.67570716,
-      "cex_total": -35707221535.73531,
-      "vanna_charm_expiry_days": 4,
+      "vex_total": -316670630.71262586,
+      "cex_total": -41363101659.975945,
+      "vanna_charm_expiry_days": 3,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 1700 (-3.8%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 1800 (+1.9%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 1668.6 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-25, D-3) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 1650 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -6.6%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 감마 플립: 1671.9 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-25, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 1650 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -6.6%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 1700~1800 사이 박스권에서 움직이되, 옵션 만기 특성상 1650(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
@@ -5818,31 +5878,31 @@
       "stage_slope_pct": 26.93,
       "stage_pos_pct": 35.15,
       "stage_prior_slope_pct": 68.77,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "TSLA",
       "spot": 375.3,
-      "is_stale_price": false,
-      "price_change_pct": 1.71,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": 0.99,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-09-30"
       ],
-      "generated_at": "2026-09-21T22:39:39.363450+00:00",
-      "max_pain": 362.5,
+      "generated_at": "2026-09-22T00:08:14.944899+00:00",
+      "max_pain": 365,
       "call_wall": 380,
-      "put_wall": 375,
-      "gamma_flip": 367.5,
+      "put_wall": 360,
+      "gamma_flip": 359.8,
       "max_oi_wall": 160,
       "max_oi_wall_total_oi": 37444.0,
       "max_oi_wall_call_oi": 1.0,
       "max_oi_wall_put_oi": 37443.0,
-      "net_gex_total": 578368817.6549622,
+      "net_gex_total": 306899469.93798757,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -5987,28 +6047,28 @@
         },
         {
           "strike": 280,
-          "call_oi": 77.0,
-          "put_oi": 4710.0
+          "call_oi": 45.0,
+          "put_oi": 4424.0
         },
         {
           "strike": 285,
           "call_oi": 20.0,
-          "put_oi": 5540.0
+          "put_oi": 896.0
         },
         {
           "strike": 290,
-          "call_oi": 172.0,
-          "put_oi": 4748.0
+          "call_oi": 166.0,
+          "put_oi": 1645.0
         },
         {
           "strike": 295,
           "call_oi": 166.0,
-          "put_oi": 7309.0
+          "put_oi": 5413.0
         },
         {
           "strike": 300,
-          "call_oi": 362.0,
-          "put_oi": 3670.0
+          "call_oi": 341.0,
+          "put_oi": 3359.0
         },
         {
           "strike": 302.5,
@@ -6017,257 +6077,257 @@
         },
         {
           "strike": 305,
-          "call_oi": 149.0,
-          "put_oi": 2121.0
+          "call_oi": 102.0,
+          "put_oi": 1740.0
         },
         {
           "strike": 307.5,
           "call_oi": 13.0,
-          "put_oi": 251.0
+          "put_oi": 284.0
         },
         {
           "strike": 310,
-          "call_oi": 224.0,
-          "put_oi": 1821.0
+          "call_oi": 178.0,
+          "put_oi": 1306.0
         },
         {
           "strike": 312.5,
-          "call_oi": 24.0,
-          "put_oi": 599.0
+          "call_oi": 12.0,
+          "put_oi": 334.0
         },
         {
           "strike": 315,
-          "call_oi": 354.0,
-          "put_oi": 3365.0
+          "call_oi": 293.0,
+          "put_oi": 2674.0
         },
         {
           "strike": 317.5,
-          "call_oi": 23.0,
-          "put_oi": 1059.0
+          "call_oi": 30.0,
+          "put_oi": 597.0
         },
         {
           "strike": 320,
-          "call_oi": 206.0,
-          "put_oi": 4651.0
+          "call_oi": 202.0,
+          "put_oi": 4025.0
         },
         {
           "strike": 322.5,
-          "call_oi": 107.0,
-          "put_oi": 810.0
+          "call_oi": 75.0,
+          "put_oi": 506.0
         },
         {
           "strike": 325,
-          "call_oi": 251.0,
-          "put_oi": 2792.0
+          "call_oi": 245.0,
+          "put_oi": 2351.0
         },
         {
           "strike": 327.5,
-          "call_oi": 105.0,
-          "put_oi": 2110.0
+          "call_oi": 77.0,
+          "put_oi": 1521.0
         },
         {
           "strike": 330,
-          "call_oi": 684.0,
-          "put_oi": 6050.0
+          "call_oi": 643.0,
+          "put_oi": 5314.0
         },
         {
           "strike": 332.5,
-          "call_oi": 173.0,
-          "put_oi": 1352.0
+          "call_oi": 57.0,
+          "put_oi": 1097.0
         },
         {
           "strike": 335,
-          "call_oi": 416.0,
-          "put_oi": 3845.0
+          "call_oi": 392.0,
+          "put_oi": 3135.0
         },
         {
           "strike": 337.5,
-          "call_oi": 101.0,
-          "put_oi": 1817.0
+          "call_oi": 78.0,
+          "put_oi": 1245.0
         },
         {
           "strike": 340,
-          "call_oi": 661.0,
-          "put_oi": 8774.0
+          "call_oi": 632.0,
+          "put_oi": 7386.0
         },
         {
           "strike": 342.5,
-          "call_oi": 155.0,
-          "put_oi": 1849.0
+          "call_oi": 135.0,
+          "put_oi": 1308.0
         },
         {
           "strike": 345,
-          "call_oi": 758.0,
-          "put_oi": 7749.0
+          "call_oi": 738.0,
+          "put_oi": 4872.0
         },
         {
           "strike": 347.5,
-          "call_oi": 211.0,
-          "put_oi": 4307.0
+          "call_oi": 118.0,
+          "put_oi": 1948.0
         },
         {
           "strike": 350,
-          "call_oi": 2225.0,
-          "put_oi": 9013.0
+          "call_oi": 2027.0,
+          "put_oi": 6183.0
         },
         {
           "strike": 352.5,
-          "call_oi": 491.0,
-          "put_oi": 3513.0
+          "call_oi": 347.0,
+          "put_oi": 2036.0
         },
         {
           "strike": 355,
-          "call_oi": 3733.0,
-          "put_oi": 23772.0
+          "call_oi": 2898.0,
+          "put_oi": 5710.0
         },
         {
           "strike": 357.5,
-          "call_oi": 2821.0,
-          "put_oi": 3604.0
+          "call_oi": 1997.0,
+          "put_oi": 1901.0
         },
         {
           "strike": 360,
-          "call_oi": 5948.0,
-          "put_oi": 8136.0
+          "call_oi": 4325.0,
+          "put_oi": 5244.0
         },
         {
           "strike": 362.5,
-          "call_oi": 5753.0,
-          "put_oi": 5467.0
+          "call_oi": 3105.0,
+          "put_oi": 3134.0
         },
         {
           "strike": 365,
-          "call_oi": 11556.0,
-          "put_oi": 6184.0
+          "call_oi": 6352.0,
+          "put_oi": 3791.0
         },
         {
           "strike": 367.5,
-          "call_oi": 22650.0,
-          "put_oi": 2542.0
+          "call_oi": 19052.0,
+          "put_oi": 1578.0
         },
         {
           "strike": 370,
-          "call_oi": 20649.0,
-          "put_oi": 3486.0
+          "call_oi": 14712.0,
+          "put_oi": 2906.0
         },
         {
           "strike": 372.5,
-          "call_oi": 4497.0,
-          "put_oi": 1446.0
+          "call_oi": 2474.0,
+          "put_oi": 786.0
         },
         {
           "strike": 375,
-          "call_oi": 12304.0,
-          "put_oi": 1170.0
+          "call_oi": 9372.0,
+          "put_oi": 848.0
         },
         {
           "strike": 377.5,
-          "call_oi": 5955.0,
-          "put_oi": 1301.0
+          "call_oi": 3582.0,
+          "put_oi": 1177.0
         },
         {
           "strike": 380,
-          "call_oi": 19216.0,
-          "put_oi": 1548.0
+          "call_oi": 15493.0,
+          "put_oi": 1368.0
         },
         {
           "strike": 382.5,
-          "call_oi": 15568.0,
-          "put_oi": 679.0
+          "call_oi": 10606.0,
+          "put_oi": 651.0
         },
         {
           "strike": 385,
-          "call_oi": 14000.0,
-          "put_oi": 312.0
+          "call_oi": 12060.0,
+          "put_oi": 181.0
         },
         {
           "strike": 387.5,
-          "call_oi": 2541.0,
-          "put_oi": 82.0
+          "call_oi": 1649.0,
+          "put_oi": 44.0
         },
         {
           "strike": 390,
-          "call_oi": 8714.0,
-          "put_oi": 338.0
+          "call_oi": 7180.0,
+          "put_oi": 340.0
         },
         {
           "strike": 392.5,
-          "call_oi": 2527.0,
-          "put_oi": 11.0
+          "call_oi": 1743.0,
+          "put_oi": 10.0
         },
         {
           "strike": 395,
-          "call_oi": 5770.0,
-          "put_oi": 59.0
+          "call_oi": 4609.0,
+          "put_oi": 60.0
         },
         {
           "strike": 397.5,
-          "call_oi": 1948.0,
-          "put_oi": 14.0
+          "call_oi": 1659.0,
+          "put_oi": 12.0
         },
         {
           "strike": 400,
-          "call_oi": 18449.0,
+          "call_oi": 11397.0,
           "put_oi": 517.0
         },
         {
           "strike": 402.5,
-          "call_oi": 1444.0,
-          "put_oi": 5.0
+          "call_oi": 1028.0,
+          "put_oi": 6.0
         },
         {
           "strike": 405,
-          "call_oi": 8066.0,
-          "put_oi": 46.0
+          "call_oi": 5860.0,
+          "put_oi": 45.0
         },
         {
           "strike": 407.5,
-          "call_oi": 1082.0,
+          "call_oi": 866.0,
           "put_oi": 8.0
         },
         {
           "strike": 410,
-          "call_oi": 6023.0,
+          "call_oi": 5741.0,
           "put_oi": 25.0
         },
         {
           "strike": 412.5,
-          "call_oi": 738.0,
+          "call_oi": 596.0,
           "put_oi": 6.0
         },
         {
           "strike": 415,
-          "call_oi": 2760.0,
+          "call_oi": 2241.0,
           "put_oi": 17.0
         },
         {
           "strike": 417.5,
-          "call_oi": 360.0,
+          "call_oi": 327.0,
           "put_oi": 2.0
         },
         {
           "strike": 420,
-          "call_oi": 3987.0,
-          "put_oi": 8.0
+          "call_oi": 3805.0,
+          "put_oi": 9.0
         },
         {
           "strike": 422.5,
-          "call_oi": 426.0,
+          "call_oi": 103.0,
           "put_oi": 0.0
         },
         {
           "strike": 425,
-          "call_oi": 2482.0,
+          "call_oi": 2299.0,
           "put_oi": 7.0
         },
         {
           "strike": 427.5,
-          "call_oi": 303.0,
+          "call_oi": 198.0,
           "put_oi": 0.0
         },
         {
           "strike": 430,
-          "call_oi": 3691.0,
+          "call_oi": 2274.0,
           "put_oi": 0.0
         },
         {
@@ -6277,7 +6337,7 @@
         },
         {
           "strike": 435,
-          "call_oi": 2145.0,
+          "call_oi": 2181.0,
           "put_oi": 0.0
         },
         {
@@ -6476,17 +6536,18 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": -96772263.3975979,
+      "cex_total": -8500556563.642741,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
-        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 375 (-0.1%) — 이 근처에서 반등할지 체크",
+        "&nbsp;&nbsp;• 하방 지지 (Put Wall): 360 (-4.1%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 380 (+1.3%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 367.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 362.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -3.4%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 375~380 사이 박스권에서 움직이되, 옵션 만기 특성상 362.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 감마 플립: 359.8 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 365 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.7%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 360~380 사이 박스권에서 움직이되, 옵션 만기 특성상 365(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 1,
       "stage_label": "바닥다지기",
@@ -6494,31 +6555,31 @@
       "stage_slope_pct": -6.09,
       "stage_pos_pct": -1.61,
       "stage_prior_slope_pct": -2.89,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "AAPL",
       "spot": 338.98,
-      "is_stale_price": false,
-      "price_change_pct": 0.32,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": 1.1,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-09-30"
       ],
-      "generated_at": "2026-09-21T22:39:44.356546+00:00",
-      "max_pain": 330,
+      "generated_at": "2026-09-22T00:08:19.415425+00:00",
+      "max_pain": 332.5,
       "call_wall": 340,
       "put_wall": 335,
-      "gamma_flip": 332.5,
+      "gamma_flip": 328.79,
       "max_oi_wall": 340,
-      "max_oi_wall_total_oi": 35314.0,
-      "max_oi_wall_call_oi": 29900.0,
-      "max_oi_wall_put_oi": 5414.0,
-      "net_gex_total": 633966363.0804482,
+      "max_oi_wall_total_oi": 25631.0,
+      "max_oi_wall_call_oi": 20334.0,
+      "max_oi_wall_put_oi": 5297.0,
+      "net_gex_total": 359425493.0755421,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -6653,38 +6714,38 @@
         },
         {
           "strike": 245,
-          "call_oi": 78.0,
-          "put_oi": 1033.0
+          "call_oi": 77.0,
+          "put_oi": 1022.0
         },
         {
           "strike": 250,
-          "call_oi": 208.0,
-          "put_oi": 14691.0
+          "call_oi": 207.0,
+          "put_oi": 14627.0
         },
         {
           "strike": 255,
-          "call_oi": 384.0,
-          "put_oi": 1033.0
+          "call_oi": 383.0,
+          "put_oi": 965.0
         },
         {
           "strike": 260,
-          "call_oi": 160.0,
-          "put_oi": 2346.0
+          "call_oi": 115.0,
+          "put_oi": 2340.0
         },
         {
           "strike": 265,
-          "call_oi": 48.0,
-          "put_oi": 10104.0
+          "call_oi": 35.0,
+          "put_oi": 636.0
         },
         {
           "strike": 270,
-          "call_oi": 113.0,
-          "put_oi": 725.0
+          "call_oi": 120.0,
+          "put_oi": 647.0
         },
         {
           "strike": 275,
-          "call_oi": 108.0,
-          "put_oi": 1735.0
+          "call_oi": 107.0,
+          "put_oi": 1710.0
         },
         {
           "strike": 277.5,
@@ -6693,207 +6754,207 @@
         },
         {
           "strike": 280,
-          "call_oi": 183.0,
-          "put_oi": 975.0
+          "call_oi": 182.0,
+          "put_oi": 1216.0
         },
         {
           "strike": 282.5,
           "call_oi": 10.0,
-          "put_oi": 170.0
+          "put_oi": 162.0
         },
         {
           "strike": 285,
-          "call_oi": 103.0,
-          "put_oi": 1133.0
+          "call_oi": 101.0,
+          "put_oi": 844.0
         },
         {
           "strike": 287.5,
           "call_oi": 27.0,
-          "put_oi": 393.0
+          "put_oi": 346.0
         },
         {
           "strike": 290,
-          "call_oi": 237.0,
-          "put_oi": 1950.0
+          "call_oi": 197.0,
+          "put_oi": 1833.0
         },
         {
           "strike": 292.5,
-          "call_oi": 19.0,
-          "put_oi": 731.0
+          "call_oi": 17.0,
+          "put_oi": 489.0
         },
         {
           "strike": 295,
-          "call_oi": 304.0,
-          "put_oi": 2884.0
+          "call_oi": 292.0,
+          "put_oi": 2891.0
         },
         {
           "strike": 297.5,
-          "call_oi": 132.0,
-          "put_oi": 386.0
+          "call_oi": 131.0,
+          "put_oi": 379.0
         },
         {
           "strike": 300,
-          "call_oi": 1111.0,
-          "put_oi": 3972.0
+          "call_oi": 991.0,
+          "put_oi": 3567.0
         },
         {
           "strike": 302.5,
-          "call_oi": 51.0,
-          "put_oi": 318.0
+          "call_oi": 40.0,
+          "put_oi": 181.0
         },
         {
           "strike": 305,
-          "call_oi": 350.0,
-          "put_oi": 4913.0
+          "call_oi": 346.0,
+          "put_oi": 4645.0
         },
         {
           "strike": 307.5,
-          "call_oi": 113.0,
-          "put_oi": 668.0
+          "call_oi": 108.0,
+          "put_oi": 594.0
         },
         {
           "strike": 310,
-          "call_oi": 1077.0,
-          "put_oi": 6614.0
+          "call_oi": 992.0,
+          "put_oi": 4109.0
         },
         {
           "strike": 312.5,
-          "call_oi": 285.0,
-          "put_oi": 1418.0
+          "call_oi": 284.0,
+          "put_oi": 1237.0
         },
         {
           "strike": 315,
-          "call_oi": 1542.0,
-          "put_oi": 6355.0
+          "call_oi": 1209.0,
+          "put_oi": 5141.0
         },
         {
           "strike": 317.5,
-          "call_oi": 475.0,
-          "put_oi": 2386.0
+          "call_oi": 445.0,
+          "put_oi": 2074.0
         },
         {
           "strike": 320,
-          "call_oi": 11443.0,
-          "put_oi": 9518.0
+          "call_oi": 6532.0,
+          "put_oi": 7660.0
         },
         {
           "strike": 322.5,
-          "call_oi": 707.0,
-          "put_oi": 3880.0
+          "call_oi": 553.0,
+          "put_oi": 2392.0
         },
         {
           "strike": 325,
-          "call_oi": 7054.0,
-          "put_oi": 7279.0
+          "call_oi": 5310.0,
+          "put_oi": 4322.0
         },
         {
           "strike": 327.5,
-          "call_oi": 1276.0,
-          "put_oi": 4581.0
+          "call_oi": 1008.0,
+          "put_oi": 2360.0
         },
         {
           "strike": 330,
-          "call_oi": 8384.0,
-          "put_oi": 9895.0
+          "call_oi": 4574.0,
+          "put_oi": 7009.0
         },
         {
           "strike": 332.5,
-          "call_oi": 5697.0,
-          "put_oi": 6300.0
+          "call_oi": 4184.0,
+          "put_oi": 3805.0
         },
         {
           "strike": 335,
-          "call_oi": 18925.0,
-          "put_oi": 8239.0
+          "call_oi": 15347.0,
+          "put_oi": 5069.0
         },
         {
           "strike": 337.5,
-          "call_oi": 15450.0,
-          "put_oi": 2848.0
+          "call_oi": 12283.0,
+          "put_oi": 986.0
         },
         {
           "strike": 340,
-          "call_oi": 29900.0,
-          "put_oi": 5414.0
+          "call_oi": 20334.0,
+          "put_oi": 5297.0
         },
         {
           "strike": 342.5,
-          "call_oi": 17569.0,
-          "put_oi": 264.0
+          "call_oi": 14103.0,
+          "put_oi": 162.0
         },
         {
           "strike": 345,
-          "call_oi": 21955.0,
-          "put_oi": 2114.0
+          "call_oi": 10728.0,
+          "put_oi": 2078.0
         },
         {
           "strike": 347.5,
-          "call_oi": 7243.0,
-          "put_oi": 1984.0
+          "call_oi": 3813.0,
+          "put_oi": 1992.0
         },
         {
           "strike": 350,
-          "call_oi": 25532.0,
-          "put_oi": 1201.0
+          "call_oi": 21681.0,
+          "put_oi": 1226.0
         },
         {
           "strike": 352.5,
-          "call_oi": 3954.0,
-          "put_oi": 64.0
+          "call_oi": 3663.0,
+          "put_oi": 63.0
         },
         {
           "strike": 355,
-          "call_oi": 7501.0,
-          "put_oi": 17.0
+          "call_oi": 6575.0,
+          "put_oi": 18.0
         },
         {
           "strike": 357.5,
-          "call_oi": 798.0,
+          "call_oi": 789.0,
           "put_oi": 0.0
         },
         {
           "strike": 360,
-          "call_oi": 14294.0,
+          "call_oi": 13200.0,
           "put_oi": 8.0
         },
         {
           "strike": 362.5,
-          "call_oi": 91.0,
+          "call_oi": 81.0,
           "put_oi": 0.0
         },
         {
           "strike": 365,
-          "call_oi": 2945.0,
+          "call_oi": 2764.0,
           "put_oi": 3.0
         },
         {
           "strike": 370,
-          "call_oi": 1660.0,
+          "call_oi": 1616.0,
           "put_oi": 0.0
         },
         {
           "strike": 375,
-          "call_oi": 1108.0,
+          "call_oi": 1138.0,
           "put_oi": 0.0
         },
         {
           "strike": 380,
-          "call_oi": 531.0,
+          "call_oi": 530.0,
           "put_oi": 0.0
         },
         {
           "strike": 385,
-          "call_oi": 143.0,
+          "call_oi": 154.0,
           "put_oi": 0.0
         },
         {
           "strike": 390,
-          "call_oi": 114.0,
+          "call_oi": 118.0,
           "put_oi": 0.0
         },
         {
           "strike": 395,
-          "call_oi": 91.0,
+          "call_oi": 77.0,
           "put_oi": 0.0
         },
         {
@@ -6917,17 +6978,18 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": 137784486.32416832,
+      "cex_total": -12409394305.961565,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 335 (-1.2%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 340 (+0.3%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 332.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 330 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.6%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 335~340 사이 박스권에서 움직이되, 옵션 만기 특성상 330(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 감마 플립: 328.8 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 332.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -1.9%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 335~340 사이 박스권에서 움직이되, 옵션 만기 특성상 332.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
@@ -6935,31 +6997,31 @@
       "stage_slope_pct": 5.05,
       "stage_pos_pct": 15.7,
       "stage_prior_slope_pct": 3.44,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "META",
       "spot": 741.245,
-      "is_stale_price": false,
-      "price_change_pct": 7.64,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": 8.96,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-09-30"
       ],
-      "generated_at": "2026-09-21T22:39:50.001904+00:00",
+      "generated_at": "2026-09-22T00:08:24.096126+00:00",
       "max_pain": 670,
       "call_wall": 750,
       "put_wall": 675,
-      "gamma_flip": 590,
+      "gamma_flip": 658.68,
       "max_oi_wall": 700,
-      "max_oi_wall_total_oi": 13941.0,
-      "max_oi_wall_call_oi": 13533.0,
-      "max_oi_wall_put_oi": 408.0,
-      "net_gex_total": 362185389.27591515,
+      "max_oi_wall_total_oi": 10131.0,
+      "max_oi_wall_call_oi": 9866.0,
+      "max_oi_wall_put_oi": 265.0,
+      "net_gex_total": 216363434.24931496,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -7225,7 +7287,7 @@
         {
           "strike": 510,
           "call_oi": 0.0,
-          "put_oi": 512.0
+          "put_oi": 493.0
         },
         {
           "strike": 515,
@@ -7235,32 +7297,32 @@
         {
           "strike": 520,
           "call_oi": 5.0,
-          "put_oi": 4992.0
+          "put_oi": 4970.0
         },
         {
           "strike": 525,
           "call_oi": 3.0,
-          "put_oi": 350.0
+          "put_oi": 349.0
         },
         {
           "strike": 530,
           "call_oi": 16.0,
-          "put_oi": 861.0
+          "put_oi": 832.0
         },
         {
           "strike": 535,
           "call_oi": 10.0,
-          "put_oi": 545.0
+          "put_oi": 539.0
         },
         {
           "strike": 540,
           "call_oi": 61.0,
-          "put_oi": 519.0
+          "put_oi": 454.0
         },
         {
           "strike": 545,
           "call_oi": 127.0,
-          "put_oi": 296.0
+          "put_oi": 266.0
         },
         {
           "strike": 547.5,
@@ -7270,7 +7332,7 @@
         {
           "strike": 550,
           "call_oi": 170.0,
-          "put_oi": 2564.0
+          "put_oi": 2546.0
         },
         {
           "strike": 552.5,
@@ -7280,426 +7342,426 @@
         {
           "strike": 555,
           "call_oi": 15.0,
-          "put_oi": 330.0
+          "put_oi": 321.0
         },
         {
           "strike": 557.5,
           "call_oi": 2.0,
-          "put_oi": 85.0
+          "put_oi": 10.0
         },
         {
           "strike": 560,
-          "call_oi": 34.0,
-          "put_oi": 2231.0
+          "call_oi": 30.0,
+          "put_oi": 2232.0
         },
         {
           "strike": 562.5,
           "call_oi": 5.0,
-          "put_oi": 136.0
+          "put_oi": 76.0
         },
         {
           "strike": 565,
-          "call_oi": 323.0,
-          "put_oi": 711.0
+          "call_oi": 324.0,
+          "put_oi": 663.0
         },
         {
           "strike": 567.5,
           "call_oi": 3.0,
-          "put_oi": 61.0
+          "put_oi": 52.0
         },
         {
           "strike": 570,
-          "call_oi": 315.0,
-          "put_oi": 681.0
+          "call_oi": 319.0,
+          "put_oi": 654.0
         },
         {
           "strike": 572.5,
           "call_oi": 5.0,
-          "put_oi": 56.0
+          "put_oi": 37.0
         },
         {
           "strike": 575,
-          "call_oi": 280.0,
-          "put_oi": 1243.0
+          "call_oi": 285.0,
+          "put_oi": 1166.0
         },
         {
           "strike": 577.5,
-          "call_oi": 4.0,
-          "put_oi": 120.0
+          "call_oi": 7.0,
+          "put_oi": 98.0
         },
         {
           "strike": 580,
-          "call_oi": 610.0,
-          "put_oi": 846.0
+          "call_oi": 613.0,
+          "put_oi": 841.0
         },
         {
           "strike": 582.5,
-          "call_oi": 9.0,
-          "put_oi": 52.0
+          "call_oi": 15.0,
+          "put_oi": 48.0
         },
         {
           "strike": 585,
-          "call_oi": 600.0,
-          "put_oi": 536.0
+          "call_oi": 602.0,
+          "put_oi": 531.0
         },
         {
           "strike": 587.5,
-          "call_oi": 14.0,
-          "put_oi": 125.0
+          "call_oi": 16.0,
+          "put_oi": 120.0
         },
         {
           "strike": 590,
-          "call_oi": 753.0,
-          "put_oi": 1021.0
+          "call_oi": 755.0,
+          "put_oi": 836.0
         },
         {
           "strike": 592.5,
           "call_oi": 21.0,
-          "put_oi": 694.0
+          "put_oi": 60.0
         },
         {
           "strike": 595,
-          "call_oi": 423.0,
-          "put_oi": 642.0
+          "call_oi": 424.0,
+          "put_oi": 490.0
         },
         {
           "strike": 597.5,
           "call_oi": 15.0,
-          "put_oi": 232.0
+          "put_oi": 192.0
         },
         {
           "strike": 600,
-          "call_oi": 1723.0,
-          "put_oi": 2201.0
+          "call_oi": 1721.0,
+          "put_oi": 2055.0
         },
         {
           "strike": 602.5,
-          "call_oi": 17.0,
-          "put_oi": 116.0
+          "call_oi": 18.0,
+          "put_oi": 92.0
         },
         {
           "strike": 605,
-          "call_oi": 615.0,
-          "put_oi": 948.0
+          "call_oi": 618.0,
+          "put_oi": 903.0
         },
         {
           "strike": 607.5,
           "call_oi": 7.0,
-          "put_oi": 232.0
+          "put_oi": 186.0
         },
         {
           "strike": 610,
           "call_oi": 706.0,
-          "put_oi": 2199.0
+          "put_oi": 2038.0
         },
         {
           "strike": 612.5,
           "call_oi": 66.0,
-          "put_oi": 618.0
+          "put_oi": 575.0
         },
         {
           "strike": 615,
-          "call_oi": 982.0,
-          "put_oi": 1806.0
+          "call_oi": 985.0,
+          "put_oi": 1540.0
         },
         {
           "strike": 617.5,
-          "call_oi": 50.0,
-          "put_oi": 414.0
+          "call_oi": 52.0,
+          "put_oi": 337.0
         },
         {
           "strike": 620,
-          "call_oi": 1279.0,
-          "put_oi": 1503.0
+          "call_oi": 1268.0,
+          "put_oi": 1212.0
         },
         {
           "strike": 622.5,
           "call_oi": 47.0,
-          "put_oi": 506.0
+          "put_oi": 344.0
         },
         {
           "strike": 625,
-          "call_oi": 1215.0,
-          "put_oi": 1722.0
+          "call_oi": 1207.0,
+          "put_oi": 1403.0
         },
         {
           "strike": 627.5,
-          "call_oi": 120.0,
-          "put_oi": 836.0
+          "call_oi": 121.0,
+          "put_oi": 340.0
         },
         {
           "strike": 630,
-          "call_oi": 474.0,
-          "put_oi": 1769.0
+          "call_oi": 473.0,
+          "put_oi": 1120.0
         },
         {
           "strike": 632.5,
           "call_oi": 140.0,
-          "put_oi": 743.0
+          "put_oi": 455.0
         },
         {
           "strike": 635,
-          "call_oi": 897.0,
-          "put_oi": 2183.0
+          "call_oi": 893.0,
+          "put_oi": 1585.0
         },
         {
           "strike": 637.5,
           "call_oi": 41.0,
-          "put_oi": 952.0
+          "put_oi": 534.0
         },
         {
           "strike": 640,
           "call_oi": 890.0,
-          "put_oi": 7962.0
+          "put_oi": 6802.0
         },
         {
           "strike": 642.5,
-          "call_oi": 99.0,
-          "put_oi": 830.0
+          "call_oi": 94.0,
+          "put_oi": 435.0
         },
         {
           "strike": 645,
-          "call_oi": 1262.0,
-          "put_oi": 3304.0
+          "call_oi": 960.0,
+          "put_oi": 2338.0
         },
         {
           "strike": 647.5,
-          "call_oi": 2647.0,
-          "put_oi": 1273.0
+          "call_oi": 2594.0,
+          "put_oi": 483.0
         },
         {
           "strike": 650,
-          "call_oi": 5075.0,
-          "put_oi": 5474.0
+          "call_oi": 4820.0,
+          "put_oi": 3825.0
         },
         {
           "strike": 652.5,
-          "call_oi": 330.0,
-          "put_oi": 751.0
+          "call_oi": 198.0,
+          "put_oi": 268.0
         },
         {
           "strike": 655,
-          "call_oi": 1671.0,
-          "put_oi": 2307.0
+          "call_oi": 1420.0,
+          "put_oi": 1352.0
         },
         {
           "strike": 657.5,
-          "call_oi": 417.0,
-          "put_oi": 473.0
+          "call_oi": 270.0,
+          "put_oi": 267.0
         },
         {
           "strike": 660,
-          "call_oi": 3181.0,
-          "put_oi": 2347.0
+          "call_oi": 2782.0,
+          "put_oi": 1688.0
         },
         {
           "strike": 662.5,
-          "call_oi": 382.0,
-          "put_oi": 731.0
+          "call_oi": 244.0,
+          "put_oi": 267.0
         },
         {
           "strike": 665,
-          "call_oi": 1710.0,
-          "put_oi": 1502.0
+          "call_oi": 1176.0,
+          "put_oi": 1069.0
         },
         {
           "strike": 667.5,
-          "call_oi": 1086.0,
-          "put_oi": 818.0
+          "call_oi": 725.0,
+          "put_oi": 559.0
         },
         {
           "strike": 670,
-          "call_oi": 4198.0,
-          "put_oi": 2818.0
+          "call_oi": 2598.0,
+          "put_oi": 1982.0
         },
         {
           "strike": 672.5,
-          "call_oi": 2311.0,
-          "put_oi": 958.0
+          "call_oi": 1072.0,
+          "put_oi": 467.0
         },
         {
           "strike": 675,
-          "call_oi": 7166.0,
-          "put_oi": 3401.0
+          "call_oi": 3733.0,
+          "put_oi": 2987.0
         },
         {
           "strike": 677.5,
-          "call_oi": 2707.0,
-          "put_oi": 1189.0
+          "call_oi": 1294.0,
+          "put_oi": 756.0
         },
         {
           "strike": 680,
-          "call_oi": 5356.0,
-          "put_oi": 1138.0
+          "call_oi": 3475.0,
+          "put_oi": 1102.0
         },
         {
           "strike": 682.5,
-          "call_oi": 1593.0,
-          "put_oi": 430.0
+          "call_oi": 1117.0,
+          "put_oi": 298.0
         },
         {
           "strike": 685,
-          "call_oi": 3961.0,
-          "put_oi": 388.0
+          "call_oi": 2885.0,
+          "put_oi": 243.0
         },
         {
           "strike": 687.5,
-          "call_oi": 2844.0,
-          "put_oi": 185.0
+          "call_oi": 2407.0,
+          "put_oi": 79.0
         },
         {
           "strike": 690,
-          "call_oi": 6380.0,
-          "put_oi": 656.0
+          "call_oi": 3214.0,
+          "put_oi": 600.0
         },
         {
           "strike": 692.5,
-          "call_oi": 1989.0,
-          "put_oi": 135.0
+          "call_oi": 1470.0,
+          "put_oi": 96.0
         },
         {
           "strike": 695,
-          "call_oi": 2222.0,
-          "put_oi": 266.0
+          "call_oi": 1287.0,
+          "put_oi": 108.0
         },
         {
           "strike": 697.5,
-          "call_oi": 1213.0,
-          "put_oi": 77.0
+          "call_oi": 608.0,
+          "put_oi": 47.0
         },
         {
           "strike": 700,
-          "call_oi": 13533.0,
-          "put_oi": 408.0
+          "call_oi": 9866.0,
+          "put_oi": 265.0
         },
         {
           "strike": 702.5,
-          "call_oi": 5016.0,
-          "put_oi": 43.0
+          "call_oi": 4600.0,
+          "put_oi": 23.0
         },
         {
           "strike": 705,
-          "call_oi": 4526.0,
-          "put_oi": 32.0
+          "call_oi": 4280.0,
+          "put_oi": 34.0
         },
         {
           "strike": 707.5,
-          "call_oi": 455.0,
-          "put_oi": 8.0
-        },
-        {
-          "strike": 710,
-          "call_oi": 2994.0,
-          "put_oi": 121.0
-        },
-        {
-          "strike": 712.5,
-          "call_oi": 908.0,
-          "put_oi": 35.0
-        },
-        {
-          "strike": 715,
-          "call_oi": 2366.0,
+          "call_oi": 250.0,
           "put_oi": 6.0
         },
         {
+          "strike": 710,
+          "call_oi": 1932.0,
+          "put_oi": 107.0
+        },
+        {
+          "strike": 712.5,
+          "call_oi": 264.0,
+          "put_oi": 3.0
+        },
+        {
+          "strike": 715,
+          "call_oi": 664.0,
+          "put_oi": 3.0
+        },
+        {
           "strike": 717.5,
-          "call_oi": 631.0,
+          "call_oi": 325.0,
           "put_oi": 0.0
         },
         {
           "strike": 720,
-          "call_oi": 3699.0,
-          "put_oi": 28.0
+          "call_oi": 3220.0,
+          "put_oi": 36.0
         },
         {
           "strike": 722.5,
-          "call_oi": 443.0,
-          "put_oi": 2.0
+          "call_oi": 205.0,
+          "put_oi": 0.0
         },
         {
           "strike": 725,
-          "call_oi": 1248.0,
-          "put_oi": 12.0
+          "call_oi": 985.0,
+          "put_oi": 10.0
         },
         {
           "strike": 727.5,
-          "call_oi": 849.0,
-          "put_oi": 13.0
+          "call_oi": 645.0,
+          "put_oi": 3.0
         },
         {
           "strike": 730,
-          "call_oi": 1879.0,
-          "put_oi": 32.0
+          "call_oi": 1631.0,
+          "put_oi": 31.0
         },
         {
           "strike": 732.5,
-          "call_oi": 216.0,
-          "put_oi": 1.0
+          "call_oi": 174.0,
+          "put_oi": 0.0
         },
         {
           "strike": 735,
-          "call_oi": 875.0,
-          "put_oi": 6.0
+          "call_oi": 452.0,
+          "put_oi": 5.0
         },
         {
           "strike": 737.5,
-          "call_oi": 285.0,
+          "call_oi": 197.0,
           "put_oi": 0.0
         },
         {
           "strike": 740,
-          "call_oi": 3102.0,
+          "call_oi": 2624.0,
           "put_oi": 6.0
         },
         {
           "strike": 742.5,
-          "call_oi": 1737.0,
+          "call_oi": 1696.0,
           "put_oi": 0.0
         },
         {
           "strike": 745,
-          "call_oi": 1210.0,
+          "call_oi": 907.0,
           "put_oi": 5.0
         },
         {
           "strike": 747.5,
-          "call_oi": 504.0,
+          "call_oi": 274.0,
           "put_oi": 0.0
         },
         {
           "strike": 750,
-          "call_oi": 4655.0,
-          "put_oi": 11.0
+          "call_oi": 4433.0,
+          "put_oi": 8.0
         },
         {
           "strike": 755,
-          "call_oi": 516.0,
-          "put_oi": 3.0
+          "call_oi": 508.0,
+          "put_oi": 2.0
         },
         {
           "strike": 760,
-          "call_oi": 352.0,
+          "call_oi": 334.0,
           "put_oi": 1.0
         },
         {
           "strike": 765,
-          "call_oi": 180.0,
+          "call_oi": 178.0,
           "put_oi": 1.0
         },
         {
           "strike": 770,
-          "call_oi": 423.0,
+          "call_oi": 349.0,
           "put_oi": 5.0
         },
         {
           "strike": 775,
-          "call_oi": 884.0,
+          "call_oi": 953.0,
           "put_oi": 5.0
         },
         {
           "strike": 780,
-          "call_oi": 299.0,
+          "call_oi": 295.0,
           "put_oi": 3.0
         },
         {
@@ -7709,27 +7771,27 @@
         },
         {
           "strike": 790,
-          "call_oi": 307.0,
+          "call_oi": 279.0,
           "put_oi": 0.0
         },
         {
           "strike": 795,
-          "call_oi": 207.0,
+          "call_oi": 195.0,
           "put_oi": 0.0
         },
         {
           "strike": 800,
-          "call_oi": 967.0,
+          "call_oi": 970.0,
           "put_oi": 0.0
         },
         {
           "strike": 805,
-          "call_oi": 178.0,
+          "call_oi": 171.0,
           "put_oi": 0.0
         },
         {
           "strike": 810,
-          "call_oi": 226.0,
+          "call_oi": 224.0,
           "put_oi": 0.0
         },
         {
@@ -7744,12 +7806,12 @@
         },
         {
           "strike": 825,
-          "call_oi": 80.0,
+          "call_oi": 75.0,
           "put_oi": 0.0
         },
         {
           "strike": 830,
-          "call_oi": 78.0,
+          "call_oi": 75.0,
           "put_oi": 0.0
         },
         {
@@ -7769,7 +7831,7 @@
         },
         {
           "strike": 850,
-          "call_oi": 581.0,
+          "call_oi": 580.0,
           "put_oi": 0.0
         },
         {
@@ -7794,22 +7856,22 @@
         },
         {
           "strike": 875,
-          "call_oi": 240.0,
+          "call_oi": 257.0,
           "put_oi": 0.0
         },
         {
           "strike": 880,
-          "call_oi": 115.0,
+          "call_oi": 124.0,
           "put_oi": 0.0
         },
         {
           "strike": 885,
-          "call_oi": 77.0,
+          "call_oi": 79.0,
           "put_oi": 0.0
         },
         {
           "strike": 890,
-          "call_oi": 405.0,
+          "call_oi": 406.0,
           "put_oi": 0.0
         },
         {
@@ -7819,32 +7881,32 @@
         },
         {
           "strike": 900,
-          "call_oi": 224.0,
+          "call_oi": 226.0,
           "put_oi": 0.0
         },
         {
           "strike": 905,
-          "call_oi": 131.0,
+          "call_oi": 133.0,
           "put_oi": 0.0
         },
         {
           "strike": 910,
-          "call_oi": 227.0,
+          "call_oi": 228.0,
           "put_oi": 0.0
         },
         {
           "strike": 915,
-          "call_oi": 247.0,
+          "call_oi": 251.0,
           "put_oi": 0.0
         },
         {
           "strike": 920,
-          "call_oi": 215.0,
+          "call_oi": 216.0,
           "put_oi": 0.0
         },
         {
           "strike": 925,
-          "call_oi": 151.0,
+          "call_oi": 152.0,
           "put_oi": 0.0
         },
         {
@@ -7854,7 +7916,7 @@
         },
         {
           "strike": 935,
-          "call_oi": 133.0,
+          "call_oi": 136.0,
           "put_oi": 0.0
         },
         {
@@ -7869,7 +7931,7 @@
         },
         {
           "strike": 950,
-          "call_oi": 138.0,
+          "call_oi": 140.0,
           "put_oi": 0.0
         },
         {
@@ -7958,16 +8020,17 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": -159670120.4936857,
+      "cex_total": 17401152185.222183,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 675 (-8.9%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 750 (+1.2%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 590 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 670 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -9.6%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 감마 플립: 658.7 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 670 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -9.6%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 675~750 사이 박스권에서 움직이되, 옵션 만기 특성상 670(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 1,
@@ -7976,31 +8039,31 @@
       "stage_slope_pct": -2.43,
       "stage_pos_pct": 20.83,
       "stage_prior_slope_pct": -1.94,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "MSFT",
       "spot": 501.61,
-      "is_stale_price": false,
-      "price_change_pct": 0.73,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": 1.35,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-09-30"
       ],
-      "generated_at": "2026-09-21T22:39:55.125163+00:00",
-      "max_pain": 492.5,
-      "call_wall": 502.5,
+      "generated_at": "2026-09-22T00:08:28.666776+00:00",
+      "max_pain": 495,
+      "call_wall": 510,
       "put_wall": 500,
-      "gamma_flip": 500,
+      "gamma_flip": 497.21,
       "max_oi_wall": 530,
-      "max_oi_wall_total_oi": 13337.0,
-      "max_oi_wall_call_oi": 13337.0,
-      "max_oi_wall_put_oi": 0.0,
-      "net_gex_total": 231926314.72826722,
+      "max_oi_wall_total_oi": 12257.0,
+      "max_oi_wall_call_oi": 12256.0,
+      "max_oi_wall_put_oi": 1.0,
+      "net_gex_total": 128089170.15460671,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -8141,22 +8204,22 @@
         {
           "strike": 420,
           "call_oi": 34.0,
-          "put_oi": 2833.0
+          "put_oi": 2835.0
         },
         {
           "strike": 425,
-          "call_oi": 63.0,
-          "put_oi": 743.0
+          "call_oi": 65.0,
+          "put_oi": 744.0
         },
         {
           "strike": 430,
-          "call_oi": 58.0,
-          "put_oi": 308.0
+          "call_oi": 51.0,
+          "put_oi": 307.0
         },
         {
           "strike": 435,
-          "call_oi": 81.0,
-          "put_oi": 313.0
+          "call_oi": 72.0,
+          "put_oi": 306.0
         },
         {
           "strike": 437.5,
@@ -8165,208 +8228,208 @@
         },
         {
           "strike": 440,
-          "call_oi": 45.0,
-          "put_oi": 658.0
+          "call_oi": 41.0,
+          "put_oi": 642.0
         },
         {
           "strike": 442.5,
           "call_oi": 73.0,
-          "put_oi": 257.0
+          "put_oi": 12.0
         },
         {
           "strike": 445,
           "call_oi": 55.0,
-          "put_oi": 991.0
+          "put_oi": 980.0
         },
         {
           "strike": 447.5,
           "call_oi": 16.0,
-          "put_oi": 84.0
+          "put_oi": 76.0
         },
         {
           "strike": 450,
-          "call_oi": 147.0,
-          "put_oi": 5290.0
+          "call_oi": 144.0,
+          "put_oi": 5004.0
         },
         {
           "strike": 452.5,
           "call_oi": 6.0,
-          "put_oi": 146.0
+          "put_oi": 133.0
         },
         {
           "strike": 455,
-          "call_oi": 91.0,
-          "put_oi": 624.0
+          "call_oi": 92.0,
+          "put_oi": 1264.0
         },
         {
           "strike": 457.5,
-          "call_oi": 10.0,
-          "put_oi": 1029.0
+          "call_oi": 9.0,
+          "put_oi": 1017.0
         },
         {
           "strike": 460,
-          "call_oi": 413.0,
-          "put_oi": 1959.0
+          "call_oi": 402.0,
+          "put_oi": 1603.0
         },
         {
           "strike": 462.5,
-          "call_oi": 3.0,
-          "put_oi": 524.0
+          "call_oi": 2.0,
+          "put_oi": 492.0
         },
         {
           "strike": 465,
-          "call_oi": 127.0,
-          "put_oi": 1928.0
+          "call_oi": 130.0,
+          "put_oi": 1780.0
         },
         {
           "strike": 467.5,
           "call_oi": 9.0,
-          "put_oi": 959.0
+          "put_oi": 950.0
         },
         {
           "strike": 470,
-          "call_oi": 443.0,
-          "put_oi": 2514.0
+          "call_oi": 330.0,
+          "put_oi": 1669.0
         },
         {
           "strike": 472.5,
-          "call_oi": 29.0,
-          "put_oi": 1423.0
+          "call_oi": 11.0,
+          "put_oi": 1103.0
         },
         {
           "strike": 475,
-          "call_oi": 251.0,
-          "put_oi": 3172.0
+          "call_oi": 199.0,
+          "put_oi": 2817.0
         },
         {
           "strike": 477.5,
-          "call_oi": 94.0,
-          "put_oi": 2038.0
+          "call_oi": 60.0,
+          "put_oi": 1469.0
         },
         {
           "strike": 480,
-          "call_oi": 513.0,
-          "put_oi": 4769.0
+          "call_oi": 465.0,
+          "put_oi": 3443.0
         },
         {
           "strike": 482.5,
-          "call_oi": 142.0,
-          "put_oi": 1699.0
+          "call_oi": 124.0,
+          "put_oi": 891.0
         },
         {
           "strike": 485,
-          "call_oi": 940.0,
-          "put_oi": 2764.0
+          "call_oi": 908.0,
+          "put_oi": 2186.0
         },
         {
           "strike": 487.5,
-          "call_oi": 909.0,
-          "put_oi": 2287.0
+          "call_oi": 986.0,
+          "put_oi": 1574.0
         },
         {
           "strike": 490,
-          "call_oi": 1431.0,
-          "put_oi": 3458.0
+          "call_oi": 957.0,
+          "put_oi": 1888.0
         },
         {
           "strike": 492.5,
-          "call_oi": 1860.0,
-          "put_oi": 2153.0
+          "call_oi": 584.0,
+          "put_oi": 1310.0
         },
         {
           "strike": 495,
-          "call_oi": 3389.0,
-          "put_oi": 2362.0
+          "call_oi": 2777.0,
+          "put_oi": 1769.0
         },
         {
           "strike": 497.5,
-          "call_oi": 2583.0,
-          "put_oi": 951.0
+          "call_oi": 1703.0,
+          "put_oi": 814.0
         },
         {
           "strike": 500,
-          "call_oi": 5713.0,
-          "put_oi": 2442.0
+          "call_oi": 4290.0,
+          "put_oi": 2089.0
         },
         {
           "strike": 502.5,
-          "call_oi": 3655.0,
-          "put_oi": 751.0
+          "call_oi": 3203.0,
+          "put_oi": 572.0
         },
         {
           "strike": 505,
-          "call_oi": 4850.0,
-          "put_oi": 1004.0
+          "call_oi": 3398.0,
+          "put_oi": 951.0
         },
         {
           "strike": 507.5,
-          "call_oi": 3541.0,
-          "put_oi": 371.0
+          "call_oi": 2682.0,
+          "put_oi": 356.0
         },
         {
           "strike": 510,
-          "call_oi": 5656.0,
-          "put_oi": 554.0
+          "call_oi": 4852.0,
+          "put_oi": 527.0
         },
         {
           "strike": 512.5,
-          "call_oi": 1462.0,
-          "put_oi": 349.0
+          "call_oi": 1243.0,
+          "put_oi": 350.0
         },
         {
           "strike": 515,
-          "call_oi": 2868.0,
-          "put_oi": 128.0
+          "call_oi": 2603.0,
+          "put_oi": 129.0
         },
         {
           "strike": 517.5,
-          "call_oi": 1315.0,
+          "call_oi": 1233.0,
           "put_oi": 11.0
         },
         {
           "strike": 520,
-          "call_oi": 4622.0,
+          "call_oi": 3066.0,
           "put_oi": 68.0
         },
         {
           "strike": 522.5,
-          "call_oi": 987.0,
+          "call_oi": 952.0,
           "put_oi": 8.0
         },
         {
           "strike": 525,
-          "call_oi": 3859.0,
+          "call_oi": 3877.0,
           "put_oi": 53.0
         },
         {
           "strike": 527.5,
-          "call_oi": 308.0,
+          "call_oi": 300.0,
           "put_oi": 22.0
         },
         {
           "strike": 530,
-          "call_oi": 13337.0,
-          "put_oi": 0.0
+          "call_oi": 12256.0,
+          "put_oi": 1.0
         },
         {
           "strike": 532.5,
-          "call_oi": 1667.0,
+          "call_oi": 1649.0,
           "put_oi": 1.0
         },
         {
           "strike": 535,
-          "call_oi": 6657.0,
+          "call_oi": 6667.0,
           "put_oi": 0.0
         },
         {
           "strike": 537.5,
-          "call_oi": 58.0,
+          "call_oi": 28.0,
           "put_oi": 0.0
         },
         {
           "strike": 540,
-          "call_oi": 1242.0,
-          "put_oi": 1.0
+          "call_oi": 1238.0,
+          "put_oi": 0.0
         },
         {
           "strike": 542.5,
@@ -8375,7 +8438,7 @@
         },
         {
           "strike": 545,
-          "call_oi": 424.0,
+          "call_oi": 426.0,
           "put_oi": 0.0
         },
         {
@@ -8385,7 +8448,7 @@
         },
         {
           "strike": 550,
-          "call_oi": 2875.0,
+          "call_oi": 2716.0,
           "put_oi": 0.0
         },
         {
@@ -8405,7 +8468,7 @@
         },
         {
           "strike": 570,
-          "call_oi": 2807.0,
+          "call_oi": 2806.0,
           "put_oi": 0.0
         },
         {
@@ -8474,17 +8537,18 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": -55102350.74281541,
+      "cex_total": -5961333038.3290615,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 500 (-0.3%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 502.5 (+0.2%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 500 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 492.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -1.8%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 500~502.5 사이 박스권에서 움직이되, 옵션 만기 특성상 492.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 510 (+1.7%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 497.2 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 495 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -1.3%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 500~510 사이 박스권에서 움직이되, 옵션 만기 특성상 495(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
@@ -8492,31 +8556,31 @@
       "stage_slope_pct": 2.08,
       "stage_pos_pct": 18.89,
       "stage_prior_slope_pct": -6.31,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "GOOGL",
       "spot": 354.97,
-      "is_stale_price": false,
-      "price_change_pct": -0.65,
-      "expiry_used": "2026-09-21",
+      "is_stale_price": true,
+      "price_change_pct": 1.23,
+      "expiry_used": "2026-09-23",
       "expiries_included_in_gex": [
-        "2026-09-21",
         "2026-09-23",
         "2026-09-25",
-        "2026-09-28"
+        "2026-09-28",
+        "2026-09-30"
       ],
-      "generated_at": "2026-09-21T22:40:00.051578+00:00",
-      "max_pain": 347.5,
-      "call_wall": 357.5,
+      "generated_at": "2026-09-22T00:08:33.059356+00:00",
+      "max_pain": 342.5,
+      "call_wall": 360,
       "put_wall": 345,
-      "gamma_flip": 352.5,
+      "gamma_flip": 346.97,
       "max_oi_wall": 400,
-      "max_oi_wall_total_oi": 18427.0,
-      "max_oi_wall_call_oi": 18427.0,
+      "max_oi_wall_total_oi": 18167.0,
+      "max_oi_wall_call_oi": 18167.0,
       "max_oi_wall_put_oi": 0.0,
-      "net_gex_total": 197919891.18216795,
+      "net_gex_total": 176325864.8436377,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -8686,48 +8750,48 @@
         },
         {
           "strike": 265,
-          "call_oi": 7.0,
-          "put_oi": 236.0
+          "call_oi": 3.0,
+          "put_oi": 239.0
         },
         {
           "strike": 270,
-          "call_oi": 10.0,
-          "put_oi": 1070.0
+          "call_oi": 5.0,
+          "put_oi": 1071.0
         },
         {
           "strike": 275,
-          "call_oi": 14.0,
+          "call_oi": 13.0,
           "put_oi": 66.0
         },
         {
           "strike": 280,
-          "call_oi": 107.0,
-          "put_oi": 237.0
+          "call_oi": 106.0,
+          "put_oi": 236.0
         },
         {
           "strike": 285,
-          "call_oi": 21.0,
-          "put_oi": 795.0
+          "call_oi": 22.0,
+          "put_oi": 785.0
         },
         {
           "strike": 290,
-          "call_oi": 56.0,
-          "put_oi": 137.0
+          "call_oi": 55.0,
+          "put_oi": 117.0
         },
         {
           "strike": 295,
-          "call_oi": 66.0,
-          "put_oi": 1318.0
+          "call_oi": 65.0,
+          "put_oi": 1294.0
         },
         {
           "strike": 300,
-          "call_oi": 175.0,
-          "put_oi": 1177.0
+          "call_oi": 174.0,
+          "put_oi": 1171.0
         },
         {
           "strike": 305,
-          "call_oi": 54.0,
-          "put_oi": 1782.0
+          "call_oi": 49.0,
+          "put_oi": 1761.0
         },
         {
           "strike": 307.5,
@@ -8736,147 +8800,147 @@
         },
         {
           "strike": 310,
-          "call_oi": 63.0,
-          "put_oi": 1131.0
+          "call_oi": 52.0,
+          "put_oi": 1054.0
         },
         {
           "strike": 312.5,
           "call_oi": 10.0,
-          "put_oi": 128.0
+          "put_oi": 125.0
         },
         {
           "strike": 315,
-          "call_oi": 64.0,
-          "put_oi": 2394.0
+          "call_oi": 63.0,
+          "put_oi": 2337.0
         },
         {
           "strike": 317.5,
-          "call_oi": 8.0,
-          "put_oi": 436.0
+          "call_oi": 6.0,
+          "put_oi": 432.0
         },
         {
           "strike": 320,
-          "call_oi": 89.0,
-          "put_oi": 2464.0
+          "call_oi": 81.0,
+          "put_oi": 2314.0
         },
         {
           "strike": 322.5,
           "call_oi": 26.0,
-          "put_oi": 682.0
+          "put_oi": 676.0
         },
         {
           "strike": 325,
-          "call_oi": 211.0,
-          "put_oi": 4968.0
+          "call_oi": 195.0,
+          "put_oi": 4719.0
         },
         {
           "strike": 327.5,
-          "call_oi": 12.0,
-          "put_oi": 2389.0
+          "call_oi": 11.0,
+          "put_oi": 2374.0
         },
         {
           "strike": 330,
-          "call_oi": 807.0,
-          "put_oi": 2772.0
+          "call_oi": 786.0,
+          "put_oi": 2171.0
         },
         {
           "strike": 332.5,
-          "call_oi": 130.0,
-          "put_oi": 1335.0
+          "call_oi": 113.0,
+          "put_oi": 944.0
         },
         {
           "strike": 335,
-          "call_oi": 1268.0,
-          "put_oi": 2839.0
+          "call_oi": 1206.0,
+          "put_oi": 2006.0
         },
         {
           "strike": 337.5,
-          "call_oi": 590.0,
-          "put_oi": 870.0
+          "call_oi": 560.0,
+          "put_oi": 614.0
         },
         {
           "strike": 340,
-          "call_oi": 1830.0,
-          "put_oi": 4232.0
+          "call_oi": 1647.0,
+          "put_oi": 3315.0
         },
         {
           "strike": 342.5,
-          "call_oi": 985.0,
-          "put_oi": 4472.0
+          "call_oi": 816.0,
+          "put_oi": 1941.0
         },
         {
           "strike": 345,
-          "call_oi": 4148.0,
-          "put_oi": 5105.0
+          "call_oi": 2956.0,
+          "put_oi": 3254.0
         },
         {
           "strike": 347.5,
-          "call_oi": 2092.0,
-          "put_oi": 2161.0
+          "call_oi": 1575.0,
+          "put_oi": 1118.0
         },
         {
           "strike": 350,
-          "call_oi": 11018.0,
-          "put_oi": 2615.0
+          "call_oi": 7919.0,
+          "put_oi": 1573.0
         },
         {
           "strike": 352.5,
-          "call_oi": 4513.0,
-          "put_oi": 592.0
+          "call_oi": 2417.0,
+          "put_oi": 512.0
         },
         {
           "strike": 355,
-          "call_oi": 10599.0,
-          "put_oi": 1261.0
+          "call_oi": 7632.0,
+          "put_oi": 927.0
         },
         {
           "strike": 357.5,
-          "call_oi": 8891.0,
-          "put_oi": 845.0
+          "call_oi": 7110.0,
+          "put_oi": 427.0
         },
         {
           "strike": 360,
-          "call_oi": 13325.0,
-          "put_oi": 1079.0
+          "call_oi": 8237.0,
+          "put_oi": 1023.0
         },
         {
           "strike": 362.5,
-          "call_oi": 5091.0,
-          "put_oi": 258.0
+          "call_oi": 4581.0,
+          "put_oi": 249.0
         },
         {
           "strike": 365,
-          "call_oi": 6542.0,
-          "put_oi": 52.0
+          "call_oi": 5012.0,
+          "put_oi": 37.0
         },
         {
           "strike": 367.5,
-          "call_oi": 890.0,
-          "put_oi": 3.0
+          "call_oi": 635.0,
+          "put_oi": 0.0
         },
         {
           "strike": 370,
-          "call_oi": 6144.0,
+          "call_oi": 6013.0,
           "put_oi": 113.0
         },
         {
           "strike": 372.5,
-          "call_oi": 2213.0,
+          "call_oi": 2256.0,
           "put_oi": 2.0
         },
         {
           "strike": 375,
-          "call_oi": 2025.0,
+          "call_oi": 1911.0,
           "put_oi": 4.0
         },
         {
           "strike": 377.5,
-          "call_oi": 250.0,
+          "call_oi": 255.0,
           "put_oi": 0.0
         },
         {
           "strike": 380,
-          "call_oi": 3048.0,
+          "call_oi": 2705.0,
           "put_oi": 0.0
         },
         {
@@ -8886,37 +8950,42 @@
         },
         {
           "strike": 385,
-          "call_oi": 1447.0,
+          "call_oi": 1459.0,
+          "put_oi": 10.0
+        },
+        {
+          "strike": 387.5,
+          "call_oi": 0.0,
           "put_oi": 0.0
         },
         {
           "strike": 390,
-          "call_oi": 4075.0,
+          "call_oi": 3410.0,
           "put_oi": 0.0
         },
         {
           "strike": 395,
-          "call_oi": 1993.0,
+          "call_oi": 1970.0,
           "put_oi": 0.0
         },
         {
           "strike": 400,
-          "call_oi": 18427.0,
+          "call_oi": 18167.0,
           "put_oi": 0.0
         },
         {
           "strike": 405,
-          "call_oi": 1792.0,
+          "call_oi": 1882.0,
           "put_oi": 0.0
         },
         {
           "strike": 410,
-          "call_oi": 2614.0,
+          "call_oi": 417.0,
           "put_oi": 0.0
         },
         {
           "strike": 415,
-          "call_oi": 2568.0,
+          "call_oi": 2357.0,
           "put_oi": 0.0
         },
         {
@@ -9055,17 +9124,18 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 0.0,
-      "cex_total": 0.0,
-      "vanna_charm_expiry_days": 0,
+      "vex_total": 47858157.66374607,
+      "cex_total": -5103203653.809719,
+      "vanna_charm_expiry_days": 1,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 345 (-2.8%) — 이 근처에서 반등할지 체크",
-        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 357.5 (+0.7%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 352.5 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-21, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 347.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -2.1%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
-        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 345~357.5 사이 박스권에서 움직이되, 옵션 만기 특성상 347.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
+        "&nbsp;&nbsp;• 상방 저항 (Call Wall): 360 (+1.4%) — 이 근처에서 막히는지 체크",
+        "&nbsp;&nbsp;• 감마 플립: 347.0 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-23, D-0) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 342.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -3.5%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 345~360 사이 박스권에서 움직이되, 옵션 만기 특성상 342.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
       "stage_label": "상승국면",
@@ -9073,14 +9143,14 @@
       "stage_slope_pct": 1.72,
       "stage_pos_pct": 3.43,
       "stage_prior_slope_pct": 5.13,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     },
     {
       "ticker": "SPCX",
       "spot": 151.85,
-      "is_stale_price": false,
-      "price_change_pct": -1.78,
+      "is_stale_price": true,
+      "price_change_pct": -1.89,
       "expiry_used": "2026-09-25",
       "expiries_included_in_gex": [
         "2026-09-25",
@@ -9088,16 +9158,16 @@
         "2026-10-09",
         "2026-10-16"
       ],
-      "generated_at": "2026-09-21T22:40:05.154957+00:00",
+      "generated_at": "2026-09-22T00:08:37.583408+00:00",
       "max_pain": 150,
       "call_wall": 160,
       "put_wall": 150,
-      "gamma_flip": 150.7,
+      "gamma_flip": 150.9,
       "max_oi_wall": 135,
       "max_oi_wall_total_oi": 88421.0,
       "max_oi_wall_call_oi": 12071.0,
       "max_oi_wall_put_oi": 76350.0,
-      "net_gex_total": 19143308.25095568,
+      "net_gex_total": 22871758.071368005,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -9846,16 +9916,17 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": 8984172.509705149,
-      "cex_total": -21881068866.851246,
-      "vanna_charm_expiry_days": 4,
+      "vex_total": -17875446.263226997,
+      "cex_total": -24256625130.587254,
+      "vanna_charm_expiry_days": 3,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 150 (-1.2%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 160 (+5.4%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 150.7 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-25, D-3) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 150 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -1.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 감마 플립: 150.9 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-25, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 150 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -1.2%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 150~160 사이 박스권에서 움직이되, 옵션 만기 특성상 150(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
@@ -9864,14 +9935,14 @@
       "stage_slope_pct": 59.95,
       "stage_pos_pct": 95.56,
       "stage_prior_slope_pct": 103.9,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=243 closes=243 status=DELAYED",
-      "stage_n_closes": 243
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=242 closes=242 status=DELAYED",
+      "stage_n_closes": 242
     },
     {
       "ticker": "PLTR",
       "spot": 183.09,
-      "is_stale_price": false,
-      "price_change_pct": 3.34,
+      "is_stale_price": true,
+      "price_change_pct": 2.44,
       "expiry_used": "2026-09-25",
       "expiries_included_in_gex": [
         "2026-09-25",
@@ -9879,16 +9950,16 @@
         "2026-10-09",
         "2026-10-16"
       ],
-      "generated_at": "2026-09-21T22:40:10.267889+00:00",
+      "generated_at": "2026-09-22T00:08:42.056425+00:00",
       "max_pain": 172.5,
       "call_wall": 185,
       "put_wall": 170,
-      "gamma_flip": 169.22,
+      "gamma_flip": 170.11,
       "max_oi_wall": 170,
       "max_oi_wall_total_oi": 49137.0,
       "max_oi_wall_call_oi": 19124.0,
       "max_oi_wall_put_oi": 30013.0,
-      "net_gex_total": 102496911.6278769,
+      "net_gex_total": 102753596.10914251,
       "regime": "positive",
       "oi_by_strike": [
         {
@@ -10317,16 +10388,17 @@
           "put_oi": 0.0
         }
       ],
-      "vex_total": -167148156.99432293,
-      "cex_total": -7882187164.337725,
-      "vanna_charm_expiry_days": 4,
+      "vex_total": -141986306.33810267,
+      "cex_total": -7914892804.794467,
+      "vanna_charm_expiry_days": 3,
       "narrative": [
+        "<b>⚠️ 가격 데이터 주의</b>: 이번 스캔은 현재가를 정상적으로 가져오지 못해 계산이 부정확할 수 있어요. 잠시 후 다시 조회하거나, 실전 매매 전 반드시 실시간 시세로 재확인하세요.",
         "<b>양의 감마 (변동성 둔화)</b>: 딜러들이 가격을 누르고 받쳐주는 방향으로 헤지하는 경향이 있어, 큰 폭의 급등락보다는 상대적으로 좁은 박스권 흐름이 나올 가능성이 있어요.",
         "<b>주요 핵심 라인:</b>",
         "&nbsp;&nbsp;• 하방 지지 (Put Wall): 170 (-7.1%) — 이 근처에서 반등할지 체크",
         "&nbsp;&nbsp;• 상방 저항 (Call Wall): 185 (+1.0%) — 이 근처에서 막히는지 체크",
-        "&nbsp;&nbsp;• 감마 플립: 169.2 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
-        "<b>만기일 (2026-09-25, D-3) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 172.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -5.8%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
+        "&nbsp;&nbsp;• 감마 플립: 170.1 — 추세 변화의 기점이 되는 위치 (현재는 위에 위치)",
+        "<b>만기일 (2026-09-25, D-2) 전망</b>: 'Max Pain 이론'에 따르면 만기가 다가올수록 주가가 172.5 근처로 수렴하는 경향이 있다는 가설이 있어요 (현재가 대비 -5.8%). 다만 이는 하나의 참고 가설일 뿐, 실적 발표나 거시경제 이벤트 등 다른 요인이 훨씬 크게 작용할 수 있어요.",
         "💡 <b>한 줄 정리</b>: \"딜러들의 헤지 물량 때문에 170~185 사이 박스권에서 움직이되, 옵션 만기 특성상 172.5(Max Pain) 쪽으로 수렴하며 끌려 내려갈 가능성이 있는 상태\""
       ],
       "stage": 2,
@@ -10335,8 +10407,8 @@
       "stage_slope_pct": 0.24,
       "stage_pos_pct": 25.56,
       "stage_prior_slope_pct": -8.26,
-      "stage_debug": "start=2025-07-28 end=2026-09-21 raw_results=290 closes=290 status=DELAYED",
-      "stage_n_closes": 290
+      "stage_debug": "start=2025-07-29 end=2026-09-22 raw_results=289 closes=289 status=DELAYED",
+      "stage_n_closes": 289
     }
   ],
   "errors": []
