@@ -684,17 +684,35 @@ def _swing_reclaim_setup_payload(ticker):
 
 
 def _swing_reclaim_candidates(limit=8):
-    """First-pass auto scan among liquid risers, then rank by swing-reclaim score."""
-    first_pass = _option_swing_market_candidates(limit=max(12, min(20, int(limit) * 2)))
+    """Auto scan for depressed/recovering swing candidates, excluding already-extended spikes."""
+    first_pass = _option_swing_market_candidates(limit=max(16, min(20, int(limit) * 3)))
     results = []
+
     for row in first_pass.get("candidates") or []:
         ticker = row.get("ticker")
         if not ticker:
             continue
         try:
             item = _swing_reclaim_setup_payload(ticker)
-            if not item.get("error"):
-                results.append(item)
+            if item.get("error"):
+                continue
+
+            rise = item.get("rise_from_low_pct")
+            from_high = item.get("from_20d_high_pct")
+            days_low = item.get("days_from_low")
+
+            # "Depressed but recovering" guardrails:
+            # - not already hundreds of percent off the low
+            # - still meaningfully below the recent high, or only just reclaiming it
+            # - low should be reasonably recent
+            if rise is None or not (2 <= rise <= 30):
+                continue
+            if days_low is None or days_low > 20:
+                continue
+            if from_high is not None and not (-30 <= from_high <= 2):
+                continue
+
+            results.append(item)
         except Exception:
             continue
 
@@ -706,13 +724,26 @@ def _swing_reclaim_candidates(limit=8):
         "LOW CONFIRMED": 2,
         "BOTTOM WATCH": 1,
     }
-    results.sort(key=lambda x: (stage_rank.get(x.get("stage"), 0), x.get("score") or 0), reverse=True)
+    results.sort(
+        key=lambda x: (
+            stage_rank.get(x.get("stage"), 0),
+            x.get("score") or 0,
+            -(x.get("rise_from_low_pct") or 999),
+        ),
+        reverse=True,
+    )
+
     wanted = max(1, min(int(limit), 12))
     return {
         "count": min(len(results), wanted),
         "candidates": results[:wanted],
-        "source": "Liquid risers first-pass + daily reclaim analysis",
-        "note": "This is a fast first-pass scan, not an exhaustive scan of every listed stock.",
+        "source": "Liquid risers first-pass + daily depressed/reclaim analysis",
+        "filters": {
+            "rise_from_low_pct": "2 to 30",
+            "days_from_low_max": 20,
+            "from_20d_high_pct": "-30 to +2",
+        },
+        "note": "Extended spikes are excluded; this scan focuses on depressed stocks recovering toward/through 21EMA and 50MA.",
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
