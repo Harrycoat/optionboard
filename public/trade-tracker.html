@@ -7,7 +7,7 @@
 <style>
 :root{--bg:#07101b;--panel:#0d1724;--line:#243249;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#091522);color:var(--text);font-family:Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:14px}.brand{font-size:26px;font-weight:900}.sub{font-size:12px;color:var(--muted);margin-top:5px}.top-nav{display:flex;gap:7px;flex-wrap:wrap}.top-nav a{padding:9px 10px;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-size:10px;font-weight:900;background:#101826}.top-nav a.active{background:var(--gold);color:#17120a;border-color:var(--gold)}
-.card{background:rgba(13,23,36,.95);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}.controls{display:grid;grid-template-columns:110px 120px 120px 120px 1fr;gap:8px}.controls input,.controls button{min-height:42px;border-radius:8px;font-weight:800}.controls input{background:#09131f;color:var(--text);border:1px solid var(--line);padding:0 11px}.controls button{border:0;background:var(--green);cursor:pointer}.note,.status{font-size:11px;color:var(--muted);line-height:1.5}.status{margin-top:8px}
+.card{background:rgba(13,23,36,.95);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}.controls{display:grid;grid-template-columns:110px 120px 120px 120px 150px 1fr;gap:8px}.controls input,.controls button{min-height:42px;border-radius:8px;font-weight:800}.controls input{background:#09131f;color:var(--text);border:1px solid var(--line);padding:0 11px}.controls button{border:0;background:var(--green);cursor:pointer}.note,.status{font-size:11px;color:var(--muted);line-height:1.5}.status{margin-top:8px}
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{background:#09131f;border:1px solid var(--line);border-radius:10px;padding:10px}.metric small{display:block;color:var(--muted);font-size:10px}.metric b{display:block;margin-top:5px;font-size:17px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
 .state{border-left:6px solid var(--gold);padding:14px 14px 14px 16px}.state h2{margin:0;font-size:22px}.state p{margin:7px 0 0;color:#c1ccda;font-size:13px;line-height:1.5}.state.green{border-color:var(--green)}.state.red{border-color:var(--red)}.state.blue{border-color:var(--blue)}
 .gauge{margin-top:12px}.ghead{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}.track{height:11px;background:linear-gradient(90deg,var(--red) 0 50%,var(--green) 50% 100%);border-radius:999px;position:relative}.marker{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:21px;background:white;border-radius:4px}.labels{display:flex;justify-content:space-between;font-size:10px;font-weight:900;margin-top:6px}.labels span:first-child{color:var(--red)}.labels span:last-child{color:var(--green)}
@@ -35,9 +35,10 @@
       <input id="callWall" type="number" step="0.01" value="64" aria-label="call wall">
       <input id="putWall" type="number" step="0.01" placeholder="PUT WALL" aria-label="put wall">
       <input id="entry" type="number" step="0.01" placeholder="ENTRY" aria-label="entry price">
+      <input id="entryVol" type="number" step="0.1" value="1.3" aria-label="expected entry volume ratio">
       <button id="startBtn">TRACK NOW</button>
     </div>
-    <div class="note">Ticker · Call Wall · Put Wall · Entry. DRAM is loaded as today's test case with Call Wall 64. Manual wall values override delayed option-wall data.</div>
+    <div class="note">Ticker · Call Wall · Put Wall · Entry · Expected Entry Volume (5M relative volume). Default 1.3×. Entry/RE-UP is blocked when current 5-minute volume is below this threshold.</div>
     <div class="status" id="status">Ready</div>
   </div>
 
@@ -55,6 +56,7 @@
       <div class="metric"><small>CALL WALL</small><b id="wall" class="red">$64.00</b></div>
       <div class="metric"><small>WALL DIST</small><b id="wallDist">—</b></div>
       <div class="metric"><small>5M VOL RATIO</small><b id="volRatio">—</b></div>
+      <div class="metric"><small>ENTRY VOL NEEDED</small><b id="entryVolNeeded" class="gold">1.30×</b></div>
       <div class="metric"><small>HULL DIST</small><b id="hullDist">—</b></div>
     </div>
     <div class="gauge">
@@ -93,9 +95,9 @@ const store='gex_trade_tracker_v1';
 const num=v=>Number.isFinite(+v)?+v:NaN;
 const money=v=>Number.isFinite(+v)?'$'+(+v).toFixed(2):'—';
 const pct=v=>Number.isFinite(+v)?((+v>=0?'+':'')+(+v).toFixed(2)+'%'):'—';
-function settings(){return {ticker:$('ticker').value.trim().toUpperCase(),callWall:num($('callWall').value),putWall:num($('putWall').value),entry:num($('entry').value)}}
+function settings(){return {ticker:$('ticker').value.trim().toUpperCase(),callWall:num($('callWall').value),putWall:num($('putWall').value),entry:num($('entry').value),entryVol:num($('entryVol').value)}}
 function saveSettings(){localStorage.setItem(store+'_settings',JSON.stringify(settings()))}
-function restore(){try{const x=JSON.parse(localStorage.getItem(store+'_settings')||'{}');if(x.ticker)$('ticker').value=x.ticker;if(Number.isFinite(x.callWall))$('callWall').value=x.callWall;if(Number.isFinite(x.putWall))$('putWall').value=x.putWall;if(Number.isFinite(x.entry))$('entry').value=x.entry}catch(e){}}
+function restore(){try{const x=JSON.parse(localStorage.getItem(store+'_settings')||'{}');if(x.ticker)$('ticker').value=x.ticker;if(Number.isFinite(x.callWall))$('callWall').value=x.callWall;if(Number.isFinite(x.putWall))$('putWall').value=x.putWall;if(Number.isFinite(x.entry))$('entry').value=x.entry;if(Number.isFinite(x.entryVol))$('entryVol').value=x.entryVol}catch(e){}}
 function logs(){try{return JSON.parse(localStorage.getItem(store+'_log')||'[]')}catch(e){return []}}
 function addLog(state,note=''){const a=logs();a.unshift({time:Date.now(),ticker:settings().ticker,state,price:num(live?.last??live?.mark??data?.spot),note});localStorage.setItem(store+'_log',JSON.stringify(a.slice(0,200)));renderLog()}
 function renderLog(){const a=logs();$('log').innerHTML=a.length?a.map(x=>'<div class="logrow"><span>'+new Date(x.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</span><b>'+x.state+'</b><div>'+money(x.price)+(x.note?' · '+x.note:'')+'</div></div>').join(''):'<div class="note" style="padding-top:10px">No trade events yet.</div>'}
@@ -112,7 +114,7 @@ function pressure(q){
 function volRatio(){const bars=data?.bars||[];if(bars.length<3)return NaN;const cur=num(bars.at(-1)?.volume),prev=bars.slice(-6,-1).map(x=>num(x.volume)).filter(Number.isFinite);const avg=prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:NaN;return Number.isFinite(cur)&&avg>0?cur/avg:NaN}
 function classify(){
  if(!data)return {state:'WAITING FOR DATA',tone:'',text:'Waiting for 5-minute structure.'};
- const s=settings(),spot=num(live?.last??live?.mark??data.spot),hull=num(data.hull21),hullSlope=num(data.hull21_slope_pct),wall=Number.isFinite(s.callWall)?s.callWall:num(data.call_wall),vr=volRatio(),bars=data.bars||[],bar=bars.at(-1)||{},high=Math.max(...bars.slice(-4).map(x=>num(x.high)).filter(Number.isFinite),spot);
+ const s=settings(),spot=num(live?.last??live?.mark??data.spot),hull=num(data.hull21),hullSlope=num(data.hull21_slope_pct),wall=Number.isFinite(s.callWall)?s.callWall:num(data.call_wall),vr=volRatio(),entryVolNeed=Number.isFinite(s.entryVol)&&s.entryVol>0?s.entryVol:1.3,bars=data.bars||[],bar=bars.at(-1)||{},high=Math.max(...bars.slice(-4).map(x=>num(x.high)).filter(Number.isFinite),spot);
  const pr=pressure(live||data.schwab_quote||{}),p=pr.pct;pressurePeak=Math.max(pressurePeak,p);
  const hullDist=Number.isFinite(hull)&&hull?((spot-hull)/hull*100):NaN,wallDist=Number.isFinite(wall)&&wall?((wall-spot)/wall*100):NaN;
  const nearHull=Number.isFinite(hullDist)&&hullDist>=-0.2&&hullDist<=0.65;
@@ -121,24 +123,25 @@ function classify(){
  const wallRejected=Number.isFinite(wall)&&high>=wall*.995&&spot<wall;
  const pressureDrop=(pressurePeak-p)>=12&&pressurePeak>=65;
  const pressureReturn=p>=58&&p>=pressurePrev+6;
- const strongVol=Number.isFinite(vr)&&vr>=1.3;
+ const strongVol=Number.isFinite(vr)&&vr>=entryVolNeed;
  const slopeUp=Number.isFinite(hullSlope)&&hullSlope>=0.03;
  const slopeDown=Number.isFinite(hullSlope)&&hullSlope<=-0.03;
  const slopeFlat=Number.isFinite(hullSlope)&&!slopeUp&&!slopeDown;
  const buyingStrong=p>=60;
  const sellingStrong=p<=40;
  let out;
- if(Number.isFinite(wall)&&spot>wall&&buyingStrong&&strongVol&&slopeUp) out={state:'BREAKOUT',tone:'green',text:'Call Wall above + HULL21 slope UP + buying pressure/volume confirmation. Monitor breakout hold and retest.'};
+ if(!strongVol && slopeUp && Number.isFinite(hullDist) && hullDist>=0) out={state:'NO TRADE / LOW VOLUME',tone:'gold',text:'HULL21 slope is UP, but 5-minute volume is only '+(Number.isFinite(vr)?vr.toFixed(2)+'×':'—')+'. Entry requires at least '+entryVolNeed.toFixed(2)+'× relative volume.'};
+ else if(Number.isFinite(wall)&&spot>wall&&buyingStrong&&strongVol&&slopeUp) out={state:'BREAKOUT',tone:'green',text:'Call Wall above + HULL21 slope UP + required 5-minute volume + buying pressure confirmation. Monitor breakout hold and retest.'};
  else if(wallRejected&&(sellingStrong||pressureDrop)) out={state:'CALL WALL REJECTION',tone:'red',text:'Price rejected near Call Wall and buying pressure weakened. Profit protection / pullback mode.'};
  else if((belowHull&&slopeDown)|| (slopeDown&&sellingStrong)) out={state:'HEDGE READY',tone:'red',text:'HULL21 slope is DOWN and selling pressure is dominant. Prepare hedge and avoid adding until recovery.'};
- else if(nearHull&&slopeUp&&pressureReturn) out={state:'RE-UP READY',tone:'green',text:'HULL21 slope has turned UP near support and buying pressure is returning. Confirm the 5-minute hold/reclaim before re-entry.'};
- else if(slopeUp&&buyingStrong&&Number.isFinite(hullDist)&&hullDist>=0) out={state:'RE-UP READY',tone:'green',text:'HULL21 slope is UP and live buying pressure is strong. Uptrend continuation is improving; watch the next 5-minute high/retest.'};
+ else if(nearHull&&slopeUp&&pressureReturn&&strongVol) out={state:'RE-UP READY',tone:'green',text:'HULL21 slope has turned UP near support, buying pressure is returning, and 5-minute volume meets the entry threshold. Confirm the 5-minute hold/reclaim before re-entry.'};
+ else if(slopeUp&&buyingStrong&&strongVol&&Number.isFinite(hullDist)&&hullDist>=0) out={state:'RE-UP READY',tone:'green',text:'HULL21 slope is UP, buying pressure is strong, and 5-minute volume meets the entry threshold. Uptrend continuation is improving.'};
  else if(nearHull&&slopeFlat) out={state:'HULL21 TEST',tone:'gold',text:'Price is near HULL21 but the slope is still FLAT. Wait for slope UP + buying pressure before re-entry.'};
  else if(slopeFlat&&Number.isFinite(hullDist)&&hullDist>0) out={state:'SIDEWAYS / HOLD',tone:'blue',text:'Price is above HULL21 but the HULL21 slope is FLAT. Uptrend is intact, but wait for the slope to turn UP before adding.'};
  else if(pressureDrop&&high>0&&(high-spot)/high*100<1.5) out={state:'PROFIT PROTECT',tone:'red',text:'Buying pressure has fallen materially from its session peak near the highs. Consider protecting profit per your plan.'};
  else if(Number.isFinite(hullDist)&&hullDist>0.65) out={state:'HOLD / PULLBACK WAIT',tone:'blue',text:'Trend remains above HULL21. Avoid chasing; wait for a cleaner pullback or slope re-acceleration.'};
  else out={state:'WATCH',tone:'',text:'No strong transition yet. Continue 5-minute tracking.'};
- pressurePrev=p;return {...out,spot,hull,hullSlope,slopeUp,slopeDown,slopeFlat,wall,vr,hullDist,wallDist,pr};
+ pressurePrev=p;return {...out,spot,hull,hullSlope,slopeUp,slopeDown,slopeFlat,wall,vr,entryVolNeed,hullDist,wallDist,pr};
 }
 function render(){
  if(!data)return;const x=classify(),box=$('stateBox');box.className='card state '+x.tone;$('stateTitle').textContent=x.state;$('stateText').textContent=x.text;
@@ -148,7 +151,7 @@ function render(){
  hs.className=x.slopeUp?'green':x.slopeDown?'red':'gold';
  ss.textContent=x.slopeUp?'UP ↑':x.slopeDown?'DOWN ↓':x.slopeFlat?'FLAT →':'—';
  ss.className=x.slopeUp?'green':x.slopeDown?'red':'gold';
- $('wall').textContent=money(x.wall);$('wallDist').textContent=pct(-x.wallDist);$('volRatio').textContent=Number.isFinite(x.vr)?x.vr.toFixed(2)+'×':'—';$('hullDist').textContent=pct(x.hullDist);
+ $('wall').textContent=money(x.wall);$('wallDist').textContent=pct(-x.wallDist);$('volRatio').textContent=Number.isFinite(x.vr)?x.vr.toFixed(2)+'×':'—';$('entryVolNeeded').textContent=(Number.isFinite(x.entryVolNeed)?x.entryVolNeed:1.3).toFixed(2)+'×';$('hullDist').textContent=pct(x.hullDist);
  const pp=x.pr?.pct??50;$('pressureMarker').style.left=pp+'%';$('pressureText').textContent=x.pr?.confidence==='LOW'?'LOW CONFIDENCE · WAIT':('BUY '+Math.round(pp)+'% / SELL '+(100-Math.round(pp))+'% · '+x.pr.confidence);$('pressureMeta').textContent=Number.isFinite(x.pr?.deltaVol)?'ΔVol '+Math.round(x.pr.deltaVol).toLocaleString():'Schwab samples';
  const bars=data.bars||[],maxV=Math.max(1,...bars.map(b=>num(b.volume)||0));$('bars').innerHTML=bars.map(b=>{const up=num(b.close)>=num(b.open),h=Math.max(4,(num(b.volume)||0)/maxV*125),t=new Date(num(b.time)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="barcol"><div class="bv">'+money(b.close)+'</div><div class="bar '+(up?'':'down')+'" style="height:'+h+'px"></div><div class="bt">'+t+'</div></div>'}).join('');
  if(x.state!==lastState){if(lastState)addLog(x.state,x.text);lastState=x.state}
@@ -156,7 +159,7 @@ function render(){
 async function loadBase(){const t=settings().ticker;if(!t)return;saveSettings();$('status').textContent='Loading '+t+' 5-minute structure…';try{const r=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(d.error)throw new Error(d.error);data=d;if(d.schwab_quote){prevLive=live;live=d.schwab_quote}render();$('status').textContent=t+' tracking · 5M HULL21 + Schwab live quote · refresh 60s'}catch(e){$('status').textContent='ERROR: '+e.message}}
 async function loadQuote(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_quote&ticker='+encodeURIComponent(t),{cache:'no-store'});const q=await r.json();if(!q.error){prevLive=live;live=q;render()}}catch(e){}}
 function start(){pressurePeak=50;pressurePrev=50;lastState='';clearInterval(timer);clearInterval(quoteTimer);loadBase();setTimeout(loadQuote,3000);timer=setInterval(loadBase,60000);quoteTimer=setInterval(loadQuote,15000)}
-$('startBtn').onclick=start;['ticker','callWall','putWall','entry'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='ticker')$(id).value=$(id).value.toUpperCase();saveSettings();render()}));
+$('startBtn').onclick=start;['ticker','callWall','putWall','entry','entryVol'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='ticker')$(id).value=$(id).value.toUpperCase();saveSettings();render()}));
 document.querySelectorAll('[data-manual]').forEach(b=>b.onclick=()=>addLog(b.dataset.manual,'manual'));
 $('clearBtn').onclick=()=>{localStorage.removeItem(store+'_log');renderLog()};
 restore();renderLog();start();
