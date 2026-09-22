@@ -16,11 +16,11 @@
 </head>
 <body>
 <main class="wrap">
-  <div class="top"><div class="brand"><i></i>GEX OPTION · PROFIT PROTECTION MONITOR</div><span class="beta">BETA · 15분 지연 분석 · 자동주문 아님</span></div>
+  <div class="top"><div class="brand"><i></i>GEX OPTION · PROFIT PROTECTION MONITOR</div><span class="beta">BETA · 주가 LIVE(Schwab) · 옵션/5분 분석 15분 지연</span></div>
   <section class="card">
     <form class="search" id="searchForm">
-      <input class="tickerInput" value="SNDK" maxlength="10" aria-label="보유종목 1" placeholder="종목 1">
-      <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 2" placeholder="종목 2">
+      <input class="tickerInput" value="NVDA" maxlength="10" aria-label="보유종목 1" placeholder="종목 1">
+      <input class="tickerInput" value="AMZN" maxlength="10" aria-label="보유종목 2" placeholder="종목 2">
       <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 3" placeholder="종목 3">
       <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 4" placeholder="종목 4">
       <input class="tickerInput" value="" maxlength="10" aria-label="보유종목 5" placeholder="종목 5">
@@ -35,7 +35,7 @@
   </section>
 
   <section class="card grid4">
-    <div class="metric"><small>15분 지연 현재가</small><b id="spot">—</b></div>
+    <div class="metric"><small>실시간 현재가 · Schwab</small><b id="spot">—</b></div>
     <div class="metric call"><small>CALL WALL</small><b id="wall">—</b></div>
     <div class="metric"><small>CALL WALL 거리</small><b id="wallDist">—</b></div>
     <div class="metric vwap"><small>HULL21 · 5분</small><b id="hull21">—</b></div>
@@ -86,7 +86,7 @@ function setCheck(id,label,value,kind=''){const n=$(id);n.className='check '+kin
 function stateFor(d,withFlow=false){
   if(!d||!Number.isFinite(+d.call_wall))return {key:'WAIT',icon:'🟡',title:'WAIT',copy:'Call Wall 데이터 대기',tone:'yellow'};
   const bars=d.bars||[],bar=d.latest_bar||bars.at(-1)||{},prior=bars.at(-2)||{};
-  const wall=+d.call_wall,put=number(d.put_wall),close=number(bar.close),high=number(bar.high),low=number(bar.low),vwap=number(d.session_vwap),hull=number(d.hull21),hullSlope=number(d.hull21_slope_pct);
+  const wall=+d.call_wall,put=number(d.put_wall),close=number(d.spot),high=number(bar.high),low=number(bar.low),vwap=number(d.session_vwap),hull=number(d.hull21),hullSlope=number(d.hull21_slope_pct);
   if(![close,high,low].every(Number.isFinite))return {key:'NO_BAR',icon:'🟡',title:'DATA WAIT',copy:'5분봉 데이터 대기',tone:'yellow'};
   const wallDist=(wall-close)/wall*100,tol=Math.max(.05,wall*.0015),vwapOk=Number.isFinite(vwap)&&close>=vwap,hullAbove=Number.isFinite(hull)&&close>=hull,hullWeak=Number.isFinite(hull)&&(!hullAbove||(Number.isFinite(hullSlope)&&hullSlope<=0));
   const crossed=Number.isFinite(+prior.close)&&+prior.close<=wall&&close>wall,retest=Number.isFinite(+prior.close)&&+prior.close>wall&&low<=wall+tol&&close>wall,rejected=high>=wall-tol&&close<wall,nearPut=Number.isFinite(put)&&close<=put*1.01;
@@ -123,7 +123,7 @@ function renderPortfolio(){
     const d=dataMap[t];
     if(!d)return '<div class="portfolio-item"><div class="ticker">'+t+'</div><div class="status">LOADING…</div></div>';
     if(d.error)return '<div class="portfolio-item red"><div class="ticker">'+t+'</div><div class="status">ERROR</div><div class="row"><span>'+d.error+'</span></div></div>';
-    const s=stateFor(d,false),bar=d.latest_bar||{},spot=number(bar.close),wall=number(d.call_wall),hull=number(d.hull21),dist=Number.isFinite(spot)&&Number.isFinite(wall)&&wall?(wall-spot)/wall*100:NaN;
+    const s=stateFor(d,false),bar=d.latest_bar||{},spot=number(d.spot),wall=number(d.call_wall),hull=number(d.hull21),dist=Number.isFinite(spot)&&Number.isFinite(wall)&&wall?(wall-spot)/wall*100:NaN;
     return '<div class="portfolio-item '+s.tone+(t===selectedTicker?' active':'')+'" data-ticker="'+t+'"><div class="ticker">'+t+'</div><div class="status">'+s.icon+' '+s.title+'</div><div class="row"><span>Price</span><b>'+money(spot)+'</b></div><div class="row"><span>Call Wall</span><b>'+money(wall)+'</b></div><div class="row"><span>Wall Dist</span><b>'+(Number.isFinite(dist)?dist.toFixed(2)+'%':'—')+'</b></div><div class="row"><span>HULL21</span><b>'+money(hull)+'</b></div></div>'
   }).join('');
   grid.querySelectorAll('.portfolio-item[data-ticker]').forEach(el=>el.onclick=()=>selectTicker(el.dataset.ticker));
@@ -139,7 +139,7 @@ function renderLog(){const items=JSON.parse(localStorage.getItem(logKey)||'[]');
 
 function render(){
   if(!data)return;
-  const wall=number(data.call_wall),put=number(data.put_wall),bar=data.latest_bar||{},spot=number(bar.close),hull=number(data.hull21);
+  const wall=number(data.call_wall),put=number(data.put_wall),bar=data.latest_bar||{},spot=number(data.spot),hull=number(data.hull21);
   $('spot').textContent=money(spot);$('wall').textContent=money(wall);
   const wallDist=Number.isFinite(spot)&&Number.isFinite(wall)&&wall?((wall-spot)/wall*100):NaN;
   $('wallDist').textContent=Number.isFinite(wallDist)?(wallDist>=0?wallDist.toFixed(2)+'% ↓':Math.abs(wallDist).toFixed(2)+'% ↑'):'—';
@@ -162,9 +162,9 @@ async function load(){
     if(selectedTicker){data=dataMap[selectedTicker];render()}
     renderPortfolio();
     const good=results.filter(x=>!x.error),latest=good.map(x=>x.latest_bar?.time).filter(Boolean).sort().at(-1);
-    $('updated').textContent=good.length+'/'+tickers.length+' 종목 확인 · 약 '+(good[0]?.delay_minutes||15)+'분 지연';
+    $('updated').textContent=good.length+'/'+tickers.length+' 종목 확인 · 주가 '+(good.some(x=>x.stock_realtime)?'LIVE':'지연')+' · 옵션/5분 분석 약 '+(good[0]?.options_delay_minutes||15)+'분 지연';
     $('portfolioStamp').textContent=latest?'최근 5분봉 '+new Date(latest).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'데이터 확인';
-    $('heartbeat').textContent='60초마다 '+tickers.length+'종목 지연 데이터 확인';
+    $('heartbeat').textContent='60초마다 '+tickers.length+'종목 확인 · Schwab 주가 LIVE';
   }finally{busy=false;document.body.classList.remove('loading')}
 }
 restoreTickers();
