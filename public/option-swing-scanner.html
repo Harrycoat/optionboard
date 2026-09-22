@@ -7,7 +7,7 @@
 <style>
 :root{--bg:#08111d;--panel:#0d1724;--panel2:#111e2e;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#0a1320 45%,#08111d);color:var(--text);font-family:Arial,sans-serif}
-.wrap{max-width:1180px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:28px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:5px}.links a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:9px 12px;border-radius:8px;margin-left:6px}
+.wrap{max-width:1180px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.top-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:9px 13px;border:1px solid #2d3b50;border-radius:9px;background:#101826;color:#eef4fb;text-decoration:none;font-size:12px;font-weight:900}.top-nav a:hover{border-color:var(--gold);color:var(--gold)}.top-nav a.active{background:var(--gold);border-color:var(--gold);color:#17120a}.brand{font-size:28px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:5px}.links a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:9px 12px;border-radius:8px;margin-left:6px}
 .card{background:rgba(13,23,36,.94);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 14px 35px rgba(0,0,0,.2)}
 .controls{display:grid;grid-template-columns:repeat(5,1fr) auto auto;gap:8px}.controls input{background:#0a1420;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{background:var(--gold);border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}.controls #autoBtn{background:var(--green)}
 .note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.status{margin:12px 0;color:var(--muted);font-size:12px}
@@ -16,13 +16,17 @@
 .rows{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px}.rows span{color:var(--muted)}.rows b{text-align:right}
 .table{overflow:auto}.scanrow{display:grid;grid-template-columns:95px 95px 110px 110px 110px 120px 120px 1fr;gap:8px;align-items:center;padding:10px 6px;border-top:1px solid var(--line);font-size:11px;min-width:900px}.scanrow.header{color:var(--muted);font-size:10px;border-top:0}.scanrow b{font-size:12px}.signal{font-weight:900}.empty{color:var(--muted);font-size:12px;padding:10px 0}
 @media(max-width:800px){.top{align-items:flex-start;flex-direction:column}.links a{margin:0 6px 0 0;display:inline-block}.controls{grid-template-columns:1fr 1fr}.controls button{min-height:42px}.grid4{grid-template-columns:1fr}.brand{font-size:24px}.wrap{padding:12px}}
-</style>
+@media(max-width:720px){.top{align-items:flex-start;flex-direction:column}.top-nav{width:100%;justify-content:flex-start}.top-nav a{flex:1;min-width:120px;font-size:11px;padding:8px 10px}}</style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
     <div><div class="brand">OPTION SWING SCANNER</div><div class="sub">Daily leader → Pullback → 15M Breakout → 5M Minervini timing</div></div>
-    <div class="links"><a href="/swing-reclaim-scanner.html">SWING RECLAIM</a><a href="/call-wall-monitor.html">CALL WALL MONITOR</a></div>
+    <div class="top-nav">
+      <a href="/option-swing-scanner.html" class="active">OPTION SWING</a>
+      <a href="/swing-reclaim-scanner.html">SWING RECLAIM</a>
+      <a href="/call-wall-monitor.html">CALL WALL MONITOR</a>
+    </div>
   </div>
 
   <div class="card">
