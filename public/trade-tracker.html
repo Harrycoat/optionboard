@@ -11,7 +11,7 @@
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{background:#09131f;border:1px solid var(--line);border-radius:10px;padding:10px}.metric small{display:block;color:var(--muted);font-size:10px}.metric b{display:block;margin-top:5px;font-size:17px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
 .state{border-left:6px solid var(--gold);padding:14px 14px 14px 16px}.state h2{margin:0;font-size:22px}.state p{margin:7px 0 0;color:#c1ccda;font-size:13px;line-height:1.5}.state.green{border-color:var(--green)}.state.red{border-color:var(--red)}.state.blue{border-color:var(--blue)}
 .gauge{margin-top:12px}.ghead{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}.track{height:11px;background:linear-gradient(90deg,var(--red) 0 50%,var(--green) 50% 100%);border-radius:999px;position:relative}.marker{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:21px;background:white;border-radius:4px}.labels{display:flex;justify-content:space-between;font-size:10px;font-weight:900;margin-top:6px}.labels span:first-child{color:var(--red)}.labels span:last-child{color:var(--green)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bars{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;align-items:end;height:180px;padding-top:16px}.barcol{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.bar{width:72%;min-height:4px;border-radius:4px;background:var(--green)}.bar.down{background:var(--red)}.bt{font-size:8px;color:var(--muted)}.bv{font-size:8px;color:#dce7f4}
+.study{margin-top:12px;background:#09131f;border:1px solid var(--line);border-radius:12px;padding:12px}.study-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}.study-head b{font-size:13px}.study-badges{display:flex;gap:6px;flex-wrap:wrap}.study-badge{font-size:10px;font-weight:900;border:1px solid var(--line);border-radius:999px;padding:4px 7px}.study-svg{width:100%;height:240px;display:block;background:#07111c;border-radius:9px}.study-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:7px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bars{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;align-items:end;height:180px;padding-top:16px}.barcol{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.bar{width:72%;min-height:4px;border-radius:4px;background:var(--green)}.bar.down{background:var(--red)}.bt{font-size:8px;color:var(--muted)}.bv{font-size:8px;color:#dce7f4}
 .log{max-height:250px;overflow:auto}.logrow{display:grid;grid-template-columns:70px 130px 1fr;gap:8px;padding:8px 0;border-top:1px solid #1f2b3d;font-size:11px}.logrow:first-child{border-top:0}.logrow span{color:var(--muted)}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.actions button{border:1px solid var(--line);background:#101826;color:var(--text);padding:8px 10px;border-radius:8px;font-weight:800;cursor:pointer}.research{font-size:12px;line-height:1.55;color:#c5d0de}.research b{color:white}
 @media(max-width:720px){.wrap{padding:10px}.top{flex-direction:column;align-items:flex-start}.brand{font-size:20px}.top-nav{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.top-nav a{text-align:center;padding:8px 4px}.controls{grid-template-columns:1fr 1fr}.controls button{grid-column:1/-1}.metrics{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.bars{height:140px;gap:3px}.card{padding:11px}.logrow{grid-template-columns:55px 105px 1fr}}
 </style>
@@ -45,6 +45,15 @@
   <div class="card state" id="stateBox">
     <h2 id="stateTitle">WAITING FOR DATA</h2>
     <p id="stateText">Tracker combines 5-minute HULL21 slope with live Buy/Sell pressure to classify SIDEWAYS, RE-UP READY, HEDGE READY, CALL WALL REJECTION, or BREAKOUT.</p>
+  </div>
+
+  <div class="card">
+    <div class="study-head">
+      <div><b>HULL DEVIATION / CONTINUATION MAP · 5M</b><div class="note">Dev% vs HULL21 · adaptive bands · volume + ATR + slope acceleration</div></div>
+      <div class="study-badges"><span class="study-badge" id="regimeBadge">REGIME —</span><span class="study-badge" id="scoreBadge">SCORE —</span></div>
+    </div>
+    <svg id="studySvg" class="study-svg" viewBox="0 0 1000 240" preserveAspectRatio="none"></svg>
+    <div class="study-legend"><span>CYAN/MAGENTA = Dev%</span><span>DASH = Adaptive bands</span><span>0 LINE = HULL21</span><span>Bars = Relative Volume</span></div>
   </div>
 
   <div class="card">
@@ -143,6 +152,28 @@ function classify(){
  else out={state:'WATCH',tone:'',text:'No strong transition yet. Continue 5-minute tracking.'};
  pressurePrev=p;return {...out,spot,hull,hullSlope,slopeUp,slopeDown,slopeFlat,wall,vr,entryVolNeed,hullDist,wallDist,pr};
 }
+function renderStudy(){
+ const svg=$('studySvg'),s=(data?.tracker_series||[]).slice(-40);
+ if(!svg||!s.length){if(svg)svg.innerHTML='';return}
+ const vals=[];s.forEach(x=>{[x.dev_pct,x.upper_band,x.lower_band].forEach(v=>{if(Number.isFinite(num(v)))vals.push(num(v))})});
+ if(!vals.length){svg.innerHTML='';return}
+ let min=Math.min(...vals,0),max=Math.max(...vals,0);if(max-min<0.2){max+=0.1;min-=0.1}
+ const pad=18,W=1000,H=240,plotH=165,volTop=178,volH=45;
+ const x=i=>pad+(W-pad*2)*(i/Math.max(1,s.length-1));
+ const y=v=>pad+(max-num(v))/(max-min)*(plotH-pad);
+ const maxVol=Math.max(1,...s.map(x=>num(x.vol_ratio)||0));
+ const path=(key)=>{let d='';s.forEach((p,i)=>{const v=num(p[key]);if(!Number.isFinite(v))return;d+=(d?' L ':'M ')+x(i).toFixed(1)+' '+y(v).toFixed(1)});return d};
+ let out='<line x1="'+pad+'" y1="'+y(0)+'" x2="'+(W-pad)+'" y2="'+y(0)+'" stroke="#66768a" stroke-dasharray="6 5" stroke-width="1"/>';
+ out+='<path d="'+path('upper_band')+'" fill="none" stroke="#b84f5a" stroke-dasharray="5 5" stroke-width="1.3"/>';
+ out+='<path d="'+path('lower_band')+'" fill="none" stroke="#347a61" stroke-dasharray="5 5" stroke-width="1.3"/>';
+ let seg='';for(let i=1;i<s.length;i++){const a=s[i-1],b=s[i],v1=num(a.dev_pct),v2=num(b.dev_pct);if(!Number.isFinite(v1)||!Number.isFinite(v2))continue;const col=v2>=0?'#55dff2':'#e85bd7';seg+='<line x1="'+x(i-1)+'" y1="'+y(v1)+'" x2="'+x(i)+'" y2="'+y(v2)+'" stroke="'+col+'" stroke-width="3"/>'}out+=seg;
+ s.forEach((p,i)=>{const vr=num(p.vol_ratio);if(!Number.isFinite(vr))return;const h=Math.min(volH,(vr/maxVol)*volH);const col=vr>=1.3?'#43e0a9':vr>=1?'#f4c34f':'#39506c';out+='<rect x="'+(x(i)-5)+'" y="'+(volTop+volH-h)+'" width="10" height="'+h+'" rx="2" fill="'+col+'"/>'});
+ const last=s.at(-1);if(last){out+='<circle cx="'+x(s.length-1)+'" cy="'+y(last.dev_pct)+'" r="5" fill="'+(num(last.dev_pct)>=0?'#55dff2':'#e85bd7')+'"/>'}
+ svg.innerHTML=out;
+ const latest=data?.tracker_latest||last||{},rb=$('regimeBadge'),sb=$('scoreBadge');
+ if(rb){rb.textContent=(latest.regime||'—')+' · '+(latest.trend||'—');rb.className='study-badge '+(latest.regime==='CONTINUATION'?'green':'gold')}
+ if(sb){sb.textContent='CONT '+(latest.cont_score??'—')+'/3 · VOL '+(Number.isFinite(num(latest.vol_ratio))?num(latest.vol_ratio).toFixed(2)+'×':'—')+' · ATR '+(Number.isFinite(num(latest.atr_ratio))?num(latest.atr_ratio).toFixed(2)+'×':'—')}
+}
 function render(){
  if(!data)return;const x=classify(),box=$('stateBox');box.className='card state '+x.tone;$('stateTitle').textContent=x.state;$('stateText').textContent=x.text;
  $('price').textContent=money(x.spot);$('hull').textContent=money(x.hull);
@@ -153,6 +184,7 @@ function render(){
  ss.className=x.slopeUp?'green':x.slopeDown?'red':'gold';
  $('wall').textContent=money(x.wall);$('wallDist').textContent=pct(-x.wallDist);$('volRatio').textContent=Number.isFinite(x.vr)?x.vr.toFixed(2)+'×':'—';$('entryVolNeeded').textContent=(Number.isFinite(x.entryVolNeed)?x.entryVolNeed:1.3).toFixed(2)+'×';$('hullDist').textContent=pct(x.hullDist);
  const pp=x.pr?.pct??50;$('pressureMarker').style.left=pp+'%';$('pressureText').textContent=x.pr?.confidence==='LOW'?'LOW CONFIDENCE · WAIT':('BUY '+Math.round(pp)+'% / SELL '+(100-Math.round(pp))+'% · '+x.pr.confidence);$('pressureMeta').textContent=Number.isFinite(x.pr?.deltaVol)?'ΔVol '+Math.round(x.pr.deltaVol).toLocaleString():'Schwab samples';
+ renderStudy();
  const bars=data.bars||[],maxV=Math.max(1,...bars.map(b=>num(b.volume)||0));$('bars').innerHTML=bars.map(b=>{const up=num(b.close)>=num(b.open),h=Math.max(4,(num(b.volume)||0)/maxV*125),t=new Date(num(b.time)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="barcol"><div class="bv">'+money(b.close)+'</div><div class="bar '+(up?'':'down')+'" style="height:'+h+'px"></div><div class="bt">'+t+'</div></div>'}).join('');
  if(x.state!==lastState){if(lastState)addLog(x.state,x.text);lastState=x.state}
 }
