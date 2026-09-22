@@ -145,9 +145,10 @@ def _schwab_price_history(ticker):
         params={
             "symbol": ticker.upper(),
             "periodType": "day",
-            "period": 2,
             "frequencyType": "minute",
             "frequency": 5,
+            "startDate": int((datetime.now(timezone.utc) - timedelta(days=5)).timestamp() * 1000),
+            "endDate": int(datetime.now(timezone.utc).timestamp() * 1000),
             "needExtendedHoursData": "false",
             "needPreviousClose": "true",
         },
@@ -1250,6 +1251,28 @@ class handler(BaseHTTPRequestHandler):
                 }, ensure_ascii=False).encode())
                 return
             self.wfile.write(json.dumps(_schwab_quote(ticker), ensure_ascii=False).encode())
+            return
+
+        if mode == "schwab_intraday":
+            ticker = (query.get("ticker", [""])[0]).strip().upper()
+            if not ticker or len(ticker) > 10 or not ticker.replace("-", "").replace(".", "").isalnum():
+                self.wfile.write(json.dumps({"error": "올바른 미국 주식 티커를 입력하세요."}, ensure_ascii=False).encode())
+                return
+            try:
+                hist = _schwab_price_history(ticker)
+                if hist.get("error"):
+                    self.wfile.write(json.dumps(hist, ensure_ascii=False).encode())
+                    return
+                bars = _latest_regular_session_bars(hist.get("bars") or [])
+                self.wfile.write(json.dumps({
+                    "ticker": ticker,
+                    "bars": bars[-120:],
+                    "source": hist.get("source"),
+                    "realtime": hist.get("realtime"),
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                }, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
             return
 
         if mode == "config":
