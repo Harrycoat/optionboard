@@ -68,7 +68,7 @@
     <div class="checks">
       <div class="check" id="volumeCheck">5분 거래량<b>—</b></div><div class="check" id="priceCheck">Call Wall 거리<b>—</b></div><div class="check" id="barCheck">HULL21 상태<b>—</b></div><div class="check" id="vwapCheck">VWAP 확인<b>—</b></div>
     </div>
-    <div class="auto-note" id="ruleGuide"><b>핵심 판단</b><br>① Call Wall 접근 + 거래량 증가 + BUY 우위 + Wall 위 유지 → BREAKOUT CONFIRMED · ② Call Wall 터치/거절 + 거래량 증가 + SELL 우위 → HEDGE 2 · ③ 1~3% 전 → HEDGE 1 · ④ Put Wall 접근 → RELEASE 검토.</div>
+    <div class="auto-note" id="ruleGuide"><b>핵심 판단</b><br>① 거래량 방향과 LIVE Pressure가 일치할 때만 강한 돌파/거절 신호 · ② 두 신호가 충돌하면 CONFLICT / WAIT · ③ ΔVol이 작으면 Pressure는 LOW CONFIDENCE로 무시 · ④ Call Wall 1~3% 전은 HEDGE 1, 1% 이내는 HEDGE 2 준비.</div>
   </section>
 
   <section class="card">
@@ -108,36 +108,44 @@ function stateFor(d){
   const volRatio=Number.isFinite(curVol)&&Number.isFinite(avgVol)&&avgVol>0?curVol/avgVol:NaN;
   const upBar=Number.isFinite(open)&&Number.isFinite(number(bar.close))&&number(bar.close)>open;
   const downBar=Number.isFinite(open)&&Number.isFinite(number(bar.close))&&number(bar.close)<open;
+  const volumeExpansion=Number.isFinite(volRatio)&&volRatio>=1.3;
 
   const q=liveQuotes[d.ticker]||d.schwab_quote||{};
   const p=pressureFromQuote(d.ticker,q);
   const buyPressure=Number.isFinite(p.pct)?p.pct:50;
-  const sellPressure=100-buyPressure;
-  const buyDom=buyPressure>=60;
-  const sellDom=buyPressure<=40;
-  const volumeExpansion=Number.isFinite(volRatio)&&volRatio>=1.3;
+  const pressureReliable=p.confidence!=='LOW';
+  const buyDom=pressureReliable&&buyPressure>=60;
+  const sellDom=pressureReliable&&buyPressure<=40;
 
   const crossed=Number.isFinite(+prior.close)&&+prior.close<=wall&&close>wall;
   const retest=Number.isFinite(+prior.close)&&+prior.close>wall&&Number.isFinite(low)&&low<=wall+tol&&close>wall;
   const rejected=Number.isFinite(high)&&high>=wall-tol&&close<wall;
   const nearPut=Number.isFinite(put)&&close<=put*1.01;
 
+  const bullishVolume=upBar&&volumeExpansion;
+  const bearishVolume=downBar&&volumeExpansion;
+  const conflict=(bullishVolume&&sellDom)||(bearishVolume&&buyDom);
+
   if(nearPut)return {key:'RELEASE_PUT',icon:'💰',title:'RELEASE',copy:'Put Wall 1% 이내 · 헤지 이익 실현 및 반등 확인 구간',tone:'green'};
 
-  if((crossed||retest||close>wall)&&vwapOk&&(volumeExpansion||buyDom)){
-    return {key:'BREAKOUT_CONFIRMED',icon:'🚀',title:'BREAKOUT CONFIRMED',copy:'Call Wall 돌파 · '+(Number.isFinite(volRatio)?'Volume '+volRatio.toFixed(2)+'× · ':'')+'BUY '+Math.round(buyPressure)+'% · 헤지 축소/해제 후보',tone:'green'};
+  if(conflict&&wallDist<=2){
+    return {key:'CONFLICT',icon:'⏸️',title:'CONFLICT / WAIT',copy:'거래량 방향과 LIVE Pressure가 충돌 · 성급한 돌파/거절 판단 보류',tone:'yellow'};
   }
 
-  if(rejected&&(volumeExpansion||sellDom)){
-    return {key:'REJECTION_CONFIRMED',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall 거절 · '+(Number.isFinite(volRatio)?'Volume '+volRatio.toFixed(2)+'× · ':'')+'SELL '+Math.round(sellPressure)+'% · 수익 보호 강화',tone:'red'};
+  if((crossed||retest||close>wall)&&vwapOk&&bullishVolume&&buyDom){
+    return {key:'BREAKOUT_CONFIRMED',icon:'🚀',title:'BREAKOUT CONFIRMED',copy:'Call Wall 돌파 + Volume '+volRatio.toFixed(2)+'× + BUY 우위 · 헤지 축소/해제 후보',tone:'green'};
   }
 
-  if(wallDist>=0&&wallDist<=1&&(hullWeak||downBar||sellDom)){
-    return {key:'HEDGE2',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · '+(sellDom?'SELL 우위 · ':'')+(volumeExpansion?'거래량 증가 · ':'')+'2차 보호 검토',tone:'red'};
+  if(rejected&&bearishVolume&&sellDom){
+    return {key:'REJECTION_CONFIRMED',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall 거절 + Volume '+volRatio.toFixed(2)+'× + SELL 우위 · 수익 보호 강화',tone:'red'};
+  }
+
+  if(wallDist>=0&&wallDist<=1&&(hullWeak||bearishVolume||sellDom)){
+    return {key:'HEDGE2',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · 2차 보호 검토',tone:'red'};
   }
 
   if(wallDist>=0&&wallDist<=1){
-    return {key:'HEDGE2_READY',icon:'🛡️',title:'HEDGE 2 READY',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · 거래량/압력 확인 중',tone:'yellow'};
+    return {key:'HEDGE2_READY',icon:'🛡️',title:'HEDGE 2 READY',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · 방향 확인 중',tone:'yellow'};
   }
 
   if((wallDist>1&&wallDist<=3)||hullWeak){
@@ -210,39 +218,55 @@ function render(){
 
 function pressureFromQuote(ticker,q){
   const prev=prevLiveQuotes[ticker]||{};
-  const bid=number(q?.bid),ask=number(q?.ask),last=number(q?.last),vol=number(q?.volume),prevLast=number(prev.last),prevVol=number(prev.volume);
+  const bid=number(q?.bid),ask=number(q?.ask),last=number(q?.last),mark=number(q?.mark),vol=number(q?.volume),prevLast=number(prev.last),prevVol=number(prev.volume);
   const deltaVol=Number.isFinite(vol)&&Number.isFinite(prevVol)?Math.max(0,vol-prevVol):NaN;
+
   let score=0,parts=0;
   if(Number.isFinite(bid)&&Number.isFinite(ask)&&ask>bid&&Number.isFinite(last)){
     const pos=Math.max(0,Math.min(1,(last-bid)/(ask-bid)));
-    score+=(pos-.5)*2; parts++;
+    score+=(pos-.5)*2;parts++;
   }
   if(Number.isFinite(last)&&Number.isFinite(prevLast)&&last!==prevLast){
-    score+=(last>prevLast?1:-1); parts++;
+    score+=(last>prevLast?1:-1);parts++;
   }
-  if(Number.isFinite(q?.mark)&&Number.isFinite(last)){
-    const mark=number(q.mark);
-    if(last!==mark){score+=(last>mark?.5:-.5);parts++}
+  if(Number.isFinite(mark)&&Number.isFinite(last)&&last!==mark){
+    score+=(last>mark?.5:-.5);parts++;
   }
   score=parts?score/parts:0;
-  const pct=Math.max(10,Math.min(90,50+score*40));
-  return {pct,score,deltaVol,bid,ask,last,vol};
-}
 
+  let confidence='LOW';
+  if(Number.isFinite(deltaVol)){
+    if(deltaVol>=5000)confidence='HIGH';
+    else if(deltaVol>=500)confidence='MEDIUM';
+  }
+
+  let pct=50;
+  if(confidence!=='LOW'){
+    pct=Math.max(15,Math.min(85,50+score*35));
+  }
+
+  return {pct,score,deltaVol,bid,ask,last,vol,confidence};
+}
 function renderLivePressure(){
   if(!selectedTicker)return;
   const q=liveQuotes[selectedTicker];
   if(!q)return;
   const p=pressureFromQuote(selectedTicker,q);
   $('pressureMarker').style.left=p.pct+'%';
+
+  if(p.confidence==='LOW'){
+    $('pressureStatus').textContent='LOW CONFIDENCE · 방향 판단 보류';
+    $('pressureMeta').textContent='Schwab LIVE'+(Number.isFinite(p.deltaVol)?' · ΔVol '+Math.round(p.deltaVol).toLocaleString():' · ΔVol 대기');
+    return;
+  }
+
   const buyPct=Math.round(p.pct),sellPct=100-buyPct;
   let label='NEUTRAL';
   if(p.pct>=60)label='BUYING ADVANTAGE';
   if(p.pct<=40)label='SELLING ADVANTAGE';
-  $('pressureStatus').textContent=label+' · BUY '+buyPct+'% / SELL '+sellPct+'%';
+  $('pressureStatus').textContent=label+' · BUY '+buyPct+'% / SELL '+sellPct+' · '+p.confidence+' CONFIDENCE';
   $('pressureMeta').textContent='Schwab LIVE'+(Number.isFinite(p.deltaVol)?' · ΔVol '+Math.round(p.deltaVol).toLocaleString():' · ΔVol 대기');
 }
-
 async function loadLiveQuotes(){
   const tickers=getTickers();
   if(!tickers.length)return;
