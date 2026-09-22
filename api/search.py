@@ -195,6 +195,13 @@ def _latest_regular_session_bars(bars):
 
 def _call_wall_monitor_payload(ticker):
     gex = analyze_ticker_cached(ticker, ttl=300, skip_stage=True)
+
+    schwab = None
+    if ticker.upper() in {"NVDA", "AMZN"}:
+        schwab = _schwab_quote(ticker.upper())
+        if schwab.get("error"):
+            schwab = None
+
     all_bars = _intraday_five_minute_bars(ticker)
     bars = _latest_regular_session_bars(all_bars)
     regular_all = _regular_session_bars_all(all_bars)
@@ -213,9 +220,17 @@ def _call_wall_monitor_payload(ticker):
     if close is not None and hull21 not in (None, 0):
         hull21_distance_pct = (close - hull21) / hull21 * 100
 
+    live_spot = None
+    if schwab:
+        live_spot = schwab.get("last") or schwab.get("mark") or schwab.get("bid") or schwab.get("ask")
+
     return {
         "ticker": ticker.upper(),
-        "spot": gex.get("spot"),
+        "spot": live_spot if live_spot is not None else gex.get("spot"),
+        "gex_spot": gex.get("spot"),
+        "stock_source": "Schwab Trader API" if live_spot is not None else "Massive delayed",
+        "stock_realtime": bool(schwab and schwab.get("realtime") is True),
+        "schwab_quote": schwab,
         "call_wall": gex.get("call_wall"),
         "put_wall": gex.get("put_wall"),
         "gamma_flip": gex.get("gamma_flip"),
@@ -229,8 +244,10 @@ def _call_wall_monitor_payload(ticker):
         "hull21_distance_pct": hull21_distance_pct,
         "hull21_timeframe": "5m",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "data_mode": "15_minute_delayed",
+        "data_mode": "live_stock_delayed_options" if live_spot is not None else "15_minute_delayed",
         "delay_minutes": 15,
+        "stock_delay_minutes": 0 if live_spot is not None else 15,
+        "options_delay_minutes": 15,
         "flow_source": "optional_manual_confirmation",
         "is_stale_price": bool(gex.get("is_stale_price")),
     }
