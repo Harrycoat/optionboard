@@ -11,7 +11,7 @@
 .card{background:rgba(13,23,36,.94);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 14px 35px rgba(0,0,0,.2)}
 .controls{display:grid;grid-template-columns:repeat(5,1fr) auto auto;gap:8px}.controls input{background:#0a1420;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{background:var(--gold);border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}.controls #autoBtn{background:var(--green)}
 .note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.status{margin:12px 0;color:var(--muted);font-size:12px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.bucket h2{font-size:14px;margin:0 0 10px}.bucket small{color:var(--muted)}.bucket .body{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.sector-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}.sector-card h2{margin:0;font-size:15px}.sector-etfs{color:var(--muted);font-size:11px;margin:6px 0 10px}.sector-leader-row{display:grid;grid-template-columns:75px 80px 1fr;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:11px}.sector-leader-row b{font-size:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.bucket h2{font-size:14px;margin:0 0 10px}.bucket small{color:var(--muted)}.bucket .body{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .item{background:#0a1420;border:1px solid var(--line);border-radius:10px;padding:11px}.item .head{display:flex;justify-content:space-between;align-items:center;gap:8px}.ticker{font-weight:900;font-size:16px}.badge{font-size:10px;padding:4px 7px;border-radius:999px;border:1px solid currentColor}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
 .rows{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px}.rows span{color:var(--muted)}.rows b{text-align:right}
 .table{overflow:auto}.scanrow{display:grid;grid-template-columns:85px 85px 95px 95px 100px 110px 100px 150px 1fr;gap:8px;align-items:center;padding:10px 6px;border-top:1px solid var(--line);font-size:11px;min-width:900px}.scanrow.header{color:var(--muted);font-size:10px;border-top:0}.scanrow b{font-size:12px}.signal{font-weight:900}.empty{color:var(--muted);font-size:12px;padding:10px 0}
@@ -35,7 +35,7 @@
   .controls{grid-template-columns:1fr 1fr!important;gap:7px}
   .controls input{padding:10px;font-size:13px}
   .controls button{min-height:40px;padding:8px 10px;font-size:11px}
-  .grid4{grid-template-columns:1fr!important;gap:10px;margin:12px 0}
+  .sector-grid{grid-template-columns:1fr!important;gap:10px;margin:12px 0}.grid4{grid-template-columns:1fr!important;gap:10px;margin:12px 0}
   .bucket{padding:12px}
   .bucket .body{margin-top:8px}
   .item{padding:10px}
@@ -114,6 +114,11 @@
     <div class="status" id="status">준비</div>
   </div>
 
+  <div class="sector-grid" id="strongestSectors">
+    <div class="card sector-card"><h2>STRONGEST SECTOR #1</h2><div class="sector-etfs">Waiting for ETF scan…</div></div>
+    <div class="card sector-card"><h2>STRONGEST SECTOR #2</h2><div class="sector-etfs">Waiting for ETF scan…</div></div>
+  </div>
+
   <div class="grid4">
     <div class="card bucket"><h2>TODAY'S LEADERS</h2><small>당일 강세 + 5분 거래량 확장</small><div class="body" id="leaders"></div></div>
     <div class="card bucket"><h2>PULLBACK LEADERS</h2><small>강한 추세에서 2~3일 눌림 + 거래량 감소</small><div class="body" id="pullbacks"></div></div>
@@ -160,6 +165,15 @@ function swingView(d){
   if(d.today_leader) return 'MOMENTUM WATCH';
   return 'WAIT';
 }
+function renderSectors(list){
+ const root=$('strongestSectors');if(!root)return;
+ if(!Array.isArray(list)||!list.length){root.innerHTML='<div class="card sector-card"><h2>STRONGEST SECTORS</h2><div class="sector-etfs">No ETF sector data.</div></div>';return}
+ root.innerHTML=list.slice(0,2).map((s,i)=>{
+   const etf=(s.etfs||[]).map(x=>x.ticker+' '+pct(x.change_pct)).join(' · ');
+   const leaders=(s.leaders||[]).map(x=>'<div class="sector-leader-row"><b>'+x.ticker+'</b><span>'+pct(x.change_pct)+'</span><span>'+(x.reason||'SECTOR LEADER')+'</span></div>').join('')||'<div class="empty">No leader selected.</div>';
+   return '<div class="card sector-card"><h2>#'+(i+1)+' '+s.sector+'</h2><div class="sector-etfs">'+etf+' · ETF SCORE '+pct(s.etf_score)+'</div>'+leaders+'</div>';
+ }).join('');
+}
 function render(arr){
   $('leaders').innerHTML=arr.filter(x=>x.today_leader).map(x=>item(x,'leader')).join('')||'<div class="empty">조건 종목 없음</div>';
   $('pullbacks').innerHTML=arr.filter(x=>x.pullback_leader).map(x=>item(x,'pullback')).join('')||'<div class="empty">조건 종목 없음</div>';
@@ -188,6 +202,7 @@ async function autoMarket(){
       return {ticker:x.ticker,spot:x.price,day_change_pct:x.change_pct,volume5_ratio:null,volume15_ratio:null,minervini5m:{stage:'—',pivot_distance_pct:null},reason:x.reason||'POPULAR / MARKET MOVER',headline:x.headline,news_url:x.news_url,_basic:true};
     }}));
     const good=rows;
+    renderSectors(j.strongest_sectors||[]);
     render(good);
     $('status').textContent='SCAN MARKET · '+good.length+'종목 표시 · '+(j.selection_mode||'market')+' · NEWS / POPULAR / MOVERS → 5M/15M 구조';
   }catch(e){$('status').textContent='SCAN MARKET 오류 · '+e.message}
