@@ -16,7 +16,36 @@
 .rows{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px}.rows span{color:var(--muted)}.rows b{text-align:right}
 .table{overflow:auto}.scanrow{display:grid;grid-template-columns:95px 95px 110px 110px 110px 120px 120px 1fr;gap:8px;align-items:center;padding:10px 6px;border-top:1px solid var(--line);font-size:11px;min-width:900px}.scanrow.header{color:var(--muted);font-size:10px;border-top:0}.scanrow b{font-size:12px}.signal{font-weight:900}.empty{color:var(--muted);font-size:12px;padding:10px 0}
 @media(max-width:800px){.top{align-items:flex-start;flex-direction:column}.links a{margin:0 6px 0 0;display:inline-block}.controls{grid-template-columns:1fr 1fr}.controls button{min-height:42px}.grid4{grid-template-columns:1fr}.brand{font-size:24px}.wrap{padding:12px}}
-@media(max-width:720px){.top{align-items:flex-start;flex-direction:column}.top-nav{width:100%;justify-content:flex-start}.top-nav a{flex:1;min-width:120px;font-size:11px;padding:8px 10px}}</style>
+@media(max-width:720px){.top{align-items:flex-start;flex-direction:column}.top-nav{width:100%;justify-content:flex-start}.top-nav a{flex:1;min-width:120px;font-size:11px;padding:8px 10px}}
+/* mobile-compact-v2 */
+@media(max-width:720px){
+  body{font-size:14px}
+  .wrap{width:100%;max-width:none;padding:10px 10px 36px}
+  .top{gap:10px;margin-bottom:10px}
+  .brand{font-size:20px;line-height:1.15}
+  .sub{font-size:11px;line-height:1.4}
+  .top-nav{display:grid!important;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;justify-content:stretch!important}
+  .top-nav a{min-width:0!important;min-height:36px!important;padding:7px 6px!important;font-size:10px!important;line-height:1.15;text-align:center}
+  .card{border-radius:12px;padding:12px}
+  .note,.status{font-size:11px}
+}
+
+<style>
+@media(max-width:720px){
+  .controls{grid-template-columns:1fr 1fr!important;gap:7px}
+  .controls input{padding:10px;font-size:13px}
+  .controls button{min-height:40px;padding:8px 10px;font-size:11px}
+  .grid4{grid-template-columns:1fr!important;gap:10px;margin:12px 0}
+  .bucket{padding:12px}
+  .bucket .body{margin-top:8px}
+  .item{padding:10px}
+  .ticker{font-size:15px}
+  .rows{font-size:10px;gap:4px 8px}
+  .table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .scanrow{min-width:760px;grid-template-columns:80px 80px 90px 90px 95px 105px 100px 1fr;padding:8px 4px;font-size:10px}
+  .scanrow.header{position:sticky;top:0;background:var(--panel);z-index:1}
+}
+</style>
 </head>
 <body>
 <div class="wrap">
