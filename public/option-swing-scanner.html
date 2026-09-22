@@ -9,7 +9,7 @@
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#0a1320 45%,#08111d);color:var(--text);font-family:Arial,sans-serif}
 .wrap{max-width:1180px;margin:auto;padding:14px 18px 24px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.top-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:9px 13px;border:1px solid #2d3b50;border-radius:9px;background:#101826;color:#eef4fb;text-decoration:none;font-size:12px;font-weight:900}.top-nav a:hover{border-color:var(--gold);color:var(--gold)}.top-nav a.active{background:var(--gold);border-color:var(--gold);color:#17120a}.brand{font-size:28px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:5px}.links a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:9px 12px;border-radius:8px;margin-left:6px}
 .card{background:rgba(13,23,36,.94);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 14px 35px rgba(0,0,0,.2)}
-.controls{display:grid;grid-template-columns:repeat(5,1fr) auto auto;gap:8px}.controls input{background:#0a1420;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{background:var(--gold);border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}.controls #autoBtn{background:var(--green)}
+.controls{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.controls input{background:#0a1420;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{background:var(--gold);border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}.controls #autoBtn{background:var(--green)}.controls #scanBtn{grid-column:1}.controls #autoBtn{grid-column:2}.controls #sectorBtn{grid-column:3;min-height:42px}
 .note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.status{margin:12px 0;color:var(--muted);font-size:12px}
 .sector-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.sector-card h2{margin:0;font-size:15px}.sector-etfs{color:var(--muted);font-size:11px;margin:6px 0 10px}.sector-leader-row{display:grid;grid-template-columns:75px 80px 1fr;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:11px}.sector-leader-row b{font-size:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}.bucket h2{font-size:14px;margin:0 0 10px}.bucket small{color:var(--muted)}.bucket .body{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:260px;overflow:auto;padding-right:2px}
 .item{background:#0a1420;border:1px solid var(--line);border-radius:10px;padding:9px}.item .head{display:flex;justify-content:space-between;align-items:center;gap:8px}.ticker{font-weight:900;font-size:16px}.badge{font-size:10px;padding:4px 7px;border-radius:999px;border:1px solid currentColor}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
@@ -58,7 +58,8 @@
     overflow:visible!important;
   }
   .controls input,
-  .controls button{
+  .controls button,
+  .controls #sectorBtn{
     min-width:0!important;
     width:100%!important;
     max-width:100%!important;
@@ -83,7 +84,7 @@
     width:100%!important;
     max-width:100%!important;
   }
-  .controls input,.controls button{
+  .controls input,.controls button,.controls #sectorBtn{
     width:100%!important;
     min-width:0!important;
     max-width:100%!important;
@@ -109,7 +110,7 @@
     <div class="controls">
       <input id="t1" value="NVDA"><input id="t2" value="TSLA"><input id="t3" value="PLTR"><input id="t4" value="AMZN"><input id="t5" placeholder="TICKER">
       <button id="scanBtn">ANALYZE</button><button id="autoBtn">SCAN MARKET</button>
-      <a href="/sector-rotation-scanner.html" style="display:flex;align-items:center;justify-content:center;background:#62a5ff;color:#07101b;text-decoration:none;border-radius:8px;padding:0 14px;font-weight:900;font-size:12px">SECTOR ROTATION</a>
+      <a id="sectorBtn" href="/sector-rotation-scanner.html" style="display:flex;align-items:center;justify-content:center;background:#62a5ff;color:#07101b;text-decoration:none;border-radius:8px;padding:0 14px;font-weight:900;font-size:12px">SECTOR ROTATION</a>
     </div>
     <div class="note">ANALYZE = 직접 입력한 종목 분석 · SCAN MARKET = 전체 시장 발견 · SECTOR ROTATION = 고정 ETF로 강한 섹터를 추적하고 DAY/0DTE + SWING 눌림 종목을 분리</div>
     <div class="status" id="status">준비</div>
