@@ -59,7 +59,7 @@
   </section>
 
   <section class="card decision yellow" id="decision">
-    <div class="decision-icon" id="decisionIcon">🟡</div><div><h1 id="decisionTitle">보호 전략 대기</h1><p id="decisionCopy">Call Wall 거리와 HULL21을 함께 보며 수익 보호 시점을 단계별로 판단합니다.</p></div>
+    <div class="decision-icon" id="decisionIcon">🟡</div><div><h1 id="decisionTitle">보호 전략 대기</h1><p id="decisionCopy">Call Wall 거리 + 5분봉 거래량 + LIVE BUY/SELL Pressure를 함께 봅니다.</p></div>
   </section>
 
   <section class="card">
@@ -68,7 +68,7 @@
     <div class="checks">
       <div class="check" id="volumeCheck">5분 거래량<b>—</b></div><div class="check" id="priceCheck">Call Wall 거리<b>—</b></div><div class="check" id="barCheck">HULL21 상태<b>—</b></div><div class="check" id="vwapCheck">VWAP 확인<b>—</b></div>
     </div>
-    <div class="auto-note" id="ruleGuide"><b>4단계 운영</b><br>NORMAL → HEDGE 1 → HEDGE 2 → RELEASE<br>① Call Wall 3% 이상: NORMAL · ② 1~3% 또는 HULL21 약화: HEDGE 1 · ③ 1% 이내/Call Wall 거절: HEDGE 2 · ④ Call Wall 돌파 후 VWAP 유지 또는 Put Wall 접근: RELEASE.</div>
+    <div class="auto-note" id="ruleGuide"><b>핵심 판단</b><br>① Call Wall 접근 + 거래량 증가 + BUY 우위 + Wall 위 유지 → BREAKOUT CONFIRMED · ② Call Wall 터치/거절 + 거래량 증가 + SELL 우위 → HEDGE 2 · ③ 1~3% 전 → HEDGE 1 · ④ Put Wall 접근 → RELEASE 검토.</div>
   </section>
 
   <section class="card">
@@ -93,22 +93,59 @@ function setCheck(id,label,value,kind=''){const n=$(id);n.className='check '+kin
 function stateFor(d){
   if(!d||!Number.isFinite(+d.call_wall))return {key:'WAIT',icon:'🟡',title:'WAIT',copy:'Call Wall 데이터 대기',tone:'yellow'};
   const bars=d.bars||[],bar=d.latest_bar||bars.at(-1)||{},prior=bars.at(-2)||{};
-  const wall=+d.call_wall,put=number(d.put_wall),close=number(d.spot),high=number(bar.high),low=number(bar.low),vwap=number(d.session_vwap),hull=number(d.hull21),hullSlope=number(d.hull21_slope_pct);
+  const wall=+d.call_wall,put=number(d.put_wall),close=number(d.spot),high=number(bar.high),low=number(bar.low),open=number(bar.open),vwap=number(d.session_vwap),hull=number(d.hull21),hullSlope=number(d.hull21_slope_pct);
   if(!Number.isFinite(close))return {key:'WAIT',icon:'🟡',title:'WAIT',copy:'Schwab 실시간 주가 대기',tone:'yellow'};
-  const wallDist=(wall-close)/wall*100,tol=Math.max(.05,wall*.0015),vwapOk=Number.isFinite(vwap)&&close>=vwap,hullAbove=Number.isFinite(hull)&&close>=hull,hullWeak=Number.isFinite(hull)&&(!hullAbove||(Number.isFinite(hullSlope)&&hullSlope<=0));
+
+  const wallDist=(wall-close)/wall*100;
+  const tol=Math.max(.05,wall*.0015);
+  const vwapOk=Number.isFinite(vwap)&&close>=vwap;
+  const hullAbove=Number.isFinite(hull)&&close>=hull;
+  const hullWeak=Number.isFinite(hull)&&(!hullAbove||(Number.isFinite(hullSlope)&&hullSlope<=0));
+
+  const prevVols=bars.slice(-6,-1).map(x=>number(x.volume)).filter(Number.isFinite);
+  const avgVol=prevVols.length?prevVols.reduce((a,b)=>a+b,0)/prevVols.length:NaN;
+  const curVol=number(bar.volume);
+  const volRatio=Number.isFinite(curVol)&&Number.isFinite(avgVol)&&avgVol>0?curVol/avgVol:NaN;
+  const upBar=Number.isFinite(open)&&Number.isFinite(number(bar.close))&&number(bar.close)>open;
+  const downBar=Number.isFinite(open)&&Number.isFinite(number(bar.close))&&number(bar.close)<open;
+
+  const q=liveQuotes[d.ticker]||d.schwab_quote||{};
+  const p=pressureFromQuote(d.ticker,q);
+  const buyPressure=Number.isFinite(p.pct)?p.pct:50;
+  const sellPressure=100-buyPressure;
+  const buyDom=buyPressure>=60;
+  const sellDom=buyPressure<=40;
+  const volumeExpansion=Number.isFinite(volRatio)&&volRatio>=1.3;
+
   const crossed=Number.isFinite(+prior.close)&&+prior.close<=wall&&close>wall;
   const retest=Number.isFinite(+prior.close)&&+prior.close>wall&&Number.isFinite(low)&&low<=wall+tol&&close>wall;
   const rejected=Number.isFinite(high)&&high>=wall-tol&&close<wall;
   const nearPut=Number.isFinite(put)&&close<=put*1.01;
 
-  if((crossed||retest||close>wall)&&vwapOk)return {key:'RELEASE',icon:'🟢',title:'RELEASE',copy:'Call Wall 돌파 후 VWAP 위 유지 · 기존 헤지 축소/해제 후보',tone:'green'};
   if(nearPut)return {key:'RELEASE_PUT',icon:'💰',title:'RELEASE',copy:'Put Wall 1% 이내 · 헤지 이익 실현 및 반등 확인 구간',tone:'green'};
-  if(rejected||((wallDist>=0&&wallDist<=1)&&hullWeak))return {key:'HEDGE2',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall 1% 이내/거절 + HULL21 약화 · 수익 보호 강화 구간',tone:'red'};
-  if(wallDist>=0&&wallDist<=1)return {key:'HEDGE2_READY',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · 2차 보호 준비 구간',tone:'red'};
-  if((wallDist>1&&wallDist<=3)||hullWeak)return {key:'HEDGE1',icon:'⚠️',title:'HEDGE 1',copy:'Call Wall '+(Number.isFinite(wallDist)?wallDist.toFixed(2):'—')+'% 전 · 1차 보호 검토',tone:'yellow'};
+
+  if((crossed||retest||close>wall)&&vwapOk&&(volumeExpansion||buyDom)){
+    return {key:'BREAKOUT_CONFIRMED',icon:'🚀',title:'BREAKOUT CONFIRMED',copy:'Call Wall 돌파 · '+(Number.isFinite(volRatio)?'Volume '+volRatio.toFixed(2)+'× · ':'')+'BUY '+Math.round(buyPressure)+'% · 헤지 축소/해제 후보',tone:'green'};
+  }
+
+  if(rejected&&(volumeExpansion||sellDom)){
+    return {key:'REJECTION_CONFIRMED',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall 거절 · '+(Number.isFinite(volRatio)?'Volume '+volRatio.toFixed(2)+'× · ':'')+'SELL '+Math.round(sellPressure)+'% · 수익 보호 강화',tone:'red'};
+  }
+
+  if(wallDist>=0&&wallDist<=1&&(hullWeak||downBar||sellDom)){
+    return {key:'HEDGE2',icon:'🛡️',title:'HEDGE 2',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · '+(sellDom?'SELL 우위 · ':'')+(volumeExpansion?'거래량 증가 · ':'')+'2차 보호 검토',tone:'red'};
+  }
+
+  if(wallDist>=0&&wallDist<=1){
+    return {key:'HEDGE2_READY',icon:'🛡️',title:'HEDGE 2 READY',copy:'Call Wall '+wallDist.toFixed(2)+'% 전 · 거래량/압력 확인 중',tone:'yellow'};
+  }
+
+  if((wallDist>1&&wallDist<=3)||hullWeak){
+    return {key:'HEDGE1',icon:'⚠️',title:'HEDGE 1',copy:'Call Wall '+(Number.isFinite(wallDist)?wallDist.toFixed(2):'—')+'% 전 · 1차 보호 검토',tone:'yellow'};
+  }
+
   return {key:'NORMAL',icon:'🟢',title:'NORMAL',copy:'Call Wall까지 여유 · 상승을 열어두고 보유',tone:'green'};
 }
-
 function classify(){
   const s=stateFor(data);
   if(!data)return s;
