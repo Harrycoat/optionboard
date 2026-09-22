@@ -647,6 +647,15 @@ PREMARKET_UNIVERSE = list(dict.fromkeys(
     ticker for names in PREMARKET_GROUPS.values() for ticker in names
 ))
 
+REGULAR_SECTOR_ETFS = {
+    "SEMICONDUCTOR": ["SMH", "SOXX"],
+    "AI / SOFTWARE": ["IGV", "XLK"],
+    "MEGA TECH": ["XLK", "XLC"],
+    "POWER / AI INFRA": ["XLI", "PAVE"],
+    "FINTECH / CRYPTO": ["XLF", "ARKF"],
+    "CLOUD / DATA": ["SKYY", "CLOU"],
+}
+
 def _ticker_sector(ticker):
     for sector, names in PREMARKET_GROUPS.items():
         if ticker in names:
@@ -830,6 +839,48 @@ def _option_swing_market_candidates(limit=12):
         except (TypeError, ValueError):
             continue
 
+    # ETF-first sector strength.
+    etf_symbols = list(dict.fromkeys(
+        etf for etfs in REGULAR_SECTOR_ETFS.values() for etf in etfs
+    ))
+    etf_quotes = {}
+    for i in range(0, len(etf_symbols), 5):
+        result = _schwab_quotes(etf_symbols[i:i+5])
+        if not result.get("_error"):
+            etf_quotes.update(result)
+
+    etf_sector_strength = {}
+    for sector, etfs in REGULAR_SECTOR_ETFS.items():
+        moves = []
+        details = []
+        for etf in etfs:
+            q = etf_quotes.get(etf) or {}
+            try:
+                spot = float(q.get("last") if q.get("last") is not None else q.get("mark"))
+                close = float(q.get("close"))
+                if close <= 0:
+                    continue
+                move = (spot - close) / close * 100
+                moves.append(move)
+                details.append({"ticker": etf, "change_pct": move, "price": spot})
+            except (TypeError, ValueError):
+                continue
+        etf_sector_strength[sector] = {
+            "score": (sum(moves) / len(moves)) if moves else None,
+            "etfs": details,
+        }
+
+    ranked_etf_sectors = sorted(
+        [
+            {"sector": sector, **info}
+            for sector, info in etf_sector_strength.items()
+            if info.get("score") is not None
+        ],
+        key=lambda x: x["score"],
+        reverse=True,
+    )
+    strongest_sector_names = [x["sector"] for x in ranked_etf_sectors[:2]]
+
     # Sector-first discovery using Schwab real-time quotes.
     # This prevents strong groups (for example semiconductors) from being missed
     # just because individual names are not in the broad top-gainers endpoint.
@@ -858,13 +909,19 @@ def _option_swing_market_candidates(limit=12):
                 continue
         avg_change = (sum(vals) / len(vals)) if vals else None
         positive = len([v for v in vals if v > 0])
+        etf_info = etf_sector_strength.get(sector) or {}
         sector_stats[sector] = {
             "avg_change_pct": avg_change,
             "positive_count": positive,
             "members_checked": len(vals),
+            "etf_score": etf_info.get("score"),
+            "etfs": etf_info.get("etfs") or [],
         }
-        # A sector is active when the average move is positive and breadth is broad.
-        active = bool(avg_change is not None and avg_change >= 0.6 and positive >= max(2, len(vals)//2))
+        # A sector is active when it is one of the ETF leaders, or stock breadth is broadly strong.
+        active = bool(
+            sector in strongest_sector_names or
+            (avg_change is not None and avg_change >= 0.6 and positive >= max(2, len(vals)//2))
+        )
         if active:
             members.sort(key=lambda x: x[2], reverse=True)
             for ticker, spot, change_pct, volume in members[:5]:
@@ -949,9 +1006,27 @@ def _option_swing_market_candidates(limit=12):
             item["reason"] = "POPULAR / MARKET MOVER"
             item["headline"] = "Strong price/volume mover from the market scan."
 
+    strongest_sectors = []
+    for sector_row in ranked_etf_sectors[:2]:
+        sector = sector_row["sector"]
+        leaders = [
+            x for x in out
+            if x.get("sector") == sector or (
+                x.get("ticker") in PREMARKET_GROUPS.get(sector, [])
+            )
+        ]
+        leaders = sorted(leaders, key=lambda x: x.get("change_pct") or 0, reverse=True)[:5]
+        strongest_sectors.append({
+            "sector": sector,
+            "etf_score": sector_row.get("score"),
+            "etfs": sector_row.get("etfs") or [],
+            "leaders": leaders,
+        })
+
     return {
         "count": len(out),
         "candidates": out,
+        "strongest_sectors": strongest_sectors,
         "source": "Massive Top Market Movers",
         "selection_mode": mode,
         "strict_count": len(strict),
