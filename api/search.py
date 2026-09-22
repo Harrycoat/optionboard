@@ -854,10 +854,10 @@ def _option_swing_market_candidates(limit=12):
     # They are still labeled by WHY and must pass the Trade Tracker before entry.
     discovery = [
         x for x in parsed
-        if x["price"] >= 1
-        and x["change_pct"] >= 0.25
-        and x["day_volume"] >= 50000
-        and x["dollar_volume"] >= 500000
+        if x["price"] >= 0.5
+        and x["change_pct"] >= 0.10
+        and x["day_volume"] >= 10000
+        and x["dollar_volume"] >= 100000
         and x not in strict
         and x not in relaxed
     ]
@@ -866,7 +866,7 @@ def _option_swing_market_candidates(limit=12):
     relaxed.sort(key=lambda x: (x["change_pct"], x["dollar_volume"]), reverse=True)
     discovery.sort(key=lambda x: (x["change_pct"], x["dollar_volume"]), reverse=True)
 
-    wanted = max(1, min(int(limit), 30))
+    wanted = max(1, min(int(limit), 40))
     out = (strict + relaxed + discovery)[:wanted]
     mode = "strict" if len(strict) >= min(5, wanted) else "strict+relaxed+discovery"
 
@@ -907,10 +907,10 @@ def _option_swing_market_candidates(limit=12):
                 "min_dollar_volume": 2000000,
             },
             "discovery": {
-                "min_price": 1,
-                "min_change_pct": 0.25,
-                "min_day_volume": 50000,
-                "min_dollar_volume": 500000,
+                "min_price": 0.5,
+                "min_change_pct": 0.10,
+                "min_day_volume": 10000,
+                "min_dollar_volume": 100000,
             },
         },
         "note": "Strict swing-quality candidates are preferred; a liquid fallback is used only when the movers list is unusually extreme.",
