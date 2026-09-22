@@ -659,16 +659,14 @@ REGULAR_SECTOR_ETFS = {
 # Fixed sector ETF map for the dedicated sector-rotation scanner.
 # The stock lists are intentionally liquid, recognizable leaders rather than a full index replication.
 SECTOR_TRACKER_GROUPS = {
-    "SEMICONDUCTOR": {"etfs": ["SMH", "SOXX"], "stocks": ["NVDA","AMD","AVGO","MU","ARM","MRVL","QCOM","INTC","TSM"]},
-    "SOFTWARE / AI": {"etfs": ["IGV", "XLK"], "stocks": ["PLTR","ORCL","CRM","NOW","CRWD","DDOG","SNOW","MDB"]},
-    "CLOUD / DATA": {"etfs": ["SKYY", "CLOU"], "stocks": ["ANET","DELL","HPE","CRWV","NBIS","VRT"]},
-    "FINANCIAL": {"etfs": ["XLF", "KRE"], "stocks": ["JPM","BAC","GS","MS","WFC","C","HOOD","COIN"]},
-    "ENERGY": {"etfs": ["XLE", "OIH"], "stocks": ["XOM","CVX","COP","SLB","HAL","EOG","FANG"]},
-    "INDUSTRIAL": {"etfs": ["XLI", "PAVE"], "stocks": ["GEV","ETN","CAT","DE","URI","PH","EMR","HON"]},
-    "HEALTHCARE / BIOTECH": {"etfs": ["XLV", "XBI"], "stocks": ["LLY","UNH","ABBV","MRK","AMGN","GILD","VRTX","REGN"]},
-    "CONSUMER": {"etfs": ["XLY", "RTH"], "stocks": ["AMZN","TSLA","HD","LOW","COST","WMT","TGT","NKE"]},
-    "COMMUNICATION": {"etfs": ["XLC"], "stocks": ["META","GOOGL","NFLX","DIS","TMUS","T","VZ"]},
-    "UTILITIES / POWER": {"etfs": ["XLU"], "stocks": ["CEG","VST","NEE","SO","DUK","AEP","BE"]},
+    "S&P 500 MOMENTUM": {"etfs": ["SPMO"], "stocks": ["NVDA","PLTR","AVGO","NFLX"]},
+    "LARGE TECH": {"etfs": ["XLK","VGT"], "stocks": ["NVDA","MSFT","AAPL","AVGO"]},
+    "CORE GROWTH": {"etfs": ["VOOG","QQQM"], "stocks": ["NVDA","MSFT","AAPL","AMZN"]},
+    "GENERATIVE AI": {"etfs": ["CHAT"], "stocks": ["NVDA","MSFT","GOOGL","PLTR"]},
+    "MEMORY / HBM": {"etfs": ["DRAM"], "stocks": ["MU","SNDK","WDC","STX"]},
+    "SEMICONDUCTOR": {"etfs": ["SMH"], "stocks": ["NVDA","AVGO","AMD","TSM","MU","MRVL","QCOM"]},
+    "AI INFRA / POWER": {"etfs": ["TCAI"], "stocks": ["VRT","CEG","GEV","ETN"]},
+    "INNOVATION / AI": {"etfs": ["AOTG"], "stocks": ["NVDA","PLTR","TSLA","CRWD"]},
 }
 
 def _ticker_sector(ticker):
