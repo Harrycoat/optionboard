@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · Swing Reclaim Scanner</title>
+<style>
+:root{--bg:#08111d;--panel:#0e1724;--panel2:#0a1420;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#42e4ad;--gold:#f1bd46;--blue:#63a8ff;--red:#ff6673}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#0a1420 45%,#08111d);color:var(--text);font-family:Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:28px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:5px}.links a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:9px 12px;border-radius:8px;margin-left:6px}
+.card{background:rgba(14,23,36,.96);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 14px 35px rgba(0,0,0,.2)}
+.controls{display:grid;grid-template-columns:repeat(5,1fr) auto auto;gap:8px}.controls input{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}.analyze{background:var(--gold)}.auto{background:var(--green)}
+.note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}.status{margin:12px 0;color:var(--muted);font-size:12px}
+.pipeline{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:18px 0}.step{padding:12px 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);text-align:center;font-size:11px}.step b{display:block;margin-top:4px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.bucket h2{margin:0 0 8px;font-size:14px}.bucket small{color:var(--muted)}.body{display:flex;flex-direction:column;gap:8px;margin-top:12px}.item{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px}.head{display:flex;justify-content:space-between;gap:8px;align-items:center}.ticker{font-size:17px;font-weight:900}.badge{font-size:10px;border:1px solid currentColor;border-radius:999px;padding:4px 7px}.green{color:var(--green)}.gold{color:var(--gold)}.blue{color:var(--blue)}.red{color:var(--red)}
+.rows{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;margin-top:9px;font-size:11px}.rows span{color:var(--muted)}.rows b{text-align:right}.empty{color:var(--muted);font-size:12px;padding:8px 0}
+.table{margin-top:18px;overflow:auto}.row{display:grid;grid-template-columns:90px 115px 105px 105px 105px 105px 105px 110px 1fr;gap:8px;align-items:center;min-width:930px;padding:10px 6px;border-top:1px solid var(--line);font-size:11px}.row.header{border-top:0;color:var(--muted);font-size:10px}.row b{font-size:12px}.signal{font-weight:900}
+@media(max-width:820px){.wrap{padding:12px}.top{flex-direction:column;align-items:flex-start}.links a{display:inline-block;margin:0 6px 0 0}.controls{grid-template-columns:1fr 1fr}.controls button{min-height:42px}.pipeline{grid-template-columns:1fr 1fr 1fr}.grid{grid-template-columns:1fr}.brand{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="brand">SWING RECLAIM SCANNER</div><div class="sub">Low → 21EMA Reclaim → 50MA Reclaim → Volume Confirmation → Swing Ready</div></div>
+    <div class="links"><a href="/option-swing-scanner.html">OPTION SWING</a><a href="/call-wall-monitor.html">CALL WALL</a></div>
+  </div>
+
+  <div class="card">
+    <div class="controls">
+      <input id="t1" value="NVDA"><input id="t2" value="TSLA"><input id="t3" value="PLTR"><input id="t4" value="AMZN"><input id="t5" placeholder="TICKER">
+      <button class="analyze" id="analyzeBtn">ANALYZE SWING</button>
+      <button class="auto" id="autoBtn">AUTO RECLAIM</button>
+    </div>
+    <div class="note">스윙 전용입니다. 최근 Low 이후 반등, 21EMA/50MA 회복, 거래량 증가를 단계별로 봅니다. <b>FTD-STYLE</b>은 개별 종목용 회복 확인 신호이며, 전통적인 O'Neil Follow-Through Day는 시장지수 개념입니다.</div>
+    <div class="status" id="status">준비</div>
+  </div>
+
+  <div class="pipeline">
+    <div class="step">1<b>BOTTOM WATCH</b></div>
+    <div class="step">2<b>LOW CONFIRMED</b></div>
+    <div class="step">3<b>21EMA RECLAIM</b></div>
+    <div class="step">4<b>50MA RECLAIM</b></div>
+    <div class="step">5<b>FTD-STYLE</b></div>
+    <div class="step">6<b>SWING READY</b></div>
+  </div>
+
+  <div class="grid">
+    <div class="card bucket"><h2>EARLY RECOVERY</h2><small>Low 형성 후 21EMA 회복 구간</small><div class="body" id="early"></div></div>
+    <div class="card bucket"><h2>21 + 50 RECLAIM</h2><small>21EMA와 50MA를 회복하는 종목</small><div class="body" id="reclaim"></div></div>
+    <div class="card bucket"><h2>SWING READY</h2><small>이평 회복 + 거래량 확인</small><div class="body" id="ready"></div></div>
+  </div>
+
+  <div class="card table">
+    <div class="row header"><span>TICKER</span><span>STAGE</span><span>FROM LOW</span><span>DAYS LOW</span><span>21EMA</span><span>50MA</span><span>VOL</span><span>FTD-STYLE</span><span>VIEW</span></div>
+    <div id="rows"></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const n=v=>Number.isFinite(+v)?+v:null;
+const pct=v=>n(v)==null?'—':(v>=0?'+':'')+v.toFixed(2)+'%';
+const mult=v=>n(v)==null?'—':v.toFixed(2)+'×';
+const money=v=>n(v)==null?'—':'$'+v.toFixed(2);
+function tickers(){return ['t1','t2','t3','t4','t5'].map(id=>$(id).value.trim().toUpperCase()).filter(Boolean)}
+function cls(stage){if(stage==='SWING READY')return'green';if(stage.includes('50'))return'gold';if(stage.includes('21'))return'blue';return''}
+function view(d){
+  if(d.stage==='SWING READY')return 'READY · 차트/Pivot/Wall 확인';
+  if(d.stage==='21+50 RECLAIM'||d.stage==='50MA RECLAIM')return 'RECLAIM WATCH';
+  if(d.stage==='21EMA RECLAIM')return 'EARLY SWING WATCH';
+  if(d.stage==='LOW CONFIRMED')return 'LOW HOLD 확인';
+  return 'WAIT';
+}
+function card(d){
+  return '<div class="item"><div class="head"><span class="ticker">'+d.ticker+'</span><span class="badge '+cls(d.stage)+'">'+d.stage+'</span></div><div class="rows">'+
+  '<span>Price</span><b>'+money(d.spot)+'</b>'+
+  '<span>From Low</span><b>'+pct(d.rise_from_low_pct)+'</b>'+
+  '<span>Days from Low</span><b>'+d.days_from_low+'</b>'+
+  '<span>21EMA</span><b>'+money(d.ema21)+'</b>'+
+  '<span>50MA</span><b>'+money(d.sma50)+'</b>'+
+  '<span>Volume</span><b>'+mult(d.volume_ratio)+'</b>'+
+  '<span>FTD-style</span><b>'+(d.ftd_style?'YES':'—')+'</b>'+
+  '<span>Score</span><b>'+d.score+'</b></div></div>';
+}
+function render(arr){
+  $('early').innerHTML=arr.filter(x=>['LOW CONFIRMED','21EMA RECLAIM'].includes(x.stage)).map(card).join('')||'<div class="empty">조건 종목 없음</div>';
+  $('reclaim').innerHTML=arr.filter(x=>['50MA RECLAIM','21+50 RECLAIM'].includes(x.stage)).map(card).join('')||'<div class="empty">조건 종목 없음</div>';
+  $('ready').innerHTML=arr.filter(x=>x.stage==='SWING READY').map(card).join('')||'<div class="empty">조건 종목 없음</div>';
+  $('rows').innerHTML=arr.map(d=>'<div class="row"><b>'+d.ticker+'</b><span class="'+cls(d.stage)+'">'+d.stage+'</span><span>'+pct(d.rise_from_low_pct)+'</span><span>'+d.days_from_low+'</span><span>'+(d.above21?'ABOVE':'BELOW')+'</span><span>'+(d.above50?'ABOVE':'BELOW')+'</span><span>'+mult(d.volume_ratio)+'</span><span>'+(d.ftd_style?'YES':'—')+'</span><span class="signal">'+view(d)+'</span></div>').join('');
+}
+async function analyze(){
+  const ts=tickers();if(!ts.length)return;
+  $('analyzeBtn').disabled=true;$('autoBtn').disabled=true;$('status').textContent='스윙 분석 중… '+ts.join(', ');
+  try{
+    const rows=await Promise.all(ts.map(async t=>{try{const r=await fetch('/api/search?mode=swing_reclaim_setup&ticker='+encodeURIComponent(t),{cache:'no-store'});return await r.json()}catch(e){return {ticker:t,error:e.message}}}));
+    const good=rows.filter(x=>!x.error);
+    render(good);
+    $('status').textContent=good.length+'/'+ts.length+' 종목 스윙 구조 분석 완료';
+  }finally{$('analyzeBtn').disabled=false;$('autoBtn').disabled=false}
+}
+async function autoScan(){
+  $('autoBtn').disabled=true;$('analyzeBtn').disabled=true;$('status').textContent='AUTO RECLAIM · 후보 검색 중…';
+  try{
+    const r=await fetch('/api/search?mode=swing_reclaim_candidates&limit=8',{cache:'no-store'});
+    const j=await r.json();
+    if(j.error)throw new Error(j.error);
+    const arr=j.candidates||[];
+    render(arr);
+    $('status').textContent='AUTO RECLAIM · '+arr.length+'종목 분석 완료 · liquid risers first-pass';
+  }catch(e){$('status').textContent='AUTO RECLAIM 오류 · '+e.message}
+  finally{$('autoBtn').disabled=false;$('analyzeBtn').disabled=false}
+}
+$('analyzeBtn').onclick=analyze;$('autoBtn').onclick=autoScan;
+['t1','t2','t3','t4','t5'].forEach(id=>$(id).addEventListener('change',e=>e.target.value=e.target.value.trim().toUpperCase()));
+analyze();
+</script>
+</body>
+</html>
