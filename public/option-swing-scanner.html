@@ -30,7 +30,7 @@
   .note,.status{font-size:11px}
 }
 
-<style>
+
 @media(max-width:720px){
   .controls{grid-template-columns:1fr 1fr!important;gap:7px}
   .controls input{padding:10px;font-size:13px}
@@ -46,7 +46,7 @@
   .scanrow.header{position:sticky;top:0;background:var(--panel);z-index:1}
 }
 
-<style>
+
 /* mobile-button-fix */
 @media(max-width:720px){
   .controls{
@@ -72,6 +72,25 @@
   .controls input:nth-of-type(5){
     grid-column:1 / -1;
   }
+}
+
+/* final-mobile-controls-fix */
+@media(max-width:720px){
+  .controls{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:7px!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .controls input,.controls button{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  .controls input:nth-of-type(5){grid-column:1/-1!important}
+  .controls button{min-height:44px!important;padding:8px 6px!important;font-size:11px!important}
 }
 </style>
 </head>
