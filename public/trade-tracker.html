@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <div><div class="brand">MY TRADE TRACKER</div><div class="sub">5M structure · HULL21 slope · live price/pressure · wall response</div></div>
+    <div><div class="brand">MY TRADE TRACKER</div><div class="sub">Schwab realtime 5M · live HULL21 slope · live volume/pressure · wall response</div></div>
     <div class="top-nav">
       <a href="/premarket-scanner.html">PREMARKET</a>
       <a href="/option-swing-scanner.html">OPTION SWING</a>
@@ -81,7 +81,7 @@
     <div class="card">
       <b>LAST 12 · 5-MIN BARS</b>
       <div class="bars" id="bars"></div>
-      <div class="note">Bar height = relative 5-minute volume. Green/red = close vs open. Existing stock bars may be delayed by the connected aggregate feed.</div>
+      <div class="note">Bar height = Schwab 5-minute volume. The current 5-minute bar is updated with live Schwab quote/volume samples every 5 seconds.</div>
     </div>
     <div class="card">
       <b>TRADE LOG</b>
@@ -99,7 +99,7 @@
 </div>
 <script>
 const $=id=>document.getElementById(id);
-let data=null,live=null,prevLive=null,timer=null,quoteTimer=null,lastState='',pressurePeak=50,pressurePrev=50;
+let data=null,live=null,prevLive=null,liveBars=[],timer=null,quoteTimer=null,lastState='',pressurePeak=50,pressurePrev=50;
 const store='gex_trade_tracker_v1';
 const num=v=>Number.isFinite(+v)?+v:NaN;
 const money=v=>Number.isFinite(+v)?'$'+(+v).toFixed(2):'—';
@@ -120,10 +120,27 @@ function pressure(q){
  let pcent=50;if(confidence!=='LOW')pcent=Math.max(15,Math.min(85,50+score*35));
  return {pct:pcent,deltaVol,confidence};
 }
-function volRatio(){const bars=data?.bars||[];if(bars.length<3)return NaN;const cur=num(bars.at(-1)?.volume),prev=bars.slice(-6,-1).map(x=>num(x.volume)).filter(Number.isFinite);const avg=prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:NaN;return Number.isFinite(cur)&&avg>0?cur/avg:NaN}
+function quoteTs(q){const t=num(q?.trade_time??q?.quote_time);return Number.isFinite(t)&&t>1e12?t:Date.now()}
+function bucket5(ts){return Math.floor(ts/300000)*300000}
+function mergeLiveQuote(q){
+ const px=num(q?.last??q?.mark),vol=num(q?.volume);if(!Number.isFinite(px))return;
+ const ts=quoteTs(q),bucket=bucket5(ts),prevVol=num(prevLive?.volume),dv=Number.isFinite(vol)&&Number.isFinite(prevVol)?Math.max(0,vol-prevVol):0;
+ if(!liveBars.length){liveBars=[{time:bucket,open:px,high:px,low:px,close:px,volume:dv,vwap:px,transactions:0}];return}
+ let b=liveBars.at(-1),bt=bucket5(num(b.time));
+ if(bt===bucket){
+   b.close=px;b.high=Math.max(num(b.high)||px,px);b.low=Math.min(num(b.low)||px,px);b.volume=(num(b.volume)||0)+dv;b.vwap=px;
+ }else if(bucket>bt){
+   liveBars.push({time:bucket,open:px,high:px,low:px,close:px,volume:dv,vwap:px,transactions:0});
+   if(liveBars.length>120)liveBars=liveBars.slice(-120);
+ }
+}
+function wma(vals,n){if(vals.length<n)return NaN;let den=0,sum=0;for(let i=0;i<n;i++){const w=i+1,v=num(vals[vals.length-n+i]);if(!Number.isFinite(v))return NaN;den+=w;sum+=v*w}return sum/den}
+function hmaSeries(vals,n=21){const half=Math.max(1,Math.floor(n/2)),root=Math.max(1,Math.floor(Math.sqrt(n))),raw=[],out=[];for(let i=0;i<vals.length;i++){const seq=vals.slice(0,i+1),wf=wma(seq,n),wh=wma(seq,half);raw.push(Number.isFinite(wf)&&Number.isFinite(wh)?2*wh-wf:NaN);const vr=raw.filter(Number.isFinite);out.push(vr.length>=root?wma(vr,root):NaN)}return out}
+function liveHull(){const closes=liveBars.map(b=>num(b.close)).filter(Number.isFinite),hs=hmaSeries(closes,21),h=hs.at(-1),p=hs.at(-2),s=Number.isFinite(h)&&Number.isFinite(p)&&p!==0?(h-p)/p*100:NaN;return {hull:h,slope:s}}
+function volRatio(){const bars=liveBars.length?liveBars:(data?.bars||[]);if(bars.length<3)return NaN;const cur=num(bars.at(-1)?.volume),prev=bars.slice(-6,-1).map(x=>num(x.volume)).filter(Number.isFinite);const avg=prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:NaN;return Number.isFinite(cur)&&avg>0?cur/avg:NaN}
 function classify(){
  if(!data)return {state:'WAITING FOR DATA',tone:'',text:'Waiting for 5-minute structure.'};
- const s=settings(),spot=num(live?.last??live?.mark??data.spot),hull=num(data.hull21),hullSlope=num(data.hull21_slope_pct),wall=Number.isFinite(s.callWall)?s.callWall:num(data.call_wall),vr=volRatio(),entryVolNeed=Number.isFinite(s.entryVol)&&s.entryVol>0?s.entryVol:1.3,bars=data.bars||[],bar=bars.at(-1)||{},high=Math.max(...bars.slice(-4).map(x=>num(x.high)).filter(Number.isFinite),spot);
+ const s=settings(),spot=num(live?.last??live?.mark??data.spot),lh=liveHull(),hull=Number.isFinite(lh.hull)?lh.hull:num(data.hull21),hullSlope=Number.isFinite(lh.slope)?lh.slope:num(data.hull21_slope_pct),wall=Number.isFinite(s.callWall)?s.callWall:num(data.call_wall),vr=volRatio(),entryVolNeed=Number.isFinite(s.entryVol)&&s.entryVol>0?s.entryVol:1.3,bars=liveBars.length?liveBars:(data.bars||[]),bar=bars.at(-1)||{},high=Math.max(...bars.slice(-4).map(x=>num(x.high)).filter(Number.isFinite),spot);
  const pr=pressure(live||data.schwab_quote||{}),p=pr.pct;pressurePeak=Math.max(pressurePeak,p);
  const hullDist=Number.isFinite(hull)&&hull?((spot-hull)/hull*100):NaN,wallDist=Number.isFinite(wall)&&wall?((wall-spot)/wall*100):NaN;
  const nearHull=Number.isFinite(hullDist)&&hullDist>=-0.2&&hullDist<=0.65;
@@ -185,12 +202,12 @@ function render(){
  $('wall').textContent=money(x.wall);$('wallDist').textContent=pct(-x.wallDist);$('volRatio').textContent=Number.isFinite(x.vr)?x.vr.toFixed(2)+'×':'—';$('entryVolNeeded').textContent=(Number.isFinite(x.entryVolNeed)?x.entryVolNeed:1.3).toFixed(2)+'×';$('hullDist').textContent=pct(x.hullDist);
  const pp=x.pr?.pct??50;$('pressureMarker').style.left=pp+'%';$('pressureText').textContent=x.pr?.confidence==='LOW'?'LOW CONFIDENCE · WAIT':('BUY '+Math.round(pp)+'% / SELL '+(100-Math.round(pp))+'% · '+x.pr.confidence);$('pressureMeta').textContent=Number.isFinite(x.pr?.deltaVol)?'ΔVol '+Math.round(x.pr.deltaVol).toLocaleString():'Schwab samples';
  renderStudy();
- const bars=data.bars||[],maxV=Math.max(1,...bars.map(b=>num(b.volume)||0));$('bars').innerHTML=bars.map(b=>{const up=num(b.close)>=num(b.open),h=Math.max(4,(num(b.volume)||0)/maxV*125),t=new Date(num(b.time)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="barcol"><div class="bv">'+money(b.close)+'</div><div class="bar '+(up?'':'down')+'" style="height:'+h+'px"></div><div class="bt">'+t+'</div></div>'}).join('');
+ const bars=(liveBars.length?liveBars:(data.bars||[])).slice(-12),maxV=Math.max(1,...bars.map(b=>num(b.volume)||0));$('bars').innerHTML=bars.map(b=>{const up=num(b.close)>=num(b.open),h=Math.max(4,(num(b.volume)||0)/maxV*125),t=new Date(num(b.time)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="barcol"><div class="bv">'+money(b.close)+'</div><div class="bar '+(up?'':'down')+'" style="height:'+h+'px"></div><div class="bt">'+t+'</div></div>'}).join('');
  if(x.state!==lastState){if(lastState)addLog(x.state,x.text);lastState=x.state}
 }
-async function loadBase(){const t=settings().ticker;if(!t)return;saveSettings();$('status').textContent='Loading '+t+' 5-minute structure…';try{const r=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(d.error)throw new Error(d.error);data=d;if(d.schwab_quote){prevLive=live;live=d.schwab_quote}render();$('status').textContent=t+' tracking · 5M HULL21 + Schwab live quote · refresh 60s'}catch(e){$('status').textContent='ERROR: '+e.message}}
-async function loadQuote(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_quote&ticker='+encodeURIComponent(t),{cache:'no-store'});const q=await r.json();if(!q.error){prevLive=live;live=q;render()}}catch(e){}}
-function start(){pressurePeak=50;pressurePrev=50;lastState='';clearInterval(timer);clearInterval(quoteTimer);loadBase();setTimeout(loadQuote,3000);timer=setInterval(loadBase,60000);quoteTimer=setInterval(loadQuote,15000)}
+async function loadBase(){const t=settings().ticker;if(!t)return;saveSettings();$('status').textContent='Loading '+t+' 5-minute structure…';try{const r=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(d.error)throw new Error(d.error);data=d;liveBars=(d.live_bars||d.bars||[]).map(x=>({...x}));if(d.schwab_quote){prevLive=live;live=d.schwab_quote;mergeLiveQuote(live)}render();$('status').textContent=t+' tracking · Schwab realtime 5M bars + live quote · quote refresh 5s'}catch(e){$('status').textContent='ERROR: '+e.message}}
+async function loadQuote(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_quote&ticker='+encodeURIComponent(t),{cache:'no-store'});const q=await r.json();if(!q.error){prevLive=live;live=q;mergeLiveQuote(q);render()}}catch(e){}}
+function start(){pressurePeak=50;pressurePrev=50;lastState='';clearInterval(timer);clearInterval(quoteTimer);loadBase();setTimeout(loadQuote,3000);timer=setInterval(loadBase,60000);quoteTimer=setInterval(loadQuote,5000)}
 $('startBtn').onclick=start;['ticker','callWall','putWall','entry','entryVol'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='ticker')$(id).value=$(id).value.toUpperCase();saveSettings();render()}));
 document.querySelectorAll('[data-manual]').forEach(b=>b.onclick=()=>addLog(b.dataset.manual,'manual'));
 $('clearBtn').onclick=()=>{localStorage.removeItem(store+'_log');renderLog()};
