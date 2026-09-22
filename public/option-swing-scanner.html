@@ -45,6 +45,34 @@
   .scanrow{min-width:760px;grid-template-columns:80px 80px 90px 90px 95px 105px 100px 1fr;padding:8px 4px;font-size:10px}
   .scanrow.header{position:sticky;top:0;background:var(--panel);z-index:1}
 }
+
+<style>
+/* mobile-button-fix */
+@media(max-width:720px){
+  .controls{
+    width:100%;
+    max-width:100%;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+  .controls input,
+  .controls button{
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+  .controls button{
+    min-height:42px!important;
+    white-space:normal!important;
+    line-height:1.15!important;
+  }
+  .controls input:nth-of-type(5){
+    grid-column:1 / -1;
+  }
+}
 </style>
 </head>
 <body>
