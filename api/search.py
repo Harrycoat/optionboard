@@ -33,6 +33,7 @@ FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY", "")
 
 SCHWAB_TOKEN_URL = "https://api.schwabapi.com/v1/oauth/token"
 SCHWAB_QUOTES_URL = "https://api.schwabapi.com/marketdata/v1/quotes"
+SCHWAB_PRICE_HISTORY_URL = "https://api.schwabapi.com/marketdata/v1/pricehistory"
 
 def _schwab_quotes(tickers):
     tickers = [str(t).strip().upper() for t in tickers if str(t).strip()]
@@ -114,6 +115,70 @@ def _schwab_quote(ticker):
             "detail": result.get("_detail"),
         }
     return result.get(ticker.upper()) or {"error": "No Schwab quote returned."}
+
+
+def _schwab_price_history(ticker):
+    """Fetch 5-minute intraday candles from Schwab for the Trade Tracker."""
+    client_id = os.environ.get("SCHWAB_CLIENT_ID", "").strip()
+    client_secret = os.environ.get("SCHWAB_CLIENT_SECRET", "").strip()
+    refresh_token = os.environ.get("SCHWAB_REFRESH_TOKEN", "").strip()
+    if not client_id or not client_secret or not refresh_token:
+        return {"error": "Schwab environment variables are missing.", "bars": []}
+
+    token_resp = requests.post(
+        SCHWAB_TOKEN_URL,
+        auth=(client_id, client_secret),
+        headers={"Accept": "application/json"},
+        data={"grant_type": "refresh_token", "refresh_token": refresh_token},
+        timeout=15,
+    )
+    if token_resp.status_code != 200:
+        return {"error": "Schwab token refresh failed", "status": token_resp.status_code, "bars": []}
+
+    access_token = (token_resp.json() or {}).get("access_token")
+    if not access_token:
+        return {"error": "Schwab access token missing from refresh response.", "bars": []}
+
+    resp = requests.get(
+        SCHWAB_PRICE_HISTORY_URL,
+        headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
+        params={
+            "symbol": ticker.upper(),
+            "periodType": "day",
+            "period": 2,
+            "frequencyType": "minute",
+            "frequency": 5,
+            "needExtendedHoursData": "false",
+            "needPreviousClose": "true",
+        },
+        timeout=15,
+    )
+    if resp.status_code != 200:
+        return {"error": "Schwab price history request failed", "status": resp.status_code, "detail": resp.text[:300], "bars": []}
+
+    payload = resp.json() or {}
+    bars = []
+    for row in payload.get("candles") or []:
+        try:
+            bars.append({
+                "time": int(row["datetime"]),
+                "open": float(row["open"]),
+                "high": float(row["high"]),
+                "low": float(row["low"]),
+                "close": float(row["close"]),
+                "volume": float(row.get("volume") or 0),
+                "vwap": float(row["close"]),
+                "transactions": 0,
+            })
+        except (KeyError, TypeError, ValueError):
+            continue
+    return {
+        "bars": bars,
+        "previous_close": payload.get("previousClose"),
+        "previous_close_date": payload.get("previousCloseDate"),
+        "source": "Schwab Trader API",
+        "realtime": True,
+    }
 
 ALLOWED_EXCHANGES = {"US"}
 
@@ -228,7 +293,13 @@ def _call_wall_monitor_payload(ticker):
     if schwab.get("error"):
         schwab = None
 
-    all_bars = _intraday_five_minute_bars(ticker)
+    schwab_history = _schwab_price_history(ticker)
+    all_bars = schwab_history.get("bars") or []
+    bar_source = "Schwab Trader API"
+    if not all_bars:
+        # Fallback only if Schwab candle history is temporarily unavailable.
+        all_bars = _intraday_five_minute_bars(ticker)
+        bar_source = "Massive fallback"
     bars = _latest_regular_session_bars(all_bars)
     regular_all = _regular_session_bars_all(all_bars)
     latest = bars[-1] if bars else None
@@ -340,7 +411,10 @@ def _call_wall_monitor_payload(ticker):
         "gamma_flip": gex.get("gamma_flip"),
         "expiry_used": gex.get("expiry_used"),
         "bars": bars[-12:],
+        "live_bars": regular_all[-100:],
         "latest_bar": latest,
+        "bar_source": bar_source,
+        "bar_realtime": bar_source == "Schwab Trader API",
         "session_vwap": _regular_session_vwap(bars),
         "hull21": hull21,
         "hull21_prev": hull21_prev,
@@ -350,9 +424,9 @@ def _call_wall_monitor_payload(ticker):
         "tracker_series": tracker_series,
         "tracker_latest": tracker_latest,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "data_mode": "live_stock_delayed_options" if live_spot is not None else "15_minute_delayed",
-        "delay_minutes": 15,
-        "stock_delay_minutes": 0 if live_spot is not None else 15,
+        "data_mode": "live_schwab_stock_delayed_options" if live_spot is not None and bar_source == "Schwab Trader API" else "mixed_fallback",
+        "delay_minutes": 0 if bar_source == "Schwab Trader API" else 15,
+        "stock_delay_minutes": 0 if live_spot is not None and bar_source == "Schwab Trader API" else 15,
         "options_delay_minutes": 15,
         "flow_source": "optional_manual_confirmation",
         "is_stale_price": bool(gex.get("is_stale_price")),
