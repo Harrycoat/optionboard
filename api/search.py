@@ -475,13 +475,14 @@ def _five_min_minervini(bars):
 
 
 def _option_swing_market_candidates(limit=12):
-    """Fast first-pass universe focused on liquid swingable leaders, not extreme one-day spikes."""
+    """Fast first-pass universe for liquid swing candidates with a relaxed fallback."""
     data = _massive_get(
         f"{MASSIVE_API_BASE}/v2/snapshot/locale/us/markets/stocks/gainers",
         {"include_otc": "false"},
     )
     rows = data.get("tickers") or []
-    out = []
+
+    parsed = []
     for row in rows:
         try:
             ticker = str(row.get("ticker") or "").upper().strip()
@@ -499,19 +500,7 @@ def _option_swing_market_candidates(limit=12):
             volume = float(volume or 0)
             prev_volume = float(prev_volume or 0)
             dollar_volume = price * volume
-
-            # Swing/options first-pass quality filter:
-            # avoid penny/illiquid names and huge one-day event spikes.
-            if price < 10:
-                continue
-            if change_pct < 2 or change_pct > 25:
-                continue
-            if volume < 750000:
-                continue
-            if dollar_volume < 20_000_000:
-                continue
-
-            out.append({
+            parsed.append({
                 "ticker": ticker,
                 "price": price,
                 "change_pct": change_pct,
@@ -523,21 +512,55 @@ def _option_swing_market_candidates(limit=12):
         except (TypeError, ValueError):
             continue
 
-        if len(out) >= max(1, min(int(limit), 20)):
-            break
+    # Preferred swing-quality filter.
+    strict = [
+        x for x in parsed
+        if x["price"] >= 10
+        and 2 <= x["change_pct"] <= 25
+        and x["day_volume"] >= 750000
+        and x["dollar_volume"] >= 20_000_000
+    ]
+
+    # Top-movers endpoints can occasionally be dominated by event spikes.
+    # If strict filtering leaves too few names, use a broader but still liquid fallback
+    # so AUTO MARKET never appears broken.
+    relaxed = [
+        x for x in parsed
+        if x["price"] >= 5
+        and 1 <= x["change_pct"] <= 60
+        and x["day_volume"] >= 250000
+        and x["dollar_volume"] >= 5_000_000
+        and x not in strict
+    ]
+
+    wanted = max(1, min(int(limit), 20))
+    out = (strict + relaxed)[:wanted]
+    mode = "strict" if len(strict) >= min(3, wanted) else "strict+fallback"
 
     return {
         "count": len(out),
         "candidates": out,
         "source": "Massive Top Market Movers",
+        "selection_mode": mode,
+        "strict_count": len(strict),
+        "raw_count": len(parsed),
         "filters": {
-            "min_price": 10,
-            "min_change_pct": 2,
-            "max_change_pct": 25,
-            "min_day_volume": 750000,
-            "min_dollar_volume": 20000000,
+            "strict": {
+                "min_price": 10,
+                "min_change_pct": 2,
+                "max_change_pct": 25,
+                "min_day_volume": 750000,
+                "min_dollar_volume": 20000000,
+            },
+            "fallback": {
+                "min_price": 5,
+                "min_change_pct": 1,
+                "max_change_pct": 60,
+                "min_day_volume": 250000,
+                "min_dollar_volume": 5000000,
+            },
         },
-        "note": "Extreme one-day spikes and thin names are filtered before 5m/15m setup analysis.",
+        "note": "Strict swing-quality candidates are preferred; a liquid fallback is used only when the movers list is unusually extreme.",
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
