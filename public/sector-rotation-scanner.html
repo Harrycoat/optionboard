@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · Sector Rotation Scanner</title>
+<style>
+:root{--bg:#08111d;--panel:#0d1724;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--gold:#f4c34f;--blue:#62a5ff}
+*{box-sizing:border-box}body{margin:0;background:#08111d;color:var(--text);font-family:Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:14px 18px 30px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center}.brand{font-size:26px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:4px}
+.top-nav{display:flex;gap:8px;flex-wrap:wrap}.top-nav a{padding:9px 13px;border:1px solid #2d3b50;border-radius:9px;background:#101826;color:#eef4fb;text-decoration:none;font-size:12px;font-weight:900}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:12px}.controls{display:flex;gap:8px;align-items:center}.controls button{background:var(--gold);border:0;border-radius:8px;padding:11px 16px;font-weight:900;cursor:pointer}.status{color:var(--muted);font-size:12px;margin-left:8px}
+.rank{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:11px;color:var(--muted)}.pill b{color:var(--text)}
+.sector{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.sector h2{font-size:16px;margin:0}.etf{color:var(--muted);font-size:11px;margin:6px 0 10px}.score{color:var(--green);font-weight:900}
+.panel h3{font-size:12px;margin:0 0 8px;color:var(--gold)}.row{display:grid;grid-template-columns:75px 75px 85px 85px 85px 1fr;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:11px;align-items:center}.row b{font-size:12px}.muted{color:var(--muted)}.green{color:var(--green)}.empty{padding:10px 0;color:var(--muted);font-size:11px}.note{color:var(--muted);font-size:11px;line-height:1.5;margin-top:10px}
+.open{color:var(--blue);text-decoration:none;font-weight:800}
+@media(max-width:800px){.top{flex-direction:column;align-items:flex-start}.top-nav{width:100%}.top-nav a{flex:1;text-align:center}.sector{grid-template-columns:1fr}.row{grid-template-columns:60px 65px 75px 75px 75px 1fr;font-size:10px;overflow-x:auto}.wrap{padding:10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="brand">SECTOR ROTATION SCANNER</div><div class="sub">Fixed ETF tracking → strongest sectors → DAY / 0DTE momentum + SWING pullback leaders</div></div>
+    <div class="top-nav">
+      <a href="/premarket-scanner.html">PREMARKET</a>
+      <a href="/option-swing-scanner.html">REGULAR MARKET</a>
+      <a href="/trade-tracker.html">TRADE TRACKER</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="controls"><button onclick="scan()">SCAN TOP SECTORS</button><span class="status" id="status">Ready</span></div>
+    <div class="note">DAY / 0DTE = today's strong-sector momentum discovery. SWING PULLBACK = prior leader near the 21EMA/HULL zone with recent volume dry-up. Final entry confirmation remains in Trade Tracker.</div>
+  </div>
+
+  <div class="card"><div class="rank" id="ranking"><span class="pill">Waiting for scan…</span></div></div>
+  <div id="results"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const pct=v=>v==null?'—':(v>=0?'+':'')+Number(v).toFixed(2)+'%';
+const x=v=>v==null?'—':Number(v).toFixed(2)+'x';
+function rows(items){
+ if(!items||!items.length)return '<div class="empty">No matching stocks right now.</div>';
+ return items.map(s=>'<div class="row"><b>'+s.ticker+'</b><span class="green">'+pct(s.day_change_pct)+'</span><span>'+x(s.intraday_rvol_est)+'</span><span>'+pct(s.distance_to_21ema_pct)+'</span><span>'+pct(s.from_20d_high_pct)+'</span><a class="open" href="/trade-tracker.html?ticker='+s.ticker+'">TRACK</a></div>').join('');
+}
+function sectorCard(s,i){
+ const etfs=(s.etfs||[]).map(e=>e.ticker+' '+pct(e.change_pct)).join(' · ');
+ return '<div class="card"><h2>#'+(i+1)+' '+s.sector+' <span class="score">'+pct(s.sector_score)+'</span></h2><div class="etf">'+etfs+'</div><div class="sector"><div class="panel"><h3>DAY / 0DTE MOMENTUM</h3><div class="row muted"><span>TICKER</span><span>DAY</span><span>RVOL*</span><span>21EMA DIST</span><span>20D HIGH</span><span></span></div>'+rows(s.day_momentum)+'</div><div class="panel"><h3>SWING PULLBACK</h3><div class="row muted"><span>TICKER</span><span>DAY</span><span>RVOL*</span><span>21EMA DIST</span><span>20D HIGH</span><span></span></div>'+rows(s.swing_pullback)+'</div></div></div>';
+}
+async function scan(){
+ $('status').textContent='Scanning fixed sector ETFs…';
+ try{
+  const r=await fetch('/api/search?mode=sector_rotation_scan&top_n=2',{cache:'no-store'});
+  const j=await r.json();
+  if(j.error)throw new Error(j.error);
+  $('ranking').innerHTML=(j.all_sector_ranking||[]).map((s,i)=>'<span class="pill"><b>#'+(i+1)+' '+s.sector+'</b> '+pct(s.score)+'</span>').join('');
+  $('results').innerHTML=(j.top_sectors||[]).map(sectorCard).join('');
+  $('status').textContent='Updated '+new Date().toLocaleTimeString();
+ }catch(e){$('status').textContent='Scan error: '+e.message;}
+}
+scan();
+setInterval(scan,60000);
+</script>
+</body>
+</html>
