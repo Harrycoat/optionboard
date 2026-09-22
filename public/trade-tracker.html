@@ -81,7 +81,7 @@
     <div class="card">
       <b>LAST 12 · 5-MIN BARS</b>
       <div class="bars" id="bars"></div>
-      <div class="note">Bar height = Schwab 5-minute volume. The current 5-minute bar is updated with live Schwab quote/volume samples every 5 seconds.</div>
+      <div class="note">Bar height = Schwab 5-minute candle volume. The latest Schwab 5-minute OHLCV is re-fetched every 5 seconds; volume is not reconstructed from quote deltas.</div>
     </div>
     <div class="card">
       <b>TRADE LOG</b>
@@ -205,9 +205,10 @@ function render(){
  const bars=(liveBars.length?liveBars:(data.bars||[])).slice(-12),maxV=Math.max(1,...bars.map(b=>num(b.volume)||0));$('bars').innerHTML=bars.map(b=>{const up=num(b.close)>=num(b.open),h=Math.max(4,(num(b.volume)||0)/maxV*125),t=new Date(num(b.time)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="barcol"><div class="bv">'+money(b.close)+'</div><div class="bar '+(up?'':'down')+'" style="height:'+h+'px"></div><div class="bt">'+t+'</div></div>'}).join('');
  if(x.state!==lastState){if(lastState)addLog(x.state,x.text);lastState=x.state}
 }
-async function loadBase(){const t=settings().ticker;if(!t)return;saveSettings();$('status').textContent='Loading '+t+' 5-minute structure…';try{const r=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(d.error)throw new Error(d.error);data=d;liveBars=(d.live_bars||d.bars||[]).map(x=>({...x}));if(d.schwab_quote){prevLive=live;live=d.schwab_quote;mergeLiveQuote(live)}render();$('status').textContent=t+' tracking · Schwab realtime 5M bars + live quote · quote refresh 5s'}catch(e){$('status').textContent='ERROR: '+e.message}}
-async function loadQuote(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_quote&ticker='+encodeURIComponent(t),{cache:'no-store'});const q=await r.json();if(!q.error){prevLive=live;live=q;mergeLiveQuote(q);render()}}catch(e){}}
-function start(){pressurePeak=50;pressurePrev=50;lastState='';clearInterval(timer);clearInterval(quoteTimer);loadBase();setTimeout(loadQuote,3000);timer=setInterval(loadBase,60000);quoteTimer=setInterval(loadQuote,5000)}
+async function loadBase(){const t=settings().ticker;if(!t)return;saveSettings();$('status').textContent='Loading '+t+' 5-minute structure…';try{const r=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(d.error)throw new Error(d.error);data=d;liveBars=(d.bars||[]).map(x=>({...x}));if(d.schwab_quote){prevLive=live;live=d.schwab_quote}render();$('status').textContent=t+' tracking · Schwab 5M OHLCV + live quote · refresh 5s'}catch(e){$('status').textContent='ERROR: '+e.message}}
+async function loadQuote(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_quote&ticker='+encodeURIComponent(t),{cache:'no-store'});const q=await r.json();if(!q.error){prevLive=live;live=q;render()}}catch(e){}}
+async function loadBars(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(!d.error&&Array.isArray(d.bars)&&d.bars.length){liveBars=d.bars.map(x=>({...x}));render()}}catch(e){}}
+function start(){pressurePeak=50;pressurePrev=50;lastState='';clearInterval(timer);clearInterval(quoteTimer);loadBase();setTimeout(()=>{loadQuote();loadBars()},2500);timer=setInterval(loadBase,60000);quoteTimer=setInterval(()=>{loadQuote();loadBars()},5000)}
 $('startBtn').onclick=start;['ticker','callWall','putWall','entry','entryVol'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='ticker')$(id).value=$(id).value.toUpperCase();saveSettings();render()}));
 document.querySelectorAll('[data-manual]').forEach(b=>b.onclick=()=>addLog(b.dataset.manual,'manual'));
 $('clearBtn').onclick=()=>{localStorage.removeItem(store+'_log');renderLog()};
