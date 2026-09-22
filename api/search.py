@@ -839,21 +839,36 @@ def _option_swing_market_candidates(limit=12):
         and x["dollar_volume"] >= 20_000_000
     ]
 
-    # Top-movers endpoints can occasionally be dominated by event spikes.
-    # If strict filtering leaves too few names, use a broader but still liquid fallback
-    # so AUTO MARKET never appears broken.
+    # Broader regular-market fallback. We want enough names to study, not just
+    # the cleanest institutional swing setups.
     relaxed = [
         x for x in parsed
-        if x["price"] >= 5
-        and 1 <= x["change_pct"] <= 60
-        and x["day_volume"] >= 250000
-        and x["dollar_volume"] >= 5_000_000
+        if x["price"] >= 3
+        and 0.5 <= x["change_pct"] <= 80
+        and x["day_volume"] >= 100000
+        and x["dollar_volume"] >= 2_000_000
         and x not in strict
     ]
 
-    wanted = max(1, min(int(limit), 20))
-    out = (strict + relaxed)[:wanted]
-    mode = "strict" if len(strict) >= min(3, wanted) else "strict+fallback"
+    # Final discovery bucket: keep liquid movers even if they are small-cap/event driven.
+    # They are still labeled by WHY and must pass the Trade Tracker before entry.
+    discovery = [
+        x for x in parsed
+        if x["price"] >= 1
+        and x["change_pct"] >= 0.25
+        and x["day_volume"] >= 50000
+        and x["dollar_volume"] >= 500000
+        and x not in strict
+        and x not in relaxed
+    ]
+
+    strict.sort(key=lambda x: (x["change_pct"], x["dollar_volume"]), reverse=True)
+    relaxed.sort(key=lambda x: (x["change_pct"], x["dollar_volume"]), reverse=True)
+    discovery.sort(key=lambda x: (x["change_pct"], x["dollar_volume"]), reverse=True)
+
+    wanted = max(1, min(int(limit), 30))
+    out = (strict + relaxed + discovery)[:wanted]
+    mode = "strict" if len(strict) >= min(5, wanted) else "strict+relaxed+discovery"
 
     # Add a plain-language reason for the regular-market scanner.
     # Prefer a recent company-news catalyst; otherwise identify the stock as a market mover.
@@ -885,11 +900,17 @@ def _option_swing_market_candidates(limit=12):
                 "min_dollar_volume": 20000000,
             },
             "fallback": {
-                "min_price": 5,
-                "min_change_pct": 1,
-                "max_change_pct": 60,
-                "min_day_volume": 250000,
-                "min_dollar_volume": 5000000,
+                "min_price": 3,
+                "min_change_pct": 0.5,
+                "max_change_pct": 80,
+                "min_day_volume": 100000,
+                "min_dollar_volume": 2000000,
+            },
+            "discovery": {
+                "min_price": 1,
+                "min_change_pct": 0.25,
+                "min_day_volume": 50000,
+                "min_dollar_volume": 500000,
             },
         },
         "note": "Strict swing-quality candidates are preferred; a liquid fallback is used only when the movers list is unusually extreme.",
