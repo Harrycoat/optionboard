@@ -475,7 +475,7 @@ def _five_min_minervini(bars):
 
 
 def _option_swing_market_candidates(limit=12):
-    """Use Massive top movers as a fast first-pass universe for today's trading candidates."""
+    """Fast first-pass universe focused on liquid swingable leaders, not extreme one-day spikes."""
     data = _massive_get(
         f"{MASSIVE_API_BASE}/v2/snapshot/locale/us/markets/stocks/gainers",
         {"include_otc": "false"},
@@ -493,29 +493,51 @@ def _option_swing_market_candidates(limit=12):
             prev_volume = prev.get("v") or 0
             if not ticker or price is None or change_pct is None:
                 continue
+
             price = float(price)
             change_pct = float(change_pct)
             volume = float(volume or 0)
             prev_volume = float(prev_volume or 0)
-            if price < 5 or volume < 250000:
+            dollar_volume = price * volume
+
+            # Swing/options first-pass quality filter:
+            # avoid penny/illiquid names and huge one-day event spikes.
+            if price < 10:
                 continue
+            if change_pct < 2 or change_pct > 25:
+                continue
+            if volume < 750000:
+                continue
+            if dollar_volume < 20_000_000:
+                continue
+
             out.append({
                 "ticker": ticker,
                 "price": price,
                 "change_pct": change_pct,
                 "day_volume": volume,
+                "dollar_volume": dollar_volume,
                 "prev_day_volume": prev_volume,
                 "volume_vs_prev_day": (volume / prev_volume) if prev_volume > 0 else None,
             })
         except (TypeError, ValueError):
             continue
+
         if len(out) >= max(1, min(int(limit), 20)):
             break
+
     return {
         "count": len(out),
         "candidates": out,
         "source": "Massive Top Market Movers",
-        "note": "Fast first-pass universe; detailed 5m/15m setup is calculated separately.",
+        "filters": {
+            "min_price": 10,
+            "min_change_pct": 2,
+            "max_change_pct": 25,
+            "min_day_volume": 750000,
+            "min_dollar_volume": 20000000,
+        },
+        "note": "Extreme one-day spikes and thin names are filtered before 5m/15m setup analysis.",
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
