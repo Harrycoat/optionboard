@@ -1,184 +1,184 @@
 {
-  "generated_at": "2026-09-22T00:09:06.257762+00:00",
+  "generated_at": "2026-09-22T17:41:34.278280+00:00",
   "categories": {
     "wave1": [
       {
         "ticker": "ANET",
         "sector": "NETWORKING",
-        "spot": 205.42,
-        "call_wall": 220,
+        "spot": 204.09,
+        "call_wall": 210,
         "put_wall": 190,
-        "call_wall_distance_pct": 7.1,
-        "gamma_flip": 190.64,
+        "call_wall_distance_pct": 2.9,
+        "gamma_flip": 191.65,
         "gamma_regime": "positive",
         "price_change_pct": 0.96,
         "volume": 5004343.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -13557569.312663877,
-        "cex_total": -895902324.489393,
+        "vex_total": 33715988.41470392,
+        "cex_total": -2578352221.721186,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "PLTR",
         "sector": "SOFTWARE",
-        "spot": 183.09,
+        "spot": 184.78,
         "call_wall": 185,
         "put_wall": 170,
-        "call_wall_distance_pct": 1.04,
-        "gamma_flip": 170.11,
+        "call_wall_distance_pct": 0.12,
+        "gamma_flip": 171.68,
         "gamma_regime": "positive",
         "price_change_pct": 2.44,
-        "volume": 22006695.0,
+        "volume": 22006697.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -142009906.1443603,
-        "cex_total": -7916807424.516577,
+        "vex_total": -127701131.17530322,
+        "cex_total": -13055447144.479088,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "AMZN",
         "sector": "CONSUMER",
-        "spot": 258.45,
+        "spot": 254.59,
         "call_wall": 260,
         "put_wall": 252.5,
-        "call_wall_distance_pct": 0.6,
-        "gamma_flip": 252.23,
+        "call_wall_distance_pct": 2.13,
+        "gamma_flip": 252.06,
         "gamma_regime": "positive",
         "price_change_pct": 0.8,
-        "volume": 42979408.0,
+        "volume": 42979407.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -46620632.77940158,
-        "cex_total": -4309996005.127667,
+        "vex_total": 188961022.25287497,
+        "cex_total": -24171532782.13802,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
         "ticker": "GOOGL",
         "sector": "TECH",
-        "spot": 354.97,
+        "spot": 352.42,
         "call_wall": 360,
-        "put_wall": 345,
-        "call_wall_distance_pct": 1.42,
-        "gamma_flip": 346.97,
+        "put_wall": 350,
+        "call_wall_distance_pct": 2.15,
+        "gamma_flip": 348.08,
         "gamma_regime": "positive",
         "price_change_pct": 1.23,
-        "volume": 30455189.0,
+        "volume": 30455384.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 47856778.42168472,
-        "cex_total": -5103911238.741681,
+        "vex_total": 204818013.13517964,
+        "cex_total": -23789052203.512157,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
         "ticker": "MSFT",
         "sector": "TECH",
-        "spot": 501.61,
-        "call_wall": 510,
-        "put_wall": 500,
-        "call_wall_distance_pct": 1.67,
-        "gamma_flip": 497.15,
-        "gamma_regime": "positive",
+        "spot": 497.24,
+        "call_wall": 500,
+        "put_wall": 490,
+        "call_wall_distance_pct": 0.56,
+        "gamma_flip": 502.0,
+        "gamma_regime": "negative",
         "price_change_pct": 1.35,
-        "volume": 27959976.0,
+        "volume": 27959944.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -55567323.14547719,
-        "cex_total": -6095214421.375198,
+        "vex_total": 249544378.16195235,
+        "cex_total": -31881275223.29902,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
         "ticker": "CRWD",
         "sector": "SECURITY",
-        "spot": 249.35,
+        "spot": 248.9,
         "call_wall": 250,
         "put_wall": 230,
-        "call_wall_distance_pct": 0.26,
-        "gamma_flip": 232.5,
+        "call_wall_distance_pct": 0.44,
+        "gamma_flip": 235.4,
         "gamma_regime": "positive",
         "price_change_pct": 7.65,
         "volume": 13372718.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -66723609.67231016,
-        "cex_total": -3177278249.170604,
+        "vex_total": -17804484.823789097,
+        "cex_total": -7537420602.591271,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "FTNT",
         "sector": "SECURITY",
-        "spot": 175.23,
+        "spot": 174.47,
         "call_wall": 177.5,
         "put_wall": 165,
-        "call_wall_distance_pct": 1.3,
-        "gamma_flip": 165.52,
+        "call_wall_distance_pct": 1.74,
+        "gamma_flip": 166.4,
         "gamma_regime": "positive",
         "price_change_pct": 2.96,
-        "volume": 3177444.0,
+        "volume": 3177445.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 2897463.4444224983,
-        "cex_total": -518627915.1207583,
+        "vex_total": 2422915.4695360055,
+        "cex_total": -664649285.0471437,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "PANW",
         "sector": "SECURITY",
-        "spot": 371.76,
+        "spot": 372.42,
         "call_wall": 400,
         "put_wall": 350,
-        "call_wall_distance_pct": 7.6,
-        "gamma_flip": 351.97,
+        "call_wall_distance_pct": 7.41,
+        "gamma_flip": 356.59,
         "gamma_regime": "positive",
         "price_change_pct": 2.11,
-        "volume": 5385835.0,
+        "volume": 5385833.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -288725.439674366,
-        "cex_total": -2352080080.5507684,
+        "vex_total": 26197756.888957255,
+        "cex_total": -4766715261.120523,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "NET",
         "sector": "SECURITY",
-        "spot": 351.67,
-        "call_wall": 360,
-        "put_wall": 290,
-        "call_wall_distance_pct": 2.37,
-        "gamma_flip": 319.07,
+        "spot": 355.65,
+        "call_wall": 400,
+        "put_wall": 340,
+        "call_wall_distance_pct": 12.47,
+        "gamma_flip": 324.13,
         "gamma_regime": "positive",
         "price_change_pct": 7.54,
-        "volume": 3905520.0,
+        "volume": 3892119.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -24048177.004552882,
-        "cex_total": -803610602.8254181,
+        "vex_total": -19338759.298216425,
+        "cex_total": -2070006006.9419339,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "DELL",
         "sector": "HARDWARE",
-        "spot": 575.31,
+        "spot": 554.24,
         "call_wall": 600,
         "put_wall": 550,
-        "call_wall_distance_pct": 4.29,
-        "gamma_flip": 564.53,
+        "call_wall_distance_pct": 8.26,
+        "gamma_flip": 563.97,
         "gamma_regime": "positive",
         "price_change_pct": -1.95,
-        "volume": 7738772.0,
+        "volume": 7736621.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 48643802.82272191,
-        "cex_total": -9758610202.343288,
+        "vex_total": 204353373.51880458,
+        "cex_total": -14182576823.511559,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       }
@@ -187,126 +187,126 @@
       {
         "ticker": "SNDK",
         "sector": "SEMIS",
-        "spot": 1766.64,
-        "call_wall": 1800,
+        "spot": 1885.44,
+        "call_wall": 2000,
         "put_wall": 1700,
-        "call_wall_distance_pct": 1.89,
-        "gamma_flip": 1673.01,
+        "call_wall_distance_pct": 6.08,
+        "gamma_flip": 1721.41,
         "gamma_regime": "positive",
         "price_change_pct": -3.25,
-        "volume": 10443306.0,
+        "volume": 10442662.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -319019436.00456554,
-        "cex_total": -41169486388.4599,
+        "vex_total": -801211597.4175987,
+        "cex_total": -47486668287.096695,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "MU",
         "sector": "SEMIS",
-        "spot": 1043.96,
-        "call_wall": 1050,
-        "put_wall": 1010,
-        "call_wall_distance_pct": 0.58,
-        "gamma_flip": 994.37,
+        "spot": 1082.25,
+        "call_wall": 1100,
+        "put_wall": 1040,
+        "call_wall_distance_pct": 1.64,
+        "gamma_flip": 1043.84,
         "gamma_regime": "positive",
         "price_change_pct": -0.1,
-        "volume": 28174370.0,
+        "volume": 28174409.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -230579486.5374183,
-        "cex_total": -4760137551.024909,
+        "vex_total": -248351764.00648764,
+        "cex_total": -52291269505.06172,
         "vanna_charm_expiry_days": 1,
         "status": "ok"
       },
       {
         "ticker": "WDC",
         "sector": "SEMIS",
-        "spot": 448.17,
-        "call_wall": 500,
+        "spot": 456.8,
+        "call_wall": 480,
         "put_wall": 420,
-        "call_wall_distance_pct": 11.56,
-        "gamma_flip": 458.86,
+        "call_wall_distance_pct": 5.08,
+        "gamma_flip": 456.11,
         "gamma_regime": "negative",
         "price_change_pct": -1.64,
-        "volume": 7635993.0,
-        "stage": 3,
-        "stage_label": "천정권",
-        "vex_total": -14245675.674547711,
-        "cex_total": -5086012154.208456,
+        "volume": 7635992.0,
+        "stage": 2,
+        "stage_label": "상승국면",
+        "vex_total": -25635591.999044057,
+        "cex_total": -7080703426.316577,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "STX",
         "sector": "SEMIS",
-        "spot": 877.33,
+        "spot": 899.48,
         "call_wall": 900,
         "put_wall": 800,
-        "call_wall_distance_pct": 2.58,
-        "gamma_flip": 839.94,
+        "call_wall_distance_pct": 0.06,
+        "gamma_flip": 858.65,
         "gamma_regime": "positive",
         "price_change_pct": -1.89,
-        "volume": 4196728.0,
+        "volume": 4196727.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": 10834396.468129626,
-        "cex_total": -5371577801.786073,
+        "vex_total": -33764738.133154534,
+        "cex_total": -6440788421.0827265,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "TER",
         "sector": "SEMIS",
-        "spot": 381.54,
-        "call_wall": 385,
+        "spot": 393.69,
+        "call_wall": 400,
         "put_wall": 350,
-        "call_wall_distance_pct": 0.91,
-        "gamma_flip": 343.1,
+        "call_wall_distance_pct": 1.6,
+        "gamma_flip": 345.09,
         "gamma_regime": "positive",
         "price_change_pct": 0.75,
-        "volume": 3394387.0,
+        "volume": 3394386.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -11902082.457027592,
-        "cex_total": -659808879.277349,
+        "vex_total": -24974088.46682527,
+        "cex_total": -481036187.0651357,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "LRCX",
         "sector": "SEMIS",
-        "spot": 302.28,
-        "call_wall": 310,
+        "spot": 306.8,
+        "call_wall": 307.5,
         "put_wall": 280,
-        "call_wall_distance_pct": 2.55,
-        "gamma_flip": 288.26,
+        "call_wall_distance_pct": 0.23,
+        "gamma_flip": 287.59,
         "gamma_regime": "positive",
         "price_change_pct": 3.35,
-        "volume": 11335957.0,
+        "volume": 11335956.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -26755134.488743246,
-        "cex_total": -1951957666.2390072,
+        "vex_total": -5351350.079811262,
+        "cex_total": -3552794668.4595313,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "MKSI",
         "sector": "SEMIS",
-        "spot": 256.92,
+        "spot": 255.49,
         "call_wall": 280,
         "put_wall": 230,
-        "call_wall_distance_pct": 8.98,
-        "gamma_flip": 219.32,
+        "call_wall_distance_pct": 9.59,
+        "gamma_flip": 220.51,
         "gamma_regime": "positive",
         "price_change_pct": -0.5,
-        "volume": 948162,
+        "volume": 948161,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 13240111.86116225,
-        "cex_total": -141531975.2813489,
+        "vex_total": 14289908.16287242,
+        "cex_total": -154868096.40598103,
         "vanna_charm_expiry_days": 24,
         "status": "ok"
       }
@@ -315,90 +315,90 @@
       {
         "ticker": "UCTT",
         "sector": "SEMIS",
-        "spot": 73.05,
-        "call_wall": 95,
+        "spot": 74.36,
+        "call_wall": 75,
         "put_wall": 60,
-        "call_wall_distance_pct": 30.05,
-        "gamma_flip": 60.13,
+        "call_wall_distance_pct": 0.87,
+        "gamma_flip": 57.53,
         "gamma_regime": "positive",
         "price_change_pct": 0.3,
         "volume": 603926,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 65950.71450888427,
-        "cex_total": -37587006.126521684,
+        "vex_total": 763218.0947909314,
+        "cex_total": -44601718.46774022,
         "vanna_charm_expiry_days": 24,
         "status": "ok"
       },
       {
         "ticker": "AEHR",
         "sector": "SEMIS",
-        "spot": 96.93,
-        "call_wall": 110,
+        "spot": 98.27,
+        "call_wall": 100,
         "put_wall": 92,
-        "call_wall_distance_pct": 13.48,
-        "gamma_flip": 96.59,
+        "call_wall_distance_pct": 1.76,
+        "gamma_flip": 93.45,
         "gamma_regime": "positive",
         "price_change_pct": 0.24,
         "volume": 2291994.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -1281168.7669831093,
-        "cex_total": -347482787.2901575,
+        "vex_total": -781364.2792746763,
+        "cex_total": -546470006.9169184,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "ACMR",
         "sector": "SEMIS",
-        "spot": 72.77,
+        "spot": 74.41,
         "call_wall": 75,
         "put_wall": 70,
-        "call_wall_distance_pct": 3.06,
-        "gamma_flip": 69.63,
+        "call_wall_distance_pct": 0.79,
+        "gamma_flip": 67.28,
         "gamma_regime": "positive",
         "price_change_pct": 1.84,
         "volume": 1565663.0,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -13048.856883783603,
-        "cex_total": -47915674.16312863,
+        "vex_total": -104594.61756099555,
+        "cex_total": -71653764.95758617,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       },
       {
         "ticker": "FORM",
         "sector": "SEMIS",
-        "spot": 119.31,
+        "spot": 122.34,
         "call_wall": 140,
-        "put_wall": 90,
-        "call_wall_distance_pct": 17.34,
-        "gamma_flip": 104.61,
+        "put_wall": 110,
+        "call_wall_distance_pct": 14.44,
+        "gamma_flip": 105.36,
         "gamma_regime": "positive",
         "price_change_pct": -3.0,
         "volume": 1296853.0,
-        "stage": 3,
-        "stage_label": "천정권",
-        "vex_total": 2175842.935026343,
-        "cex_total": -129647306.6620558,
+        "stage": 2,
+        "stage_label": "상승국면",
+        "vex_total": 1594111.9727213967,
+        "cex_total": -145629078.78998056,
         "vanna_charm_expiry_days": 24,
         "status": "ok"
       },
       {
         "ticker": "LASR",
         "sector": "SEMIS",
-        "spot": 40.19,
+        "spot": 40.49,
         "call_wall": 45,
         "put_wall": 40,
-        "call_wall_distance_pct": 11.97,
-        "gamma_flip": 39.27,
+        "call_wall_distance_pct": 11.14,
+        "gamma_flip": 37.78,
         "gamma_regime": "positive",
         "price_change_pct": -1.03,
         "volume": 547396,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 120550.1515107083,
-        "cex_total": -14279249.886282047,
+        "vex_total": 198083.78605984346,
+        "cex_total": -26807354.916614525,
         "vanna_charm_expiry_days": 3,
         "status": "ok"
       }
@@ -406,86 +406,98 @@
   },
   "top10_gamma_flip": [
     {
-      "ticker": "RKLB",
-      "spot": 69.89,
-      "gamma_flip": 70,
+      "ticker": "TSLA",
+      "spot": 378.37,
+      "gamma_flip": 377.5,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.16
+      "flip_distance_pct": 0.23
     },
     {
-      "ticker": "T",
-      "spot": 25.45,
-      "gamma_flip": 25.5,
+      "ticker": "CRWD",
+      "spot": 249.31,
+      "gamma_flip": 250,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.2
+      "flip_distance_pct": 0.28
     },
     {
-      "ticker": "FCX",
-      "spot": 72.16,
-      "gamma_flip": 72,
+      "ticker": "AAPL",
+      "spot": 341.42,
+      "gamma_flip": 342.5,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.22
+      "flip_distance_pct": 0.32
     },
     {
-      "ticker": "GOOG",
-      "spot": 350.87,
-      "gamma_flip": 350,
+      "ticker": "PANW",
+      "spot": 373.19,
+      "gamma_flip": 375,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.25
+      "flip_distance_pct": 0.49
     },
     {
-      "ticker": "CVNA",
-      "spot": 67.18,
-      "gamma_flip": 67,
-      "gamma_regime": "positive",
-      "flip_distance_pct": 0.27
-    },
-    {
-      "ticker": "QCOM",
-      "spot": 194.23,
-      "gamma_flip": 195,
-      "gamma_regime": "positive",
-      "flip_distance_pct": 0.4
-    },
-    {
-      "ticker": "WMT",
-      "spot": 107.44,
-      "gamma_flip": 107,
-      "gamma_regime": "positive",
-      "flip_distance_pct": 0.41
-    },
-    {
-      "ticker": "CSCO",
-      "spot": 111.46,
-      "gamma_flip": 111,
-      "gamma_regime": "positive",
-      "flip_distance_pct": 0.41
-    },
-    {
-      "ticker": "COHR",
-      "spot": 321.52,
-      "gamma_flip": 320,
-      "gamma_regime": "positive",
-      "flip_distance_pct": 0.47
-    },
-    {
-      "ticker": "CRWV",
-      "spot": 85.43,
-      "gamma_flip": 85,
+      "ticker": "AMD",
+      "spot": 616.94,
+      "gamma_flip": 620,
       "gamma_regime": "positive",
       "flip_distance_pct": 0.5
+    },
+    {
+      "ticker": "KO",
+      "spot": 88.47,
+      "gamma_flip": 88,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.53
+    },
+    {
+      "ticker": "HPE",
+      "spot": 61.33,
+      "gamma_flip": 61,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.54
+    },
+    {
+      "ticker": "PFE",
+      "spot": 27.84,
+      "gamma_flip": 28,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.56
+    },
+    {
+      "ticker": "WBD",
+      "spot": 30.8,
+      "gamma_flip": 30.5,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 0.97
+    },
+    {
+      "ticker": "SATS",
+      "spot": 103.92,
+      "gamma_flip": 105,
+      "gamma_regime": "positive",
+      "flip_distance_pct": 1.04
     }
   ],
   "top_gainers": [
     {
+      "ticker": "ALAB",
+      "spot": 340.74,
+      "price_change_pct": 10.2,
+      "volume": 6146037.0,
+      "gamma_flip": 276.47,
+      "gamma_regime": "positive",
+      "call_wall": 400,
+      "put_wall": 347.5,
+      "stage": 2,
+      "stage_label": "상승국면"
+    },
+    {
       "ticker": "ARM",
       "spot": 322.9,
       "price_change_pct": 9.7,
-      "volume": 13009926.0,
-      "gamma_flip": 272.57,
+      "volume": 13009920.0,
+      "gamma_flip": 272.18,
       "gamma_regime": "positive",
       "call_wall": 350,
-      "put_wall": 270,
+      "put_wall": 300,
       "stage": 2,
       "stage_label": "상승국면"
     },
@@ -493,11 +505,11 @@
       "ticker": "META",
       "spot": 741.25,
       "price_change_pct": 8.96,
-      "volume": 48685049.0,
-      "gamma_flip": 659.63,
+      "volume": 48720457.0,
+      "gamma_flip": 730.15,
       "gamma_regime": "positive",
       "call_wall": 750,
-      "put_wall": 675,
+      "put_wall": 700,
       "stage": 1,
       "stage_label": "바닥다지기"
     },
@@ -506,7 +518,7 @@
       "spot": 249.35,
       "price_change_pct": 7.65,
       "volume": 13372718.0,
-      "gamma_flip": 232.62,
+      "gamma_flip": 235.28,
       "gamma_regime": "positive",
       "call_wall": 250,
       "put_wall": 230,
@@ -517,8 +529,8 @@
       "ticker": "QCOM",
       "spot": 194.23,
       "price_change_pct": 7.54,
-      "volume": 18444528.0,
-      "gamma_flip": 182.87,
+      "volume": 18444594.0,
+      "gamma_flip": 182.32,
       "gamma_regime": "positive",
       "call_wall": 200,
       "put_wall": 175,
@@ -529,8 +541,8 @@
       "ticker": "MRNA",
       "spot": 172.94,
       "price_change_pct": 7.38,
-      "volume": 21043688.0,
-      "gamma_flip": 135.31,
+      "volume": 21018288.0,
+      "gamma_flip": 139.4,
       "gamma_regime": "positive",
       "call_wall": 200,
       "put_wall": 160,
@@ -541,11 +553,11 @@
       "ticker": "SHOP",
       "spot": 137.92,
       "price_change_pct": 7.08,
-      "volume": 16650094.0,
-      "gamma_flip": 132.47,
+      "volume": 16650081.0,
+      "gamma_flip": 130.07,
       "gamma_regime": "positive",
-      "call_wall": 140,
-      "put_wall": 110,
+      "call_wall": 150,
+      "put_wall": 135,
       "stage": 2,
       "stage_label": "상승국면"
     },
@@ -553,10 +565,10 @@
       "ticker": "RKLB",
       "spot": 69.89,
       "price_change_pct": 7.05,
-      "volume": 26038592.0,
-      "gamma_flip": 67.42,
+      "volume": 26038712.0,
+      "gamma_flip": 64.36,
       "gamma_regime": "positive",
-      "call_wall": 70,
+      "call_wall": 75,
       "put_wall": 65,
       "stage": 4,
       "stage_label": "하락국면"
@@ -565,11 +577,11 @@
       "ticker": "APP",
       "spot": 330.17,
       "price_change_pct": 6.61,
-      "volume": 5999098.0,
-      "gamma_flip": 326.47,
+      "volume": 5999097.0,
+      "gamma_flip": 320.47,
       "gamma_regime": "positive",
       "call_wall": 350,
-      "put_wall": 300,
+      "put_wall": 310,
       "stage": 4,
       "stage_label": "하락국면"
     },
@@ -577,222 +589,329 @@
       "ticker": "AMD",
       "spot": 615.52,
       "price_change_pct": 5.42,
-      "volume": 44494354.0,
-      "gamma_flip": 593.58,
+      "volume": 44494272.0,
+      "gamma_flip": 604.56,
       "gamma_regime": "positive",
       "call_wall": 620,
-      "put_wall": 545,
+      "put_wall": 600,
       "stage": 2,
       "stage_label": "상승국면"
-    },
-    {
-      "ticker": "CRWV",
-      "spot": 85.43,
-      "price_change_pct": 4.74,
-      "volume": 39890993.0,
-      "gamma_flip": 80.24,
-      "gamma_regime": "positive",
-      "call_wall": 90,
-      "put_wall": 80,
-      "stage": 4,
-      "stage_label": "하락국면"
     }
   ],
-  "gamma_squeeze_candidates": [],
-  "vanna_squeeze_candidates": [
-    {
-      "ticker": "PLTR",
-      "sector": "SOFTWARE",
-      "category": "wave1",
-      "spot": 183.09,
-      "price_change_pct": 2.44,
-      "vex_total": -142009906.1443603
-    },
-    {
-      "ticker": "CRWD",
-      "sector": "SECURITY",
-      "category": "wave1",
-      "spot": 249.35,
-      "price_change_pct": 7.65,
-      "vex_total": -66723609.67231016
-    },
+  "gamma_squeeze_candidates": [
     {
       "ticker": "MSFT",
       "sector": "TECH",
       "category": "wave1",
-      "spot": 501.61,
+      "spot": 497.24,
       "price_change_pct": 1.35,
-      "vex_total": -55567323.14547719
+      "gamma_flip": 502.0,
+      "call_wall": 500,
+      "call_wall_distance_pct": 0.56
+    }
+  ],
+  "vanna_squeeze_candidates": [
+    {
+      "ticker": "MSFT",
+      "sector": "TECH",
+      "category": "wave1",
+      "spot": 497.24,
+      "price_change_pct": 1.35,
+      "vex_total": 249544378.16195235
     },
     {
       "ticker": "GOOGL",
       "sector": "TECH",
       "category": "wave1",
-      "spot": 354.97,
+      "spot": 352.42,
       "price_change_pct": 1.23,
-      "vex_total": 47856778.42168472
+      "vex_total": 204818013.13517964
     },
     {
       "ticker": "AMZN",
       "sector": "CONSUMER",
       "category": "wave1",
-      "spot": 258.45,
+      "spot": 254.59,
       "price_change_pct": 0.8,
-      "vex_total": -46620632.77940158
-    },
-    {
-      "ticker": "LRCX",
-      "sector": "SEMIS",
-      "category": "wave2",
-      "spot": 302.28,
-      "price_change_pct": 3.35,
-      "vex_total": -26755134.488743246
-    },
-    {
-      "ticker": "NET",
-      "sector": "SECURITY",
-      "category": "wave1",
-      "spot": 351.67,
-      "price_change_pct": 7.54,
-      "vex_total": -24048177.004552882
-    },
-    {
-      "ticker": "ANET",
-      "sector": "NETWORKING",
-      "category": "wave1",
-      "spot": 205.42,
-      "price_change_pct": 0.96,
-      "vex_total": -13557569.312663877
-    }
-  ],
-  "charm_squeeze_candidates": [
-    {
-      "ticker": "SNDK",
-      "sector": "SEMIS",
-      "category": "wave2",
-      "spot": 1766.64,
-      "days_to_expiry": 3,
-      "cex_total": -41169486388.4599,
-      "gamma_flip": 1673.01
-    },
-    {
-      "ticker": "DELL",
-      "sector": "HARDWARE",
-      "category": "wave1",
-      "spot": 575.31,
-      "days_to_expiry": 3,
-      "cex_total": -9758610202.343288,
-      "gamma_flip": 564.53
+      "vex_total": 188961022.25287497
     },
     {
       "ticker": "PLTR",
       "sector": "SOFTWARE",
       "category": "wave1",
-      "spot": 183.09,
-      "days_to_expiry": 3,
-      "cex_total": -7916807424.516577,
-      "gamma_flip": 170.11
+      "spot": 184.78,
+      "price_change_pct": 2.44,
+      "vex_total": -127701131.17530322
     },
     {
-      "ticker": "MSFT",
-      "sector": "TECH",
+      "ticker": "ANET",
+      "sector": "NETWORKING",
       "category": "wave1",
-      "spot": 501.61,
-      "days_to_expiry": 1,
-      "cex_total": -6095214421.375198,
-      "gamma_flip": 497.15
+      "spot": 204.09,
+      "price_change_pct": 0.96,
+      "vex_total": 33715988.41470392
     },
     {
-      "ticker": "STX",
+      "ticker": "PANW",
+      "sector": "SECURITY",
+      "category": "wave1",
+      "spot": 372.42,
+      "price_change_pct": 2.11,
+      "vex_total": 26197756.888957255
+    },
+    {
+      "ticker": "TER",
       "sector": "SEMIS",
       "category": "wave2",
-      "spot": 877.33,
-      "days_to_expiry": 3,
-      "cex_total": -5371577801.786073,
-      "gamma_flip": 839.94
+      "spot": 393.69,
+      "price_change_pct": 0.75,
+      "vex_total": -24974088.46682527
     },
     {
-      "ticker": "GOOGL",
-      "sector": "TECH",
+      "ticker": "NET",
+      "sector": "SECURITY",
       "category": "wave1",
-      "spot": 354.97,
-      "days_to_expiry": 1,
-      "cex_total": -5103911238.741681,
-      "gamma_flip": 346.97
-    },
-    {
-      "ticker": "WDC",
-      "sector": "SEMIS",
-      "category": "wave2",
-      "spot": 448.17,
-      "days_to_expiry": 3,
-      "cex_total": -5086012154.208456,
-      "gamma_flip": 458.86
-    },
+      "spot": 355.65,
+      "price_change_pct": 7.54,
+      "vex_total": -19338759.298216425
+    }
+  ],
+  "charm_squeeze_candidates": [
     {
       "ticker": "MU",
       "sector": "SEMIS",
       "category": "wave2",
-      "spot": 1043.96,
+      "spot": 1082.25,
       "days_to_expiry": 1,
-      "cex_total": -4760137551.024909,
-      "gamma_flip": 994.37
-    }
-  ],
-  "wall_shift_radar": [
+      "cex_total": -52291269505.06172,
+      "gamma_flip": 1043.84
+    },
+    {
+      "ticker": "SNDK",
+      "sector": "SEMIS",
+      "category": "wave2",
+      "spot": 1885.44,
+      "days_to_expiry": 3,
+      "cex_total": -47486668287.096695,
+      "gamma_flip": 1721.41
+    },
     {
       "ticker": "MSFT",
       "sector": "TECH",
-      "spot": 501.61,
-      "gamma_regime": "positive",
-      "shift_label": "Call Wall 상승·가격 대기",
-      "shift_type": "upside",
-      "movement_score": 1.5,
-      "ranking_score": 1.5,
-      "price_confirmed": false,
-      "previous_spot": 501.61,
-      "spot_change": 0.0,
-      "spot_change_pct": 0.0,
-      "previous_captured_at": "2026-09-21T22:40:34.406616+00:00",
-      "current_captured_at": "2026-09-22T00:09:06.257762+00:00",
-      "previous_call_wall": 502.5,
-      "call_wall": 510,
-      "call_wall_delta": 7.5,
-      "previous_put_wall": 500,
-      "put_wall": 500,
-      "put_wall_delta": 0.0,
-      "previous_gamma_flip": 500,
-      "gamma_flip": 497.15,
-      "gamma_flip_delta": -2.85,
-      "call_wall_upside_pct": 1.67,
-      "put_wall_distance_pct": 0.32
+      "category": "wave1",
+      "spot": 497.24,
+      "days_to_expiry": 1,
+      "cex_total": -31881275223.29902,
+      "gamma_flip": 502.0
+    },
+    {
+      "ticker": "AMZN",
+      "sector": "CONSUMER",
+      "category": "wave1",
+      "spot": 254.59,
+      "days_to_expiry": 1,
+      "cex_total": -24171532782.13802,
+      "gamma_flip": 252.06
     },
     {
       "ticker": "GOOGL",
       "sector": "TECH",
-      "spot": 354.97,
+      "category": "wave1",
+      "spot": 352.42,
+      "days_to_expiry": 1,
+      "cex_total": -23789052203.512157,
+      "gamma_flip": 348.08
+    },
+    {
+      "ticker": "DELL",
+      "sector": "HARDWARE",
+      "category": "wave1",
+      "spot": 554.24,
+      "days_to_expiry": 3,
+      "cex_total": -14182576823.511559,
+      "gamma_flip": 563.97
+    },
+    {
+      "ticker": "PLTR",
+      "sector": "SOFTWARE",
+      "category": "wave1",
+      "spot": 184.78,
+      "days_to_expiry": 3,
+      "cex_total": -13055447144.479088,
+      "gamma_flip": 171.68
+    },
+    {
+      "ticker": "CRWD",
+      "sector": "SECURITY",
+      "category": "wave1",
+      "spot": 248.9,
+      "days_to_expiry": 3,
+      "cex_total": -7537420602.591271,
+      "gamma_flip": 235.4
+    }
+  ],
+  "wall_shift_radar": [
+    {
+      "ticker": "NET",
+      "sector": "SECURITY",
+      "spot": 355.65,
       "gamma_regime": "positive",
-      "shift_label": "Call Wall 상승·가격 대기",
-      "shift_type": "upside",
-      "movement_score": 0.7,
-      "ranking_score": 0.7,
+      "shift_label": "상승 이동 확인",
+      "shift_type": "bullish",
+      "movement_score": 25.31,
+      "ranking_score": 25.88,
+      "price_confirmed": true,
+      "previous_spot": 351.67,
+      "spot_change": 3.98,
+      "spot_change_pct": 1.13,
+      "previous_captured_at": "2026-09-22T00:09:06.257762+00:00",
+      "current_captured_at": "2026-09-22T17:41:34.278280+00:00",
+      "previous_call_wall": 360,
+      "call_wall": 400,
+      "call_wall_delta": 40.0,
+      "previous_put_wall": 290,
+      "put_wall": 340,
+      "put_wall_delta": 50.0,
+      "previous_gamma_flip": 319.07,
+      "gamma_flip": 324.13,
+      "gamma_flip_delta": 5.06,
+      "call_wall_upside_pct": 12.47,
+      "put_wall_distance_pct": 4.4
+    },
+    {
+      "ticker": "FORM",
+      "sector": "SEMIS",
+      "spot": 122.34,
+      "gamma_regime": "positive",
+      "shift_label": "상승 이동 확인",
+      "shift_type": "bullish",
+      "movement_score": 16.35,
+      "ranking_score": 17.62,
+      "price_confirmed": true,
+      "previous_spot": 119.31,
+      "spot_change": 3.03,
+      "spot_change_pct": 2.54,
+      "previous_captured_at": "2026-09-22T00:09:06.257762+00:00",
+      "current_captured_at": "2026-09-22T17:41:34.278280+00:00",
+      "previous_call_wall": 140,
+      "call_wall": 140,
+      "call_wall_delta": 0.0,
+      "previous_put_wall": 90,
+      "put_wall": 110,
+      "put_wall_delta": 20.0,
+      "previous_gamma_flip": 104.61,
+      "gamma_flip": 105.36,
+      "gamma_flip_delta": 0.75,
+      "call_wall_upside_pct": 14.44,
+      "put_wall_distance_pct": 10.09
+    },
+    {
+      "ticker": "SNDK",
+      "sector": "SEMIS",
+      "spot": 1885.44,
+      "gamma_regime": "positive",
+      "shift_label": "Call Wall 상승 확인",
+      "shift_type": "bullish",
+      "movement_score": 10.61,
+      "ranking_score": 13.97,
+      "price_confirmed": true,
+      "previous_spot": 1766.64,
+      "spot_change": 118.8,
+      "spot_change_pct": 6.72,
+      "previous_captured_at": "2026-09-22T00:09:06.257762+00:00",
+      "current_captured_at": "2026-09-22T17:41:34.278280+00:00",
+      "previous_call_wall": 1800,
+      "call_wall": 2000,
+      "call_wall_delta": 200.0,
+      "previous_put_wall": 1700,
+      "put_wall": 1700,
+      "put_wall_delta": 0.0,
+      "previous_gamma_flip": 1673.01,
+      "gamma_flip": 1721.41,
+      "gamma_flip_delta": 48.4,
+      "call_wall_upside_pct": 6.08,
+      "put_wall_distance_pct": 9.84
+    },
+    {
+      "ticker": "MU",
+      "sector": "SEMIS",
+      "spot": 1082.25,
+      "gamma_regime": "positive",
+      "shift_label": "상승 이동 확인",
+      "shift_type": "bullish",
+      "movement_score": 7.39,
+      "ranking_score": 9.23,
+      "price_confirmed": true,
+      "previous_spot": 1043.96,
+      "spot_change": 38.29,
+      "spot_change_pct": 3.67,
+      "previous_captured_at": "2026-09-22T00:09:06.257762+00:00",
+      "current_captured_at": "2026-09-22T17:41:34.278280+00:00",
+      "previous_call_wall": 1050,
+      "call_wall": 1100,
+      "call_wall_delta": 50.0,
+      "previous_put_wall": 1010,
+      "put_wall": 1040,
+      "put_wall_delta": 30.0,
+      "previous_gamma_flip": 994.37,
+      "gamma_flip": 1043.84,
+      "gamma_flip_delta": 49.47,
+      "call_wall_upside_pct": 1.64,
+      "put_wall_distance_pct": 3.9
+    },
+    {
+      "ticker": "TER",
+      "sector": "SEMIS",
+      "spot": 393.69,
+      "gamma_regime": "positive",
+      "shift_label": "Call Wall 상승 확인",
+      "shift_type": "bullish",
+      "movement_score": 3.81,
+      "ranking_score": 5.4,
+      "price_confirmed": true,
+      "previous_spot": 381.54,
+      "spot_change": 12.15,
+      "spot_change_pct": 3.18,
+      "previous_captured_at": "2026-09-22T00:09:06.257762+00:00",
+      "current_captured_at": "2026-09-22T17:41:34.278280+00:00",
+      "previous_call_wall": 385,
+      "call_wall": 400,
+      "call_wall_delta": 15.0,
+      "previous_put_wall": 350,
+      "put_wall": 350,
+      "put_wall_delta": 0.0,
+      "previous_gamma_flip": 343.1,
+      "gamma_flip": 345.09,
+      "gamma_flip_delta": 1.99,
+      "call_wall_upside_pct": 1.6,
+      "put_wall_distance_pct": 11.1
+    },
+    {
+      "ticker": "GOOGL",
+      "sector": "TECH",
+      "spot": 352.42,
+      "gamma_regime": "positive",
+      "shift_label": "상승 구조·가격 대기",
+      "shift_type": "watch_up",
+      "movement_score": 1.42,
+      "ranking_score": 1.78,
       "price_confirmed": false,
       "previous_spot": 354.97,
-      "spot_change": 0.0,
-      "spot_change_pct": 0.0,
-      "previous_captured_at": "2026-09-21T22:40:34.406616+00:00",
-      "current_captured_at": "2026-09-22T00:09:06.257762+00:00",
-      "previous_call_wall": 357.5,
+      "spot_change": -2.55,
+      "spot_change_pct": -0.72,
+      "previous_captured_at": "2026-09-22T00:09:06.257762+00:00",
+      "current_captured_at": "2026-09-22T17:41:34.278280+00:00",
+      "previous_call_wall": 360,
       "call_wall": 360,
-      "call_wall_delta": 2.5,
+      "call_wall_delta": 0.0,
       "previous_put_wall": 345,
-      "put_wall": 345,
-      "put_wall_delta": 0.0,
-      "previous_gamma_flip": 352.5,
-      "gamma_flip": 346.97,
-      "gamma_flip_delta": -5.53,
-      "call_wall_upside_pct": 1.42,
-      "put_wall_distance_pct": 2.81
+      "put_wall": 350,
+      "put_wall_delta": 5.0,
+      "previous_gamma_flip": 346.97,
+      "gamma_flip": 348.08,
+      "gamma_flip_delta": 1.11,
+      "call_wall_upside_pct": 2.15,
+      "put_wall_distance_pct": 0.69
     }
   ],
   "wall_history": {
@@ -936,6 +1055,16 @@
         "put_wall": 190,
         "gamma_flip": 190.64,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "NETWORKING",
+        "spot": 204.09,
+        "call_wall": 210,
+        "put_wall": 190,
+        "gamma_flip": 191.65,
+        "gamma_regime": "positive"
       }
     ],
     "PLTR": [
@@ -1077,6 +1206,16 @@
         "call_wall": 185,
         "put_wall": 170,
         "gamma_flip": 170.11,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "SOFTWARE",
+        "spot": 184.78,
+        "call_wall": 185,
+        "put_wall": 170,
+        "gamma_flip": 171.68,
         "gamma_regime": "positive"
       }
     ],
@@ -1220,6 +1359,16 @@
         "put_wall": 252.5,
         "gamma_flip": 252.23,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "CONSUMER",
+        "spot": 254.59,
+        "call_wall": 260,
+        "put_wall": 252.5,
+        "gamma_flip": 252.06,
+        "gamma_regime": "positive"
       }
     ],
     "GOOGL": [
@@ -1361,6 +1510,16 @@
         "call_wall": 360,
         "put_wall": 345,
         "gamma_flip": 346.97,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "TECH",
+        "spot": 352.42,
+        "call_wall": 360,
+        "put_wall": 350,
+        "gamma_flip": 348.08,
         "gamma_regime": "positive"
       }
     ],
@@ -1504,6 +1663,16 @@
         "put_wall": 500,
         "gamma_flip": 497.15,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "TECH",
+        "spot": 497.24,
+        "call_wall": 500,
+        "put_wall": 490,
+        "gamma_flip": 502.0,
+        "gamma_regime": "negative"
       }
     ],
     "CRWD": [
@@ -1645,6 +1814,16 @@
         "call_wall": 250,
         "put_wall": 230,
         "gamma_flip": 232.5,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 248.9,
+        "call_wall": 250,
+        "put_wall": 230,
+        "gamma_flip": 235.4,
         "gamma_regime": "positive"
       }
     ],
@@ -1788,6 +1967,16 @@
         "put_wall": 165,
         "gamma_flip": 165.52,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 174.47,
+        "call_wall": 177.5,
+        "put_wall": 165,
+        "gamma_flip": 166.4,
+        "gamma_regime": "positive"
       }
     ],
     "PANW": [
@@ -1929,6 +2118,16 @@
         "call_wall": 400,
         "put_wall": 350,
         "gamma_flip": 351.97,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 372.42,
+        "call_wall": 400,
+        "put_wall": 350,
+        "gamma_flip": 356.59,
         "gamma_regime": "positive"
       }
     ],
@@ -2072,6 +2271,16 @@
         "put_wall": 290,
         "gamma_flip": 319.07,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 355.65,
+        "call_wall": 400,
+        "put_wall": 340,
+        "gamma_flip": 324.13,
+        "gamma_regime": "positive"
       }
     ],
     "DELL": [
@@ -2213,6 +2422,16 @@
         "call_wall": 600,
         "put_wall": 550,
         "gamma_flip": 564.53,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave1",
+        "sector": "HARDWARE",
+        "spot": 554.24,
+        "call_wall": 600,
+        "put_wall": 550,
+        "gamma_flip": 563.97,
         "gamma_regime": "positive"
       }
     ],
@@ -2356,6 +2575,16 @@
         "put_wall": 1700,
         "gamma_flip": 1673.01,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 1885.44,
+        "call_wall": 2000,
+        "put_wall": 1700,
+        "gamma_flip": 1721.41,
+        "gamma_regime": "positive"
       }
     ],
     "MU": [
@@ -2497,6 +2726,16 @@
         "call_wall": 1050,
         "put_wall": 1010,
         "gamma_flip": 994.37,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 1082.25,
+        "call_wall": 1100,
+        "put_wall": 1040,
+        "gamma_flip": 1043.84,
         "gamma_regime": "positive"
       }
     ],
@@ -2640,6 +2879,16 @@
         "put_wall": 420,
         "gamma_flip": 458.86,
         "gamma_regime": "negative"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 456.8,
+        "call_wall": 480,
+        "put_wall": 420,
+        "gamma_flip": 456.11,
+        "gamma_regime": "negative"
       }
     ],
     "STX": [
@@ -2781,6 +3030,16 @@
         "call_wall": 900,
         "put_wall": 800,
         "gamma_flip": 839.94,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 899.48,
+        "call_wall": 900,
+        "put_wall": 800,
+        "gamma_flip": 858.65,
         "gamma_regime": "positive"
       }
     ],
@@ -2924,6 +3183,16 @@
         "put_wall": 350,
         "gamma_flip": 343.1,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 393.69,
+        "call_wall": 400,
+        "put_wall": 350,
+        "gamma_flip": 345.09,
+        "gamma_regime": "positive"
       }
     ],
     "LRCX": [
@@ -3065,6 +3334,16 @@
         "call_wall": 310,
         "put_wall": 280,
         "gamma_flip": 288.26,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 306.8,
+        "call_wall": 307.5,
+        "put_wall": 280,
+        "gamma_flip": 287.59,
         "gamma_regime": "positive"
       }
     ],
@@ -3208,6 +3487,16 @@
         "put_wall": 230,
         "gamma_flip": 219.32,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 255.49,
+        "call_wall": 280,
+        "put_wall": 230,
+        "gamma_flip": 220.51,
+        "gamma_regime": "positive"
       }
     ],
     "UCTT": [
@@ -3349,6 +3638,16 @@
         "call_wall": 95,
         "put_wall": 60,
         "gamma_flip": 60.13,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 74.36,
+        "call_wall": 75,
+        "put_wall": 60,
+        "gamma_flip": 57.53,
         "gamma_regime": "positive"
       }
     ],
@@ -3492,6 +3791,16 @@
         "put_wall": 92,
         "gamma_flip": 96.59,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 98.27,
+        "call_wall": 100,
+        "put_wall": 92,
+        "gamma_flip": 93.45,
+        "gamma_regime": "positive"
       }
     ],
     "ACMR": [
@@ -3633,6 +3942,16 @@
         "call_wall": 75,
         "put_wall": 70,
         "gamma_flip": 69.63,
+        "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 74.41,
+        "call_wall": 75,
+        "put_wall": 70,
+        "gamma_flip": 67.28,
         "gamma_regime": "positive"
       }
     ],
@@ -3776,6 +4095,16 @@
         "put_wall": 90,
         "gamma_flip": 104.61,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 122.34,
+        "call_wall": 140,
+        "put_wall": 110,
+        "gamma_flip": 105.36,
+        "gamma_regime": "positive"
       }
     ],
     "LASR": [
@@ -3918,12 +4247,22 @@
         "put_wall": 40,
         "gamma_flip": 39.27,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-22T17:41:34.278280+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 40.49,
+        "call_wall": 45,
+        "put_wall": 40,
+        "gamma_flip": 37.78,
+        "gamma_regime": "positive"
       }
     ]
   },
   "dev_reentry_top_pick": {
     "ticker": "SHOP",
-    "spot": 137.92,
+    "spot": 148.1,
     "signal_type": "trend_cross",
     "signal_label": "200일선 상향 돌파",
     "stage": 2,
@@ -3935,15 +4274,9 @@
     "band_lower": -12.77,
     "ma50": 136.38,
     "ma100": 124.14,
-    "ma200": 130.25,
+    "ma200": 130.19,
     "above_ma200": true,
     "trend_chart": [
-      {
-        "time": "2026-06-11",
-        "close": 110.47,
-        "ma200": 138.35,
-        "volume": 8245595
-      },
       {
         "time": "2026-06-12",
         "close": 108.24,
@@ -4357,6 +4690,12 @@
         "close": 137.92,
         "ma200": 130.25,
         "volume": 16650094
+      },
+      {
+        "time": "2026-09-22",
+        "close": 148.02,
+        "ma200": 130.19,
+        "volume": 16416789
       }
     ],
     "trend_cross": true,
@@ -4369,23 +4708,23 @@
     "volume_ratio": 2.09,
     "avg_dollar_volume": 1097115934,
     "liquidity_confirmed": true,
-    "signal_age": 0,
+    "signal_age": 1,
     "signal_date": "2026-09-21",
     "signal_ma200": 130.25,
     "signal_spot": 137.92,
-    "put_wall": 110.0,
-    "call_wall": 140.0,
-    "gamma_flip": 132.48,
+    "put_wall": 135.0,
+    "call_wall": 150.0,
+    "gamma_flip": 130.57,
     "above_put_wall": true,
     "above_gamma_flip": true,
-    "call_wall_upside_pct": 1.51,
+    "call_wall_upside_pct": 1.28,
     "gex_confirmed": true,
     "gex_available": true
   },
   "dev_reentry_trend": [
     {
       "ticker": "SHOP",
-      "spot": 137.92,
+      "spot": 148.1,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
@@ -4397,15 +4736,9 @@
       "band_lower": -12.77,
       "ma50": 136.38,
       "ma100": 124.14,
-      "ma200": 130.25,
+      "ma200": 130.19,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 110.47,
-          "ma200": 138.35,
-          "volume": 8245595
-        },
         {
           "time": "2026-06-12",
           "close": 108.24,
@@ -4819,6 +5152,12 @@
           "close": 137.92,
           "ma200": 130.25,
           "volume": 16650094
+        },
+        {
+          "time": "2026-09-22",
+          "close": 148.02,
+          "ma200": 130.19,
+          "volume": 16416789
         }
       ],
       "trend_cross": true,
@@ -4831,22 +5170,22 @@
       "volume_ratio": 2.09,
       "avg_dollar_volume": 1097115934,
       "liquidity_confirmed": true,
-      "signal_age": 0,
+      "signal_age": 1,
       "signal_date": "2026-09-21",
       "signal_ma200": 130.25,
       "signal_spot": 137.92,
-      "put_wall": 110.0,
-      "call_wall": 140.0,
-      "gamma_flip": 132.48,
+      "put_wall": 135.0,
+      "call_wall": 150.0,
+      "gamma_flip": 130.57,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 1.51,
+      "call_wall_upside_pct": 1.28,
       "gex_confirmed": true,
       "gex_available": true
     },
     {
       "ticker": "COIN",
-      "spot": 201.05,
+      "spot": 200.47,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
@@ -4858,15 +5197,9 @@
       "band_lower": -11.82,
       "ma50": 166.66,
       "ma100": 171.25,
-      "ma200": 188.91,
+      "ma200": 188.53,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 160.43,
-          "ma200": 241.66,
-          "volume": 6933145
-        },
         {
           "time": "2026-06-12",
           "close": 159.78,
@@ -5280,6 +5613,12 @@
           "close": 201.05,
           "ma200": 188.91,
           "volume": 14518100
+        },
+        {
+          "time": "2026-09-22",
+          "close": 200.32,
+          "ma200": 188.53,
+          "volume": 4544350
         }
       ],
       "trend_cross": true,
@@ -5292,42 +5631,36 @@
       "volume_ratio": 2.03,
       "avg_dollar_volume": 2101834400,
       "liquidity_confirmed": true,
-      "signal_age": 1,
+      "signal_age": 2,
       "signal_date": "2026-09-18",
       "signal_ma200": 189.22,
       "signal_spot": 194.25,
-      "put_wall": 190.0,
-      "call_wall": 212.5,
-      "gamma_flip": 177.29,
+      "put_wall": 200.0,
+      "call_wall": 210.0,
+      "gamma_flip": 176.59,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 5.7,
+      "call_wall_upside_pct": 4.76,
       "gex_confirmed": true,
       "gex_available": true
     },
     {
       "ticker": "MSTR",
-      "spot": 168.5,
+      "spot": 169.72,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
       "stage_label": "200일선 상향 돌파",
-      "score": 81.7,
+      "score": 78.7,
       "hull21": 135.03,
       "dev_pct": 13.99,
       "band_upper": 13.96,
       "band_lower": -11.59,
       "ma50": 110.82,
       "ma100": 124.85,
-      "ma200": 136.98,
+      "ma200": 136.88,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 120.15,
-          "ma200": 197.34,
-          "volume": 17574203
-        },
         {
           "time": "2026-06-12",
           "close": 123.97,
@@ -5741,6 +6074,12 @@
           "close": 168.5,
           "ma200": 136.98,
           "volume": 41898382
+        },
+        {
+          "time": "2026-09-22",
+          "close": 169.7,
+          "ma200": 136.88,
+          "volume": 16062505
         }
       ],
       "trend_cross": true,
@@ -5753,22 +6092,22 @@
       "volume_ratio": 2.0,
       "avg_dollar_volume": 4210025919,
       "liquidity_confirmed": true,
-      "signal_age": 1,
+      "signal_age": 2,
       "signal_date": "2026-09-18",
       "signal_ma200": 137.04,
       "signal_spot": 153.92,
-      "put_wall": 150.0,
-      "call_wall": 180.0,
-      "gamma_flip": 145.96,
+      "put_wall": 160.0,
+      "call_wall": 170.0,
+      "gamma_flip": 130.52,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 6.82,
+      "call_wall_upside_pct": 0.16,
       "gex_confirmed": true,
       "gex_available": true
     },
     {
       "ticker": "COHR",
-      "spot": 321.52,
+      "spot": 310.34,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
@@ -5780,15 +6119,9 @@
       "band_lower": -19.66,
       "ma50": 297.39,
       "ma100": 332.82,
-      "ma200": 283.75,
+      "ma200": 284.45,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 363.58,
-          "ma200": 216.43,
-          "volume": 6489545
-        },
         {
           "time": "2026-06-12",
           "close": 385.03,
@@ -6202,6 +6535,12 @@
           "close": 321.52,
           "ma200": 283.75,
           "volume": 7586479
+        },
+        {
+          "time": "2026-09-22",
+          "close": 310.65,
+          "ma200": 284.45,
+          "volume": 4928090
         }
       ],
       "trend_cross": true,
@@ -6214,16 +6553,16 @@
       "volume_ratio": 1.25,
       "avg_dollar_volume": 1744196979,
       "liquidity_confirmed": true,
-      "signal_age": 3,
+      "signal_age": 4,
       "signal_date": "2026-09-16",
       "signal_ma200": 281.54,
       "signal_spot": 289.93,
       "put_wall": 300.0,
-      "call_wall": 350.0,
-      "gamma_flip": 292.94,
+      "call_wall": 320.0,
+      "gamma_flip": 301.36,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 8.86,
+      "call_wall_upside_pct": 3.11,
       "gex_confirmed": true,
       "gex_available": true
     }
@@ -6231,6 +6570,458 @@
   "dev_reentry_hull": [],
   "dev_reentry_watch": [
     {
+      "ticker": "AVGO",
+      "spot": 364.03,
+      "signal_type": "near",
+      "signal_label": "신호 임박",
+      "stage": 1,
+      "stage_label": "신호 임박",
+      "score": 26.3,
+      "hull21": 347.93,
+      "dev_pct": 4.63,
+      "band_upper": 8.28,
+      "band_lower": -8.69,
+      "ma50": 378.61,
+      "ma100": 392.32,
+      "ma200": 368.92,
+      "above_ma200": false,
+      "trend_chart": [
+        {
+          "time": "2026-06-12",
+          "close": 382.07,
+          "ma200": 358.1,
+          "volume": 27630074
+        },
+        {
+          "time": "2026-06-15",
+          "close": 393.94,
+          "ma200": 358.57,
+          "volume": 32394179
+        },
+        {
+          "time": "2026-06-16",
+          "close": 376.71,
+          "ma200": 358.91,
+          "volume": 31573669
+        },
+        {
+          "time": "2026-06-17",
+          "close": 392.9,
+          "ma200": 359.39,
+          "volume": 40005503
+        },
+        {
+          "time": "2026-06-18",
+          "close": 411.35,
+          "ma200": 359.95,
+          "volume": 45076052
+        },
+        {
+          "time": "2026-06-22",
+          "close": 392.13,
+          "ma200": 360.4,
+          "volume": 26403669
+        },
+        {
+          "time": "2026-06-23",
+          "close": 380.15,
+          "ma200": 360.77,
+          "volume": 33122248
+        },
+        {
+          "time": "2026-06-24",
+          "close": 382.07,
+          "ma200": 361.01,
+          "volume": 29938924
+        },
+        {
+          "time": "2026-06-25",
+          "close": 378.91,
+          "ma200": 361.17,
+          "volume": 23412032
+        },
+        {
+          "time": "2026-06-26",
+          "close": 365.02,
+          "ma200": 361.32,
+          "volume": 34839254
+        },
+        {
+          "time": "2026-06-29",
+          "close": 372.45,
+          "ma200": 361.33,
+          "volume": 24285240
+        },
+        {
+          "time": "2026-06-30",
+          "close": 377.75,
+          "ma200": 361.42,
+          "volume": 28517369
+        },
+        {
+          "time": "2026-07-01",
+          "close": 369.34,
+          "ma200": 361.47,
+          "volume": 23712466
+        },
+        {
+          "time": "2026-07-02",
+          "close": 360.45,
+          "ma200": 361.45,
+          "volume": 26788851
+        },
+        {
+          "time": "2026-07-06",
+          "close": 373.9,
+          "ma200": 361.52,
+          "volume": 24543999
+        },
+        {
+          "time": "2026-07-07",
+          "close": 370.78,
+          "ma200": 361.64,
+          "volume": 24116688
+        },
+        {
+          "time": "2026-07-08",
+          "close": 388.69,
+          "ma200": 361.86,
+          "volume": 31624071
+        },
+        {
+          "time": "2026-07-09",
+          "close": 401.11,
+          "ma200": 362.14,
+          "volume": 28073958
+        },
+        {
+          "time": "2026-07-10",
+          "close": 399.97,
+          "ma200": 362.45,
+          "volume": 14595940
+        },
+        {
+          "time": "2026-07-13",
+          "close": 384.05,
+          "ma200": 362.67,
+          "volume": 21294509
+        },
+        {
+          "time": "2026-07-14",
+          "close": 389.11,
+          "ma200": 362.92,
+          "volume": 19931742
+        },
+        {
+          "time": "2026-07-15",
+          "close": 394.28,
+          "ma200": 363.21,
+          "volume": 16324127
+        },
+        {
+          "time": "2026-07-16",
+          "close": 374.45,
+          "ma200": 363.41,
+          "volume": 23407245
+        },
+        {
+          "time": "2026-07-17",
+          "close": 370.82,
+          "ma200": 363.63,
+          "volume": 23272208
+        },
+        {
+          "time": "2026-07-20",
+          "close": 378.16,
+          "ma200": 363.87,
+          "volume": 14420450
+        },
+        {
+          "time": "2026-07-21",
+          "close": 386.5,
+          "ma200": 364.13,
+          "volume": 17291140
+        },
+        {
+          "time": "2026-07-22",
+          "close": 396.81,
+          "ma200": 364.43,
+          "volume": 16966188
+        },
+        {
+          "time": "2026-07-23",
+          "close": 392.47,
+          "ma200": 364.7,
+          "volume": 16348682
+        },
+        {
+          "time": "2026-07-24",
+          "close": 381.92,
+          "ma200": 364.93,
+          "volume": 15149396
+        },
+        {
+          "time": "2026-07-27",
+          "close": 383.22,
+          "ma200": 365.16,
+          "volume": 18502121
+        },
+        {
+          "time": "2026-07-28",
+          "close": 380.91,
+          "ma200": 365.34,
+          "volume": 20328406
+        },
+        {
+          "time": "2026-07-29",
+          "close": 370.32,
+          "ma200": 365.47,
+          "volume": 21374408
+        },
+        {
+          "time": "2026-07-30",
+          "close": 387.84,
+          "ma200": 365.78,
+          "volume": 23639845
+        },
+        {
+          "time": "2026-07-31",
+          "close": 389.28,
+          "ma200": 365.95,
+          "volume": 20391003
+        },
+        {
+          "time": "2026-08-03",
+          "close": 392.23,
+          "ma200": 366.19,
+          "volume": 17335376
+        },
+        {
+          "time": "2026-08-04",
+          "close": 418.16,
+          "ma200": 366.52,
+          "volume": 29564242
+        },
+        {
+          "time": "2026-08-05",
+          "close": 418.28,
+          "ma200": 366.84,
+          "volume": 16880446
+        },
+        {
+          "time": "2026-08-06",
+          "close": 420.56,
+          "ma200": 367.2,
+          "volume": 13907545
+        },
+        {
+          "time": "2026-08-07",
+          "close": 427.76,
+          "ma200": 367.59,
+          "volume": 14698253
+        },
+        {
+          "time": "2026-08-10",
+          "close": 422.4,
+          "ma200": 367.99,
+          "volume": 13854127
+        },
+        {
+          "time": "2026-08-11",
+          "close": 416.08,
+          "ma200": 368.37,
+          "volume": 12882657
+        },
+        {
+          "time": "2026-08-12",
+          "close": 416.05,
+          "ma200": 368.73,
+          "volume": 15859206
+        },
+        {
+          "time": "2026-08-13",
+          "close": 417.82,
+          "ma200": 369.04,
+          "volume": 13180479
+        },
+        {
+          "time": "2026-08-14",
+          "close": 392.99,
+          "ma200": 369.2,
+          "volume": 29513597
+        },
+        {
+          "time": "2026-08-17",
+          "close": 392.43,
+          "ma200": 369.3,
+          "volume": 20042640
+        },
+        {
+          "time": "2026-08-18",
+          "close": 380.0,
+          "ma200": 369.27,
+          "volume": 22878198
+        },
+        {
+          "time": "2026-08-19",
+          "close": 362.48,
+          "ma200": 369.2,
+          "volume": 35091374
+        },
+        {
+          "time": "2026-08-20",
+          "close": 364.03,
+          "ma200": 369.17,
+          "volume": 19729828
+        },
+        {
+          "time": "2026-08-21",
+          "close": 368.45,
+          "ma200": 369.2,
+          "volume": 19037141
+        },
+        {
+          "time": "2026-08-24",
+          "close": 358.76,
+          "ma200": 369.23,
+          "volume": 18717230
+        },
+        {
+          "time": "2026-08-25",
+          "close": 356.74,
+          "ma200": 369.22,
+          "volume": 18014885
+        },
+        {
+          "time": "2026-08-26",
+          "close": 355.59,
+          "ma200": 369.22,
+          "volume": 19196260
+        },
+        {
+          "time": "2026-08-27",
+          "close": 371.54,
+          "ma200": 369.33,
+          "volume": 21329954
+        },
+        {
+          "time": "2026-08-28",
+          "close": 368.79,
+          "ma200": 369.38,
+          "volume": 16596067
+        },
+        {
+          "time": "2026-08-31",
+          "close": 370.34,
+          "ma200": 369.48,
+          "volume": 21947988
+        },
+        {
+          "time": "2026-09-01",
+          "close": 369.68,
+          "ma200": 369.55,
+          "volume": 19288938
+        },
+        {
+          "time": "2026-09-02",
+          "close": 367.24,
+          "ma200": 369.68,
+          "volume": 38874579
+        },
+        {
+          "time": "2026-09-03",
+          "close": 357.16,
+          "ma200": 369.76,
+          "volume": 60242596
+        },
+        {
+          "time": "2026-09-04",
+          "close": 357.89,
+          "ma200": 369.83,
+          "volume": 32863265
+        },
+        {
+          "time": "2026-09-08",
+          "close": 368.56,
+          "ma200": 369.97,
+          "volume": 30464889
+        },
+        {
+          "time": "2026-09-09",
+          "close": 364.38,
+          "ma200": 370.02,
+          "volume": 25918212
+        },
+        {
+          "time": "2026-09-10",
+          "close": 360.83,
+          "ma200": 370.09,
+          "volume": 23994295
+        },
+        {
+          "time": "2026-09-11",
+          "close": 361.99,
+          "ma200": 370.2,
+          "volume": 21166937
+        },
+        {
+          "time": "2026-09-14",
+          "close": 344.72,
+          "ma200": 370.04,
+          "volume": 32662846
+        },
+        {
+          "time": "2026-09-15",
+          "close": 339.27,
+          "ma200": 369.81,
+          "volume": 24783897
+        },
+        {
+          "time": "2026-09-16",
+          "close": 339.51,
+          "ma200": 369.52,
+          "volume": 23152534
+        },
+        {
+          "time": "2026-09-17",
+          "close": 347.3,
+          "ma200": 369.24,
+          "volume": 24389566
+        },
+        {
+          "time": "2026-09-18",
+          "close": 357.61,
+          "ma200": 369.1,
+          "volume": 44032803
+        },
+        {
+          "time": "2026-09-21",
+          "close": 362.66,
+          "ma200": 369.0,
+          "volume": 26498793
+        },
+        {
+          "time": "2026-09-22",
+          "close": 364.03,
+          "ma200": 368.92,
+          "volume": 10260032
+        }
+      ],
+      "trend_cross": false,
+      "trend_active": false,
+      "hull_reentry": false,
+      "above_hull21": true,
+      "hull_rising": false,
+      "slope_accelerating": false,
+      "volume_confirmed": false,
+      "volume_ratio": 0.38,
+      "avg_dollar_volume": 9904101102,
+      "liquidity_confirmed": true,
+      "near_reason": "200일선 돌파 임박",
+      "signal_age": 0,
+      "signal_date": "2026-09-22"
+    },
+    {
       "ticker": "GS",
       "spot": 959.39,
       "signal_type": "watch",
@@ -6244,15 +7035,9 @@
       "band_lower": -6.54,
       "ma50": 1034.49,
       "ma100": 1022.28,
-      "ma200": 957.58,
-      "above_ma200": true,
+      "ma200": 958.13,
+      "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 1035.64,
-          "ma200": 868.15,
-          "volume": 2561861
-        },
         {
           "time": "2026-06-12",
           "close": 1062.75,
@@ -6666,6 +7451,12 @@
           "close": 959.39,
           "ma200": 957.58,
           "volume": 1864046
+        },
+        {
+          "time": "2026-09-22",
+          "close": 948.31,
+          "ma200": 958.13,
+          "volume": 968075
         }
       ],
       "trend_cross": true,
@@ -6678,9 +7469,461 @@
       "volume_ratio": 0.9,
       "avg_dollar_volume": 1984518344,
       "liquidity_confirmed": true,
-      "signal_age": 0,
+      "signal_age": 1,
       "signal_date": "2026-09-21",
       "signal_ma200": 957.58
+    },
+    {
+      "ticker": "DIS",
+      "spot": 104.23,
+      "signal_type": "watch",
+      "signal_label": "오늘의 관찰 후보",
+      "stage": 1,
+      "stage_label": "오늘의 관찰 후보",
+      "score": 17.8,
+      "hull21": 105.28,
+      "dev_pct": -1.0,
+      "band_upper": 4.5,
+      "band_lower": -4.05,
+      "ma50": 102.88,
+      "ma100": 102.18,
+      "ma200": 104.02,
+      "above_ma200": false,
+      "trend_chart": [
+        {
+          "time": "2026-06-12",
+          "close": 100.04,
+          "ma200": 107.45,
+          "volume": 8257240
+        },
+        {
+          "time": "2026-06-15",
+          "close": 101.69,
+          "ma200": 107.37,
+          "volume": 10265096
+        },
+        {
+          "time": "2026-06-16",
+          "close": 101.28,
+          "ma200": 107.29,
+          "volume": 10694557
+        },
+        {
+          "time": "2026-06-17",
+          "close": 100.86,
+          "ma200": 107.2,
+          "volume": 11168736
+        },
+        {
+          "time": "2026-06-18",
+          "close": 103.89,
+          "ma200": 107.13,
+          "volume": 22943614
+        },
+        {
+          "time": "2026-06-22",
+          "close": 102.45,
+          "ma200": 107.06,
+          "volume": 17396273
+        },
+        {
+          "time": "2026-06-23",
+          "close": 103.53,
+          "ma200": 106.98,
+          "volume": 14457424
+        },
+        {
+          "time": "2026-06-24",
+          "close": 101.12,
+          "ma200": 106.9,
+          "volume": 12215537
+        },
+        {
+          "time": "2026-06-25",
+          "close": 98.05,
+          "ma200": 106.79,
+          "volume": 12066379
+        },
+        {
+          "time": "2026-06-26",
+          "close": 98.79,
+          "ma200": 106.7,
+          "volume": 13921362
+        },
+        {
+          "time": "2026-06-29",
+          "close": 98.63,
+          "ma200": 106.61,
+          "volume": 10418067
+        },
+        {
+          "time": "2026-06-30",
+          "close": 96.25,
+          "ma200": 106.51,
+          "volume": 12717808
+        },
+        {
+          "time": "2026-07-01",
+          "close": 95.71,
+          "ma200": 106.41,
+          "volume": 11590417
+        },
+        {
+          "time": "2026-07-02",
+          "close": 99.5,
+          "ma200": 106.33,
+          "volume": 11308072
+        },
+        {
+          "time": "2026-07-06",
+          "close": 97.41,
+          "ma200": 106.24,
+          "volume": 10171874
+        },
+        {
+          "time": "2026-07-07",
+          "close": 97.48,
+          "ma200": 106.14,
+          "volume": 9936369
+        },
+        {
+          "time": "2026-07-08",
+          "close": 96.7,
+          "ma200": 106.05,
+          "volume": 8720822
+        },
+        {
+          "time": "2026-07-09",
+          "close": 96.17,
+          "ma200": 105.97,
+          "volume": 11448122
+        },
+        {
+          "time": "2026-07-10",
+          "close": 95.62,
+          "ma200": 105.88,
+          "volume": 10678886
+        },
+        {
+          "time": "2026-07-13",
+          "close": 96.0,
+          "ma200": 105.8,
+          "volume": 9304174
+        },
+        {
+          "time": "2026-07-14",
+          "close": 95.87,
+          "ma200": 105.71,
+          "volume": 7651540
+        },
+        {
+          "time": "2026-07-15",
+          "close": 97.15,
+          "ma200": 105.63,
+          "volume": 10219184
+        },
+        {
+          "time": "2026-07-16",
+          "close": 99.71,
+          "ma200": 105.56,
+          "volume": 7480013
+        },
+        {
+          "time": "2026-07-17",
+          "close": 97.67,
+          "ma200": 105.48,
+          "volume": 10496514
+        },
+        {
+          "time": "2026-07-20",
+          "close": 96.41,
+          "ma200": 105.39,
+          "volume": 9861721
+        },
+        {
+          "time": "2026-07-21",
+          "close": 96.14,
+          "ma200": 105.3,
+          "volume": 9745415
+        },
+        {
+          "time": "2026-07-22",
+          "close": 95.87,
+          "ma200": 105.22,
+          "volume": 9119248
+        },
+        {
+          "time": "2026-07-23",
+          "close": 92.83,
+          "ma200": 105.12,
+          "volume": 13562488
+        },
+        {
+          "time": "2026-07-24",
+          "close": 94.85,
+          "ma200": 105.03,
+          "volume": 12153054
+        },
+        {
+          "time": "2026-07-27",
+          "close": 96.65,
+          "ma200": 104.96,
+          "volume": 10595413
+        },
+        {
+          "time": "2026-07-28",
+          "close": 98.89,
+          "ma200": 104.89,
+          "volume": 11395092
+        },
+        {
+          "time": "2026-07-29",
+          "close": 98.48,
+          "ma200": 104.83,
+          "volume": 11070138
+        },
+        {
+          "time": "2026-07-30",
+          "close": 96.16,
+          "ma200": 104.76,
+          "volume": 21112372
+        },
+        {
+          "time": "2026-07-31",
+          "close": 96.19,
+          "ma200": 104.69,
+          "volume": 11193030
+        },
+        {
+          "time": "2026-08-03",
+          "close": 98.14,
+          "ma200": 104.63,
+          "volume": 11794818
+        },
+        {
+          "time": "2026-08-04",
+          "close": 98.18,
+          "ma200": 104.56,
+          "volume": 16796758
+        },
+        {
+          "time": "2026-08-05",
+          "close": 101.76,
+          "ma200": 104.52,
+          "volume": 20809012
+        },
+        {
+          "time": "2026-08-06",
+          "close": 104.68,
+          "ma200": 104.49,
+          "volume": 14047182
+        },
+        {
+          "time": "2026-08-07",
+          "close": 104.91,
+          "ma200": 104.45,
+          "volume": 10929696
+        },
+        {
+          "time": "2026-08-10",
+          "close": 103.18,
+          "ma200": 104.4,
+          "volume": 8631939
+        },
+        {
+          "time": "2026-08-11",
+          "close": 103.53,
+          "ma200": 104.35,
+          "volume": 6781574
+        },
+        {
+          "time": "2026-08-12",
+          "close": 103.22,
+          "ma200": 104.3,
+          "volume": 6717518
+        },
+        {
+          "time": "2026-08-13",
+          "close": 104.8,
+          "ma200": 104.27,
+          "volume": 7099964
+        },
+        {
+          "time": "2026-08-14",
+          "close": 106.85,
+          "ma200": 104.24,
+          "volume": 8176896
+        },
+        {
+          "time": "2026-08-17",
+          "close": 103.5,
+          "ma200": 104.2,
+          "volume": 7635031
+        },
+        {
+          "time": "2026-08-18",
+          "close": 103.95,
+          "ma200": 104.17,
+          "volume": 6149935
+        },
+        {
+          "time": "2026-08-19",
+          "close": 106.93,
+          "ma200": 104.14,
+          "volume": 8046145
+        },
+        {
+          "time": "2026-08-20",
+          "close": 107.32,
+          "ma200": 104.12,
+          "volume": 7971489
+        },
+        {
+          "time": "2026-08-21",
+          "close": 107.78,
+          "ma200": 104.09,
+          "volume": 6840801
+        },
+        {
+          "time": "2026-08-24",
+          "close": 110.61,
+          "ma200": 104.09,
+          "volume": 12662634
+        },
+        {
+          "time": "2026-08-25",
+          "close": 111.25,
+          "ma200": 104.09,
+          "volume": 6748598
+        },
+        {
+          "time": "2026-08-26",
+          "close": 109.63,
+          "ma200": 104.09,
+          "volume": 8528613
+        },
+        {
+          "time": "2026-08-27",
+          "close": 106.82,
+          "ma200": 104.07,
+          "volume": 8704359
+        },
+        {
+          "time": "2026-08-28",
+          "close": 108.1,
+          "ma200": 104.04,
+          "volume": 5467425
+        },
+        {
+          "time": "2026-08-31",
+          "close": 107.55,
+          "ma200": 104.01,
+          "volume": 8731192
+        },
+        {
+          "time": "2026-09-01",
+          "close": 106.22,
+          "ma200": 103.96,
+          "volume": 7034768
+        },
+        {
+          "time": "2026-09-02",
+          "close": 107.98,
+          "ma200": 103.96,
+          "volume": 7556681
+        },
+        {
+          "time": "2026-09-03",
+          "close": 107.16,
+          "ma200": 103.96,
+          "volume": 6242525
+        },
+        {
+          "time": "2026-09-04",
+          "close": 105.31,
+          "ma200": 103.96,
+          "volume": 6112017
+        },
+        {
+          "time": "2026-09-08",
+          "close": 105.06,
+          "ma200": 103.96,
+          "volume": 7397791
+        },
+        {
+          "time": "2026-09-09",
+          "close": 104.18,
+          "ma200": 103.95,
+          "volume": 7042559
+        },
+        {
+          "time": "2026-09-10",
+          "close": 105.82,
+          "ma200": 103.97,
+          "volume": 7609754
+        },
+        {
+          "time": "2026-09-11",
+          "close": 106.55,
+          "ma200": 103.98,
+          "volume": 7257809
+        },
+        {
+          "time": "2026-09-14",
+          "close": 108.59,
+          "ma200": 104.01,
+          "volume": 7172193
+        },
+        {
+          "time": "2026-09-15",
+          "close": 106.42,
+          "ma200": 104.03,
+          "volume": 8919502
+        },
+        {
+          "time": "2026-09-16",
+          "close": 106.99,
+          "ma200": 104.05,
+          "volume": 10108578
+        },
+        {
+          "time": "2026-09-17",
+          "close": 105.35,
+          "ma200": 104.05,
+          "volume": 7818191
+        },
+        {
+          "time": "2026-09-18",
+          "close": 102.67,
+          "ma200": 104.03,
+          "volume": 19139671
+        },
+        {
+          "time": "2026-09-21",
+          "close": 104.23,
+          "ma200": 104.03,
+          "volume": 7128220
+        },
+        {
+          "time": "2026-09-22",
+          "close": 103.56,
+          "ma200": 104.02,
+          "volume": 2800647
+        }
+      ],
+      "trend_cross": true,
+      "trend_active": true,
+      "hull_reentry": false,
+      "above_hull21": false,
+      "hull_rising": false,
+      "slope_accelerating": false,
+      "volume_confirmed": false,
+      "volume_ratio": 0.85,
+      "avg_dollar_volume": 870819035,
+      "liquidity_confirmed": true,
+      "signal_age": 1,
+      "signal_date": "2026-09-21",
+      "signal_ma200": 104.03
     },
     {
       "ticker": "VZ",
@@ -6696,15 +7939,9 @@
       "band_lower": -4.14,
       "ma50": 47.67,
       "ma100": 46.99,
-      "ma200": 46.16,
+      "ma200": 46.19,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 46.94,
-          "ma200": 44.38,
-          "volume": 26889393
-        },
         {
           "time": "2026-06-12",
           "close": 48.11,
@@ -7118,6 +8355,12 @@
           "close": 47.68,
           "ma200": 46.16,
           "volume": 19991655
+        },
+        {
+          "time": "2026-09-22",
+          "close": 46.98,
+          "ma200": 46.19,
+          "volume": 11754136
         }
       ],
       "trend_cross": false,
@@ -7130,7 +8373,7 @@
       "volume_ratio": 2.42,
       "avg_dollar_volume": 905297000,
       "liquidity_confirmed": true,
-      "signal_age": 1,
+      "signal_age": 2,
       "signal_date": "2026-09-18",
       "signal_ma200": 46.12
     },
@@ -7148,15 +8391,9 @@
       "band_lower": -3.84,
       "ma50": 61.97,
       "ma100": 58.01,
-      "ma200": 55.26,
+      "ma200": 55.27,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 55.16,
-          "ma200": 52.09,
-          "volume": 31746350
-        },
         {
           "time": "2026-06-12",
           "close": 56.02,
@@ -7570,6 +8807,12 @@
           "close": 57.96,
           "ma200": 55.26,
           "volume": 33227743
+        },
+        {
+          "time": "2026-09-22",
+          "close": 56.41,
+          "ma200": 55.27,
+          "volume": 21493667
         }
       ],
       "trend_cross": false,
@@ -7582,7 +8825,7 @@
       "volume_ratio": 1.06,
       "avg_dollar_volume": 2009003132,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 55.21
     },
@@ -7603,12 +8846,6 @@
       "ma200": 13.53,
       "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 14.71,
-          "ma200": 12.94,
-          "volume": 47657219
-        },
         {
           "time": "2026-06-12",
           "close": 14.84,
@@ -8022,6 +9259,12 @@
           "close": 13.17,
           "ma200": 13.53,
           "volume": 50080938
+        },
+        {
+          "time": "2026-09-22",
+          "close": 13.05,
+          "ma200": 13.53,
+          "volume": 21875254
         }
       ],
       "trend_cross": true,
@@ -8034,7 +9277,7 @@
       "volume_ratio": 1.03,
       "avg_dollar_volume": 609275274,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 13.53
     },
@@ -8052,15 +9295,9 @@
       "band_lower": -16.13,
       "ma50": 155.83,
       "ma100": 172.7,
-      "ma200": 147.44,
+      "ma200": 147.82,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 176.55,
-          "ma200": 117.69,
-          "volume": 9891755
-        },
         {
           "time": "2026-06-12",
           "close": 179.2,
@@ -8474,6 +9711,12 @@
           "close": 158.98,
           "ma200": 147.44,
           "volume": 9263602
+        },
+        {
+          "time": "2026-09-22",
+          "close": 159.42,
+          "ma200": 147.82,
+          "volume": 3703621
         }
       ],
       "trend_cross": true,
@@ -8486,7 +9729,7 @@
       "volume_ratio": 0.95,
       "avg_dollar_volume": 1313272391,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 146.73
     },
@@ -8504,15 +9747,9 @@
       "band_lower": -3.47,
       "ma50": 51.4,
       "ma100": 50.32,
-      "ma200": 49.87,
+      "ma200": 49.88,
       "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 50.68,
-          "ma200": 47.82,
-          "volume": 11512938
-        },
         {
           "time": "2026-06-12",
           "close": 51.66,
@@ -8926,6 +10163,12 @@
           "close": 49.0,
           "ma200": 49.87,
           "volume": 9847559
+        },
+        {
+          "time": "2026-09-22",
+          "close": 48.01,
+          "ma200": 49.88,
+          "volume": 3418894
         }
       ],
       "trend_cross": false,
@@ -8938,7 +10181,7 @@
       "volume_ratio": 1.67,
       "avg_dollar_volume": 295018618,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 49.85
     },
@@ -8956,15 +10199,9 @@
       "band_lower": -4.96,
       "ma50": 17.31,
       "ma100": 16.98,
-      "ma200": 17.01,
+      "ma200": 17.0,
       "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 17.21,
-          "ma200": 16.73,
-          "volume": 26041197
-        },
         {
           "time": "2026-06-12",
           "close": 17.52,
@@ -9378,6 +10615,12 @@
           "close": 16.04,
           "ma200": 17.01,
           "volume": 24038292
+        },
+        {
+          "time": "2026-09-22",
+          "close": 15.65,
+          "ma200": 17.0,
+          "volume": 11895033
         }
       ],
       "trend_cross": false,
@@ -9390,467 +10633,15 @@
       "volume_ratio": 1.52,
       "avg_dollar_volume": 387539684,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 17.02
-    },
-    {
-      "ticker": "EQT",
-      "spot": 50.35,
-      "signal_type": "watch",
-      "signal_label": "오늘의 관찰 후보",
-      "stage": 1,
-      "stage_label": "오늘의 관찰 후보",
-      "score": 8.6,
-      "hull21": 53.14,
-      "dev_pct": -5.26,
-      "band_upper": 5.43,
-      "band_lower": -5.94,
-      "ma50": 52.83,
-      "ma100": 53.81,
-      "ma200": 55.86,
-      "above_ma200": false,
-      "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 51.2,
-          "ma200": 56.59,
-          "volume": 8442324
-        },
-        {
-          "time": "2026-06-12",
-          "close": 51.94,
-          "ma200": 56.59,
-          "volume": 5227899
-        },
-        {
-          "time": "2026-06-15",
-          "close": 50.75,
-          "ma200": 56.58,
-          "volume": 7793517
-        },
-        {
-          "time": "2026-06-16",
-          "close": 51.37,
-          "ma200": 56.58,
-          "volume": 8786579
-        },
-        {
-          "time": "2026-06-17",
-          "close": 51.13,
-          "ma200": 56.57,
-          "volume": 7826679
-        },
-        {
-          "time": "2026-06-18",
-          "close": 50.72,
-          "ma200": 56.57,
-          "volume": 13560800
-        },
-        {
-          "time": "2026-06-22",
-          "close": 51.84,
-          "ma200": 56.57,
-          "volume": 9872777
-        },
-        {
-          "time": "2026-06-23",
-          "close": 51.66,
-          "ma200": 56.57,
-          "volume": 9762804
-        },
-        {
-          "time": "2026-06-24",
-          "close": 51.48,
-          "ma200": 56.57,
-          "volume": 8643216
-        },
-        {
-          "time": "2026-06-25",
-          "close": 51.65,
-          "ma200": 56.57,
-          "volume": 7955902
-        },
-        {
-          "time": "2026-06-26",
-          "close": 52.7,
-          "ma200": 56.58,
-          "volume": 12647677
-        },
-        {
-          "time": "2026-06-29",
-          "close": 52.0,
-          "ma200": 56.59,
-          "volume": 6287670
-        },
-        {
-          "time": "2026-06-30",
-          "close": 53.17,
-          "ma200": 56.6,
-          "volume": 11787733
-        },
-        {
-          "time": "2026-07-01",
-          "close": 52.48,
-          "ma200": 56.6,
-          "volume": 7364860
-        },
-        {
-          "time": "2026-07-02",
-          "close": 52.61,
-          "ma200": 56.62,
-          "volume": 4878730
-        },
-        {
-          "time": "2026-07-06",
-          "close": 51.71,
-          "ma200": 56.63,
-          "volume": 6848366
-        },
-        {
-          "time": "2026-07-07",
-          "close": 51.76,
-          "ma200": 56.64,
-          "volume": 6510748
-        },
-        {
-          "time": "2026-07-08",
-          "close": 51.16,
-          "ma200": 56.64,
-          "volume": 8363123
-        },
-        {
-          "time": "2026-07-09",
-          "close": 50.15,
-          "ma200": 56.65,
-          "volume": 6776565
-        },
-        {
-          "time": "2026-07-10",
-          "close": 48.85,
-          "ma200": 56.64,
-          "volume": 10861645
-        },
-        {
-          "time": "2026-07-13",
-          "close": 49.72,
-          "ma200": 56.64,
-          "volume": 7671510
-        },
-        {
-          "time": "2026-07-14",
-          "close": 49.81,
-          "ma200": 56.62,
-          "volume": 5812753
-        },
-        {
-          "time": "2026-07-15",
-          "close": 49.25,
-          "ma200": 56.6,
-          "volume": 5906873
-        },
-        {
-          "time": "2026-07-16",
-          "close": 49.4,
-          "ma200": 56.57,
-          "volume": 7634173
-        },
-        {
-          "time": "2026-07-17",
-          "close": 49.56,
-          "ma200": 56.55,
-          "volume": 5535642
-        },
-        {
-          "time": "2026-07-20",
-          "close": 49.05,
-          "ma200": 56.52,
-          "volume": 9119988
-        },
-        {
-          "time": "2026-07-21",
-          "close": 49.8,
-          "ma200": 56.49,
-          "volume": 7224687
-        },
-        {
-          "time": "2026-07-22",
-          "close": 54.01,
-          "ma200": 56.48,
-          "volume": 17854909
-        },
-        {
-          "time": "2026-07-23",
-          "close": 53.39,
-          "ma200": 56.47,
-          "volume": 8831912
-        },
-        {
-          "time": "2026-07-24",
-          "close": 53.03,
-          "ma200": 56.45,
-          "volume": 6683719
-        },
-        {
-          "time": "2026-07-27",
-          "close": 52.0,
-          "ma200": 56.42,
-          "volume": 7692882
-        },
-        {
-          "time": "2026-07-28",
-          "close": 51.66,
-          "ma200": 56.4,
-          "volume": 8311937
-        },
-        {
-          "time": "2026-07-29",
-          "close": 52.57,
-          "ma200": 56.39,
-          "volume": 6974044
-        },
-        {
-          "time": "2026-07-30",
-          "close": 52.71,
-          "ma200": 56.39,
-          "volume": 5448268
-        },
-        {
-          "time": "2026-07-31",
-          "close": 53.29,
-          "ma200": 56.38,
-          "volume": 5338911
-        },
-        {
-          "time": "2026-08-03",
-          "close": 53.56,
-          "ma200": 56.38,
-          "volume": 5073620
-        },
-        {
-          "time": "2026-08-04",
-          "close": 52.77,
-          "ma200": 56.37,
-          "volume": 6022866
-        },
-        {
-          "time": "2026-08-05",
-          "close": 51.23,
-          "ma200": 56.36,
-          "volume": 6281838
-        },
-        {
-          "time": "2026-08-06",
-          "close": 51.6,
-          "ma200": 56.35,
-          "volume": 5692094
-        },
-        {
-          "time": "2026-08-07",
-          "close": 51.69,
-          "ma200": 56.33,
-          "volume": 4828133
-        },
-        {
-          "time": "2026-08-10",
-          "close": 54.08,
-          "ma200": 56.32,
-          "volume": 7239934
-        },
-        {
-          "time": "2026-08-11",
-          "close": 54.37,
-          "ma200": 56.32,
-          "volume": 6246468
-        },
-        {
-          "time": "2026-08-12",
-          "close": 54.06,
-          "ma200": 56.32,
-          "volume": 4574307
-        },
-        {
-          "time": "2026-08-13",
-          "close": 54.08,
-          "ma200": 56.33,
-          "volume": 4625784
-        },
-        {
-          "time": "2026-08-14",
-          "close": 54.42,
-          "ma200": 56.33,
-          "volume": 5161475
-        },
-        {
-          "time": "2026-08-17",
-          "close": 53.01,
-          "ma200": 56.33,
-          "volume": 8623924
-        },
-        {
-          "time": "2026-08-18",
-          "close": 53.14,
-          "ma200": 56.34,
-          "volume": 7357389
-        },
-        {
-          "time": "2026-08-19",
-          "close": 53.64,
-          "ma200": 56.35,
-          "volume": 6518114
-        },
-        {
-          "time": "2026-08-20",
-          "close": 53.89,
-          "ma200": 56.35,
-          "volume": 5210774
-        },
-        {
-          "time": "2026-08-21",
-          "close": 53.72,
-          "ma200": 56.34,
-          "volume": 6130607
-        },
-        {
-          "time": "2026-08-24",
-          "close": 53.79,
-          "ma200": 56.33,
-          "volume": 6482442
-        },
-        {
-          "time": "2026-08-25",
-          "close": 54.0,
-          "ma200": 56.32,
-          "volume": 6992499
-        },
-        {
-          "time": "2026-08-26",
-          "close": 54.79,
-          "ma200": 56.31,
-          "volume": 8275162
-        },
-        {
-          "time": "2026-08-27",
-          "close": 54.77,
-          "ma200": 56.29,
-          "volume": 8726283
-        },
-        {
-          "time": "2026-08-28",
-          "close": 54.57,
-          "ma200": 56.27,
-          "volume": 3646555
-        },
-        {
-          "time": "2026-08-31",
-          "close": 54.18,
-          "ma200": 56.24,
-          "volume": 5802708
-        },
-        {
-          "time": "2026-09-01",
-          "close": 55.59,
-          "ma200": 56.21,
-          "volume": 5815680
-        },
-        {
-          "time": "2026-09-02",
-          "close": 55.75,
-          "ma200": 56.19,
-          "volume": 6191167
-        },
-        {
-          "time": "2026-09-03",
-          "close": 55.61,
-          "ma200": 56.17,
-          "volume": 6285990
-        },
-        {
-          "time": "2026-09-04",
-          "close": 55.17,
-          "ma200": 56.15,
-          "volume": 5236229
-        },
-        {
-          "time": "2026-09-08",
-          "close": 55.12,
-          "ma200": 56.13,
-          "volume": 4956586
-        },
-        {
-          "time": "2026-09-09",
-          "close": 54.63,
-          "ma200": 56.11,
-          "volume": 6330718
-        },
-        {
-          "time": "2026-09-10",
-          "close": 54.96,
-          "ma200": 56.1,
-          "volume": 6024742
-        },
-        {
-          "time": "2026-09-11",
-          "close": 54.07,
-          "ma200": 56.09,
-          "volume": 5470942
-        },
-        {
-          "time": "2026-09-14",
-          "close": 53.21,
-          "ma200": 56.07,
-          "volume": 6059182
-        },
-        {
-          "time": "2026-09-15",
-          "close": 53.12,
-          "ma200": 56.05,
-          "volume": 6648737
-        },
-        {
-          "time": "2026-09-16",
-          "close": 50.41,
-          "ma200": 56.01,
-          "volume": 9729398
-        },
-        {
-          "time": "2026-09-17",
-          "close": 50.35,
-          "ma200": 55.95,
-          "volume": 6795475
-        },
-        {
-          "time": "2026-09-18",
-          "close": 50.0,
-          "ma200": 55.9,
-          "volume": 20428549
-        },
-        {
-          "time": "2026-09-21",
-          "close": 50.13,
-          "ma200": 55.86,
-          "volume": 8281090
-        }
-      ],
-      "trend_cross": false,
-      "trend_active": false,
-      "hull_reentry": true,
-      "above_hull21": false,
-      "hull_rising": false,
-      "slope_accelerating": false,
-      "volume_confirmed": false,
-      "volume_ratio": 1.07,
-      "avg_dollar_volume": 318550638,
-      "liquidity_confirmed": true,
-      "signal_age": 2,
-      "signal_date": "2026-09-17",
-      "signal_ma200": 55.95
     }
   ],
   "dev_reentry_long": [
     {
       "ticker": "SHOP",
-      "spot": 137.92,
+      "spot": 148.1,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
@@ -9862,15 +10653,9 @@
       "band_lower": -12.77,
       "ma50": 136.38,
       "ma100": 124.14,
-      "ma200": 130.25,
+      "ma200": 130.19,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 110.47,
-          "ma200": 138.35,
-          "volume": 8245595
-        },
         {
           "time": "2026-06-12",
           "close": 108.24,
@@ -10284,6 +11069,12 @@
           "close": 137.92,
           "ma200": 130.25,
           "volume": 16650094
+        },
+        {
+          "time": "2026-09-22",
+          "close": 148.02,
+          "ma200": 130.19,
+          "volume": 16416789
         }
       ],
       "trend_cross": true,
@@ -10296,22 +11087,22 @@
       "volume_ratio": 2.09,
       "avg_dollar_volume": 1097115934,
       "liquidity_confirmed": true,
-      "signal_age": 0,
+      "signal_age": 1,
       "signal_date": "2026-09-21",
       "signal_ma200": 130.25,
       "signal_spot": 137.92,
-      "put_wall": 110.0,
-      "call_wall": 140.0,
-      "gamma_flip": 132.48,
+      "put_wall": 135.0,
+      "call_wall": 150.0,
+      "gamma_flip": 130.57,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 1.51,
+      "call_wall_upside_pct": 1.28,
       "gex_confirmed": true,
       "gex_available": true
     },
     {
       "ticker": "COIN",
-      "spot": 201.05,
+      "spot": 200.47,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
@@ -10323,15 +11114,9 @@
       "band_lower": -11.82,
       "ma50": 166.66,
       "ma100": 171.25,
-      "ma200": 188.91,
+      "ma200": 188.53,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 160.43,
-          "ma200": 241.66,
-          "volume": 6933145
-        },
         {
           "time": "2026-06-12",
           "close": 159.78,
@@ -10745,6 +11530,12 @@
           "close": 201.05,
           "ma200": 188.91,
           "volume": 14518100
+        },
+        {
+          "time": "2026-09-22",
+          "close": 200.32,
+          "ma200": 188.53,
+          "volume": 4544350
         }
       ],
       "trend_cross": true,
@@ -10757,42 +11548,36 @@
       "volume_ratio": 2.03,
       "avg_dollar_volume": 2101834400,
       "liquidity_confirmed": true,
-      "signal_age": 1,
+      "signal_age": 2,
       "signal_date": "2026-09-18",
       "signal_ma200": 189.22,
       "signal_spot": 194.25,
-      "put_wall": 190.0,
-      "call_wall": 212.5,
-      "gamma_flip": 177.29,
+      "put_wall": 200.0,
+      "call_wall": 210.0,
+      "gamma_flip": 176.59,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 5.7,
+      "call_wall_upside_pct": 4.76,
       "gex_confirmed": true,
       "gex_available": true
     },
     {
       "ticker": "MSTR",
-      "spot": 168.5,
+      "spot": 169.72,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
       "stage_label": "200일선 상향 돌파",
-      "score": 81.7,
+      "score": 78.7,
       "hull21": 135.03,
       "dev_pct": 13.99,
       "band_upper": 13.96,
       "band_lower": -11.59,
       "ma50": 110.82,
       "ma100": 124.85,
-      "ma200": 136.98,
+      "ma200": 136.88,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 120.15,
-          "ma200": 197.34,
-          "volume": 17574203
-        },
         {
           "time": "2026-06-12",
           "close": 123.97,
@@ -11206,6 +11991,12 @@
           "close": 168.5,
           "ma200": 136.98,
           "volume": 41898382
+        },
+        {
+          "time": "2026-09-22",
+          "close": 169.7,
+          "ma200": 136.88,
+          "volume": 16062505
         }
       ],
       "trend_cross": true,
@@ -11218,22 +12009,22 @@
       "volume_ratio": 2.0,
       "avg_dollar_volume": 4210025919,
       "liquidity_confirmed": true,
-      "signal_age": 1,
+      "signal_age": 2,
       "signal_date": "2026-09-18",
       "signal_ma200": 137.04,
       "signal_spot": 153.92,
-      "put_wall": 150.0,
-      "call_wall": 180.0,
-      "gamma_flip": 145.96,
+      "put_wall": 160.0,
+      "call_wall": 170.0,
+      "gamma_flip": 130.52,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 6.82,
+      "call_wall_upside_pct": 0.16,
       "gex_confirmed": true,
       "gex_available": true
     },
     {
       "ticker": "COHR",
-      "spot": 321.52,
+      "spot": 310.34,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
@@ -11245,15 +12036,9 @@
       "band_lower": -19.66,
       "ma50": 297.39,
       "ma100": 332.82,
-      "ma200": 283.75,
+      "ma200": 284.45,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 363.58,
-          "ma200": 216.43,
-          "volume": 6489545
-        },
         {
           "time": "2026-06-12",
           "close": 385.03,
@@ -11667,6 +12452,12 @@
           "close": 321.52,
           "ma200": 283.75,
           "volume": 7586479
+        },
+        {
+          "time": "2026-09-22",
+          "close": 310.65,
+          "ma200": 284.45,
+          "volume": 4928090
         }
       ],
       "trend_cross": true,
@@ -11679,18 +12470,470 @@
       "volume_ratio": 1.25,
       "avg_dollar_volume": 1744196979,
       "liquidity_confirmed": true,
-      "signal_age": 3,
+      "signal_age": 4,
       "signal_date": "2026-09-16",
       "signal_ma200": 281.54,
       "signal_spot": 289.93,
       "put_wall": 300.0,
-      "call_wall": 350.0,
-      "gamma_flip": 292.94,
+      "call_wall": 320.0,
+      "gamma_flip": 301.36,
       "above_put_wall": true,
       "above_gamma_flip": true,
-      "call_wall_upside_pct": 8.86,
+      "call_wall_upside_pct": 3.11,
       "gex_confirmed": true,
       "gex_available": true
+    },
+    {
+      "ticker": "AVGO",
+      "spot": 364.03,
+      "signal_type": "near",
+      "signal_label": "신호 임박",
+      "stage": 1,
+      "stage_label": "신호 임박",
+      "score": 26.3,
+      "hull21": 347.93,
+      "dev_pct": 4.63,
+      "band_upper": 8.28,
+      "band_lower": -8.69,
+      "ma50": 378.61,
+      "ma100": 392.32,
+      "ma200": 368.92,
+      "above_ma200": false,
+      "trend_chart": [
+        {
+          "time": "2026-06-12",
+          "close": 382.07,
+          "ma200": 358.1,
+          "volume": 27630074
+        },
+        {
+          "time": "2026-06-15",
+          "close": 393.94,
+          "ma200": 358.57,
+          "volume": 32394179
+        },
+        {
+          "time": "2026-06-16",
+          "close": 376.71,
+          "ma200": 358.91,
+          "volume": 31573669
+        },
+        {
+          "time": "2026-06-17",
+          "close": 392.9,
+          "ma200": 359.39,
+          "volume": 40005503
+        },
+        {
+          "time": "2026-06-18",
+          "close": 411.35,
+          "ma200": 359.95,
+          "volume": 45076052
+        },
+        {
+          "time": "2026-06-22",
+          "close": 392.13,
+          "ma200": 360.4,
+          "volume": 26403669
+        },
+        {
+          "time": "2026-06-23",
+          "close": 380.15,
+          "ma200": 360.77,
+          "volume": 33122248
+        },
+        {
+          "time": "2026-06-24",
+          "close": 382.07,
+          "ma200": 361.01,
+          "volume": 29938924
+        },
+        {
+          "time": "2026-06-25",
+          "close": 378.91,
+          "ma200": 361.17,
+          "volume": 23412032
+        },
+        {
+          "time": "2026-06-26",
+          "close": 365.02,
+          "ma200": 361.32,
+          "volume": 34839254
+        },
+        {
+          "time": "2026-06-29",
+          "close": 372.45,
+          "ma200": 361.33,
+          "volume": 24285240
+        },
+        {
+          "time": "2026-06-30",
+          "close": 377.75,
+          "ma200": 361.42,
+          "volume": 28517369
+        },
+        {
+          "time": "2026-07-01",
+          "close": 369.34,
+          "ma200": 361.47,
+          "volume": 23712466
+        },
+        {
+          "time": "2026-07-02",
+          "close": 360.45,
+          "ma200": 361.45,
+          "volume": 26788851
+        },
+        {
+          "time": "2026-07-06",
+          "close": 373.9,
+          "ma200": 361.52,
+          "volume": 24543999
+        },
+        {
+          "time": "2026-07-07",
+          "close": 370.78,
+          "ma200": 361.64,
+          "volume": 24116688
+        },
+        {
+          "time": "2026-07-08",
+          "close": 388.69,
+          "ma200": 361.86,
+          "volume": 31624071
+        },
+        {
+          "time": "2026-07-09",
+          "close": 401.11,
+          "ma200": 362.14,
+          "volume": 28073958
+        },
+        {
+          "time": "2026-07-10",
+          "close": 399.97,
+          "ma200": 362.45,
+          "volume": 14595940
+        },
+        {
+          "time": "2026-07-13",
+          "close": 384.05,
+          "ma200": 362.67,
+          "volume": 21294509
+        },
+        {
+          "time": "2026-07-14",
+          "close": 389.11,
+          "ma200": 362.92,
+          "volume": 19931742
+        },
+        {
+          "time": "2026-07-15",
+          "close": 394.28,
+          "ma200": 363.21,
+          "volume": 16324127
+        },
+        {
+          "time": "2026-07-16",
+          "close": 374.45,
+          "ma200": 363.41,
+          "volume": 23407245
+        },
+        {
+          "time": "2026-07-17",
+          "close": 370.82,
+          "ma200": 363.63,
+          "volume": 23272208
+        },
+        {
+          "time": "2026-07-20",
+          "close": 378.16,
+          "ma200": 363.87,
+          "volume": 14420450
+        },
+        {
+          "time": "2026-07-21",
+          "close": 386.5,
+          "ma200": 364.13,
+          "volume": 17291140
+        },
+        {
+          "time": "2026-07-22",
+          "close": 396.81,
+          "ma200": 364.43,
+          "volume": 16966188
+        },
+        {
+          "time": "2026-07-23",
+          "close": 392.47,
+          "ma200": 364.7,
+          "volume": 16348682
+        },
+        {
+          "time": "2026-07-24",
+          "close": 381.92,
+          "ma200": 364.93,
+          "volume": 15149396
+        },
+        {
+          "time": "2026-07-27",
+          "close": 383.22,
+          "ma200": 365.16,
+          "volume": 18502121
+        },
+        {
+          "time": "2026-07-28",
+          "close": 380.91,
+          "ma200": 365.34,
+          "volume": 20328406
+        },
+        {
+          "time": "2026-07-29",
+          "close": 370.32,
+          "ma200": 365.47,
+          "volume": 21374408
+        },
+        {
+          "time": "2026-07-30",
+          "close": 387.84,
+          "ma200": 365.78,
+          "volume": 23639845
+        },
+        {
+          "time": "2026-07-31",
+          "close": 389.28,
+          "ma200": 365.95,
+          "volume": 20391003
+        },
+        {
+          "time": "2026-08-03",
+          "close": 392.23,
+          "ma200": 366.19,
+          "volume": 17335376
+        },
+        {
+          "time": "2026-08-04",
+          "close": 418.16,
+          "ma200": 366.52,
+          "volume": 29564242
+        },
+        {
+          "time": "2026-08-05",
+          "close": 418.28,
+          "ma200": 366.84,
+          "volume": 16880446
+        },
+        {
+          "time": "2026-08-06",
+          "close": 420.56,
+          "ma200": 367.2,
+          "volume": 13907545
+        },
+        {
+          "time": "2026-08-07",
+          "close": 427.76,
+          "ma200": 367.59,
+          "volume": 14698253
+        },
+        {
+          "time": "2026-08-10",
+          "close": 422.4,
+          "ma200": 367.99,
+          "volume": 13854127
+        },
+        {
+          "time": "2026-08-11",
+          "close": 416.08,
+          "ma200": 368.37,
+          "volume": 12882657
+        },
+        {
+          "time": "2026-08-12",
+          "close": 416.05,
+          "ma200": 368.73,
+          "volume": 15859206
+        },
+        {
+          "time": "2026-08-13",
+          "close": 417.82,
+          "ma200": 369.04,
+          "volume": 13180479
+        },
+        {
+          "time": "2026-08-14",
+          "close": 392.99,
+          "ma200": 369.2,
+          "volume": 29513597
+        },
+        {
+          "time": "2026-08-17",
+          "close": 392.43,
+          "ma200": 369.3,
+          "volume": 20042640
+        },
+        {
+          "time": "2026-08-18",
+          "close": 380.0,
+          "ma200": 369.27,
+          "volume": 22878198
+        },
+        {
+          "time": "2026-08-19",
+          "close": 362.48,
+          "ma200": 369.2,
+          "volume": 35091374
+        },
+        {
+          "time": "2026-08-20",
+          "close": 364.03,
+          "ma200": 369.17,
+          "volume": 19729828
+        },
+        {
+          "time": "2026-08-21",
+          "close": 368.45,
+          "ma200": 369.2,
+          "volume": 19037141
+        },
+        {
+          "time": "2026-08-24",
+          "close": 358.76,
+          "ma200": 369.23,
+          "volume": 18717230
+        },
+        {
+          "time": "2026-08-25",
+          "close": 356.74,
+          "ma200": 369.22,
+          "volume": 18014885
+        },
+        {
+          "time": "2026-08-26",
+          "close": 355.59,
+          "ma200": 369.22,
+          "volume": 19196260
+        },
+        {
+          "time": "2026-08-27",
+          "close": 371.54,
+          "ma200": 369.33,
+          "volume": 21329954
+        },
+        {
+          "time": "2026-08-28",
+          "close": 368.79,
+          "ma200": 369.38,
+          "volume": 16596067
+        },
+        {
+          "time": "2026-08-31",
+          "close": 370.34,
+          "ma200": 369.48,
+          "volume": 21947988
+        },
+        {
+          "time": "2026-09-01",
+          "close": 369.68,
+          "ma200": 369.55,
+          "volume": 19288938
+        },
+        {
+          "time": "2026-09-02",
+          "close": 367.24,
+          "ma200": 369.68,
+          "volume": 38874579
+        },
+        {
+          "time": "2026-09-03",
+          "close": 357.16,
+          "ma200": 369.76,
+          "volume": 60242596
+        },
+        {
+          "time": "2026-09-04",
+          "close": 357.89,
+          "ma200": 369.83,
+          "volume": 32863265
+        },
+        {
+          "time": "2026-09-08",
+          "close": 368.56,
+          "ma200": 369.97,
+          "volume": 30464889
+        },
+        {
+          "time": "2026-09-09",
+          "close": 364.38,
+          "ma200": 370.02,
+          "volume": 25918212
+        },
+        {
+          "time": "2026-09-10",
+          "close": 360.83,
+          "ma200": 370.09,
+          "volume": 23994295
+        },
+        {
+          "time": "2026-09-11",
+          "close": 361.99,
+          "ma200": 370.2,
+          "volume": 21166937
+        },
+        {
+          "time": "2026-09-14",
+          "close": 344.72,
+          "ma200": 370.04,
+          "volume": 32662846
+        },
+        {
+          "time": "2026-09-15",
+          "close": 339.27,
+          "ma200": 369.81,
+          "volume": 24783897
+        },
+        {
+          "time": "2026-09-16",
+          "close": 339.51,
+          "ma200": 369.52,
+          "volume": 23152534
+        },
+        {
+          "time": "2026-09-17",
+          "close": 347.3,
+          "ma200": 369.24,
+          "volume": 24389566
+        },
+        {
+          "time": "2026-09-18",
+          "close": 357.61,
+          "ma200": 369.1,
+          "volume": 44032803
+        },
+        {
+          "time": "2026-09-21",
+          "close": 362.66,
+          "ma200": 369.0,
+          "volume": 26498793
+        },
+        {
+          "time": "2026-09-22",
+          "close": 364.03,
+          "ma200": 368.92,
+          "volume": 10260032
+        }
+      ],
+      "trend_cross": false,
+      "trend_active": false,
+      "hull_reentry": false,
+      "above_hull21": true,
+      "hull_rising": false,
+      "slope_accelerating": false,
+      "volume_confirmed": false,
+      "volume_ratio": 0.38,
+      "avg_dollar_volume": 9904101102,
+      "liquidity_confirmed": true,
+      "near_reason": "200일선 돌파 임박",
+      "signal_age": 0,
+      "signal_date": "2026-09-22"
     },
     {
       "ticker": "GS",
@@ -11706,15 +12949,9 @@
       "band_lower": -6.54,
       "ma50": 1034.49,
       "ma100": 1022.28,
-      "ma200": 957.58,
-      "above_ma200": true,
+      "ma200": 958.13,
+      "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 1035.64,
-          "ma200": 868.15,
-          "volume": 2561861
-        },
         {
           "time": "2026-06-12",
           "close": 1062.75,
@@ -12128,6 +13365,12 @@
           "close": 959.39,
           "ma200": 957.58,
           "volume": 1864046
+        },
+        {
+          "time": "2026-09-22",
+          "close": 948.31,
+          "ma200": 958.13,
+          "volume": 968075
         }
       ],
       "trend_cross": true,
@@ -12140,9 +13383,461 @@
       "volume_ratio": 0.9,
       "avg_dollar_volume": 1984518344,
       "liquidity_confirmed": true,
-      "signal_age": 0,
+      "signal_age": 1,
       "signal_date": "2026-09-21",
       "signal_ma200": 957.58
+    },
+    {
+      "ticker": "DIS",
+      "spot": 104.23,
+      "signal_type": "watch",
+      "signal_label": "오늘의 관찰 후보",
+      "stage": 1,
+      "stage_label": "오늘의 관찰 후보",
+      "score": 17.8,
+      "hull21": 105.28,
+      "dev_pct": -1.0,
+      "band_upper": 4.5,
+      "band_lower": -4.05,
+      "ma50": 102.88,
+      "ma100": 102.18,
+      "ma200": 104.02,
+      "above_ma200": false,
+      "trend_chart": [
+        {
+          "time": "2026-06-12",
+          "close": 100.04,
+          "ma200": 107.45,
+          "volume": 8257240
+        },
+        {
+          "time": "2026-06-15",
+          "close": 101.69,
+          "ma200": 107.37,
+          "volume": 10265096
+        },
+        {
+          "time": "2026-06-16",
+          "close": 101.28,
+          "ma200": 107.29,
+          "volume": 10694557
+        },
+        {
+          "time": "2026-06-17",
+          "close": 100.86,
+          "ma200": 107.2,
+          "volume": 11168736
+        },
+        {
+          "time": "2026-06-18",
+          "close": 103.89,
+          "ma200": 107.13,
+          "volume": 22943614
+        },
+        {
+          "time": "2026-06-22",
+          "close": 102.45,
+          "ma200": 107.06,
+          "volume": 17396273
+        },
+        {
+          "time": "2026-06-23",
+          "close": 103.53,
+          "ma200": 106.98,
+          "volume": 14457424
+        },
+        {
+          "time": "2026-06-24",
+          "close": 101.12,
+          "ma200": 106.9,
+          "volume": 12215537
+        },
+        {
+          "time": "2026-06-25",
+          "close": 98.05,
+          "ma200": 106.79,
+          "volume": 12066379
+        },
+        {
+          "time": "2026-06-26",
+          "close": 98.79,
+          "ma200": 106.7,
+          "volume": 13921362
+        },
+        {
+          "time": "2026-06-29",
+          "close": 98.63,
+          "ma200": 106.61,
+          "volume": 10418067
+        },
+        {
+          "time": "2026-06-30",
+          "close": 96.25,
+          "ma200": 106.51,
+          "volume": 12717808
+        },
+        {
+          "time": "2026-07-01",
+          "close": 95.71,
+          "ma200": 106.41,
+          "volume": 11590417
+        },
+        {
+          "time": "2026-07-02",
+          "close": 99.5,
+          "ma200": 106.33,
+          "volume": 11308072
+        },
+        {
+          "time": "2026-07-06",
+          "close": 97.41,
+          "ma200": 106.24,
+          "volume": 10171874
+        },
+        {
+          "time": "2026-07-07",
+          "close": 97.48,
+          "ma200": 106.14,
+          "volume": 9936369
+        },
+        {
+          "time": "2026-07-08",
+          "close": 96.7,
+          "ma200": 106.05,
+          "volume": 8720822
+        },
+        {
+          "time": "2026-07-09",
+          "close": 96.17,
+          "ma200": 105.97,
+          "volume": 11448122
+        },
+        {
+          "time": "2026-07-10",
+          "close": 95.62,
+          "ma200": 105.88,
+          "volume": 10678886
+        },
+        {
+          "time": "2026-07-13",
+          "close": 96.0,
+          "ma200": 105.8,
+          "volume": 9304174
+        },
+        {
+          "time": "2026-07-14",
+          "close": 95.87,
+          "ma200": 105.71,
+          "volume": 7651540
+        },
+        {
+          "time": "2026-07-15",
+          "close": 97.15,
+          "ma200": 105.63,
+          "volume": 10219184
+        },
+        {
+          "time": "2026-07-16",
+          "close": 99.71,
+          "ma200": 105.56,
+          "volume": 7480013
+        },
+        {
+          "time": "2026-07-17",
+          "close": 97.67,
+          "ma200": 105.48,
+          "volume": 10496514
+        },
+        {
+          "time": "2026-07-20",
+          "close": 96.41,
+          "ma200": 105.39,
+          "volume": 9861721
+        },
+        {
+          "time": "2026-07-21",
+          "close": 96.14,
+          "ma200": 105.3,
+          "volume": 9745415
+        },
+        {
+          "time": "2026-07-22",
+          "close": 95.87,
+          "ma200": 105.22,
+          "volume": 9119248
+        },
+        {
+          "time": "2026-07-23",
+          "close": 92.83,
+          "ma200": 105.12,
+          "volume": 13562488
+        },
+        {
+          "time": "2026-07-24",
+          "close": 94.85,
+          "ma200": 105.03,
+          "volume": 12153054
+        },
+        {
+          "time": "2026-07-27",
+          "close": 96.65,
+          "ma200": 104.96,
+          "volume": 10595413
+        },
+        {
+          "time": "2026-07-28",
+          "close": 98.89,
+          "ma200": 104.89,
+          "volume": 11395092
+        },
+        {
+          "time": "2026-07-29",
+          "close": 98.48,
+          "ma200": 104.83,
+          "volume": 11070138
+        },
+        {
+          "time": "2026-07-30",
+          "close": 96.16,
+          "ma200": 104.76,
+          "volume": 21112372
+        },
+        {
+          "time": "2026-07-31",
+          "close": 96.19,
+          "ma200": 104.69,
+          "volume": 11193030
+        },
+        {
+          "time": "2026-08-03",
+          "close": 98.14,
+          "ma200": 104.63,
+          "volume": 11794818
+        },
+        {
+          "time": "2026-08-04",
+          "close": 98.18,
+          "ma200": 104.56,
+          "volume": 16796758
+        },
+        {
+          "time": "2026-08-05",
+          "close": 101.76,
+          "ma200": 104.52,
+          "volume": 20809012
+        },
+        {
+          "time": "2026-08-06",
+          "close": 104.68,
+          "ma200": 104.49,
+          "volume": 14047182
+        },
+        {
+          "time": "2026-08-07",
+          "close": 104.91,
+          "ma200": 104.45,
+          "volume": 10929696
+        },
+        {
+          "time": "2026-08-10",
+          "close": 103.18,
+          "ma200": 104.4,
+          "volume": 8631939
+        },
+        {
+          "time": "2026-08-11",
+          "close": 103.53,
+          "ma200": 104.35,
+          "volume": 6781574
+        },
+        {
+          "time": "2026-08-12",
+          "close": 103.22,
+          "ma200": 104.3,
+          "volume": 6717518
+        },
+        {
+          "time": "2026-08-13",
+          "close": 104.8,
+          "ma200": 104.27,
+          "volume": 7099964
+        },
+        {
+          "time": "2026-08-14",
+          "close": 106.85,
+          "ma200": 104.24,
+          "volume": 8176896
+        },
+        {
+          "time": "2026-08-17",
+          "close": 103.5,
+          "ma200": 104.2,
+          "volume": 7635031
+        },
+        {
+          "time": "2026-08-18",
+          "close": 103.95,
+          "ma200": 104.17,
+          "volume": 6149935
+        },
+        {
+          "time": "2026-08-19",
+          "close": 106.93,
+          "ma200": 104.14,
+          "volume": 8046145
+        },
+        {
+          "time": "2026-08-20",
+          "close": 107.32,
+          "ma200": 104.12,
+          "volume": 7971489
+        },
+        {
+          "time": "2026-08-21",
+          "close": 107.78,
+          "ma200": 104.09,
+          "volume": 6840801
+        },
+        {
+          "time": "2026-08-24",
+          "close": 110.61,
+          "ma200": 104.09,
+          "volume": 12662634
+        },
+        {
+          "time": "2026-08-25",
+          "close": 111.25,
+          "ma200": 104.09,
+          "volume": 6748598
+        },
+        {
+          "time": "2026-08-26",
+          "close": 109.63,
+          "ma200": 104.09,
+          "volume": 8528613
+        },
+        {
+          "time": "2026-08-27",
+          "close": 106.82,
+          "ma200": 104.07,
+          "volume": 8704359
+        },
+        {
+          "time": "2026-08-28",
+          "close": 108.1,
+          "ma200": 104.04,
+          "volume": 5467425
+        },
+        {
+          "time": "2026-08-31",
+          "close": 107.55,
+          "ma200": 104.01,
+          "volume": 8731192
+        },
+        {
+          "time": "2026-09-01",
+          "close": 106.22,
+          "ma200": 103.96,
+          "volume": 7034768
+        },
+        {
+          "time": "2026-09-02",
+          "close": 107.98,
+          "ma200": 103.96,
+          "volume": 7556681
+        },
+        {
+          "time": "2026-09-03",
+          "close": 107.16,
+          "ma200": 103.96,
+          "volume": 6242525
+        },
+        {
+          "time": "2026-09-04",
+          "close": 105.31,
+          "ma200": 103.96,
+          "volume": 6112017
+        },
+        {
+          "time": "2026-09-08",
+          "close": 105.06,
+          "ma200": 103.96,
+          "volume": 7397791
+        },
+        {
+          "time": "2026-09-09",
+          "close": 104.18,
+          "ma200": 103.95,
+          "volume": 7042559
+        },
+        {
+          "time": "2026-09-10",
+          "close": 105.82,
+          "ma200": 103.97,
+          "volume": 7609754
+        },
+        {
+          "time": "2026-09-11",
+          "close": 106.55,
+          "ma200": 103.98,
+          "volume": 7257809
+        },
+        {
+          "time": "2026-09-14",
+          "close": 108.59,
+          "ma200": 104.01,
+          "volume": 7172193
+        },
+        {
+          "time": "2026-09-15",
+          "close": 106.42,
+          "ma200": 104.03,
+          "volume": 8919502
+        },
+        {
+          "time": "2026-09-16",
+          "close": 106.99,
+          "ma200": 104.05,
+          "volume": 10108578
+        },
+        {
+          "time": "2026-09-17",
+          "close": 105.35,
+          "ma200": 104.05,
+          "volume": 7818191
+        },
+        {
+          "time": "2026-09-18",
+          "close": 102.67,
+          "ma200": 104.03,
+          "volume": 19139671
+        },
+        {
+          "time": "2026-09-21",
+          "close": 104.23,
+          "ma200": 104.03,
+          "volume": 7128220
+        },
+        {
+          "time": "2026-09-22",
+          "close": 103.56,
+          "ma200": 104.02,
+          "volume": 2800647
+        }
+      ],
+      "trend_cross": true,
+      "trend_active": true,
+      "hull_reentry": false,
+      "above_hull21": false,
+      "hull_rising": false,
+      "slope_accelerating": false,
+      "volume_confirmed": false,
+      "volume_ratio": 0.85,
+      "avg_dollar_volume": 870819035,
+      "liquidity_confirmed": true,
+      "signal_age": 1,
+      "signal_date": "2026-09-21",
+      "signal_ma200": 104.03
     },
     {
       "ticker": "VZ",
@@ -12158,15 +13853,9 @@
       "band_lower": -4.14,
       "ma50": 47.67,
       "ma100": 46.99,
-      "ma200": 46.16,
+      "ma200": 46.19,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 46.94,
-          "ma200": 44.38,
-          "volume": 26889393
-        },
         {
           "time": "2026-06-12",
           "close": 48.11,
@@ -12580,6 +14269,12 @@
           "close": 47.68,
           "ma200": 46.16,
           "volume": 19991655
+        },
+        {
+          "time": "2026-09-22",
+          "close": 46.98,
+          "ma200": 46.19,
+          "volume": 11754136
         }
       ],
       "trend_cross": false,
@@ -12592,7 +14287,7 @@
       "volume_ratio": 2.42,
       "avg_dollar_volume": 905297000,
       "liquidity_confirmed": true,
-      "signal_age": 1,
+      "signal_age": 2,
       "signal_date": "2026-09-18",
       "signal_ma200": 46.12
     },
@@ -12610,15 +14305,9 @@
       "band_lower": -3.84,
       "ma50": 61.97,
       "ma100": 58.01,
-      "ma200": 55.26,
+      "ma200": 55.27,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 55.16,
-          "ma200": 52.09,
-          "volume": 31746350
-        },
         {
           "time": "2026-06-12",
           "close": 56.02,
@@ -13032,6 +14721,12 @@
           "close": 57.96,
           "ma200": 55.26,
           "volume": 33227743
+        },
+        {
+          "time": "2026-09-22",
+          "close": 56.41,
+          "ma200": 55.27,
+          "volume": 21493667
         }
       ],
       "trend_cross": false,
@@ -13044,7 +14739,7 @@
       "volume_ratio": 1.06,
       "avg_dollar_volume": 2009003132,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 55.21
     },
@@ -13065,12 +14760,6 @@
       "ma200": 13.53,
       "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 14.71,
-          "ma200": 12.94,
-          "volume": 47657219
-        },
         {
           "time": "2026-06-12",
           "close": 14.84,
@@ -13484,6 +15173,12 @@
           "close": 13.17,
           "ma200": 13.53,
           "volume": 50080938
+        },
+        {
+          "time": "2026-09-22",
+          "close": 13.05,
+          "ma200": 13.53,
+          "volume": 21875254
         }
       ],
       "trend_cross": true,
@@ -13496,7 +15191,7 @@
       "volume_ratio": 1.03,
       "avg_dollar_volume": 609275274,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 13.53
     },
@@ -13514,15 +15209,9 @@
       "band_lower": -16.13,
       "ma50": 155.83,
       "ma100": 172.7,
-      "ma200": 147.44,
+      "ma200": 147.82,
       "above_ma200": true,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 176.55,
-          "ma200": 117.69,
-          "volume": 9891755
-        },
         {
           "time": "2026-06-12",
           "close": 179.2,
@@ -13936,6 +15625,12 @@
           "close": 158.98,
           "ma200": 147.44,
           "volume": 9263602
+        },
+        {
+          "time": "2026-09-22",
+          "close": 159.42,
+          "ma200": 147.82,
+          "volume": 3703621
         }
       ],
       "trend_cross": true,
@@ -13948,7 +15643,7 @@
       "volume_ratio": 0.95,
       "avg_dollar_volume": 1313272391,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 146.73
     },
@@ -13966,15 +15661,9 @@
       "band_lower": -3.47,
       "ma50": 51.4,
       "ma100": 50.32,
-      "ma200": 49.87,
+      "ma200": 49.88,
       "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 50.68,
-          "ma200": 47.82,
-          "volume": 11512938
-        },
         {
           "time": "2026-06-12",
           "close": 51.66,
@@ -14388,6 +16077,12 @@
           "close": 49.0,
           "ma200": 49.87,
           "volume": 9847559
+        },
+        {
+          "time": "2026-09-22",
+          "close": 48.01,
+          "ma200": 49.88,
+          "volume": 3418894
         }
       ],
       "trend_cross": false,
@@ -14400,7 +16095,7 @@
       "volume_ratio": 1.67,
       "avg_dollar_volume": 295018618,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 49.85
     },
@@ -14418,15 +16113,9 @@
       "band_lower": -4.96,
       "ma50": 17.31,
       "ma100": 16.98,
-      "ma200": 17.01,
+      "ma200": 17.0,
       "above_ma200": false,
       "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 17.21,
-          "ma200": 16.73,
-          "volume": 26041197
-        },
         {
           "time": "2026-06-12",
           "close": 17.52,
@@ -14840,6 +16529,12 @@
           "close": 16.04,
           "ma200": 17.01,
           "volume": 24038292
+        },
+        {
+          "time": "2026-09-22",
+          "close": 15.65,
+          "ma200": 17.0,
+          "volume": 11895033
         }
       ],
       "trend_cross": false,
@@ -14852,613 +16547,161 @@
       "volume_ratio": 1.52,
       "avg_dollar_volume": 387539684,
       "liquidity_confirmed": true,
-      "signal_age": 2,
+      "signal_age": 3,
       "signal_date": "2026-09-17",
       "signal_ma200": 17.02
-    },
-    {
-      "ticker": "EQT",
-      "spot": 50.35,
-      "signal_type": "watch",
-      "signal_label": "오늘의 관찰 후보",
-      "stage": 1,
-      "stage_label": "오늘의 관찰 후보",
-      "score": 8.6,
-      "hull21": 53.14,
-      "dev_pct": -5.26,
-      "band_upper": 5.43,
-      "band_lower": -5.94,
-      "ma50": 52.83,
-      "ma100": 53.81,
-      "ma200": 55.86,
-      "above_ma200": false,
-      "trend_chart": [
-        {
-          "time": "2026-06-11",
-          "close": 51.2,
-          "ma200": 56.59,
-          "volume": 8442324
-        },
-        {
-          "time": "2026-06-12",
-          "close": 51.94,
-          "ma200": 56.59,
-          "volume": 5227899
-        },
-        {
-          "time": "2026-06-15",
-          "close": 50.75,
-          "ma200": 56.58,
-          "volume": 7793517
-        },
-        {
-          "time": "2026-06-16",
-          "close": 51.37,
-          "ma200": 56.58,
-          "volume": 8786579
-        },
-        {
-          "time": "2026-06-17",
-          "close": 51.13,
-          "ma200": 56.57,
-          "volume": 7826679
-        },
-        {
-          "time": "2026-06-18",
-          "close": 50.72,
-          "ma200": 56.57,
-          "volume": 13560800
-        },
-        {
-          "time": "2026-06-22",
-          "close": 51.84,
-          "ma200": 56.57,
-          "volume": 9872777
-        },
-        {
-          "time": "2026-06-23",
-          "close": 51.66,
-          "ma200": 56.57,
-          "volume": 9762804
-        },
-        {
-          "time": "2026-06-24",
-          "close": 51.48,
-          "ma200": 56.57,
-          "volume": 8643216
-        },
-        {
-          "time": "2026-06-25",
-          "close": 51.65,
-          "ma200": 56.57,
-          "volume": 7955902
-        },
-        {
-          "time": "2026-06-26",
-          "close": 52.7,
-          "ma200": 56.58,
-          "volume": 12647677
-        },
-        {
-          "time": "2026-06-29",
-          "close": 52.0,
-          "ma200": 56.59,
-          "volume": 6287670
-        },
-        {
-          "time": "2026-06-30",
-          "close": 53.17,
-          "ma200": 56.6,
-          "volume": 11787733
-        },
-        {
-          "time": "2026-07-01",
-          "close": 52.48,
-          "ma200": 56.6,
-          "volume": 7364860
-        },
-        {
-          "time": "2026-07-02",
-          "close": 52.61,
-          "ma200": 56.62,
-          "volume": 4878730
-        },
-        {
-          "time": "2026-07-06",
-          "close": 51.71,
-          "ma200": 56.63,
-          "volume": 6848366
-        },
-        {
-          "time": "2026-07-07",
-          "close": 51.76,
-          "ma200": 56.64,
-          "volume": 6510748
-        },
-        {
-          "time": "2026-07-08",
-          "close": 51.16,
-          "ma200": 56.64,
-          "volume": 8363123
-        },
-        {
-          "time": "2026-07-09",
-          "close": 50.15,
-          "ma200": 56.65,
-          "volume": 6776565
-        },
-        {
-          "time": "2026-07-10",
-          "close": 48.85,
-          "ma200": 56.64,
-          "volume": 10861645
-        },
-        {
-          "time": "2026-07-13",
-          "close": 49.72,
-          "ma200": 56.64,
-          "volume": 7671510
-        },
-        {
-          "time": "2026-07-14",
-          "close": 49.81,
-          "ma200": 56.62,
-          "volume": 5812753
-        },
-        {
-          "time": "2026-07-15",
-          "close": 49.25,
-          "ma200": 56.6,
-          "volume": 5906873
-        },
-        {
-          "time": "2026-07-16",
-          "close": 49.4,
-          "ma200": 56.57,
-          "volume": 7634173
-        },
-        {
-          "time": "2026-07-17",
-          "close": 49.56,
-          "ma200": 56.55,
-          "volume": 5535642
-        },
-        {
-          "time": "2026-07-20",
-          "close": 49.05,
-          "ma200": 56.52,
-          "volume": 9119988
-        },
-        {
-          "time": "2026-07-21",
-          "close": 49.8,
-          "ma200": 56.49,
-          "volume": 7224687
-        },
-        {
-          "time": "2026-07-22",
-          "close": 54.01,
-          "ma200": 56.48,
-          "volume": 17854909
-        },
-        {
-          "time": "2026-07-23",
-          "close": 53.39,
-          "ma200": 56.47,
-          "volume": 8831912
-        },
-        {
-          "time": "2026-07-24",
-          "close": 53.03,
-          "ma200": 56.45,
-          "volume": 6683719
-        },
-        {
-          "time": "2026-07-27",
-          "close": 52.0,
-          "ma200": 56.42,
-          "volume": 7692882
-        },
-        {
-          "time": "2026-07-28",
-          "close": 51.66,
-          "ma200": 56.4,
-          "volume": 8311937
-        },
-        {
-          "time": "2026-07-29",
-          "close": 52.57,
-          "ma200": 56.39,
-          "volume": 6974044
-        },
-        {
-          "time": "2026-07-30",
-          "close": 52.71,
-          "ma200": 56.39,
-          "volume": 5448268
-        },
-        {
-          "time": "2026-07-31",
-          "close": 53.29,
-          "ma200": 56.38,
-          "volume": 5338911
-        },
-        {
-          "time": "2026-08-03",
-          "close": 53.56,
-          "ma200": 56.38,
-          "volume": 5073620
-        },
-        {
-          "time": "2026-08-04",
-          "close": 52.77,
-          "ma200": 56.37,
-          "volume": 6022866
-        },
-        {
-          "time": "2026-08-05",
-          "close": 51.23,
-          "ma200": 56.36,
-          "volume": 6281838
-        },
-        {
-          "time": "2026-08-06",
-          "close": 51.6,
-          "ma200": 56.35,
-          "volume": 5692094
-        },
-        {
-          "time": "2026-08-07",
-          "close": 51.69,
-          "ma200": 56.33,
-          "volume": 4828133
-        },
-        {
-          "time": "2026-08-10",
-          "close": 54.08,
-          "ma200": 56.32,
-          "volume": 7239934
-        },
-        {
-          "time": "2026-08-11",
-          "close": 54.37,
-          "ma200": 56.32,
-          "volume": 6246468
-        },
-        {
-          "time": "2026-08-12",
-          "close": 54.06,
-          "ma200": 56.32,
-          "volume": 4574307
-        },
-        {
-          "time": "2026-08-13",
-          "close": 54.08,
-          "ma200": 56.33,
-          "volume": 4625784
-        },
-        {
-          "time": "2026-08-14",
-          "close": 54.42,
-          "ma200": 56.33,
-          "volume": 5161475
-        },
-        {
-          "time": "2026-08-17",
-          "close": 53.01,
-          "ma200": 56.33,
-          "volume": 8623924
-        },
-        {
-          "time": "2026-08-18",
-          "close": 53.14,
-          "ma200": 56.34,
-          "volume": 7357389
-        },
-        {
-          "time": "2026-08-19",
-          "close": 53.64,
-          "ma200": 56.35,
-          "volume": 6518114
-        },
-        {
-          "time": "2026-08-20",
-          "close": 53.89,
-          "ma200": 56.35,
-          "volume": 5210774
-        },
-        {
-          "time": "2026-08-21",
-          "close": 53.72,
-          "ma200": 56.34,
-          "volume": 6130607
-        },
-        {
-          "time": "2026-08-24",
-          "close": 53.79,
-          "ma200": 56.33,
-          "volume": 6482442
-        },
-        {
-          "time": "2026-08-25",
-          "close": 54.0,
-          "ma200": 56.32,
-          "volume": 6992499
-        },
-        {
-          "time": "2026-08-26",
-          "close": 54.79,
-          "ma200": 56.31,
-          "volume": 8275162
-        },
-        {
-          "time": "2026-08-27",
-          "close": 54.77,
-          "ma200": 56.29,
-          "volume": 8726283
-        },
-        {
-          "time": "2026-08-28",
-          "close": 54.57,
-          "ma200": 56.27,
-          "volume": 3646555
-        },
-        {
-          "time": "2026-08-31",
-          "close": 54.18,
-          "ma200": 56.24,
-          "volume": 5802708
-        },
-        {
-          "time": "2026-09-01",
-          "close": 55.59,
-          "ma200": 56.21,
-          "volume": 5815680
-        },
-        {
-          "time": "2026-09-02",
-          "close": 55.75,
-          "ma200": 56.19,
-          "volume": 6191167
-        },
-        {
-          "time": "2026-09-03",
-          "close": 55.61,
-          "ma200": 56.17,
-          "volume": 6285990
-        },
-        {
-          "time": "2026-09-04",
-          "close": 55.17,
-          "ma200": 56.15,
-          "volume": 5236229
-        },
-        {
-          "time": "2026-09-08",
-          "close": 55.12,
-          "ma200": 56.13,
-          "volume": 4956586
-        },
-        {
-          "time": "2026-09-09",
-          "close": 54.63,
-          "ma200": 56.11,
-          "volume": 6330718
-        },
-        {
-          "time": "2026-09-10",
-          "close": 54.96,
-          "ma200": 56.1,
-          "volume": 6024742
-        },
-        {
-          "time": "2026-09-11",
-          "close": 54.07,
-          "ma200": 56.09,
-          "volume": 5470942
-        },
-        {
-          "time": "2026-09-14",
-          "close": 53.21,
-          "ma200": 56.07,
-          "volume": 6059182
-        },
-        {
-          "time": "2026-09-15",
-          "close": 53.12,
-          "ma200": 56.05,
-          "volume": 6648737
-        },
-        {
-          "time": "2026-09-16",
-          "close": 50.41,
-          "ma200": 56.01,
-          "volume": 9729398
-        },
-        {
-          "time": "2026-09-17",
-          "close": 50.35,
-          "ma200": 55.95,
-          "volume": 6795475
-        },
-        {
-          "time": "2026-09-18",
-          "close": 50.0,
-          "ma200": 55.9,
-          "volume": 20428549
-        },
-        {
-          "time": "2026-09-21",
-          "close": 50.13,
-          "ma200": 55.86,
-          "volume": 8281090
-        }
-      ],
-      "trend_cross": false,
-      "trend_active": false,
-      "hull_reentry": true,
-      "above_hull21": false,
-      "hull_rising": false,
-      "slope_accelerating": false,
-      "volume_confirmed": false,
-      "volume_ratio": 1.07,
-      "avg_dollar_volume": 318550638,
-      "liquidity_confirmed": true,
-      "signal_age": 2,
-      "signal_date": "2026-09-17",
-      "signal_ma200": 55.95
     }
   ],
   "call_wall_breakouts": [],
   "unusual_options_activity": [
     {
-      "ticker": "META",
-      "spot": 741.25,
-      "strike": 730,
+      "ticker": "MRNA",
+      "spot": 182.64,
+      "strike": 182.5,
       "side": "put",
-      "volume": 36344,
-      "oi": 1,
-      "vol_oi_ratio": 36344.0,
+      "volume": 826,
+      "oi": 3,
+      "vol_oi_ratio": 275.33,
       "is_new_contract": false
     },
     {
-      "ticker": "META",
-      "spot": 741.25,
-      "strike": 735,
+      "ticker": "MU",
+      "spot": 1081.47,
+      "strike": 1075,
       "side": "put",
-      "volume": 26050,
-      "oi": 1,
-      "vol_oi_ratio": 26050.0,
+      "volume": 13525,
+      "oi": 62,
+      "vol_oi_ratio": 218.15,
       "is_new_contract": false
     },
     {
-      "ticker": "META",
-      "spot": 741.25,
-      "strike": 740,
+      "ticker": "SNDK",
+      "spot": 1891.16,
+      "strike": 1885,
       "side": "put",
-      "volume": 42601,
-      "oi": 2,
-      "vol_oi_ratio": 21300.5,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "INTC",
-      "spot": 121.78,
-      "strike": 121,
-      "side": "put",
-      "volume": 62797,
-      "oi": 5,
-      "vol_oi_ratio": 12559.4,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "AMD",
-      "spot": 615.52,
-      "strike": 600,
-      "side": "put",
-      "volume": 46016,
+      "volume": 745,
       "oi": 4,
-      "vol_oi_ratio": 11504.0,
+      "vol_oi_ratio": 186.25,
       "is_new_contract": false
     },
     {
-      "ticker": "INTC",
-      "spot": 121.78,
-      "strike": 118,
-      "side": "put",
-      "volume": 21210,
-      "oi": 2,
-      "vol_oi_ratio": 10605.0,
+      "ticker": "PYPL",
+      "spot": 53.53,
+      "strike": 49.5,
+      "side": "call",
+      "volume": 3630,
+      "oi": 21,
+      "vol_oi_ratio": 172.86,
       "is_new_contract": false
     },
     {
-      "ticker": "INTC",
-      "spot": 121.78,
-      "strike": 122,
-      "side": "put",
-      "volume": 69701,
-      "oi": 8,
-      "vol_oi_ratio": 8712.62,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "AMD",
-      "spot": 615.52,
-      "strike": 595,
-      "side": "put",
-      "volume": 14398,
-      "oi": 2,
-      "vol_oi_ratio": 7199.0,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "AMD",
-      "spot": 615.52,
-      "strike": 585,
-      "side": "put",
-      "volume": 9133,
-      "oi": 2,
-      "vol_oi_ratio": 4566.5,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "NVDA",
-      "spot": 227.38,
+      "ticker": "SATS",
+      "spot": 103.92,
       "strike": 140,
       "side": "put",
-      "volume": 22760,
+      "volume": 2121,
+      "oi": 17,
+      "vol_oi_ratio": 124.76,
+      "is_new_contract": false
+    },
+    {
+      "ticker": "AMD",
+      "spot": 617.59,
+      "strike": 617.5,
+      "side": "put",
+      "volume": 6861,
+      "oi": 63,
+      "vol_oi_ratio": 108.9,
+      "is_new_contract": false
+    },
+    {
+      "ticker": "MRNA",
+      "spot": 182.64,
+      "strike": 185,
+      "side": "put",
+      "volume": 840,
+      "oi": 8,
+      "vol_oi_ratio": 105.0,
+      "is_new_contract": false
+    },
+    {
+      "ticker": "MU",
+      "spot": 1081.47,
+      "strike": 1070,
+      "side": "put",
+      "volume": 12712,
+      "oi": 125,
+      "vol_oi_ratio": 101.7,
+      "is_new_contract": false
+    },
+    {
+      "ticker": "SNDK",
+      "spot": 1891.16,
+      "strike": 1895,
+      "side": "put",
+      "volume": 507,
+      "oi": 5,
+      "vol_oi_ratio": 101.4,
+      "is_new_contract": false
+    },
+    {
+      "ticker": "JPM",
+      "spot": 340.44,
+      "strike": 320,
+      "side": "call",
+      "volume": 569,
+      "oi": 6,
+      "vol_oi_ratio": 94.83,
+      "is_new_contract": false
+    },
+    {
+      "ticker": "SNDK",
+      "spot": 1891.16,
+      "strike": 1875,
+      "side": "put",
+      "volume": 779,
       "oi": 9,
-      "vol_oi_ratio": 2528.89,
+      "vol_oi_ratio": 86.56,
       "is_new_contract": false
     },
     {
       "ticker": "MU",
-      "spot": 1043.96,
-      "strike": 1040,
+      "spot": 1081.47,
+      "strike": 1080,
       "side": "put",
-      "volume": 46578,
-      "oi": 53,
-      "vol_oi_ratio": 878.83,
+      "volume": 10219,
+      "oi": 128,
+      "vol_oi_ratio": 79.84,
       "is_new_contract": false
     },
     {
-      "ticker": "MU",
-      "spot": 1043.96,
-      "strike": 1045,
+      "ticker": "AMD",
+      "spot": 617.59,
+      "strike": 612.5,
       "side": "put",
-      "volume": 21750,
-      "oi": 26,
-      "vol_oi_ratio": 836.54,
+      "volume": 11883,
+      "oi": 209,
+      "vol_oi_ratio": 56.86,
       "is_new_contract": false
     },
     {
-      "ticker": "WBD",
-      "spot": 30.8,
-      "strike": 20,
-      "side": "put",
-      "volume": 35442,
-      "oi": 50,
-      "vol_oi_ratio": 708.84,
+      "ticker": "CSCO",
+      "spot": 104.87,
+      "strike": 107,
+      "side": "call",
+      "volume": 1739,
+      "oi": 37,
+      "vol_oi_ratio": 47.0,
       "is_new_contract": false
     },
     {
-      "ticker": "CRWV",
-      "spot": 85.43,
-      "strike": 62,
-      "side": "put",
-      "volume": 685,
-      "oi": 1,
-      "vol_oi_ratio": 685.0,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "MSTR",
-      "spot": 168.5,
-      "strike": 180,
-      "side": "put",
-      "volume": 546,
-      "oi": 1,
-      "vol_oi_ratio": 546.0,
+      "ticker": "AMD",
+      "spot": 617.59,
+      "strike": 617.5,
+      "side": "call",
+      "volume": 10614,
+      "oi": 244,
+      "vol_oi_ratio": 43.5,
       "is_new_contract": false
     }
   ]
