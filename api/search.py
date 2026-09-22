@@ -656,6 +656,21 @@ REGULAR_SECTOR_ETFS = {
     "CLOUD / DATA": ["SKYY", "CLOU"],
 }
 
+# Fixed sector ETF map for the dedicated sector-rotation scanner.
+# The stock lists are intentionally liquid, recognizable leaders rather than a full index replication.
+SECTOR_TRACKER_GROUPS = {
+    "SEMICONDUCTOR": {"etfs": ["SMH", "SOXX"], "stocks": ["NVDA","AMD","AVGO","MU","ARM","MRVL","QCOM","INTC","TSM"]},
+    "SOFTWARE / AI": {"etfs": ["IGV", "XLK"], "stocks": ["PLTR","ORCL","CRM","NOW","CRWD","DDOG","SNOW","MDB"]},
+    "CLOUD / DATA": {"etfs": ["SKYY", "CLOU"], "stocks": ["ANET","DELL","HPE","CRWV","NBIS","VRT"]},
+    "FINANCIAL": {"etfs": ["XLF", "KRE"], "stocks": ["JPM","BAC","GS","MS","WFC","C","HOOD","COIN"]},
+    "ENERGY": {"etfs": ["XLE", "OIH"], "stocks": ["XOM","CVX","COP","SLB","HAL","EOG","FANG"]},
+    "INDUSTRIAL": {"etfs": ["XLI", "PAVE"], "stocks": ["GEV","ETN","CAT","DE","URI","PH","EMR","HON"]},
+    "HEALTHCARE / BIOTECH": {"etfs": ["XLV", "XBI"], "stocks": ["LLY","UNH","ABBV","MRK","AMGN","GILD","VRTX","REGN"]},
+    "CONSUMER": {"etfs": ["XLY", "RTH"], "stocks": ["AMZN","TSLA","HD","LOW","COST","WMT","TGT","NKE"]},
+    "COMMUNICATION": {"etfs": ["XLC"], "stocks": ["META","GOOGL","NFLX","DIS","TMUS","T","VZ"]},
+    "UTILITIES / POWER": {"etfs": ["XLU"], "stocks": ["CEG","VST","NEE","SO","DUK","AEP","BE"]},
+}
+
 def _ticker_sector(ticker):
     for sector, names in PREMARKET_GROUPS.items():
         if ticker in names:
@@ -797,6 +812,163 @@ def _premarket_scan(limit=16, min_gap=1.0):
         "price_source": "Schwab Trader API real-time quote",
         "news_source": "Finnhub company news when configured",
         "note": "This is a focused liquid-growth universe, not the entire US market. Premarket gain is measured versus the previous close.",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def _sector_rotation_scan(top_n=2):
+    """Rank fixed sector ETFs, then split top-sector stocks into day momentum and swing pullback lists."""
+    top_n = max(1, min(int(top_n), 4))
+
+    etf_symbols = list(dict.fromkeys(
+        etf for group in SECTOR_TRACKER_GROUPS.values() for etf in group["etfs"]
+    ))
+    etf_quotes = {}
+    for i in range(0, len(etf_symbols), 5):
+        result = _schwab_quotes(etf_symbols[i:i+5])
+        if not result.get("_error"):
+            etf_quotes.update(result)
+
+    ranked = []
+    for sector, group in SECTOR_TRACKER_GROUPS.items():
+        etfs = []
+        moves = []
+        for etf in group["etfs"]:
+            q = etf_quotes.get(etf) or {}
+            try:
+                spot = float(q.get("last") if q.get("last") is not None else q.get("mark"))
+                prev = float(q.get("close"))
+                if prev <= 0:
+                    continue
+                move = (spot - prev) / prev * 100
+                moves.append(move)
+                etfs.append({"ticker": etf, "price": spot, "change_pct": move})
+            except (TypeError, ValueError):
+                continue
+        if moves:
+            ranked.append({
+                "sector": sector,
+                "score": sum(moves) / len(moves),
+                "etfs": etfs,
+                "stocks": group["stocks"],
+            })
+
+    ranked.sort(key=lambda x: x["score"], reverse=True)
+    selected = ranked[:top_n]
+
+    # Session-progress adjustment gives a rough intraday RVOL estimate using current total volume
+    # against average daily volume. It is a discovery aid, not exchange-level order flow.
+    now_et = datetime.now(timezone.utc).astimezone(EASTERN)
+    open_minutes = 9 * 60 + 30
+    current_minutes = now_et.hour * 60 + now_et.minute
+    elapsed = max(1, min(390, current_minutes - open_minutes))
+    session_fraction = max(0.08, min(1.0, elapsed / 390.0))
+
+    results = []
+    for sector_row in selected:
+        names = sector_row["stocks"]
+        quotes = {}
+        for i in range(0, len(names), 5):
+            result = _schwab_quotes(names[i:i+5])
+            if not result.get("_error"):
+                quotes.update(result)
+
+        day_candidates = []
+        swing_candidates = []
+        for ticker in names:
+            q = quotes.get(ticker) or {}
+            try:
+                spot = float(q.get("last") if q.get("last") is not None else q.get("mark"))
+                prev_close = float(q.get("close"))
+                day_volume = float(q.get("volume") or 0)
+            except (TypeError, ValueError):
+                continue
+            if spot < 5 or prev_close <= 0:
+                continue
+
+            day_change = (spot - prev_close) / prev_close * 100
+            daily = _daily_bars(ticker, lookback_days=100)
+            if len(daily) < 25:
+                continue
+
+            closes = [float(x["close"]) for x in daily]
+            vols = [float(x.get("volume") or 0) for x in daily]
+            ema21 = _ema(closes[-60:], 21)
+            high20 = max(float(x["high"]) for x in daily[-20:])
+            close20 = closes[-21] if len(closes) >= 21 else closes[0]
+            return20 = ((spot - close20) / close20 * 100) if close20 > 0 else None
+            from_high = ((spot - high20) / high20 * 100) if high20 > 0 else None
+            dist21 = ((spot - ema21) / ema21 * 100) if ema21 else None
+
+            avg20_vol = (sum(vols[-21:-1]) / len(vols[-21:-1])) if len(vols[-21:-1]) else None
+            recent5_vol = (sum(vols[-6:-1]) / len(vols[-6:-1])) if len(vols[-6:-1]) else None
+            dryup = bool(avg20_vol and recent5_vol and recent5_vol <= avg20_vol * 0.80)
+            intraday_rvol = (
+                day_volume / (avg20_vol * session_fraction)
+                if avg20_vol and avg20_vol > 0 else None
+            )
+
+            base = {
+                "ticker": ticker,
+                "price": spot,
+                "day_change_pct": day_change,
+                "day_volume": day_volume,
+                "intraday_rvol_est": intraday_rvol,
+                "ema21": ema21,
+                "distance_to_21ema_pct": dist21,
+                "return_20d_pct": return20,
+                "from_20d_high_pct": from_high,
+                "volume_dryup": dryup,
+            }
+
+            # Day / 0DTE discovery: strong sector + positive stock + expanding relative volume.
+            if day_change >= 1.0 and (intraday_rvol is None or intraday_rvol >= 1.10):
+                item = dict(base)
+                item["state"] = "DAY MOMENTUM"
+                item["reason"] = "Strong sector + positive move + volume expansion"
+                day_candidates.append(item)
+
+            # Swing pullback: previously strong leader, now near 21EMA with a controlled pullback and dry volume.
+            prior_leader = bool(return20 is not None and return20 >= 5.0)
+            near21 = bool(dist21 is not None and -2.5 <= dist21 <= 3.5)
+            controlled_pullback = bool(from_high is not None and -12.0 <= from_high <= -1.0)
+            if prior_leader and near21 and controlled_pullback and dryup:
+                item = dict(base)
+                item["state"] = "SWING PULLBACK"
+                item["reason"] = "Prior leader + 21EMA/HULL zone + volume dry-up"
+                swing_candidates.append(item)
+
+        day_candidates.sort(
+            key=lambda x: ((x.get("intraday_rvol_est") or 0), x.get("day_change_pct") or 0),
+            reverse=True,
+        )
+        swing_candidates.sort(
+            key=lambda x: (
+                x.get("return_20d_pct") or 0,
+                -(abs(x.get("distance_to_21ema_pct") or 99)),
+            ),
+            reverse=True,
+        )
+
+        results.append({
+            "sector": sector_row["sector"],
+            "sector_score": sector_row["score"],
+            "etfs": sector_row["etfs"],
+            "day_momentum": day_candidates[:5],
+            "swing_pullback": swing_candidates[:5],
+        })
+
+    return {
+        "top_sectors": results,
+        "all_sector_ranking": [
+            {"sector": x["sector"], "score": x["score"], "etfs": x["etfs"]}
+            for x in ranked
+        ],
+        "rules": {
+            "day_momentum": "Strong top sector; stock >= +1%; estimated intraday RVOL >= 1.10 when available.",
+            "swing_pullback": "20-day return >= +5%; 1-12% below 20-day high; within -2.5%/+3.5% of 21EMA; recent daily volume <= 80% of 20-day average.",
+        },
+        "note": "Discovery scanner only. Intraday RVOL is estimated from elapsed-session volume versus average daily volume; confirm 5-minute volume and structure in Trade Tracker.",
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -1378,6 +1550,15 @@ class handler(BaseHTTPRequestHandler):
                 limit = int((query.get("limit", ["16"])[0]))
                 min_gap = float((query.get("min_gap", ["1.0"])[0]))
                 result = _premarket_scan(limit=limit, min_gap=min_gap)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
+            return
+
+        if mode == "sector_rotation_scan":
+            try:
+                top_n = int((query.get("top_n", ["2"])[0]))
+                result = _sector_rotation_scan(top_n=top_n)
                 self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
