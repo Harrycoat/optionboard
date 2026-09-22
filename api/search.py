@@ -93,6 +93,11 @@ def _schwab_quotes(tickers):
             "last": quote.get("lastPrice"),
             "mark": quote.get("mark"),
             "volume": quote.get("totalVolume"),
+            "close": quote.get("closePrice"),
+            "net_change": quote.get("netChange"),
+            "net_percent_change": quote.get("netPercentChange"),
+            "trade_time": quote.get("tradeTime"),
+            "quote_time": quote.get("quoteTime"),
             "realtime": row.get("realtime"),
             "description": reference.get("description"),
             "source": "Schwab Trader API",
@@ -471,6 +476,164 @@ def _five_min_minervini(bars):
         "volume_dryup": volume_dryup,
         "breakout_volume": breakout_volume,
         "range_sequence_pct": ranges,
+    }
+
+
+
+PREMARKET_GROUPS = {
+    "SEMICONDUCTOR": ["NVDA","AMD","AVGO","MU","ARM","MRVL","INTC","QCOM","TSM"],
+    "AI / SOFTWARE": ["PLTR","ORCL","CRM","SNOW","DDOG","CRWD","MDB","NOW"],
+    "MEGA TECH": ["AAPL","MSFT","AMZN","META","GOOGL","NFLX","TSLA"],
+    "POWER / AI INFRA": ["VRT","CEG","VST","GEV","ETN","BE"],
+    "FINTECH / CRYPTO": ["COIN","HOOD","MSTR","SOFI","PYPL"],
+    "CLOUD / DATA": ["CRWV","NBIS","DELL","HPE","ANET"],
+}
+PREMARKET_UNIVERSE = list(dict.fromkeys(
+    ticker for names in PREMARKET_GROUPS.values() for ticker in names
+))
+
+def _ticker_sector(ticker):
+    for sector, names in PREMARKET_GROUPS.items():
+        if ticker in names:
+            return sector
+    return "OTHER"
+
+def _finnhub_company_news(ticker, days=2):
+    if not FINNHUB_API_KEY:
+        return []
+    end = date.today()
+    start = end - timedelta(days=max(1, int(days)))
+    try:
+        r = requests.get(
+            "https://finnhub.io/api/v1/company-news",
+            params={
+                "symbol": ticker,
+                "from": start.isoformat(),
+                "to": end.isoformat(),
+                "token": FINNHUB_API_KEY,
+            },
+            timeout=10,
+        )
+        if r.status_code != 200:
+            return []
+        rows = r.json() or []
+        rows = sorted(rows, key=lambda x: x.get("datetime") or 0, reverse=True)
+        return rows[:3]
+    except Exception:
+        return []
+
+def _news_reason(headline):
+    text = (headline or "").lower()
+    groups = [
+        ("EARNINGS", ["earnings","revenue","eps","quarter","results"]),
+        ("GUIDANCE", ["guidance","outlook","forecast","raises","cuts outlook"]),
+        ("CONTRACT", ["contract","award","deal","partnership","agreement","selected by"]),
+        ("FDA / CLINICAL", ["fda","clinical","trial","phase 2","phase 3","approval"]),
+        ("M&A", ["acquire","acquisition","merger","buyout","takeover"]),
+        ("ANALYST", ["upgrade","downgrade","price target","initiates","overweight"]),
+        ("OFFERING", ["offering","share sale","secondary","convertible notes"]),
+        ("PRODUCT / AI", ["launch","unveil","artificial intelligence"," ai ","chip","platform"]),
+    ]
+    for label, words in groups:
+        if any(w in text for w in words):
+            return label
+    return "NEWS"
+
+def _premarket_scan(limit=16, min_gap=1.0):
+    quotes = {}
+    for i in range(0, len(PREMARKET_UNIVERSE), 5):
+        batch = PREMARKET_UNIVERSE[i:i+5]
+        result = _schwab_quotes(batch)
+        if result.get("_error"):
+            continue
+        quotes.update(result)
+
+    movers = []
+    for ticker in PREMARKET_UNIVERSE:
+        q = quotes.get(ticker) or {}
+        spot = q.get("last")
+        if spot is None:
+            spot = q.get("mark")
+        if spot is None:
+            bid, ask = q.get("bid"), q.get("ask")
+            if bid is not None and ask is not None:
+                spot = (float(bid) + float(ask)) / 2
+        prev_close = q.get("close")
+        try:
+            spot = float(spot)
+            prev_close = float(prev_close)
+        except (TypeError, ValueError):
+            continue
+        if prev_close <= 0:
+            continue
+        gap = (spot - prev_close) / prev_close * 100
+        if gap < float(min_gap):
+            continue
+        movers.append({
+            "ticker": ticker,
+            "sector": _ticker_sector(ticker),
+            "spot": spot,
+            "prev_close": prev_close,
+            "gap_pct": gap,
+            "volume": q.get("volume"),
+            "bid": q.get("bid"),
+            "ask": q.get("ask"),
+            "realtime": q.get("realtime"),
+            "description": q.get("description"),
+        })
+
+    movers.sort(key=lambda x: x["gap_pct"], reverse=True)
+
+    # Sector breadth from all positive premarket names in our scan universe.
+    sector_stats = {}
+    for sector, names in PREMARKET_GROUPS.items():
+        vals = []
+        for ticker in names:
+            q = quotes.get(ticker) or {}
+            try:
+                spot = float(q.get("last") if q.get("last") is not None else q.get("mark"))
+                close = float(q.get("close"))
+                if close > 0:
+                    vals.append((spot - close) / close * 100)
+            except (TypeError, ValueError):
+                continue
+        positive = [v for v in vals if v >= float(min_gap)]
+        sector_stats[sector] = {
+            "members_checked": len(vals),
+            "positive_count": len(positive),
+            "avg_gap_pct": (sum(vals) / len(vals)) if vals else None,
+        }
+
+    # News lookup only for the strongest movers to keep the scan quick.
+    for item in movers[:min(12, len(movers))]:
+        news = _finnhub_company_news(item["ticker"], days=2)
+        latest = news[0] if news else None
+        sector = sector_stats.get(item["sector"]) or {}
+        if latest and latest.get("headline"):
+            item["reason"] = _news_reason(latest.get("headline"))
+            item["headline"] = latest.get("headline")
+            item["news_url"] = latest.get("url")
+            item["news_time"] = latest.get("datetime")
+        elif (sector.get("positive_count") or 0) >= 2:
+            item["reason"] = "SECTOR MOVE"
+            item["headline"] = f'{item["sector"]}: {sector.get("positive_count")} peers are also up'
+        else:
+            item["reason"] = "MOMENTUM / CHECK NEWS"
+            item["headline"] = "No clear catalyst detected from connected news source."
+        item["sector_positive_count"] = sector.get("positive_count")
+        item["sector_avg_gap_pct"] = sector.get("avg_gap_pct")
+
+    wanted = max(1, min(int(limit), 25))
+    return {
+        "count": min(len(movers), wanted),
+        "movers": movers[:wanted],
+        "min_gap_pct": float(min_gap),
+        "universe_count": len(PREMARKET_UNIVERSE),
+        "sector_stats": sector_stats,
+        "price_source": "Schwab Trader API real-time quote",
+        "news_source": "Finnhub company news when configured",
+        "note": "This is a focused liquid-growth universe, not the entire US market. Premarket gain is measured versus the previous close.",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -877,6 +1040,16 @@ class handler(BaseHTTPRequestHandler):
 
         if mode == "fear_greed":
             self.wfile.write(json.dumps(_fetch_cnn_fear_greed(), ensure_ascii=False).encode())
+            return
+
+        if mode == "premarket_scan":
+            try:
+                limit = int((query.get("limit", ["16"])[0]))
+                min_gap = float((query.get("min_gap", ["1.0"])[0]))
+                result = _premarket_scan(limit=limit, min_gap=min_gap)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
             return
 
         if mode == "option_swing_candidates":
