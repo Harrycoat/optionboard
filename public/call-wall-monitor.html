@@ -51,10 +51,10 @@
       <div class="volume-status" id="flowStatus">캔들 방향 + 상대거래량 분석 대기</div>
     </div>
     <div class="pressure-gauge">
-      <div class="pressure-head"><b>LIVE BUY / SELL PRESSURE</b><span id="pressureMeta">Schwab LIVE · 샘플링 준비</span></div>
+      <div class="pressure-head"><b>LIVE BUY / SELL PRESSURE</b><span id="pressureMeta">Schwab LIVE · 첫 샘플</span></div>
       <div class="pressure-track"><i class="pressure-marker" id="pressureMarker" style="left:50%"></i></div>
       <div class="pressure-labels"><span class="sell">SELL</span><span>NEUTRAL</span><span class="buy">BUY</span></div>
-      <div class="pressure-status" id="pressureStatus">실시간 호가/체결 추정 대기</div>
+      <div class="pressure-status" id="pressureStatus">첫 LIVE 샘플 수집 중</div>
     </div>
   </section>
 
@@ -299,9 +299,20 @@ async function load(){
   try{
     $('heartbeat').textContent='5종목 데이터 확인 중…';
     const results=await Promise.all(tickers.map(fetchTicker));
-    results.forEach((d,i)=>dataMap[tickers[i]]=d);
+    results.forEach((d,i)=>{
+      const t=tickers[i];
+      dataMap[t]=d;
+      if(d && !d.error && d.schwab_quote){
+        if(liveQuotes[t]) prevLiveQuotes[t]=liveQuotes[t];
+        liveQuotes[t]=d.schwab_quote;
+      }
+    });
     if(!selectedTicker||!tickers.includes(selectedTicker)||dataMap[selectedTicker]?.error)selectedTicker=tickers.find(t=>dataMap[t]&&!dataMap[t].error)||'';
-    if(selectedTicker){data=dataMap[selectedTicker];render()}
+    if(selectedTicker){
+      data=dataMap[selectedTicker];
+      render();
+      renderLivePressure();
+    }
     renderPortfolio();
     const good=results.filter(x=>!x.error),latest=good.map(x=>x.latest_bar?.time).filter(Boolean).sort().at(-1);
     $('updated').textContent=good.length+'/'+tickers.length+' 종목 확인 · 주가 '+(good.some(x=>x.stock_realtime)?'LIVE':'지연')+' · 옵션/5분 분석 약 '+(good[0]?.options_delay_minutes||15)+'분 지연';
@@ -313,7 +324,7 @@ restoreTickers();
 $('searchForm').addEventListener('submit',e=>{e.preventDefault();lastLogKey='';selectedTicker='';load();clearInterval(timer);timer=setInterval(load,60000)});
 tickerInputs().forEach(i=>i.addEventListener('change',()=>{i.value=i.value.trim().toUpperCase();saveTickers()}));
 $('clearLog').onclick=()=>{localStorage.removeItem(logKey);lastLogKey='';renderLog()};
-renderLog();load();loadLiveQuotes();timer=setInterval(load,60000);liveTimer=setInterval(loadLiveQuotes,15000);
+renderLog();load();setTimeout(loadLiveQuotes,5000);timer=setInterval(load,60000);liveTimer=setInterval(loadLiveQuotes,15000);
 </script>
 </body>
 </html>
