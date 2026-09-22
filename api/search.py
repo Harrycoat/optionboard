@@ -474,6 +474,52 @@ def _five_min_minervini(bars):
     }
 
 
+def _option_swing_market_candidates(limit=12):
+    """Use Massive top movers as a fast first-pass universe for today's trading candidates."""
+    data = _massive_get(
+        f"{MASSIVE_API_BASE}/v2/snapshot/locale/us/markets/stocks/gainers",
+        {"include_otc": "false"},
+    )
+    rows = data.get("tickers") or []
+    out = []
+    for row in rows:
+        try:
+            ticker = str(row.get("ticker") or "").upper().strip()
+            day = row.get("day") or {}
+            prev = row.get("prevDay") or {}
+            price = row.get("lastTrade", {}).get("p") or day.get("c") or row.get("min", {}).get("c")
+            change_pct = row.get("todaysChangePerc")
+            volume = day.get("v") or 0
+            prev_volume = prev.get("v") or 0
+            if not ticker or price is None or change_pct is None:
+                continue
+            price = float(price)
+            change_pct = float(change_pct)
+            volume = float(volume or 0)
+            prev_volume = float(prev_volume or 0)
+            if price < 5 or volume < 250000:
+                continue
+            out.append({
+                "ticker": ticker,
+                "price": price,
+                "change_pct": change_pct,
+                "day_volume": volume,
+                "prev_day_volume": prev_volume,
+                "volume_vs_prev_day": (volume / prev_volume) if prev_volume > 0 else None,
+            })
+        except (TypeError, ValueError):
+            continue
+        if len(out) >= max(1, min(int(limit), 20)):
+            break
+    return {
+        "count": len(out),
+        "candidates": out,
+        "source": "Massive Top Market Movers",
+        "note": "Fast first-pass universe; detailed 5m/15m setup is calculated separately.",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 def _option_swing_setup_payload(ticker):
     ticker = ticker.upper()
     all_5m = _intraday_five_minute_bars(ticker)
@@ -603,6 +649,15 @@ class handler(BaseHTTPRequestHandler):
 
         if mode == "fear_greed":
             self.wfile.write(json.dumps(_fetch_cnn_fear_greed(), ensure_ascii=False).encode())
+            return
+
+        if mode == "option_swing_candidates":
+            try:
+                limit = int((query.get("limit", ["12"])[0]))
+                result = _option_swing_market_candidates(limit=limit)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
             return
 
         if mode == "schwab_quote":
