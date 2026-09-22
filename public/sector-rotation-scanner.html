@@ -30,7 +30,7 @@
 
   <div class="card">
     <div class="controls"><button onclick="scan()">SCAN TOP SECTORS</button><span class="status" id="status">Ready</span></div>
-    <div class="note">DAY / 0DTE = today's strong-sector momentum discovery. SWING PULLBACK = prior leader near the 21EMA/HULL zone with recent volume dry-up. Final entry confirmation remains in Trade Tracker.</div>
+    <div class="note">DAY / 0DTE shows positive leaders from today's strongest sectors. MOMENTUM = RVOL confirmed; WATCH = positive but still waiting for volume. SWING PULLBACK = prior leader near the 21EMA/HULL zone with recent volume dry-up. Final entry confirmation remains in Trade Tracker.</div>
   </div>
 
   <div class="card"><div class="rank" id="ranking"><span class="pill">Waiting for scan…</span></div></div>
@@ -42,11 +42,11 @@ const pct=v=>v==null?'—':(v>=0?'+':'')+Number(v).toFixed(2)+'%';
 const x=v=>v==null?'—':Number(v).toFixed(2)+'x';
 function rows(items){
  if(!items||!items.length)return '<div class="empty">No matching stocks right now.</div>';
- return items.map(s=>'<div class="row"><b>'+s.ticker+'</b><span class="green">'+pct(s.day_change_pct)+'</span><span>'+x(s.intraday_rvol_est)+'</span><span>'+pct(s.distance_to_21ema_pct)+'</span><span>'+pct(s.from_20d_high_pct)+'</span><a class="open" href="/trade-tracker.html?ticker='+s.ticker+'">TRACK</a></div>').join('');
+ return items.map(s=>'<div class="row"><b>'+s.ticker+'</b><span class="green">'+pct(s.day_change_pct)+'</span><span>'+x(s.intraday_rvol_est)+'</span><span>'+(s.state||'—')+'</span><span>'+pct(s.from_20d_high_pct)+'</span><a class="open" href="/trade-tracker.html?ticker='+s.ticker+'">TRACK</a></div>').join('');
 }
 function sectorCard(s,i){
  const etfs=(s.etfs||[]).map(e=>e.ticker+' '+pct(e.change_pct)).join(' · ');
- return '<div class="card"><h2>#'+(i+1)+' '+s.sector+' <span class="score">'+pct(s.sector_score)+'</span></h2><div class="etf">'+etfs+'</div><div class="sector"><div class="panel"><h3>DAY / 0DTE MOMENTUM</h3><div class="row muted"><span>TICKER</span><span>DAY</span><span>RVOL*</span><span>21EMA DIST</span><span>20D HIGH</span><span></span></div>'+rows(s.day_momentum)+'</div><div class="panel"><h3>SWING PULLBACK</h3><div class="row muted"><span>TICKER</span><span>DAY</span><span>RVOL*</span><span>21EMA DIST</span><span>20D HIGH</span><span></span></div>'+rows(s.swing_pullback)+'</div></div></div>';
+ return '<div class="card"><h2>#'+(i+1)+' '+s.sector+' <span class="score">'+pct(s.sector_score)+'</span></h2><div class="etf">'+etfs+'</div><div class="sector"><div class="panel"><h3>DAY / 0DTE MOMENTUM</h3><div class="row muted"><span>TICKER</span><span>DAY</span><span>RVOL*</span><span>STATE</span><span>20D HIGH</span><span></span></div>'+rows(s.day_momentum)+'</div><div class="panel"><h3>SWING PULLBACK</h3><div class="row muted"><span>TICKER</span><span>DAY</span><span>RVOL*</span><span>21EMA DIST</span><span>20D HIGH</span><span></span></div>'+rows(s.swing_pullback)+'</div></div></div>';
 }
 async function scan(){
  $('status').textContent='Scanning fixed sector ETFs…';
