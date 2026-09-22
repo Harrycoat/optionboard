@@ -170,19 +170,26 @@ function render(arr){
 async function autoMarket(){
   $('autoBtn').disabled=true;$('scanBtn').disabled=true;$('status').textContent='SCAN MARKET · 미국 시장 후보 검색 중…';
   try{
-    const r=await fetch('/api/search?mode=option_swing_candidates&limit=20',{cache:'no-store'});
+    const r=await fetch('/api/search?mode=option_swing_candidates&limit=30',{cache:'no-store'});
     const j=await r.json();
     if(j.error)throw new Error(j.error);
-    const c=(j.candidates||[]).slice(0,20);
+    const c=(j.candidates||[]).slice(0,30);
     if(!c.length){
       render([]);
       $('status').textContent='SCAN MARKET 후보 0개 · 현재 필터 조건에 맞는 종목이 없습니다.';
       return
     }
-    const rows=await Promise.all(c.map(async x=>{try{const rr=await fetch('/api/search?mode=option_swing_setup&ticker='+encodeURIComponent(x.ticker),{cache:'no-store'});const d=await rr.json();return {...d,reason:x.reason,headline:x.headline,news_url:x.news_url}}catch(e){return {ticker:x.ticker,error:e.message}}}));
-    const good=rows.filter(x=>!x.error);
+    const rows=await Promise.all(c.map(async x=>{try{
+      const rr=await fetch('/api/search?mode=option_swing_setup&ticker='+encodeURIComponent(x.ticker),{cache:'no-store'});
+      const d=await rr.json();
+      if(d.error) return {ticker:x.ticker,spot:x.price,day_change_pct:x.change_pct,volume5_ratio:null,volume15_ratio:null,minervini5m:{stage:'—',pivot_distance_pct:null},reason:x.reason||'POPULAR / MARKET MOVER',headline:x.headline,news_url:x.news_url,_basic:true};
+      return {...d,reason:x.reason,headline:x.headline,news_url:x.news_url};
+    }catch(e){
+      return {ticker:x.ticker,spot:x.price,day_change_pct:x.change_pct,volume5_ratio:null,volume15_ratio:null,minervini5m:{stage:'—',pivot_distance_pct:null},reason:x.reason||'POPULAR / MARKET MOVER',headline:x.headline,news_url:x.news_url,_basic:true};
+    }}));
+    const good=rows;
     render(good);
-    $('status').textContent='SCAN MARKET · '+good.length+'종목 자동 분석 완료 · '+(j.selection_mode||'market')+' · NEWS / POPULAR / MOVERS → 5M/15M 구조';
+    $('status').textContent='SCAN MARKET · '+good.length+'종목 표시 · '+(j.selection_mode||'market')+' · NEWS / POPULAR / MOVERS → 5M/15M 구조';
   }catch(e){$('status').textContent='SCAN MARKET 오류 · '+e.message}
   finally{$('autoBtn').disabled=false;$('scanBtn').disabled=false}
 }
