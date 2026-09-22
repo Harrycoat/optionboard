@@ -2602,7 +2602,7 @@
   {
     "ticker": "TW",
     "date": "2026-09-22",
-    "spot": 101.99,
+    "spot": 99.74,
     "expiries_used": [
       "2026-10-16",
       "2026-11-20"
@@ -2662,21 +2662,21 @@
         "call_oi": 14.0,
         "put_oi": 2.0,
         "call_volume": 10.0,
-        "put_volume": 1.0
+        "put_volume": 2.0
       },
       {
         "strike": 95,
         "call_oi": 11.0,
         "put_oi": 5.0,
         "call_volume": 2.0,
-        "put_volume": 7.0
+        "put_volume": 8.0
       },
       {
         "strike": 100,
         "call_oi": 31.0,
         "put_oi": 8.0,
         "call_volume": 35.0,
-        "put_volume": 1.0
+        "put_volume": 2.0
       },
       {
         "strike": 105,
