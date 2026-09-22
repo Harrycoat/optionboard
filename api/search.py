@@ -344,6 +344,238 @@ def _finnhub_symbol_search(query):
     return {"results": results}
 
 
+def _daily_bars(ticker, lookback_days=120):
+    """Daily stock aggregates for swing structure checks."""
+    end = date.today()
+    start = end - timedelta(days=lookback_days)
+    data = _massive_get(
+        f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{start}/{end}",
+        {"adjusted": "true", "sort": "asc", "limit": 500},
+    )
+    bars = []
+    for row in data.get("results") or []:
+        try:
+            bars.append({
+                "time": int(row["t"]),
+                "open": float(row["o"]),
+                "high": float(row["h"]),
+                "low": float(row["l"]),
+                "close": float(row["c"]),
+                "volume": float(row.get("v") or 0),
+            })
+        except (KeyError, TypeError, ValueError):
+            continue
+    return bars
+
+
+def _ema(values, period):
+    if not values:
+        return None
+    alpha = 2.0 / (period + 1.0)
+    value = float(values[0])
+    for item in values[1:]:
+        value = alpha * float(item) + (1 - alpha) * value
+    return value
+
+
+def _sma(values, period):
+    if len(values) < period:
+        return None
+    return sum(values[-period:]) / period
+
+
+def _aggregate_15m(session_bars):
+    """Combine sequential 5-minute regular-session bars into 15-minute bars."""
+    out = []
+    chunk = []
+    for bar in session_bars or []:
+        chunk.append(bar)
+        if len(chunk) == 3:
+            out.append({
+                "time": chunk[0]["time"],
+                "open": chunk[0]["open"],
+                "high": max(x["high"] for x in chunk),
+                "low": min(x["low"] for x in chunk),
+                "close": chunk[-1]["close"],
+                "volume": sum(x["volume"] for x in chunk),
+            })
+            chunk = []
+    return out
+
+
+def _range_pct(bar):
+    close = float(bar.get("close") or 0)
+    if close <= 0:
+        return None
+    return (float(bar.get("high") or close) - float(bar.get("low") or close)) / close * 100
+
+
+def _five_min_minervini(bars):
+    """Intraday contraction/pivot heuristic inspired by VCP structure."""
+    sample = list(bars or [])[-12:]
+    if len(sample) < 9:
+        return {
+            "stage": "WAIT",
+            "score": 0,
+            "pivot": None,
+            "pivot_distance_pct": None,
+            "contraction": False,
+            "volume_dryup": False,
+        }
+
+    thirds = [sample[-12:-8], sample[-8:-4], sample[-4:]]
+    ranges = []
+    for group in thirds:
+        vals = [_range_pct(x) for x in group]
+        vals = [x for x in vals if x is not None]
+        ranges.append(sum(vals) / len(vals) if vals else None)
+
+    contraction = all(x is not None for x in ranges) and ranges[2] < ranges[1] < ranges[0]
+    vols = [float(x.get("volume") or 0) for x in sample]
+    early_vol = sum(vols[:4]) / 4 if len(vols) >= 4 else 0
+    late_vol = sum(vols[-4:]) / 4 if len(vols) >= 4 else 0
+    volume_dryup = early_vol > 0 and late_vol < early_vol * 0.85
+
+    pivot = max(float(x["high"]) for x in sample[-6:-1]) if len(sample) >= 6 else None
+    close = float(sample[-1]["close"])
+    pivot_distance_pct = ((pivot - close) / pivot * 100) if pivot else None
+
+    latest_vol = vols[-1]
+    prev_avg = sum(vols[-6:-1]) / 5 if len(vols) >= 6 else 0
+    breakout_volume = prev_avg > 0 and latest_vol >= prev_avg * 1.5
+    breakout = bool(pivot and close > pivot and breakout_volume)
+
+    score = 0
+    score += 35 if contraction else 0
+    score += 20 if volume_dryup else 0
+    score += 20 if pivot_distance_pct is not None and -0.5 <= pivot_distance_pct <= 1.5 else 0
+    score += 25 if breakout else 0
+
+    if breakout:
+        stage = "BREAKOUT"
+    elif contraction and pivot_distance_pct is not None and pivot_distance_pct <= 1.5:
+        stage = "PIVOT READY"
+    elif contraction:
+        stage = "T3"
+    elif volume_dryup:
+        stage = "T2"
+    else:
+        stage = "T1"
+
+    return {
+        "stage": stage,
+        "score": score,
+        "pivot": pivot,
+        "pivot_distance_pct": pivot_distance_pct,
+        "contraction": contraction,
+        "volume_dryup": volume_dryup,
+        "breakout_volume": breakout_volume,
+        "range_sequence_pct": ranges,
+    }
+
+
+def _option_swing_setup_payload(ticker):
+    ticker = ticker.upper()
+    all_5m = _intraday_five_minute_bars(ticker)
+    session_5m = _latest_regular_session_bars(all_5m)
+    bars_15m = _aggregate_15m(session_5m)
+    daily = _daily_bars(ticker)
+
+    schwab = _schwab_quote(ticker)
+    if schwab.get("error"):
+        schwab = None
+    live_spot = None
+    if schwab:
+        live_spot = schwab.get("last") or schwab.get("mark") or schwab.get("bid") or schwab.get("ask")
+
+    spot = float(live_spot) if live_spot is not None else (float(session_5m[-1]["close"]) if session_5m else None)
+
+    closes = [float(x["close"]) for x in daily]
+    ema21 = _ema(closes[-60:], 21) if closes else None
+    sma50 = _sma(closes, 50)
+    sma200 = _sma(closes, 200)
+
+    prev_close = closes[-2] if len(closes) >= 2 else None
+    day_change_pct = ((spot - prev_close) / prev_close * 100) if spot is not None and prev_close else None
+
+    pullback_days = 0
+    for i in range(len(daily) - 1, max(-1, len(daily) - 4), -1):
+        if i > 0 and daily[i]["close"] < daily[i - 1]["close"]:
+            pullback_days += 1
+        else:
+            break
+
+    avg10vol = None
+    if len(daily) >= 11:
+        avg10vol = sum(float(x["volume"]) for x in daily[-11:-1]) / 10
+    latest_daily_vol = float(daily[-1]["volume"]) if daily else None
+    volume_dryup_daily = bool(avg10vol and latest_daily_vol is not None and latest_daily_vol < avg10vol * 0.85)
+
+    recent_high = max((float(x["high"]) for x in daily[-20:]), default=None)
+    from_high_pct = ((spot - recent_high) / recent_high * 100) if spot is not None and recent_high else None
+    trend_ok = bool(
+        spot is not None and
+        (ema21 is None or spot >= ema21) and
+        (sma50 is None or spot >= sma50)
+    )
+    pullback_leader = bool(pullback_days in (2, 3) and trend_ok and volume_dryup_daily)
+
+    latest_15 = bars_15m[-1] if bars_15m else None
+    prior_15 = bars_15m[-5:-1] if len(bars_15m) >= 5 else []
+    prior_15_high = max((float(x["high"]) for x in prior_15), default=None)
+    avg_15_vol = (sum(float(x["volume"]) for x in prior_15) / len(prior_15)) if prior_15 else None
+    vol15_ratio = (
+        float(latest_15["volume"]) / avg_15_vol
+        if latest_15 and avg_15_vol and avg_15_vol > 0
+        else None
+    )
+    breakout15 = bool(
+        latest_15 and prior_15_high and
+        float(latest_15["close"]) > prior_15_high and
+        vol15_ratio is not None and vol15_ratio >= 1.5
+    )
+
+    micro = _five_min_minervini(session_5m)
+
+    latest5 = session_5m[-1] if session_5m else None
+    prev5 = session_5m[-6:-1] if len(session_5m) >= 6 else []
+    avg5 = (sum(float(x["volume"]) for x in prev5) / len(prev5)) if prev5 else None
+    vol5_ratio = (
+        float(latest5["volume"]) / avg5
+        if latest5 and avg5 and avg5 > 0
+        else None
+    )
+
+    today_leader = bool(
+        day_change_pct is not None and day_change_pct >= 2.0 and
+        vol5_ratio is not None and vol5_ratio >= 1.3
+    )
+
+    return {
+        "ticker": ticker,
+        "spot": spot,
+        "schwab_quote": schwab,
+        "day_change_pct": day_change_pct,
+        "today_leader": today_leader,
+        "pullback_leader": pullback_leader,
+        "pullback_days": pullback_days,
+        "daily_volume_dryup": volume_dryup_daily,
+        "from_20d_high_pct": from_high_pct,
+        "ema21": ema21,
+        "sma50": sma50,
+        "sma200": sma200,
+        "trend_ok": trend_ok,
+        "breakout15": breakout15,
+        "breakout15_level": prior_15_high,
+        "volume15_ratio": vol15_ratio,
+        "volume5_ratio": vol5_ratio,
+        "minervini5m": micro,
+        "latest_5m": latest5,
+        "latest_15m": latest_15,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         query = parse_qs(urlparse(self.path).query)
@@ -433,6 +665,14 @@ class handler(BaseHTTPRequestHandler):
         if mode == "call_wall_monitor":
             try:
                 result = _call_wall_monitor_payload(ticker)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
+            return
+
+        if mode == "option_swing_setup":
+            try:
+                result = _option_swing_setup_payload(ticker)
                 self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
