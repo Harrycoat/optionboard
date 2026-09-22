@@ -110,7 +110,7 @@
       <input id="t1" value="NVDA"><input id="t2" value="TSLA"><input id="t3" value="PLTR"><input id="t4" value="AMZN"><input id="t5" placeholder="TICKER">
       <button id="scanBtn">ANALYZE</button><button id="autoBtn">SCAN MARKET</button>
     </div>
-    <div class="note">ANALYZE = 직접 입력한 종목 분석 · SCAN MARKET = 시장에서 후보를 자동 검색한 뒤 5분/15분 구조를 분석</div>
+    <div class="note">ANALYZE = 직접 입력한 종목 분석 · SCAN MARKET = 정규장에서 뉴스·인기 급등주·거래량 증가 종목을 넓게 찾은 뒤 5분/15분 구조를 분석</div>
     <div class="status" id="status">준비</div>
   </div>
 
@@ -170,10 +170,10 @@ function render(arr){
 async function autoMarket(){
   $('autoBtn').disabled=true;$('scanBtn').disabled=true;$('status').textContent='SCAN MARKET · 미국 시장 후보 검색 중…';
   try{
-    const r=await fetch('/api/search?mode=option_swing_candidates&limit=8',{cache:'no-store'});
+    const r=await fetch('/api/search?mode=option_swing_candidates&limit=20',{cache:'no-store'});
     const j=await r.json();
     if(j.error)throw new Error(j.error);
-    const c=(j.candidates||[]).slice(0,8);
+    const c=(j.candidates||[]).slice(0,20);
     if(!c.length){
       render([]);
       $('status').textContent='SCAN MARKET 후보 0개 · 현재 필터 조건에 맞는 종목이 없습니다.';
@@ -182,7 +182,7 @@ async function autoMarket(){
     const rows=await Promise.all(c.map(async x=>{try{const rr=await fetch('/api/search?mode=option_swing_setup&ticker='+encodeURIComponent(x.ticker),{cache:'no-store'});const d=await rr.json();return {...d,reason:x.reason,headline:x.headline,news_url:x.news_url}}catch(e){return {ticker:x.ticker,error:e.message}}}));
     const good=rows.filter(x=>!x.error);
     render(good);
-    $('status').textContent='SCAN MARKET · '+good.length+'종목 자동 분석 완료 · '+(j.selection_mode||'market')+' · Top movers → 5M/15M 구조';
+    $('status').textContent='SCAN MARKET · '+good.length+'종목 자동 분석 완료 · '+(j.selection_mode||'market')+' · NEWS / POPULAR / MOVERS → 5M/15M 구조';
   }catch(e){$('status').textContent='SCAN MARKET 오류 · '+e.message}
   finally{$('autoBtn').disabled=false;$('scanBtn').disabled=false}
 }
