@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · Premarket Scanner</title>
+<style>
+:root{--bg:#07101b;--panel:#0d1724;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--gold:#f4c34f;--red:#ff6673;--blue:#62a5ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#091522);color:var(--text);font-family:Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px}
+.brand{font-size:27px;font-weight:900}.sub{font-size:12px;color:var(--muted);margin-top:5px}
+.top-nav{display:flex;gap:7px;flex-wrap:wrap}.top-nav a{padding:9px 11px;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-size:11px;font-weight:900;background:#101826}
+.top-nav a.active{background:var(--gold);color:#17120a;border-color:var(--gold)}
+.card{background:rgba(13,23,36,.95);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.controls{display:grid;grid-template-columns:150px 160px 1fr;gap:8px}.controls input,.controls button{min-height:42px;border-radius:8px;font-weight:800}
+.controls input{background:#09131f;color:var(--text);border:1px solid var(--line);padding:0 11px}.controls button{border:0;background:var(--green);cursor:pointer}
+.note,.status{font-size:11px;color:var(--muted);line-height:1.5}.status{margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.bucket h2{font-size:14px;margin:0 0 9px}.body{display:flex;flex-direction:column;gap:8px}
+.item{background:#09131f;border:1px solid var(--line);border-radius:10px;padding:10px}.head{display:flex;justify-content:space-between;gap:8px;align-items:center}.ticker{font-weight:900;font-size:16px}
+.badge{font-size:10px;border:1px solid currentColor;border-radius:999px;padding:4px 7px;font-weight:900}.green{color:var(--green)}.gold{color:var(--gold)}.blue{color:var(--blue)}.red{color:var(--red)}
+.rows{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;font-size:11px}.rows span{color:var(--muted)}.rows b{text-align:right}
+.headline{font-size:11px;line-height:1.35;margin-top:8px}.headline a{color:var(--blue);text-decoration:none}
+.table{overflow-x:auto;-webkit-overflow-scrolling:touch}.row{min-width:820px;display:grid;grid-template-columns:80px 85px 110px 100px 90px 90px 1fr;gap:8px;border-top:1px solid var(--line);padding:9px 5px;font-size:11px;align-items:center}
+.row.header{color:var(--muted);font-size:10px;border-top:0}.empty{padding:9px 0;color:var(--muted);font-size:12px}
+@media(max-width:720px){
+ .wrap{padding:10px}.top{flex-direction:column;align-items:flex-start}.brand{font-size:20px}.top-nav{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.top-nav a{text-align:center;font-size:10px;padding:8px 5px}
+ .controls{grid-template-columns:1fr 1fr}.controls button{grid-column:1/-1}.grid{grid-template-columns:1fr}.card{padding:11px}.sub{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="brand">PREMARKET SCANNER</div><div class="sub">Schwab real-time gap → news catalyst → sector confirmation</div></div>
+    <div class="top-nav">
+      <a href="/premarket-scanner.html" class="active">PREMARKET</a>
+      <a href="/option-swing-scanner.html">OPTION SWING</a>
+      <a href="/swing-reclaim-scanner.html">SWING RECLAIM</a>
+      <a href="/call-wall-monitor.html">CALL WALL</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="controls">
+      <input id="gap" type="number" step="0.5" value="1.0" aria-label="minimum premarket gap">
+      <input id="limit" type="number" min="5" max="25" value="16" aria-label="result limit">
+      <button id="scanBtn">SCAN PREMARKET</button>
+    </div>
+    <div class="note">Minimum Gap % · Result Limit. Price is Schwab real-time. News reason is shown when the connected news source returns a recent catalyst; otherwise sector strength or unconfirmed momentum is shown.</div>
+    <div class="status" id="status">Ready</div>
+  </div>
+
+  <div class="grid">
+    <div class="card bucket"><h2>NEWS MOVERS</h2><div class="body" id="news"></div></div>
+    <div class="card bucket"><h2>SECTOR MOVERS</h2><div class="body" id="sector"></div></div>
+    <div class="card bucket"><h2>MOMENTUM / CHECK NEWS</h2><div class="body" id="other"></div></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:14px;margin:0 0 8px">ALL PREMARKET MOVERS</h2>
+    <div class="table">
+      <div class="row header"><span>TICKER</span><span>GAP</span><span>PRICE</span><span>SECTOR</span><span>PEERS UP</span><span>VOLUME</span><span>WHY</span></div>
+      <div id="rows"></div>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const pct=v=>Number.isFinite(+v)?((+v>=0?'+':'')+(+v).toFixed(2)+'%'):'—';
+const money=v=>Number.isFinite(+v)?'$'+(+v).toFixed(2):'—';
+const num=v=>Number.isFinite(+v)?Math.round(+v).toLocaleString():'—';
+function cls(r){if(r==='SECTOR MOVE')return 'blue';if(r==='MOMENTUM / CHECK NEWS')return 'gold';return 'green'}
+function card(d){
+ const link=d.news_url?'<a href="'+d.news_url+'" target="_blank" rel="noopener">'+(d.headline||d.reason)+'</a>':(d.headline||d.reason||'—');
+ return '<div class="item"><div class="head"><span class="ticker">'+d.ticker+'</span><span class="badge '+cls(d.reason)+'">'+(d.reason||'—')+'</span></div>'+
+ '<div class="rows"><span>Premarket</span><b>'+pct(d.gap_pct)+'</b><span>Price</span><b>'+money(d.spot)+'</b><span>Sector</span><b>'+d.sector+'</b><span>Peers Up</span><b>'+(d.sector_positive_count??'—')+'</b></div>'+
+ '<div class="headline">'+link+'</div></div>';
+}
+function render(list){
+ $('news').innerHTML=list.filter(x=>x.reason && !['SECTOR MOVE','MOMENTUM / CHECK NEWS'].includes(x.reason)).map(card).join('')||'<div class="empty">No news mover detected.</div>';
+ $('sector').innerHTML=list.filter(x=>x.reason==='SECTOR MOVE').map(card).join('')||'<div class="empty">No sector mover detected.</div>';
+ $('other').innerHTML=list.filter(x=>x.reason==='MOMENTUM / CHECK NEWS').map(card).join('')||'<div class="empty">No unconfirmed mover.</div>';
+ $('rows').innerHTML=list.map(d=>'<div class="row"><b>'+d.ticker+'</b><b>'+pct(d.gap_pct)+'</b><span>'+money(d.spot)+'</span><span>'+d.sector+'</span><span>'+(d.sector_positive_count??'—')+'</span><span>'+num(d.volume)+'</span><span>'+(d.reason||'—')+'</span></div>').join('')||'<div class="empty">No stocks matched this gap threshold.</div>';
+}
+async function scan(){
+ const minGap=parseFloat($('gap').value||'1'); const limit=parseInt($('limit').value||'16',10);
+ $('status').textContent='Scanning Schwab real-time premarket quotes...';
+ $('scanBtn').disabled=true;
+ try{
+  const r=await fetch('/api/search?mode=premarket_scan&min_gap='+encodeURIComponent(minGap)+'&limit='+encodeURIComponent(limit),{cache:'no-store'});
+  const d=await r.json();
+  if(d.error) throw new Error(d.error);
+  render(d.movers||[]);
+  $('status').textContent=(d.count||0)+' movers · '+d.price_source+' · universe '+d.universe_count+' stocks';
+ }catch(e){$('status').textContent='ERROR: '+e.message}
+ finally{$('scanBtn').disabled=false}
+}
+$('scanBtn').addEventListener('click',scan);
+scan();
+</script>
+</body></html>
