@@ -793,7 +793,7 @@ def _premarket_scan(limit=16, min_gap=1.0):
 
 
 def _option_swing_market_candidates(limit=12):
-    """Fast first-pass universe for liquid swing candidates with a relaxed fallback."""
+    """Regular-market discovery: sector leaders first, then broad market movers."""
     data = _massive_get(
         f"{MASSIVE_API_BASE}/v2/snapshot/locale/us/markets/stocks/gainers",
         {"include_otc": "false"},
@@ -829,6 +829,69 @@ def _option_swing_market_candidates(limit=12):
             })
         except (TypeError, ValueError):
             continue
+
+    # Sector-first discovery using Schwab real-time quotes.
+    # This prevents strong groups (for example semiconductors) from being missed
+    # just because individual names are not in the broad top-gainers endpoint.
+    sector_candidates = []
+    sector_stats = {}
+    for sector, names in PREMARKET_GROUPS.items():
+        quotes = {}
+        for i in range(0, len(names), 5):
+            result = _schwab_quotes(names[i:i+5])
+            if not result.get("_error"):
+                quotes.update(result)
+        vals = []
+        members = []
+        for ticker in names:
+            q = quotes.get(ticker) or {}
+            try:
+                spot = float(q.get("last") if q.get("last") is not None else q.get("mark"))
+                close = float(q.get("close"))
+                volume = float(q.get("volume") or 0)
+                if spot < 5 or close <= 0:
+                    continue
+                change_pct = (spot - close) / close * 100
+                vals.append(change_pct)
+                members.append((ticker, spot, change_pct, volume))
+            except (TypeError, ValueError):
+                continue
+        avg_change = (sum(vals) / len(vals)) if vals else None
+        positive = len([v for v in vals if v > 0])
+        sector_stats[sector] = {
+            "avg_change_pct": avg_change,
+            "positive_count": positive,
+            "members_checked": len(vals),
+        }
+        # A sector is active when the average move is positive and breadth is broad.
+        active = bool(avg_change is not None and avg_change >= 0.6 and positive >= max(2, len(vals)//2))
+        if active:
+            members.sort(key=lambda x: x[2], reverse=True)
+            for ticker, spot, change_pct, volume in members[:5]:
+                if change_pct < 0.5:
+                    continue
+                sector_candidates.append({
+                    "ticker": ticker,
+                    "price": spot,
+                    "change_pct": change_pct,
+                    "day_volume": volume,
+                    "dollar_volume": spot * volume,
+                    "prev_day_volume": 0,
+                    "volume_vs_prev_day": None,
+                    "reason": "SECTOR LEADER",
+                    "headline": f"{sector} strength · sector avg {avg_change:+.2f}% · {positive}/{len(vals)} names positive",
+                    "sector": sector,
+                })
+
+    # Merge sector leaders ahead of broad movers, de-duplicated by ticker.
+    by_ticker = {}
+    for x in sector_candidates + parsed:
+        t = x.get("ticker")
+        if not t:
+            continue
+        if t not in by_ticker or x.get("reason") == "SECTOR LEADER":
+            by_ticker[t] = x
+    parsed = list(by_ticker.values())
 
     # Preferred swing-quality filter.
     strict = [
@@ -880,6 +943,8 @@ def _option_swing_market_candidates(limit=12):
             item["headline"] = latest.get("headline")
             item["news_url"] = latest.get("url")
             item["news_time"] = latest.get("datetime")
+        elif item.get("reason") == "SECTOR LEADER":
+            pass
         else:
             item["reason"] = "POPULAR / MARKET MOVER"
             item["headline"] = "Strong price/volume mover from the market scan."
@@ -891,6 +956,7 @@ def _option_swing_market_candidates(limit=12):
         "selection_mode": mode,
         "strict_count": len(strict),
         "raw_count": len(parsed),
+        "sector_stats": sector_stats,
         "filters": {
             "strict": {
                 "min_price": 10,
