@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · Option Swing Scanner</title>
+<style>
+:root{--bg:#08111d;--panel:#0d1724;--panel2:#111e2e;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#0a1320 45%,#08111d);color:var(--text);font-family:Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:28px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:5px}.links a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:9px 12px;border-radius:8px;margin-left:6px}
+.card{background:rgba(13,23,36,.94);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 14px 35px rgba(0,0,0,.2)}
+.controls{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:8px}.controls input{background:#0a1420;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;text-transform:uppercase;font-weight:800}.controls button{background:var(--gold);border:0;border-radius:8px;padding:0 18px;font-weight:900;cursor:pointer}
+.note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.status{margin:12px 0;color:var(--muted);font-size:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.bucket h2{font-size:14px;margin:0 0 10px}.bucket small{color:var(--muted)}.bucket .body{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.item{background:#0a1420;border:1px solid var(--line);border-radius:10px;padding:11px}.item .head{display:flex;justify-content:space-between;align-items:center;gap:8px}.ticker{font-weight:900;font-size:16px}.badge{font-size:10px;padding:4px 7px;border-radius:999px;border:1px solid currentColor}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
+.rows{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;font-size:11px}.rows span{color:var(--muted)}.rows b{text-align:right}
+.table{overflow:auto}.scanrow{display:grid;grid-template-columns:95px 95px 110px 110px 110px 120px 120px 1fr;gap:8px;align-items:center;padding:10px 6px;border-top:1px solid var(--line);font-size:11px;min-width:900px}.scanrow.header{color:var(--muted);font-size:10px;border-top:0}.scanrow b{font-size:12px}.signal{font-weight:900}.empty{color:var(--muted);font-size:12px;padding:10px 0}
+@media(max-width:800px){.top{align-items:flex-start;flex-direction:column}.links a{margin:0 6px 0 0;display:inline-block}.controls{grid-template-columns:1fr 1fr}.controls button{min-height:42px}.grid4{grid-template-columns:1fr}.brand{font-size:24px}.wrap{padding:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="brand">OPTION SWING SCANNER</div><div class="sub">Daily leader → Pullback → 15M Breakout → 5M Minervini timing</div></div>
+    <div class="links"><a href="/">HOME</a><a href="/call-wall-monitor.html">CALL WALL MONITOR</a></div>
+  </div>
+
+  <div class="card">
+    <div class="controls">
+      <input id="t1" value="NVDA"><input id="t2" value="TSLA"><input id="t3" value="PLTR"><input id="t4" value="AMZN"><input id="t5" placeholder="TICKER">
+      <button id="scanBtn">SCAN</button>
+    </div>
+    <div class="note">1차 개발: 입력한 종목을 실시간 주가 + 5분/15분 구조로 분류합니다. 이후 시장 전체 자동 검색으로 확장할 수 있습니다.</div>
+    <div class="status" id="status">준비</div>
+  </div>
+
+  <div class="grid4">
+    <div class="card bucket"><h2>TODAY'S LEADERS</h2><small>당일 강세 + 5분 거래량 확장</small><div class="body" id="leaders"></div></div>
+    <div class="card bucket"><h2>PULLBACK LEADERS</h2><small>강한 추세에서 2~3일 눌림 + 거래량 감소</small><div class="body" id="pullbacks"></div></div>
+    <div class="card bucket"><h2>15-MIN BREAKOUT</h2><small>15분 고점 돌파 + Volume 1.5×</small><div class="body" id="breakouts"></div></div>
+    <div class="card bucket"><h2>5M MINERVINI</h2><small>T1 → T2 → T3 → Pivot Ready → Breakout</small><div class="body" id="mini"></div></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:15px;margin:0 0 8px">ALL SCANNED STOCKS</h2>
+    <div class="table">
+      <div class="scanrow header"><span>TICKER</span><span>DAY</span><span>5M VOL</span><span>15M VOL</span><span>15M</span><span>5M STAGE</span><span>PIVOT DIST</span><span>SWING VIEW</span></div>
+      <div id="allRows"></div>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const n=v=>Number.isFinite(+v)?+v:null;
+const pct=v=>n(v)==null?'—':(v>=0?'+':'')+v.toFixed(2)+'%';
+const mult=v=>n(v)==null?'—':v.toFixed(2)+'×';
+const money=v=>n(v)==null?'—':'$'+v.toFixed(2);
+function tickers(){return ['t1','t2','t3','t4','t5'].map(id=>$(id).value.trim().toUpperCase()).filter(Boolean)}
+function item(d,type){
+  let badge='',cls='gold';
+  if(type==='leader'){badge='LEADER';cls='green'}
+  if(type==='pullback'){badge=d.pullback_days+'D PULLBACK';cls='blue'}
+  if(type==='breakout'){badge='15M BREAKOUT';cls='green'}
+  if(type==='mini'){badge=d.minervini5m?.stage||'WAIT';cls=(badge==='BREAKOUT'?'green':badge==='PIVOT READY'?'gold':'blue')}
+  return '<div class="item"><div class="head"><span class="ticker">'+d.ticker+'</span><span class="badge '+cls+'">'+badge+'</span></div><div class="rows">'+
+    '<span>Price</span><b>'+money(d.spot)+'</b>'+
+    '<span>Day</span><b>'+pct(d.day_change_pct)+'</b>'+
+    '<span>5M Volume</span><b>'+mult(d.volume5_ratio)+'</b>'+
+    '<span>15M Volume</span><b>'+mult(d.volume15_ratio)+'</b>'+
+    '<span>Pivot Dist</span><b>'+pct(d.minervini5m?.pivot_distance_pct)+'</b>'+
+    '<span>20D High Dist</span><b>'+pct(d.from_20d_high_pct)+'</b>'+
+    '</div></div>';
+}
+function swingView(d){
+  const m=d.minervini5m||{};
+  if(d.breakout15 && m.stage==='BREAKOUT') return '15M + 5M BREAKOUT ALIGN';
+  if(d.pullback_leader && ['PIVOT READY','BREAKOUT'].includes(m.stage)) return 'PULLBACK → ENTRY WATCH';
+  if(d.today_leader && m.stage==='PIVOT READY') return 'LEADER → PIVOT WATCH';
+  if(d.pullback_leader) return 'PULLBACK WATCH';
+  if(d.today_leader) return 'MOMENTUM WATCH';
+  return 'WAIT';
+}
+function render(arr){
+  $('leaders').innerHTML=arr.filter(x=>x.today_leader).map(x=>item(x,'leader')).join('')||'<div class="empty">조건 종목 없음</div>';
+  $('pullbacks').innerHTML=arr.filter(x=>x.pullback_leader).map(x=>item(x,'pullback')).join('')||'<div class="empty">조건 종목 없음</div>';
+  $('breakouts').innerHTML=arr.filter(x=>x.breakout15).map(x=>item(x,'breakout')).join('')||'<div class="empty">조건 종목 없음</div>';
+  $('mini').innerHTML=arr.filter(x=>x.minervini5m && x.minervini5m.stage!=='WAIT').sort((a,b)=>(b.minervini5m.score||0)-(a.minervini5m.score||0)).map(x=>item(x,'mini')).join('')||'<div class="empty">조건 종목 없음</div>';
+  $('allRows').innerHTML=arr.map(d=>'<div class="scanrow"><b>'+d.ticker+'</b><span>'+pct(d.day_change_pct)+'</span><span>'+mult(d.volume5_ratio)+'</span><span>'+mult(d.volume15_ratio)+'</span><span class="'+(d.breakout15?'green':'')+'">'+(d.breakout15?'BREAKOUT':'—')+'</span><span>'+((d.minervini5m||{}).stage||'—')+'</span><span>'+pct((d.minervini5m||{}).pivot_distance_pct)+'</span><span class="signal">'+swingView(d)+'</span></div>').join('');
+}
+async function scan(){
+  const ts=tickers(); if(!ts.length)return;
+  $('scanBtn').disabled=true;$('status').textContent='스캔 중… '+ts.join(', ');
+  try{
+    const rows=await Promise.all(ts.map(async t=>{try{const r=await fetch('/api/search?mode=option_swing_setup&ticker='+encodeURIComponent(t),{cache:'no-store'});return await r.json()}catch(e){return {ticker:t,error:e.message}}}));
+    const good=rows.filter(x=>!x.error);
+    render(good);
+    $('status').textContent=good.length+'/'+ts.length+' 종목 분석 완료 · 실시간 주가 + 5분/15분 구조';
+  }finally{$('scanBtn').disabled=false}
+}
+$('scanBtn').onclick=scan;
+['t1','t2','t3','t4','t5'].forEach(id=>$(id).addEventListener('change',e=>e.target.value=e.target.value.trim().toUpperCase()));
+scan();
+</script>
+</body>
+</html>
