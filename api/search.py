@@ -235,11 +235,89 @@ def _call_wall_monitor_payload(ticker):
 
     closes = [float(bar["close"]) for bar in regular_all]
     hull_series = _hull_series(closes, 21)
+    hull50_series = _hull_series(closes, 50)
     hull21 = hull_series[-1] if hull_series else None
     hull21_prev = hull_series[-2] if len(hull_series) > 1 else None
     hull21_slope_pct = None
     if hull21 is not None and hull21_prev not in (None, 0):
         hull21_slope_pct = (hull21 - hull21_prev) / hull21_prev * 100
+
+    # Trade Tracker study series: HULL deviation + adaptive bands + volume/ATR regime.
+    # This is a web adaptation of the user's Thinkorswim Hull_Deviation_Reentry_v3 logic.
+    tracker_series = []
+    true_ranges = []
+    atr_series = []
+    for i, bar in enumerate(regular_all):
+        prev_close = closes[i - 1] if i > 0 else closes[i]
+        tr = max(
+            float(bar["high"]) - float(bar["low"]),
+            abs(float(bar["high"]) - prev_close),
+            abs(float(bar["low"]) - prev_close),
+        )
+        true_ranges.append(tr)
+        if i == 0:
+            atr_series.append(tr)
+        else:
+            prev_atr = atr_series[-1]
+            atr_series.append((prev_atr * 13 + tr) / 14.0)
+
+    dev_series = []
+    for i, close_i in enumerate(closes):
+        h21 = hull_series[i] if i < len(hull_series) else None
+        dev_series.append(((close_i - h21) / h21 * 100) if h21 not in (None, 0) else None)
+
+    start_i = max(0, len(regular_all) - 60)
+    for i in range(start_i, len(regular_all)):
+        h21 = hull_series[i] if i < len(hull_series) else None
+        h50 = hull50_series[i] if i < len(hull50_series) else None
+        dev = dev_series[i]
+        valid_dev = [x for x in dev_series[max(0, i - 49):i + 1] if x is not None]
+        upper = lower = None
+        if len(valid_dev) >= 10:
+            avg_dev = sum(valid_dev) / len(valid_dev)
+            variance = sum((x - avg_dev) ** 2 for x in valid_dev) / len(valid_dev)
+            stdev = variance ** 0.5
+            upper = avg_dev + stdev * 2.0
+            lower = avg_dev - stdev * 2.0
+
+        slope_now = slope_prev = None
+        slope_accel = False
+        if i >= 6 and hull_series[i] is not None and hull_series[i - 3] is not None and hull_series[i - 6] is not None:
+            slope_now = (hull_series[i] - hull_series[i - 3]) / 3.0
+            slope_prev = (hull_series[i - 3] - hull_series[i - 6]) / 3.0
+            slope_accel = abs(slope_now) > abs(slope_prev)
+
+        prior_vols = [float(x["volume"]) for x in regular_all[max(0, i - 20):i]]
+        vol_avg = (sum(prior_vols) / len(prior_vols)) if prior_vols else None
+        vol_ratio = (float(regular_all[i]["volume"]) / vol_avg) if vol_avg and vol_avg > 0 else None
+
+        prior_atrs = atr_series[max(0, i - 20):i]
+        atr_avg = (sum(prior_atrs) / len(prior_atrs)) if prior_atrs else None
+        atr_ratio = (atr_series[i] / atr_avg) if atr_avg and atr_avg > 0 else None
+        atr_expanding = bool(atr_ratio is not None and atr_ratio > 1.0)
+
+        cont_score = (1 if slope_accel else 0) + (1 if vol_ratio is not None and vol_ratio >= 1.0 else 0) + (1 if atr_expanding else 0)
+        regime = "CONTINUATION" if cont_score >= 2 else "REVERSION"
+        trend = "UP" if h21 is not None and h50 is not None and h21 > h50 else "DOWN" if h21 is not None and h50 is not None else "NA"
+
+        tracker_series.append({
+            "time": int(regular_all[i]["time"]),
+            "close": float(regular_all[i]["close"]),
+            "volume": float(regular_all[i]["volume"]),
+            "hull21": h21,
+            "hull50": h50,
+            "dev_pct": dev,
+            "upper_band": upper,
+            "lower_band": lower,
+            "vol_ratio": vol_ratio,
+            "atr_ratio": atr_ratio,
+            "slope_accelerating": slope_accel,
+            "cont_score": cont_score,
+            "regime": regime,
+            "trend": trend,
+        })
+
+    tracker_latest = tracker_series[-1] if tracker_series else None
 
     close = float(latest["close"]) if latest else None
     hull21_distance_pct = None
@@ -269,6 +347,8 @@ def _call_wall_monitor_payload(ticker):
         "hull21_slope_pct": hull21_slope_pct,
         "hull21_distance_pct": hull21_distance_pct,
         "hull21_timeframe": "5m",
+        "tracker_series": tracker_series,
+        "tracker_latest": tracker_latest,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "data_mode": "live_stock_delayed_options" if live_spot is not None else "15_minute_delayed",
         "delay_minutes": 15,
