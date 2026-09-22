@@ -196,11 +196,9 @@ def _latest_regular_session_bars(bars):
 def _call_wall_monitor_payload(ticker):
     gex = analyze_ticker_cached(ticker, ttl=300, skip_stage=True)
 
-    schwab = None
-    if ticker.upper() in {"NVDA", "AMZN"}:
-        schwab = _schwab_quote(ticker.upper())
-        if schwab.get("error"):
-            schwab = None
+    schwab = _schwab_quote(ticker.upper())
+    if schwab.get("error"):
+        schwab = None
 
     all_bars = _intraday_five_minute_bars(ticker)
     bars = _latest_regular_session_bars(all_bars)
@@ -354,10 +352,9 @@ class handler(BaseHTTPRequestHandler):
 
         if mode == "schwab_quote":
             ticker = (query.get("ticker", [""])[0]).strip().upper()
-            if ticker not in {"NVDA", "AMZN"}:
+            if not ticker or len(ticker) > 10 or not ticker.replace("-", "").replace(".", "").isalnum():
                 self.wfile.write(json.dumps({
-                    "error": "Schwab test supports only NVDA and AMZN.",
-                    "allowed": ["AMZN", "NVDA"],
+                    "error": "올바른 미국 주식 티커를 입력하세요."
                 }, ensure_ascii=False).encode())
                 return
             self.wfile.write(json.dumps(_schwab_quote(ticker), ensure_ascii=False).encode())
