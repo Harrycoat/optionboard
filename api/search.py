@@ -921,11 +921,20 @@ def _sector_rotation_scan(top_n=2):
                 "volume_dryup": dryup,
             }
 
-            # Day / 0DTE discovery: strong sector + positive stock + expanding relative volume.
-            if day_change >= 1.0 and (intraday_rvol is None or intraday_rvol >= 1.10):
+            # Day / 0DTE discovery: show positive leaders from the strongest sector,
+            # then distinguish volume-confirmed momentum from early watch candidates.
+            # This avoids hiding an entire strong group just because only one name
+            # has already crossed the RVOL confirmation threshold.
+            if day_change >= 0.50:
                 item = dict(base)
-                item["state"] = "DAY MOMENTUM"
-                item["reason"] = "Strong sector + positive move + volume expansion"
+                if intraday_rvol is not None and intraday_rvol >= 1.10:
+                    item["state"] = "MOMENTUM"
+                    item["reason"] = "Strong sector + positive move + volume expansion"
+                    item["volume_confirmed"] = True
+                else:
+                    item["state"] = "WATCH"
+                    item["reason"] = "Strong sector + positive move; waiting for volume confirmation"
+                    item["volume_confirmed"] = False
                 day_candidates.append(item)
 
             # Swing pullback: previously strong leader, now near 21EMA with a controlled pullback and dry volume.
@@ -965,7 +974,7 @@ def _sector_rotation_scan(top_n=2):
             for x in ranked
         ],
         "rules": {
-            "day_momentum": "Strong top sector; stock >= +1%; estimated intraday RVOL >= 1.10 when available.",
+            "day_momentum": "Strong top sector; show stocks >= +0.5%. MOMENTUM = estimated intraday RVOL >= 1.10; otherwise WATCH for volume confirmation.",
             "swing_pullback": "20-day return >= +5%; 1-12% below 20-day high; within -2.5%/+3.5% of 21EMA; recent daily volume <= 80% of 20-day average.",
         },
         "note": "Discovery scanner only. Intraday RVOL is estimated from elapsed-session volume versus average daily volume; confirm 5-minute volume and structure in Trade Tracker.",
