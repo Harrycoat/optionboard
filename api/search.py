@@ -565,6 +565,158 @@ def _option_swing_market_candidates(limit=12):
     }
 
 
+def _swing_reclaim_setup_payload(ticker):
+    """Daily swing recovery model: low -> 21EMA reclaim -> 50MA reclaim -> volume confirmation."""
+    ticker = ticker.upper()
+    daily = _daily_bars(ticker, lookback_days=260)
+    if len(daily) < 55:
+        return {"ticker": ticker, "error": "Not enough daily history for swing reclaim analysis."}
+
+    schwab = _schwab_quote(ticker)
+    if schwab.get("error"):
+        schwab = None
+
+    closes = [float(x["close"]) for x in daily]
+    highs = [float(x["high"]) for x in daily]
+    lows = [float(x["low"]) for x in daily]
+    vols = [float(x["volume"]) for x in daily]
+
+    live_spot = None
+    if schwab:
+        live_spot = schwab.get("last") or schwab.get("mark") or schwab.get("bid") or schwab.get("ask")
+    spot = float(live_spot) if live_spot is not None else closes[-1]
+
+    ema21 = _ema(closes[-80:], 21)
+    ema21_prev = _ema(closes[-81:-1], 21) if len(closes) >= 81 else None
+    sma50 = _sma(closes, 50)
+    sma50_prev = _sma(closes[:-1], 50)
+    sma200 = _sma(closes, 200)
+
+    lookback = min(30, len(daily))
+    recent = daily[-lookback:]
+    low_bar = min(recent, key=lambda x: float(x["low"]))
+    low_price = float(low_bar["low"])
+    low_index = daily.index(low_bar)
+    days_from_low = max(0, len(daily) - 1 - low_index)
+    rise_from_low_pct = ((spot - low_price) / low_price * 100) if low_price > 0 else None
+
+    prev_close = closes[-2]
+    day_change_pct = ((spot - prev_close) / prev_close * 100) if prev_close else None
+
+    avg20vol = sum(vols[-21:-1]) / 20 if len(vols) >= 21 else None
+    latest_volume = vols[-1]
+    volume_ratio = (latest_volume / avg20vol) if avg20vol and avg20vol > 0 else None
+
+    was_below_21 = any(float(x["close"]) < (_ema([float(y["close"]) for y in daily[:i+1]][-80:], 21) or float(x["close"]))
+                       for i, x in enumerate(daily[-6:-1], start=len(daily)-6))
+    reclaim21 = bool(ema21 is not None and spot >= ema21 and (closes[-2] < ema21 or was_below_21))
+    reclaim50 = bool(sma50 is not None and spot >= sma50 and closes[-2] < sma50)
+    above21 = bool(ema21 is not None and spot >= ema21)
+    above50 = bool(sma50 is not None and spot >= sma50)
+    ema21_rising = bool(ema21_prev is not None and ema21 > ema21_prev)
+    sma50_rising = bool(sma50_prev is not None and sma50 > sma50_prev)
+
+    # Stock-level recovery confirmation inspired by an FTD concept.
+    # This is intentionally labeled "FTD-style" because classic O'Neil FTD is a market-index concept.
+    ftd_style = bool(
+        day_change_pct is not None and day_change_pct >= 1.5 and
+        volume_ratio is not None and volume_ratio >= 1.3 and
+        spot > prev_close and
+        days_from_low >= 2
+    )
+
+    recent_high = max(highs[-20:])
+    from_20d_high_pct = ((spot - recent_high) / recent_high * 100) if recent_high else None
+
+    score = 0
+    if days_from_low <= 10:
+        score += 15
+    if rise_from_low_pct is not None and 3 <= rise_from_low_pct <= 20:
+        score += 15
+    if above21:
+        score += 15
+    if above50:
+        score += 20
+    if ema21_rising:
+        score += 10
+    if volume_ratio is not None and volume_ratio >= 1.3:
+        score += 10
+    if ftd_style:
+        score += 15
+
+    if ftd_style and above21 and above50:
+        stage = "SWING READY"
+    elif reclaim21 and reclaim50:
+        stage = "21+50 RECLAIM"
+    elif above21 and reclaim50:
+        stage = "50MA RECLAIM"
+    elif reclaim21 or (above21 and not above50):
+        stage = "21EMA RECLAIM"
+    elif days_from_low <= 7 and rise_from_low_pct is not None and rise_from_low_pct > 0:
+        stage = "LOW CONFIRMED"
+    else:
+        stage = "BOTTOM WATCH"
+
+    return {
+        "ticker": ticker,
+        "spot": spot,
+        "schwab_quote": schwab,
+        "stage": stage,
+        "score": score,
+        "low_price": low_price,
+        "days_from_low": days_from_low,
+        "rise_from_low_pct": rise_from_low_pct,
+        "day_change_pct": day_change_pct,
+        "ema21": ema21,
+        "sma50": sma50,
+        "sma200": sma200,
+        "above21": above21,
+        "above50": above50,
+        "reclaim21": reclaim21,
+        "reclaim50": reclaim50,
+        "ema21_rising": ema21_rising,
+        "sma50_rising": sma50_rising,
+        "volume_ratio": volume_ratio,
+        "ftd_style": ftd_style,
+        "from_20d_high_pct": from_20d_high_pct,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def _swing_reclaim_candidates(limit=8):
+    """First-pass auto scan among liquid risers, then rank by swing-reclaim score."""
+    first_pass = _option_swing_market_candidates(limit=max(12, min(20, int(limit) * 2)))
+    results = []
+    for row in first_pass.get("candidates") or []:
+        ticker = row.get("ticker")
+        if not ticker:
+            continue
+        try:
+            item = _swing_reclaim_setup_payload(ticker)
+            if not item.get("error"):
+                results.append(item)
+        except Exception:
+            continue
+
+    stage_rank = {
+        "SWING READY": 6,
+        "21+50 RECLAIM": 5,
+        "50MA RECLAIM": 4,
+        "21EMA RECLAIM": 3,
+        "LOW CONFIRMED": 2,
+        "BOTTOM WATCH": 1,
+    }
+    results.sort(key=lambda x: (stage_rank.get(x.get("stage"), 0), x.get("score") or 0), reverse=True)
+    wanted = max(1, min(int(limit), 12))
+    return {
+        "count": min(len(results), wanted),
+        "candidates": results[:wanted],
+        "source": "Liquid risers first-pass + daily reclaim analysis",
+        "note": "This is a fast first-pass scan, not an exhaustive scan of every listed stock.",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 def _option_swing_setup_payload(ticker):
     ticker = ticker.upper()
     all_5m = _intraday_five_minute_bars(ticker)
@@ -705,6 +857,15 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
             return
 
+        if mode == "swing_reclaim_candidates":
+            try:
+                limit = int((query.get("limit", ["8"])[0]))
+                result = _swing_reclaim_candidates(limit=limit)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
+            return
+
         if mode == "schwab_quote":
             symbols_param = (query.get("symbols", [""])[0]).strip()
             if symbols_param:
@@ -773,6 +934,14 @@ class handler(BaseHTTPRequestHandler):
         if mode == "option_swing_setup":
             try:
                 result = _option_swing_setup_payload(ticker)
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
+            return
+
+        if mode == "swing_reclaim_setup":
+            try:
+                result = _swing_reclaim_setup_payload(ticker)
                 self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
