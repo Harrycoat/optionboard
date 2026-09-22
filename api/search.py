@@ -30,6 +30,63 @@ from earnings_engine import (  # noqa: E402
 
 FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY", "")
 
+
+SCHWAB_TOKEN_URL = "https://api.schwabapi.com/v1/oauth/token"
+SCHWAB_QUOTES_URL = "https://api.schwabapi.com/marketdata/v1/quotes"
+
+def _schwab_quote(ticker):
+    client_id = os.environ.get("SCHWAB_CLIENT_ID", "").strip()
+    client_secret = os.environ.get("SCHWAB_CLIENT_SECRET", "").strip()
+    refresh_token = os.environ.get("SCHWAB_REFRESH_TOKEN", "").strip()
+    if not client_id or not client_secret or not refresh_token:
+        return {"error": "Schwab environment variables are missing."}
+
+    token_resp = requests.post(
+        SCHWAB_TOKEN_URL,
+        auth=(client_id, client_secret),
+        headers={"Accept": "application/json"},
+        data={"grant_type": "refresh_token", "refresh_token": refresh_token},
+        timeout=15,
+    )
+    if token_resp.status_code != 200:
+        return {
+            "error": "Schwab token refresh failed",
+            "status": token_resp.status_code,
+            "detail": token_resp.text[:300],
+        }
+
+    access_token = (token_resp.json() or {}).get("access_token")
+    if not access_token:
+        return {"error": "Schwab access token missing from refresh response."}
+
+    quote_resp = requests.get(
+        SCHWAB_QUOTES_URL,
+        headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
+        params={"symbols": ticker, "fields": "quote,reference", "indicative": "false"},
+        timeout=15,
+    )
+    if quote_resp.status_code != 200:
+        return {
+            "error": "Schwab quote request failed",
+            "status": quote_resp.status_code,
+            "detail": quote_resp.text[:300],
+        }
+
+    row = (quote_resp.json() or {}).get(ticker.upper()) or {}
+    quote = row.get("quote") or {}
+    reference = row.get("reference") or {}
+    return {
+        "ticker": ticker.upper(),
+        "bid": quote.get("bidPrice"),
+        "ask": quote.get("askPrice"),
+        "last": quote.get("lastPrice"),
+        "mark": quote.get("mark"),
+        "volume": quote.get("totalVolume"),
+        "realtime": row.get("realtime"),
+        "description": reference.get("description"),
+        "source": "Schwab Trader API",
+    }
+
 ALLOWED_EXCHANGES = {"US"}
 
 CNN_FEAR_GREED_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
@@ -276,6 +333,17 @@ class handler(BaseHTTPRequestHandler):
 
         if mode == "fear_greed":
             self.wfile.write(json.dumps(_fetch_cnn_fear_greed(), ensure_ascii=False).encode())
+            return
+
+        if mode == "schwab_quote":
+            ticker = (query.get("ticker", [""])[0]).strip().upper()
+            if ticker not in {"NVDA", "AMZN"}:
+                self.wfile.write(json.dumps({
+                    "error": "Schwab test supports only NVDA and AMZN.",
+                    "allowed": ["AMZN", "NVDA"],
+                }, ensure_ascii=False).encode())
+                return
+            self.wfile.write(json.dumps(_schwab_quote(ticker), ensure_ascii=False).encode())
             return
 
         if mode == "config":
