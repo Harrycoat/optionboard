@@ -32,13 +32,13 @@
   <div class="card">
     <div class="controls">
       <input id="ticker" value="DRAM" aria-label="ticker">
-      <input id="callWall" type="number" step="0.01" value="64" aria-label="call wall">
-      <input id="putWall" type="number" step="0.01" placeholder="PUT WALL" aria-label="put wall">
+      <input id="callWall" type="number" step="0.01" placeholder="AUTO CALL WALL" aria-label="call wall" readonly title="Auto-filled from GEX option data">
+      <input id="putWall" type="number" step="0.01" placeholder="AUTO PUT WALL" aria-label="put wall" readonly title="Auto-filled from GEX option data">
       <input id="entry" type="number" step="0.01" placeholder="ENTRY" aria-label="entry price">
       <input id="entryVol" type="number" step="0.1" value="1.3" aria-label="expected entry volume ratio">
       <button id="startBtn">TRACK NOW</button>
     </div>
-    <div class="note">Ticker · Call Wall · Put Wall · Entry · Expected Entry Volume (5M relative volume). Default 1.3×. Entry/RE-UP is blocked when current 5-minute volume is below this threshold.</div>
+    <div class="note">Ticker · Call Wall (AUTO) · Put Wall (AUTO) · Entry · Expected Entry Volume. Call/Put Wall are filled automatically from the GEX option data for the selected ticker.</div>
     <div class="status" id="status">Ready</div>
   </div>
 
@@ -106,7 +106,7 @@ const money=v=>Number.isFinite(+v)?'$'+(+v).toFixed(2):'—';
 const pct=v=>Number.isFinite(+v)?((+v>=0?'+':'')+(+v).toFixed(2)+'%'):'—';
 function settings(){return {ticker:$('ticker').value.trim().toUpperCase(),callWall:num($('callWall').value),putWall:num($('putWall').value),entry:num($('entry').value),entryVol:num($('entryVol').value)}}
 function saveSettings(){localStorage.setItem(store+'_settings',JSON.stringify(settings()))}
-function restore(){try{const x=JSON.parse(localStorage.getItem(store+'_settings')||'{}');if(x.ticker)$('ticker').value=x.ticker;if(Number.isFinite(x.callWall))$('callWall').value=x.callWall;if(Number.isFinite(x.putWall))$('putWall').value=x.putWall;if(Number.isFinite(x.entry))$('entry').value=x.entry;if(Number.isFinite(x.entryVol))$('entryVol').value=x.entryVol}catch(e){}}
+function restore(){try{const x=JSON.parse(localStorage.getItem(store+'_settings')||'{}');if(x.ticker)$('ticker').value=x.ticker;if(Number.isFinite(x.entry))$('entry').value=x.entry;if(Number.isFinite(x.entryVol))$('entryVol').value=x.entryVol}catch(e){}}
 function logs(){try{return JSON.parse(localStorage.getItem(store+'_log')||'[]')}catch(e){return []}}
 function addLog(state,note=''){const a=logs();a.unshift({time:Date.now(),ticker:settings().ticker,state,price:num(live?.last??live?.mark??data?.spot),note});localStorage.setItem(store+'_log',JSON.stringify(a.slice(0,200)));renderLog()}
 function renderLog(){const a=logs();$('log').innerHTML=a.length?a.map(x=>'<div class="logrow"><span>'+new Date(x.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</span><b>'+x.state+'</b><div>'+money(x.price)+(x.note?' · '+x.note:'')+'</div></div>').join(''):'<div class="note" style="padding-top:10px">No trade events yet.</div>'}
@@ -205,11 +205,15 @@ function render(){
  const bars=(liveBars.length?liveBars:(data.bars||[])).slice(-12),maxV=Math.max(1,...bars.map(b=>num(b.volume)||0));$('bars').innerHTML=bars.map(b=>{const up=num(b.close)>=num(b.open),h=Math.max(4,(num(b.volume)||0)/maxV*125),t=new Date(num(b.time)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="barcol"><div class="bv">'+money(b.close)+'</div><div class="bar '+(up?'':'down')+'" style="height:'+h+'px"></div><div class="bt">'+t+'</div></div>'}).join('');
  if(x.state!==lastState){if(lastState)addLog(x.state,x.text);lastState=x.state}
 }
-async function loadBase(){const t=settings().ticker;if(!t)return;saveSettings();$('status').textContent='Loading '+t+' 5-minute structure…';try{const r=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(d.error)throw new Error(d.error);data=d;liveBars=(d.bars||[]).map(x=>({...x}));if(d.schwab_quote){prevLive=live;live=d.schwab_quote}render();$('status').textContent=t+' tracking · Schwab 5M OHLCV + live quote · refresh 5s'}catch(e){$('status').textContent='ERROR: '+e.message}}
+async function loadBase(){const t=settings().ticker;if(!t)return;saveSettings();$('status').textContent='Loading '+t+' 5-minute structure…';try{const r=await fetch('/api/search?mode=call_wall_monitor&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(d.error)throw new Error(d.error);data=d;liveBars=(d.bars||[]).map(x=>({...x}));
+if(Number.isFinite(num(d.call_wall)))$('callWall').value=Number(d.call_wall).toFixed(2);
+if(Number.isFinite(num(d.put_wall)))$('putWall').value=Number(d.put_wall).toFixed(2);
+if(d.schwab_quote){prevLive=live;live=d.schwab_quote}
+saveSettings();render();$('status').textContent=t+' tracking · Schwab 5M OHLCV + live quote · Call/Put Wall AUTO · refresh 5s'}catch(e){$('status').textContent='ERROR: '+e.message}}
 async function loadQuote(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_quote&ticker='+encodeURIComponent(t),{cache:'no-store'});const q=await r.json();if(!q.error){prevLive=live;live=q;render()}}catch(e){}}
 async function loadBars(){const t=settings().ticker;if(!t)return;try{const r=await fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'});const d=await r.json();if(!d.error&&Array.isArray(d.bars)&&d.bars.length){liveBars=d.bars.map(x=>({...x}));render()}}catch(e){}}
 function start(){pressurePeak=50;pressurePrev=50;lastState='';clearInterval(timer);clearInterval(quoteTimer);loadBase();setTimeout(()=>{loadQuote();loadBars()},2500);timer=setInterval(loadBase,60000);quoteTimer=setInterval(()=>{loadQuote();loadBars()},5000)}
-$('startBtn').onclick=start;['ticker','callWall','putWall','entry','entryVol'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='ticker')$(id).value=$(id).value.toUpperCase();saveSettings();render()}));
+$('startBtn').onclick=start;['ticker','entry','entryVol'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='ticker')$(id).value=$(id).value.toUpperCase();saveSettings();render()}));
 document.querySelectorAll('[data-manual]').forEach(b=>b.onclick=()=>addLog(b.dataset.manual,'manual'));
 $('clearBtn').onclick=()=>{localStorage.removeItem(store+'_log');renderLog()};
 restore();renderLog();start();
