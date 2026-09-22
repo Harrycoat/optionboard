@@ -34,12 +34,16 @@ FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY", "")
 SCHWAB_TOKEN_URL = "https://api.schwabapi.com/v1/oauth/token"
 SCHWAB_QUOTES_URL = "https://api.schwabapi.com/marketdata/v1/quotes"
 
-def _schwab_quote(ticker):
+def _schwab_quotes(tickers):
+    tickers = [str(t).strip().upper() for t in tickers if str(t).strip()]
+    if not tickers:
+        return {}
+
     client_id = os.environ.get("SCHWAB_CLIENT_ID", "").strip()
     client_secret = os.environ.get("SCHWAB_CLIENT_SECRET", "").strip()
     refresh_token = os.environ.get("SCHWAB_REFRESH_TOKEN", "").strip()
     if not client_id or not client_secret or not refresh_token:
-        return {"error": "Schwab environment variables are missing."}
+        return {"_error": "Schwab environment variables are missing."}
 
     token_resp = requests.post(
         SCHWAB_TOKEN_URL,
@@ -50,42 +54,61 @@ def _schwab_quote(ticker):
     )
     if token_resp.status_code != 200:
         return {
-            "error": "Schwab token refresh failed",
-            "status": token_resp.status_code,
-            "detail": token_resp.text[:300],
+            "_error": "Schwab token refresh failed",
+            "_status": token_resp.status_code,
+            "_detail": token_resp.text[:300],
         }
 
     access_token = (token_resp.json() or {}).get("access_token")
     if not access_token:
-        return {"error": "Schwab access token missing from refresh response."}
+        return {"_error": "Schwab access token missing from refresh response."}
 
     quote_resp = requests.get(
         SCHWAB_QUOTES_URL,
         headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
-        params={"symbols": ticker, "fields": "quote,reference", "indicative": "false"},
+        params={
+            "symbols": ",".join(tickers),
+            "fields": "quote,reference",
+            "indicative": "false",
+        },
         timeout=15,
     )
     if quote_resp.status_code != 200:
         return {
-            "error": "Schwab quote request failed",
-            "status": quote_resp.status_code,
-            "detail": quote_resp.text[:300],
+            "_error": "Schwab quote request failed",
+            "_status": quote_resp.status_code,
+            "_detail": quote_resp.text[:300],
         }
 
-    row = (quote_resp.json() or {}).get(ticker.upper()) or {}
-    quote = row.get("quote") or {}
-    reference = row.get("reference") or {}
-    return {
-        "ticker": ticker.upper(),
-        "bid": quote.get("bidPrice"),
-        "ask": quote.get("askPrice"),
-        "last": quote.get("lastPrice"),
-        "mark": quote.get("mark"),
-        "volume": quote.get("totalVolume"),
-        "realtime": row.get("realtime"),
-        "description": reference.get("description"),
-        "source": "Schwab Trader API",
-    }
+    raw = quote_resp.json() or {}
+    out = {}
+    for ticker in tickers:
+        row = raw.get(ticker) or {}
+        quote = row.get("quote") or {}
+        reference = row.get("reference") or {}
+        out[ticker] = {
+            "ticker": ticker,
+            "bid": quote.get("bidPrice"),
+            "ask": quote.get("askPrice"),
+            "last": quote.get("lastPrice"),
+            "mark": quote.get("mark"),
+            "volume": quote.get("totalVolume"),
+            "realtime": row.get("realtime"),
+            "description": reference.get("description"),
+            "source": "Schwab Trader API",
+        }
+    return out
+
+
+def _schwab_quote(ticker):
+    result = _schwab_quotes([ticker])
+    if result.get("_error"):
+        return {
+            "error": result.get("_error"),
+            "status": result.get("_status"),
+            "detail": result.get("_detail"),
+        }
+    return result.get(ticker.upper()) or {"error": "No Schwab quote returned."}
 
 ALLOWED_EXCHANGES = {"US"}
 
@@ -351,6 +374,24 @@ class handler(BaseHTTPRequestHandler):
             return
 
         if mode == "schwab_quote":
+            symbols_param = (query.get("symbols", [""])[0]).strip()
+            if symbols_param:
+                tickers = []
+                for raw in symbols_param.split(","):
+                    t = raw.strip().upper()
+                    if t and len(t) <= 10 and t.replace("-", "").replace(".", "").isalnum():
+                        tickers.append(t)
+                tickers = list(dict.fromkeys(tickers))[:5]
+                if not tickers:
+                    self.wfile.write(json.dumps({"error": "올바른 미국 주식 티커가 필요합니다."}, ensure_ascii=False).encode())
+                    return
+                result = _schwab_quotes(tickers)
+                if result.get("_error"):
+                    self.wfile.write(json.dumps({"error": result.get("_error"), "status": result.get("_status"), "detail": result.get("_detail")}, ensure_ascii=False).encode())
+                    return
+                self.wfile.write(json.dumps({"quotes": result}, ensure_ascii=False).encode())
+                return
+
             ticker = (query.get("ticker", [""])[0]).strip().upper()
             if not ticker or len(ticker) > 10 or not ticker.replace("-", "").replace(".", "").isalnum():
                 self.wfile.write(json.dumps({
