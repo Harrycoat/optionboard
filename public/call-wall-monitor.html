@@ -12,7 +12,40 @@
     .auto-note{margin-top:12px;border:1px solid #2d4666;background:#0d1a2a;border-radius:11px;padding:11px 12px;color:#9fc5f3;font-size:12px;line-height:1.55}.auto-note b{color:#fff}.optional{margin-top:14px;border-top:1px solid #263246;padding-top:12px}.optional summary{cursor:pointer;color:#aebbd0;font-size:13px;font-weight:800}.optional .flow{margin-top:11px}
     @media(max-width:820px){.search{grid-template-columns:repeat(2,minmax(0,1fr))}.search button{min-height:46px}.portfolio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:680px){.wrap{width:min(100% - 18px,980px);padding-top:13px}.top{align-items:flex-start}.beta{font-size:10px}.card{padding:14px;border-radius:14px}.grid4{grid-template-columns:repeat(2,1fr)}.flow,.flow.market{grid-template-columns:1fr 1fr}.checks{grid-template-columns:repeat(2,1fr)}.decision h1{font-size:20px}.decision p{font-size:13px}.search input{font-size:16px}.search button{padding:0 17px}.log{grid-template-columns:55px 68px 1fr}}
-  @media(max-width:720px){.top{align-items:flex-start;flex-direction:column}.top-nav{width:100%;justify-content:flex-start}.top-nav a{flex:1;min-width:120px;font-size:11px;padding:8px 10px}}</style>
+  @media(max-width:720px){.top{align-items:flex-start;flex-direction:column}.top-nav{width:100%;justify-content:flex-start}.top-nav a{flex:1;min-width:120px;font-size:11px;padding:8px 10px}}
+/* mobile-compact-v2 */
+@media(max-width:720px){
+  body{font-size:14px}
+  .wrap{width:100%;max-width:none;padding:10px 10px 36px}
+  .top{gap:10px;margin-bottom:10px}
+  .brand{font-size:20px;line-height:1.15}
+  .sub{font-size:11px;line-height:1.4}
+  .top-nav{display:grid!important;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;justify-content:stretch!important}
+  .top-nav a{min-width:0!important;min-height:36px!important;padding:7px 6px!important;font-size:10px!important;line-height:1.15;text-align:center}
+  .card{border-radius:12px;padding:12px}
+  .note,.status{font-size:11px}
+}
+
+<style>
+@media(max-width:720px){
+  .search{grid-template-columns:1fr 1fr!important;gap:7px}
+  .search input{padding:11px 10px;font-size:14px}
+  .search button{min-height:42px;padding:8px 10px}
+  .grid4{grid-template-columns:1fr 1fr!important;gap:7px}
+  .metric{padding:10px}
+  .metric b{font-size:16px}
+  .portfolio-grid{grid-template-columns:1fr!important}
+  .decision{grid-template-columns:auto 1fr;gap:10px;padding:12px}
+  .decision-icon{font-size:28px}
+  .decision h1{font-size:19px}
+  .decision p{font-size:12px}
+  .flow{grid-template-columns:1fr!important}
+  .volume-gauge,.pressure-gauge,.hour-flow{padding:10px}
+  .hour-flow-chart{height:130px;gap:3px;overflow-x:auto}
+  .flow-time{font-size:8px}
+  .flow-tip{font-size:8px}
+}
+</style>
 </head>
 <body>
 <main class="wrap">
