@@ -855,6 +855,20 @@ def _option_swing_market_candidates(limit=12):
     out = (strict + relaxed)[:wanted]
     mode = "strict" if len(strict) >= min(3, wanted) else "strict+fallback"
 
+    # Add a plain-language reason for the regular-market scanner.
+    # Prefer a recent company-news catalyst; otherwise identify the stock as a market mover.
+    for item in out[:min(12, len(out))]:
+        news = _finnhub_company_news(item["ticker"], days=2)
+        latest = news[0] if news else None
+        if latest and latest.get("headline"):
+            item["reason"] = _news_reason(latest.get("headline"))
+            item["headline"] = latest.get("headline")
+            item["news_url"] = latest.get("url")
+            item["news_time"] = latest.get("datetime")
+        else:
+            item["reason"] = "POPULAR / MARKET MOVER"
+            item["headline"] = "Strong price/volume mover from the market scan."
+
     return {
         "count": len(out),
         "candidates": out,
