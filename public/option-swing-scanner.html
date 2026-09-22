@@ -94,11 +94,15 @@ async function autoMarket(){
     const j=await r.json();
     if(j.error)throw new Error(j.error);
     const c=(j.candidates||[]).slice(0,8);
-    if(!c.length){$('status').textContent='자동 후보를 찾지 못했습니다.';return}
+    if(!c.length){
+      render([]);
+      $('status').textContent='AUTO MARKET 후보 0개 · 필터 조건에 맞는 종목이 없습니다.';
+      return
+    }
     const rows=await Promise.all(c.map(async x=>{try{const rr=await fetch('/api/search?mode=option_swing_setup&ticker='+encodeURIComponent(x.ticker),{cache:'no-store'});return await rr.json()}catch(e){return {ticker:x.ticker,error:e.message}}}));
     const good=rows.filter(x=>!x.error);
     render(good);
-    $('status').textContent='AUTO MARKET · '+good.length+'종목 분석 완료 · Top movers → 5M/15M 구조';
+    $('status').textContent='AUTO MARKET · '+good.length+'종목 분석 완료 · '+(j.selection_mode||'market')+' · Top movers → 5M/15M 구조';
   }catch(e){$('status').textContent='AUTO MARKET 오류 · '+e.message}
   finally{$('autoBtn').disabled=false;$('scanBtn').disabled=false}
 }
