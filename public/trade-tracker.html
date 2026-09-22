@@ -8,7 +8,7 @@
 :root{--bg:#07101b;--panel:#0d1724;--line:#243249;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#091522);color:var(--text);font-family:Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:14px}.brand{font-size:26px;font-weight:900}.sub{font-size:12px;color:var(--muted);margin-top:5px}.top-nav{display:flex;gap:7px;flex-wrap:wrap}.top-nav a{padding:9px 10px;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-size:10px;font-weight:900;background:#101826}.top-nav a.active{background:var(--gold);color:#17120a;border-color:var(--gold)}
 .card{background:rgba(13,23,36,.95);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}.controls{display:grid;grid-template-columns:110px 120px 120px 120px 1fr;gap:8px}.controls input,.controls button{min-height:42px;border-radius:8px;font-weight:800}.controls input{background:#09131f;color:var(--text);border:1px solid var(--line);padding:0 11px}.controls button{border:0;background:var(--green);cursor:pointer}.note,.status{font-size:11px;color:var(--muted);line-height:1.5}.status{margin-top:8px}
-.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.metric{background:#09131f;border:1px solid var(--line);border-radius:10px;padding:10px}.metric small{display:block;color:var(--muted);font-size:10px}.metric b{display:block;margin-top:5px;font-size:17px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{background:#09131f;border:1px solid var(--line);border-radius:10px;padding:10px}.metric small{display:block;color:var(--muted);font-size:10px}.metric b{display:block;margin-top:5px;font-size:17px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
 .state{border-left:6px solid var(--gold);padding:14px 14px 14px 16px}.state h2{margin:0;font-size:22px}.state p{margin:7px 0 0;color:#c1ccda;font-size:13px;line-height:1.5}.state.green{border-color:var(--green)}.state.red{border-color:var(--red)}.state.blue{border-color:var(--blue)}
 .gauge{margin-top:12px}.ghead{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}.track{height:11px;background:linear-gradient(90deg,var(--red) 0 50%,var(--green) 50% 100%);border-radius:999px;position:relative}.marker{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:21px;background:white;border-radius:4px}.labels{display:flex;justify-content:space-between;font-size:10px;font-weight:900;margin-top:6px}.labels span:first-child{color:var(--red)}.labels span:last-child{color:var(--green)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bars{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;align-items:end;height:180px;padding-top:16px}.barcol{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.bar{width:72%;min-height:4px;border-radius:4px;background:var(--green)}.bar.down{background:var(--red)}.bt{font-size:8px;color:var(--muted)}.bv{font-size:8px;color:#dce7f4}
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <div><div class="brand">MY TRADE TRACKER</div><div class="sub">5M structure · HULL21 · live price/pressure · wall response</div></div>
+    <div><div class="brand">MY TRADE TRACKER</div><div class="sub">5M structure · HULL21 slope · live price/pressure · wall response</div></div>
     <div class="top-nav">
       <a href="/premarket-scanner.html">PREMARKET</a>
       <a href="/option-swing-scanner.html">OPTION SWING</a>
@@ -43,13 +43,15 @@
 
   <div class="card state" id="stateBox">
     <h2 id="stateTitle">WAITING FOR DATA</h2>
-    <p id="stateText">Tracker will classify HOLD, PROFIT PROTECT, PULLBACK WAIT, RE-ENTRY WATCH, HULL21 TEST, HEDGE READY, or BREAKOUT.</p>
+    <p id="stateText">Tracker combines 5-minute HULL21 slope with live Buy/Sell pressure to classify SIDEWAYS, RE-UP READY, HEDGE READY, CALL WALL REJECTION, or BREAKOUT.</p>
   </div>
 
   <div class="card">
     <div class="metrics">
       <div class="metric"><small>LIVE PRICE</small><b id="price">—</b></div>
       <div class="metric"><small>5M HULL21</small><b id="hull" class="blue">—</b></div>
+      <div class="metric"><small>HULL21 SLOPE</small><b id="hullSlope">—</b></div>
+      <div class="metric"><small>SLOPE STATE</small><b id="slopeState">—</b></div>
       <div class="metric"><small>CALL WALL</small><b id="wall" class="red">$64.00</b></div>
       <div class="metric"><small>WALL DIST</small><b id="wallDist">—</b></div>
       <div class="metric"><small>5M VOL RATIO</small><b id="volRatio">—</b></div>
@@ -110,7 +112,7 @@ function pressure(q){
 function volRatio(){const bars=data?.bars||[];if(bars.length<3)return NaN;const cur=num(bars.at(-1)?.volume),prev=bars.slice(-6,-1).map(x=>num(x.volume)).filter(Number.isFinite);const avg=prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:NaN;return Number.isFinite(cur)&&avg>0?cur/avg:NaN}
 function classify(){
  if(!data)return {state:'WAITING FOR DATA',tone:'',text:'Waiting for 5-minute structure.'};
- const s=settings(),spot=num(live?.last??live?.mark??data.spot),hull=num(data.hull21),wall=Number.isFinite(s.callWall)?s.callWall:num(data.call_wall),vr=volRatio(),bars=data.bars||[],bar=bars.at(-1)||{},high=Math.max(...bars.slice(-4).map(x=>num(x.high)).filter(Number.isFinite),spot);
+ const s=settings(),spot=num(live?.last??live?.mark??data.spot),hull=num(data.hull21),hullSlope=num(data.hull21_slope_pct),wall=Number.isFinite(s.callWall)?s.callWall:num(data.call_wall),vr=volRatio(),bars=data.bars||[],bar=bars.at(-1)||{},high=Math.max(...bars.slice(-4).map(x=>num(x.high)).filter(Number.isFinite),spot);
  const pr=pressure(live||data.schwab_quote||{}),p=pr.pct;pressurePeak=Math.max(pressurePeak,p);
  const hullDist=Number.isFinite(hull)&&hull?((spot-hull)/hull*100):NaN,wallDist=Number.isFinite(wall)&&wall?((wall-spot)/wall*100):NaN;
  const nearHull=Number.isFinite(hullDist)&&hullDist>=-0.2&&hullDist<=0.65;
@@ -120,20 +122,33 @@ function classify(){
  const pressureDrop=(pressurePeak-p)>=12&&pressurePeak>=65;
  const pressureReturn=p>=58&&p>=pressurePrev+6;
  const strongVol=Number.isFinite(vr)&&vr>=1.3;
+ const slopeUp=Number.isFinite(hullSlope)&&hullSlope>=0.03;
+ const slopeDown=Number.isFinite(hullSlope)&&hullSlope<=-0.03;
+ const slopeFlat=Number.isFinite(hullSlope)&&!slopeUp&&!slopeDown;
+ const buyingStrong=p>=60;
+ const sellingStrong=p<=40;
  let out;
- if(Number.isFinite(wall)&&spot>wall&&p>=60&&strongVol) out={state:'BREAKOUT',tone:'green',text:'Call Wall above + pressure/volume confirmation. Monitor breakout hold and retest.'};
- else if(wallRejected&&(p<=48||pressureDrop)) out={state:'CALL WALL REJECTION',tone:'red',text:'Price rejected near Call Wall and buying pressure weakened. Profit protection / pullback mode.'};
- else if(belowHull) out={state:'HEDGE READY',tone:'red',text:'Latest 5-minute close is below HULL21. Prepare hedge and avoid adding until recovery.'};
- else if(nearHull&&pressureReturn) out={state:'RE-ENTRY WATCH',tone:'green',text:'Pullback reached HULL21 area and live buying pressure is returning. Confirm 5-minute hold before re-entry.'};
- else if(nearHull) out={state:'HULL21 TEST',tone:'gold',text:'Price is testing HULL21. Wait for pressure recovery or a 5-minute break.'};
+ if(Number.isFinite(wall)&&spot>wall&&buyingStrong&&strongVol&&slopeUp) out={state:'BREAKOUT',tone:'green',text:'Call Wall above + HULL21 slope UP + buying pressure/volume confirmation. Monitor breakout hold and retest.'};
+ else if(wallRejected&&(sellingStrong||pressureDrop)) out={state:'CALL WALL REJECTION',tone:'red',text:'Price rejected near Call Wall and buying pressure weakened. Profit protection / pullback mode.'};
+ else if((belowHull&&slopeDown)|| (slopeDown&&sellingStrong)) out={state:'HEDGE READY',tone:'red',text:'HULL21 slope is DOWN and selling pressure is dominant. Prepare hedge and avoid adding until recovery.'};
+ else if(nearHull&&slopeUp&&pressureReturn) out={state:'RE-UP READY',tone:'green',text:'HULL21 slope has turned UP near support and buying pressure is returning. Confirm the 5-minute hold/reclaim before re-entry.'};
+ else if(slopeUp&&buyingStrong&&Number.isFinite(hullDist)&&hullDist>=0) out={state:'RE-UP READY',tone:'green',text:'HULL21 slope is UP and live buying pressure is strong. Uptrend continuation is improving; watch the next 5-minute high/retest.'};
+ else if(nearHull&&slopeFlat) out={state:'HULL21 TEST',tone:'gold',text:'Price is near HULL21 but the slope is still FLAT. Wait for slope UP + buying pressure before re-entry.'};
+ else if(slopeFlat&&Number.isFinite(hullDist)&&hullDist>0) out={state:'SIDEWAYS / HOLD',tone:'blue',text:'Price is above HULL21 but the HULL21 slope is FLAT. Uptrend is intact, but wait for the slope to turn UP before adding.'};
  else if(pressureDrop&&high>0&&(high-spot)/high*100<1.5) out={state:'PROFIT PROTECT',tone:'red',text:'Buying pressure has fallen materially from its session peak near the highs. Consider protecting profit per your plan.'};
- else if(Number.isFinite(hullDist)&&hullDist>0.65) out={state:'HOLD / PULLBACK WAIT',tone:'blue',text:'Trend remains above HULL21. Avoid chasing; wait for a cleaner pullback or wall test.'};
+ else if(Number.isFinite(hullDist)&&hullDist>0.65) out={state:'HOLD / PULLBACK WAIT',tone:'blue',text:'Trend remains above HULL21. Avoid chasing; wait for a cleaner pullback or slope re-acceleration.'};
  else out={state:'WATCH',tone:'',text:'No strong transition yet. Continue 5-minute tracking.'};
- pressurePrev=p;return {...out,spot,hull,wall,vr,hullDist,wallDist,pr};
+ pressurePrev=p;return {...out,spot,hull,hullSlope,slopeUp,slopeDown,slopeFlat,wall,vr,hullDist,wallDist,pr};
 }
 function render(){
  if(!data)return;const x=classify(),box=$('stateBox');box.className='card state '+x.tone;$('stateTitle').textContent=x.state;$('stateText').textContent=x.text;
- $('price').textContent=money(x.spot);$('hull').textContent=money(x.hull);$('wall').textContent=money(x.wall);$('wallDist').textContent=pct(-x.wallDist);$('volRatio').textContent=Number.isFinite(x.vr)?x.vr.toFixed(2)+'×':'—';$('hullDist').textContent=pct(x.hullDist);
+ $('price').textContent=money(x.spot);$('hull').textContent=money(x.hull);
+ const hs=$('hullSlope'),ss=$('slopeState');
+ hs.textContent=Number.isFinite(x.hullSlope)?((x.hullSlope>=0?'+':'')+x.hullSlope.toFixed(3)+'%'):'—';
+ hs.className=x.slopeUp?'green':x.slopeDown?'red':'gold';
+ ss.textContent=x.slopeUp?'UP ↑':x.slopeDown?'DOWN ↓':x.slopeFlat?'FLAT →':'—';
+ ss.className=x.slopeUp?'green':x.slopeDown?'red':'gold';
+ $('wall').textContent=money(x.wall);$('wallDist').textContent=pct(-x.wallDist);$('volRatio').textContent=Number.isFinite(x.vr)?x.vr.toFixed(2)+'×':'—';$('hullDist').textContent=pct(x.hullDist);
  const pp=x.pr?.pct??50;$('pressureMarker').style.left=pp+'%';$('pressureText').textContent=x.pr?.confidence==='LOW'?'LOW CONFIDENCE · WAIT':('BUY '+Math.round(pp)+'% / SELL '+(100-Math.round(pp))+'% · '+x.pr.confidence);$('pressureMeta').textContent=Number.isFinite(x.pr?.deltaVol)?'ΔVol '+Math.round(x.pr.deltaVol).toLocaleString():'Schwab samples';
  const bars=data.bars||[],maxV=Math.max(1,...bars.map(b=>num(b.volume)||0));$('bars').innerHTML=bars.map(b=>{const up=num(b.close)>=num(b.open),h=Math.max(4,(num(b.volume)||0)/maxV*125),t=new Date(num(b.time)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="barcol"><div class="bv">'+money(b.close)+'</div><div class="bar '+(up?'':'down')+'" style="height:'+h+'px"></div><div class="bt">'+t+'</div></div>'}).join('');
  if(x.state!==lastState){if(lastState)addLog(x.state,x.text);lastState=x.state}
