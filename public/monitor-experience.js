@@ -3,7 +3,23 @@
 'use strict';
 const $=id=>document.getElementById(id);
 const cache=new Map();
-let selected='',planMode='breakout',lastData=null;
+let selected='',planMode='breakout',lastData=null,restoredTicker='';
+const planFields=['planConfirmation','planInvalidReason','planTarget','riskDollars','riskSlippage','riskAccount','riskPercent','riskEntry','riskStop'];
+const planKey=t=>'gexoption_daytrade_plan_v1_'+(localStorage.getItem('gexoption_active_watchlist_user')||'guest')+'_'+t;
+function restorePlan(t){
+ if(restoredTicker===t)return;
+ restoredTicker=t;
+ let saved=null;try{saved=t?JSON.parse(localStorage.getItem(planKey(t))||'null'):null}catch(_){}
+ for(const id of planFields){$(id).value=saved&&saved.fields&&Object.prototype.hasOwnProperty.call(saved.fields,id)?String(saved.fields[id]):(id==='riskSlippage'?'0.5':'')}
+ if(saved&&['breakout','pullback','wait'].includes(saved.mode))planMode=saved.mode;
+ $('planSaveStatus').textContent=saved?'저장된 개인 계획 · '+validTimestamp(saved.saved_at)+' · 이 브라우저에만 보관':'미저장 계획 · 이 브라우저에만 저장됩니다.';
+}
+function priceFresh(x){
+ if(!x||!x.quoteTime)return false;
+ const ms=typeof x.quoteTime==='number'&&x.quoteTime<1e11?x.quoteTime*1000:Date.parse(x.quoteTime);
+ return Number.isFinite(ms)&&ms<=Date.now()+60000&&Date.now()-ms<3*60*1000;
+}
+
 const number=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
 const cash=(v,d=2)=>number(v)===null?'—':'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
 const esc=v=>String(v===null||v===undefined?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -20,7 +36,7 @@ const condition=x=>{
 };
 function select(t){
  if(!t)return;
- selected=t;renderRadar();renderStory();renderPlan();
+ selected=t;restorePlan(t);renderRadar();renderStory();renderPlan();
  const node=$('tickerStory');if(node)node.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderRadar(){
@@ -60,7 +76,7 @@ function renderStory(){
  $('storyCall').textContent=x?cash(x.call,1):'—';
  $('storyHull').textContent=x&&number(x.hull)!==null?n(x.hull)+(x.slope>0.03?' ▲':x.slope<-.03?' ▼':' →'):'—';
  $('storyVolume').textContent=x?x.vol.label:'—';
- $('storyQuoteTime').textContent=x?(x.quoteRealtime?'Schwab 실시간 표기 · ':'Schwab 실시간 여부 미확인 · ')+validTimestamp(x.quoteTime):'시세 기준시각 확인 중';
+ $('storyQuoteTime').textContent=x?(x.quoteRealtime?'Schwab 실시간 표기 · ':'Schwab 실시간 여부 미확인 · ')+validTimestamp(x.quoteTime)+(priceFresh(x)?' · 최근 갱신':' · 갱신 시각 재확인 필요'):'시세 기준시각 확인 중';
  $('storyWallTime').textContent='옵션 Wall: 별도 API · 기준 시각 표시 기능 준비 중';
  $('storyNews').textContent='뉴스·공시 원문은 아직 이 모니터에 연결되지 않았습니다. 움직이는 이유는 확인된 출처가 있을 때만 표시합니다.';
  $('storyStructure').textContent=x?'Put '+cash(x.put,1)+' / 현재 '+cash(x.spot)+' / Call '+cash(x.call,1):'Wall 데이터 확인 중';
@@ -84,16 +100,46 @@ function renderPlan(){
  }
  $('planTitle').textContent=title;$('planBody').textContent=body;$('planInvalid').textContent=invalid;
  $('planTicker').textContent=selected||'종목 미선택';
+ const q=cache.get(selected);$('planSourceTime').value=q?validTimestamp(q.quoteTime):'시세 기준시각 확인 중';
  calc();
 }
-function calc(){
- const account=number($('riskAccount').value),risk=number($('riskPercent').value),entry=number($('riskEntry').value),stop=number($('riskStop').value);
- const valid=account!==null&&account>0&&risk!==null&&risk>0&&risk<=100&&entry!==null&&entry>0&&stop!==null&&stop>0&&stop<entry;
- $('riskResult').textContent=valid?Math.floor(account*risk/100/(entry-stop)).toLocaleString('en-US')+'주':'—';
- $('riskLoss').textContent=valid?cash(Math.floor(account*risk/100/(entry-stop))*(entry-stop)):'값을 입력하면 계산됩니다';
- $('copyScenario').disabled=!valid||!selected;
- $('riskError').textContent=entry!==null&&stop!==null&&stop>=entry?'손절가는 진입가보다 낮아야 합니다.':(!valid?'계좌·위험 한도·진입가·손절가를 직접 입력하세요.':'수수료·슬리피지·갭 리스크는 별도입니다.');
+function planCalculation(){
+ const dollars=number($('riskDollars').value),account=number($('riskAccount').value),pct=number($('riskPercent').value);
+ const allowed=dollars!==null&&dollars>0?dollars:(account!==null&&account>0&&pct!==null&&pct>0&&pct<=100?account*pct/100:null);
+ const entry=number($('riskEntry').value),stop=number($('riskStop').value),slip=number($('riskSlippage').value);
+ const perShare=entry!==null&&stop!==null&&slip!==null&&slip>=0&&slip<=20?entry-stop+entry*slip/100:null;
+ const valid=allowed!==null&&allowed>0&&entry!==null&&entry>0&&stop!==null&&stop>0&&stop<entry&&perShare!==null&&perShare>0;
+ const qty=valid?Math.floor(allowed/perShare):null;
+ return {valid,allowed,entry,stop,slip,perShare,qty,loss:valid?qty*perShare:null};
 }
+function calc(){
+ const p=planCalculation();
+ $('riskResult').textContent=p.valid?p.qty.toLocaleString('en-US')+'주':'—';
+ $('riskLoss').textContent=p.valid?cash(p.loss):'값을 입력하면 계산됩니다';
+ const confirmed=$('planConfirmation').value.trim().length>0;
+ const reason=$('planInvalidReason').value.trim().length>0;
+ $('copyScenario').disabled=!p.valid||p.qty<1||!selected||!confirmed||!reason;
+ $('saveScenario').disabled=$('copyScenario').disabled;
+ $('riskError').textContent=p.entry!==null&&p.stop!==null&&p.stop>=p.entry?'무효화 가격은 이 매수 가정의 진입가보다 낮아야 합니다.':(!p.valid?'허용 손실 또는 계좌·위험 %, 진입가, 무효화 가격을 입력하세요.':p.qty<1?'허용 손실보다 주당 위험이 커 수량이 0입니다.':(!confirmed||!reason?'내 확인 조건과 무효화 이유를 먼저 입력하세요.':(!priceFresh(cache.get(selected))?'시세 기준 시각이 오래됐거나 미확인입니다. 저장 전 새로고침하여 확인하세요.':'수수료·실제 슬리피지·갭 손실은 별도입니다.')));
+}
+function scenarioText(){
+ const p=planCalculation();
+ return [selected+' 개인 데이트레이딩 시나리오', '유형: '+planMode,$('planTitle').textContent,
+ '확인: '+$('planConfirmation').value.trim(),'무효화 이유: '+$('planInvalidReason').value.trim(),
+ '진입 가정 '+cash(p.entry)+' / 무효화 '+cash(p.stop)+' / 목표 '+(number($('planTarget').value)===null?'미정':cash($('planTarget').value)),
+ '허용 손실 '+cash(p.allowed)+' / 슬리피지 가정 '+p.slip+'% / 수량 '+p.qty+'주 / 계산 예상 손실 '+cash(p.loss),
+ '가격 기준 '+$('planSourceTime').value,'주문 실행 없음 · 개인 계획용 · 수수료·실제 체결·갭 위험 별도'].join('\\n');
+}
+$('saveScenario').addEventListener('click',()=>{
+ const p=planCalculation(),x=cache.get(selected);
+ if(!p.valid||p.qty<1||!$('planConfirmation').value.trim()||!$('planInvalidReason').value.trim()||!selected)return;
+ if(!priceFresh(x)){ $('planSaveStatus').textContent='시세 기준 시각이 오래됐거나 확인되지 않았습니다. REFRESH 후 다시 검토해 주세요.';return }
+ const fields={};for(const id of planFields){if(id!=='riskAccount')fields[id]=$(id).value}
+ const snapshot={symbol:selected,price:x.spot,put_wall:x.put,call_wall:x.call,hull21:x.hull,quote_at:x.quoteTime,realtime:x.quoteRealtime,source:'Schwab quote / independent options Wall'};
+ const value={version:1,saved_at:new Date().toISOString(),mode:planMode,fields,allowed_loss:p.allowed,quantity:p.qty,estimated_loss:p.loss,snapshot};
+ try{localStorage.setItem(planKey(selected),JSON.stringify(value));$('planSaveStatus').textContent='✓ 저장됨 · '+validTimestamp(value.saved_at)+' · 이 브라우저에서 다시 열 수 있습니다.'}
+ catch(_){$('planSaveStatus').textContent='저장에 실패했습니다. 브라우저 저장 공간과 권한을 확인하세요.'}
+});
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-radar],[data-select],[data-plan-mode]');
  if(!b)return;
@@ -101,12 +147,9 @@ document.addEventListener('click',e=>{
  if(b.dataset.select)select(b.dataset.select);
  if(b.dataset.planMode){planMode=b.dataset.planMode;renderPlan()}
 });
-['riskAccount','riskPercent','riskEntry','riskStop'].forEach(id=>$(id).addEventListener('input',calc));
+planFields.forEach(id=>$(id).addEventListener('input',()=>{$('planSaveStatus').textContent='변경된 계획 · 저장 필요';calc()}));
 $('copyScenario').addEventListener('click',async()=>{
- const text=[selected+' 개인 거래 시나리오', $('planTitle').textContent,$('planBody').textContent,$('planInvalid').textContent,
- '계좌 '+$('riskAccount').value+', 위험 '+$('riskPercent').value+'%, 진입 '+$('riskEntry').value+', 손절 '+$('riskStop').value,
- '계산 수량 '+$('riskResult').textContent+', 예상 손실 '+$('riskLoss').textContent,'정보 제공·개인 기록용. 수수료·슬리피지·갭 위험 미반영.'].join('\n');
- try{await navigator.clipboard.writeText(text);$('copyScenario').textContent='✓ 복사됨';setTimeout(()=>$('copyScenario').textContent='시나리오 요약 복사',1400)}
+ try{await navigator.clipboard.writeText(scenarioText());$('copyScenario').textContent='✓ 복사됨';setTimeout(()=>$('copyScenario').textContent='시나리오 요약 복사',1400)}
  catch(_){$('riskError').textContent='클립보드 접근이 차단되었습니다. 브라우저 권한을 확인해 주세요.'}
 });
 window.addEventListener('gex-monitor-update',e=>{
@@ -114,12 +157,12 @@ window.addEventListener('gex-monitor-update',e=>{
  cache.set(x.ticker,x);
  const displayed=typeof getList==='function'?getList():[];
  if(!selected||!displayed.includes(selected))selected=displayed[0]||x.ticker;
- renderRadar();if(selected===x.ticker){renderStory();renderPlan()}
+ restorePlan(selected);renderRadar();if(selected===x.ticker){renderStory();renderPlan()}
 });
 window.addEventListener('gex-monitor-list-change',()=>{
  const list=typeof getList==='function'?getList():[];
  if(!list.includes(selected))selected=list[0]||'';
- renderRadar();renderStory();renderPlan();
+ restorePlan(selected);renderRadar();renderStory();renderPlan();
 });
-window.addEventListener('load',()=>{const list=typeof getList==='function'?getList():[];selected=list[0]||'';renderRadar();renderStory();renderPlan()});
+window.addEventListener('load',()=>{const list=typeof getList==='function'?getList():[];selected=list[0]||'';restorePlan(selected);renderRadar();renderStory();renderPlan()});
 })();
