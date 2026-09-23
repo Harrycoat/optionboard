@@ -753,6 +753,7 @@ def _premarket_scan(limit=16, min_gap=1.0):
             "prev_close": prev_close,
             "gap_pct": gap,
             "volume": q.get("volume"),
+            "quote_time": q.get("quote_time") or q.get("trade_time"),
             "bid": q.get("bid"),
             "ask": q.get("ask"),
             "realtime": q.get("realtime"),
@@ -912,25 +913,51 @@ def _morning_three():
         })
 
     prelim.sort(key=lambda x: (x["_pre_score"], x.get("gap_pct") or 0), reverse=True)
-    # Reserve options-analysis slots across distinct sectors BEFORE the costly
-    # per-ticker option calls. Otherwise a strong software morning consumes all
-    # five slots and other sectors never reach the final selection.
+    # Preserve a cross-sector first pass, then allow a second candidate from
+    # a sector only if it has independently documented evidence. Bound costly
+    # options calls: the frontend never determines the final shortlist.
     distinct_prelim = []
-    seen_prelim_sectors = set()
+    used_prelim = set()
     for item in prelim:
         sector = item.get("sector") or "OTHER"
-        if sector in seen_prelim_sectors:
+        if sector in used_prelim:
             continue
         distinct_prelim.append(item)
-        seen_prelim_sectors.add(sector)
+        used_prelim.add(sector)
         if len(distinct_prelim) >= 5:
             break
+    if len(distinct_prelim) < 6:
+        for item in prelim:
+            if item in distinct_prelim:
+                continue
+            if not item.get("news_url"):
+                continue
+            distinct_prelim.append(item)
+            if len(distinct_prelim) >= 6:
+                break
     finalists = []
 
     # Options analysis is intentionally limited to the strongest preliminary names
     # so the serverless request remains bounded.
     for item in distinct_prelim:
         ticker = item["ticker"]
+        # The premarket scanner fetches news for at most 12 names. A finalist
+        # outside that slice MUST get its own server-side news lookup.
+        news_status = "not_configured" if not FINNHUB_API_KEY else "no_linked_article"
+        if item.get("news_url") and item.get("headline"):
+            news_status = "linked"
+        elif FINNHUB_API_KEY:
+            verified = _finnhub_company_news(ticker, days=2)
+            latest = next((row for row in verified
+                           if isinstance(row, dict)
+                           and str(row.get("headline") or "").strip()
+                           and str(row.get("url") or "").startswith("https://")), None)
+            if latest:
+                item["reason"] = _news_reason(latest["headline"])
+                item["headline"] = latest["headline"]
+                item["news_url"] = latest["url"]
+                item["news_time"] = latest.get("datetime")
+                news_status = "linked"
         option_score = 0
         call_wall = put_wall = gamma_flip = expiry = None
         option_state = "unavailable"
@@ -993,6 +1020,9 @@ def _morning_three():
             "spot": item.get("spot"),
             "gap_pct": item.get("gap_pct"),
             "volume": item.get("volume"),
+            "volume_label": "Schwab 누적 거래량 (장전 전용 아님)",
+            "quote_time": item.get("quote_time"),
+            "news_status": news_status,
             "spread_pct": item.get("spread_pct"),
             "reason": item.get("reason"),
             "headline": item.get("headline"),
@@ -1010,23 +1040,33 @@ def _morning_three():
         })
 
     finalists.sort(key=lambda x: x["score"], reverse=True)
-    # Maximum one ticker per sector. Fewer than three is a valid result when
-    # only one or two distinct sectors pass the evidence/liquidity filters.
     top = []
-    selected_sectors = set()
+    sector_counts = {}
+    reason_keys = set()
     for item in finalists:
         sector = item.get("sector") or "OTHER"
-        if sector in selected_sectors:
+        if sector_counts.get(sector, 0) >= 2:
+            continue
+        # Repeated generic sector WHY text is not an independent catalyst.
+        # Prefer a candidate from another sector or a documented unique news
+        # headline; never fill the third slot merely to reach three.
+        key = " ".join(str(item.get("headline") or "").lower().split())
+        if key and key in reason_keys:
+            continue
+        if sector_counts.get(sector, 0) and not item.get("news_url"):
             continue
         top.append(item)
-        selected_sectors.add(sector)
+        sector_counts[sector] = sector_counts.get(sector, 0) + 1
+        if key:
+            reason_keys.add(key)
         if len(top) == 3:
             break
     return {
         "count": len(top),
         "candidates": top,
-        "market_state": "관망 우위 · 섹터 분산 기준" if len(top) < 3 else "서로 다른 섹터 3개 압축",
-        "selection_policy": "maximum_one_stock_per_sector",
+        "market_state": "관망 우위 · 근거/섹터 분산 기준" if len(top) < 3 else "근거 검증 후보 3개",
+        "selection_policy": "maximum_two_per_sector_distinct_why",
+        "news_configured": bool(FINNHUB_API_KEY),
         "method": {
             "catalyst": 30,
             "liquidity": 25,
