@@ -34,6 +34,18 @@
     refresh();
     return true;
   }
+  function remove(ticker){
+    ticker=clean(ticker);
+    const key=scopedKey();
+    if(!key)return false;
+    const next=list().filter(item=>item!==ticker);
+    localStorage.setItem(key,JSON.stringify(next));
+    const legacy=parse(localStorage.getItem(BASE_KEY)).map(clean).filter(Boolean).filter(item=>item!==ticker);
+    localStorage.setItem(BASE_KEY,JSON.stringify(legacy));
+    window.dispatchEvent(new CustomEvent('gex-watchlist-change',{detail:{ticker,list:next,removed:true}}));
+    refresh();
+    return true;
+  }
   document.addEventListener('click',event=>{
     const button=event.target.closest('[data-watch-add]');
     if(!button)return;
@@ -47,5 +59,5 @@
   const style=document.createElement('style');
   style.textContent='.gex-watch-add{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:6px 9px;border:1px solid #e0a838;border-radius:6px;background:rgba(224,168,56,.08);color:#f2bd4c;font:800 11px Arial,"Noto Sans KR",sans-serif;white-space:nowrap;cursor:pointer}.gex-watch-add:hover{background:rgba(224,168,56,.18)}.gex-watch-add.is-saved{border-color:#55e6b5;background:rgba(85,230,181,.1);color:#55e6b5}';
   document.head.appendChild(style);
-  window.GexWatchlist={add,list,refresh};
+  window.GexWatchlist={add,remove,list,refresh};
 })();
