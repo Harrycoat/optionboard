@@ -571,6 +571,13 @@
   .member-quickstrip{ max-width:1100px; margin:12px auto 0; padding:0 20px; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
   .qs-btn{ border:1px solid var(--line); background:transparent; color:var(--text-dim); font-size:11.5px; font-weight:700; padding:7px 13px; border-radius:20px; cursor:pointer; font-family:inherit; }
   .qs-btn:hover{ color:var(--text); border-color:var(--gold); }
+  .tape{ background:#070b11; border-bottom:1px solid var(--line); overflow:hidden; white-space:nowrap; }
+  .tape-track{ display:inline-flex; padding:7px 0; animation:tape-scroll 45s linear infinite; will-change:transform; }
+  .tape:hover .tape-track{ animation-play-state:paused; }
+  @keyframes tape-scroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  .tape-item{ display:inline-flex; align-items:center; gap:6px; padding:0 16px; border-right:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-dim); cursor:pointer; }
+  .tape-item b{ color:var(--text); font-weight:800; }
+  .tape-item i{ font-style:normal; font-weight:700; }
   .mijoostock-side-banner{
     position:absolute; top:290px; left:max(18px,calc(50% - 770px)); z-index:2;
     width:128px; min-height:560px; padding:46px 12px 20px;
@@ -746,6 +753,7 @@
   .journal-trade-note{ font-size:11px; color:var(--text-dim); font-style:italic; }
 </style></head>
 <body>
+<div class="tape" aria-label="시장 지표"><div class="tape-track" id="tapeTrack"></div></div>
 <header>
   <div class="logo">
     <div class="dot"></div>
@@ -1302,7 +1310,6 @@ async function loadMarketStatusBanner(){
     </div>
     ${ftdNote ? `<div style="font-size:11.5px; color:var(--text-dim); margin-top:6px; padding-left:2px;">${ftdNote}</div>` : ''}
     <div style="font-size:10.5px; color:var(--text-dim); opacity:0.7; margin-top:4px; padding-left:2px;">※ 위 국면 표시는 참고용 정보이며, 매수/매도를 권유하는 투자자문이 아닙니다.</div>
-    <div id="macroStrip" style="margin-top:10px;"></div>
   `;
   loadMacroStrip();
 }
@@ -1318,17 +1325,9 @@ const MACRO_TICKERS = [
   { ticker: 'VXX', label: '변동성 (VIX 프록시)' },
   { ticker: 'CPER', label: '구리 (경기 선행지표)' },
 ];
-const TREND_FLAT_THRESHOLD = 0.3;
-function classifyTrend(pct){
-  if(pct == null) return { label: '데이터 부족', color: '#8b93a1' };
-  if(pct > TREND_FLAT_THRESHOLD) return { label: '상승중', color: UP };
-  if(pct < -TREND_FLAT_THRESHOLD) return { label: '하락중', color: DOWN };
-  return { label: '횡보', color: GOLD };
-}
 async function loadMacroStrip(){
-  const el = document.getElementById('macroStrip');
-  if(!el) return;
-  el.innerHTML = `<div class="leader-empty" style="font-size:12px;">매크로 지표 확인 중...</div>`;
+  const trackEl = document.getElementById('tapeTrack');
+  if(!trackEl) return;
   const results = await Promise.all(
     MACRO_TICKERS.map(m =>
       fetch(`/api/search?ticker=${encodeURIComponent(m.ticker)}`)
@@ -1336,47 +1335,19 @@ async function loadMacroStrip(){
         .catch(() => null)
     )
   );
-  let upCount = 0, downCount = 0, flatCount = 0, missingCount = 0;
-  const cards = MACRO_TICKERS.map((m, i) => {
+  const items = MACRO_TICKERS.map((m, i) => {
     const d = results[i];
     if(!d || d.error){
-      missingCount++;
-      return `
-        <div class="wcard" style="cursor:default;">
-          <div class="t" style="font-size:13px;">${m.ticker}</div>
-          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${m.label}</div>
-          <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">데이터 없음</div>
-        </div>`;
+      return `<span class="tape-item" data-ticker="${m.ticker}"><b>${m.ticker}</b><span>—</span></span>`;
     }
     const pct = d.price_change_pct;
-    const trend = classifyTrend(pct);
-    if(trend.label === '상승중') upCount++;
-    else if(trend.label === '하락중') downCount++;
-    else if(trend.label === '횡보') flatCount++;
-    else missingCount++;
-    const pctText = (pct != null) ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%` : '—';
-    return `
-      <div class="wcard" data-ticker="${m.ticker}">
-        <div class="t">${m.ticker}</div>
-        <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">${m.label}</div>
-        <div class="spot" style="font-size:16px; margin-top:8px;">$${fmtNum(d.spot)}</div>
-        <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
-          <span style="font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:4px; background:${trend.color}22; color:${trend.color};">${trend.label}</span>
-          <span class="mono" style="font-size:12px; color:${trend.color};">${pctText}</span>
-          <span style="display:inline-flex;">${trendIconSVGColored(pct, trend.color)}</span>
-        </div>
-      </div>`;
-  }).join('');
-  const totalKnown = upCount + downCount + flatCount;
-  const summaryLine = totalKnown > 0
-    ? `오늘 매크로 10개 중 <b style="color:${UP};">상승 ${upCount}개</b> · <b style="color:${DOWN};">하락 ${downCount}개</b> · <b style="color:${GOLD};">횡보 ${flatCount}개</b>${missingCount ? ` (데이터 부족 ${missingCount}개)` : ''}`
-    : '';
-  el.innerHTML = `
-    ${summaryLine ? `<div style="font-size:12px; color:var(--text-dim); margin-bottom:10px; padding-top:10px; border-top:1px dashed var(--line);">${summaryLine}</div>` : ''}
-    <div class="watchlist-grid">${cards}</div>
-  `;
-  el.querySelectorAll('.wcard[data-ticker]').forEach(card=>{
-    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
+    const pctColor = pct == null ? 'var(--text-dim)' : (pct >= 0 ? UP : DOWN);
+    const pctText = pct != null ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%` : '—';
+    return `<span class="tape-item" data-ticker="${m.ticker}"><b>${m.ticker}</b><span>$${fmtNum(d.spot)}</span><i style="color:${pctColor};">${pctText}</i></span>`;
+  });
+  trackEl.innerHTML = items.concat(items).join('');
+  trackEl.querySelectorAll('.tape-item[data-ticker]').forEach(item=>{
+    item.addEventListener('click', ()=> searchTicker(item.dataset.ticker));
   });
 }
 // ---------- 오늘의 이상 옵션 거래 (Unusual Options Activity — Vol/OI 비율 상위) ----------
@@ -3336,6 +3307,7 @@ if(isIndustryView()){
   loadAiLeaderMap();
   loadTradingJournal();
   setInterval(loadMarketFloat, 60000);
+  setInterval(loadMacroStrip, 60000);
 }
 initMemberAccount();
 const initialTicker = validWatchTicker(new URLSearchParams(location.search).get('ticker'));
