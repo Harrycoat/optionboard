@@ -338,6 +338,9 @@
   .leader-card:last-child{ border-bottom:none; }
   .leader-card:hover{ opacity:0.8; }
   .leader-ticker{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color: var(--text); min-width:56px; }
+  #morning3Section .section-title{ font-size:21px; }
+  #morning3Section .leader-ticker{ font-size:19px; min-width:70px; }
+  #morning3Section .leader-card{ padding:15px 6px; gap:18px; }
   .leader-empty{ font-size:12px; color: var(--text-dim); padding:12px 0; }
   .reentry-row-actions{ display:flex; align-items:center; gap:6px; margin-left:auto; }
   .reentry-row-actions button{ min-height:30px; padding:6px 9px; border:1px solid var(--line); border-radius:6px; background:var(--panel-2); color:var(--text-dim); font-size:10px; font-weight:800; white-space:nowrap; cursor:pointer; }
@@ -952,10 +955,10 @@
 </div>
 <section id="morning3Section">
   <div class="section-title">☀️ 오늘의 Morning 3</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">매일 아침 선정된 종목을 시가에 가상 매수, 당일 종가에 전량 매도합니다. 이긴 날도 진 날도 바로 아래 저녁 복기에서 그대로 공개합니다.</p>
+  <p style="color:var(--text-dim); font-size:14px; margin-bottom:12px; line-height:1.65;">매일 아침 선정된 종목을 시가에 가상 매수, 당일 종가에 전량 매도합니다. 이긴 날도 진 날도 바로 아래 저녁 복기에서 그대로 공개합니다.</p>
   <div class="updated-note" id="m3SectionNote">불러오는 중...</div>
   <div id="m3SectionBoard"><div class="leader-empty">불러오는 중...</div></div>
-  <div style="margin-top:10px;"><a href="https://morning.gexoption.com/" style="font-size:13px; font-weight:700; color:#e0a838;">Morning 3 자세히 보기 →</a></div>
+  <div style="margin-top:10px;"><a href="https://morning.gexoption.com/" style="font-size:14.5px; font-weight:700; color:#e0a838;">Morning 3 자세히 보기 →</a></div>
 </section>
 <script>
 (function(){
@@ -976,10 +979,10 @@
         var gapColor = Number(pk.gap_pct) >= 0 ? 'var(--up)' : 'var(--down)';
         return '<div class="leader-card" data-ticker="' + esc(pk.ticker) + '">' +
           '<span class="leader-ticker">' + esc(pk.ticker) + '</span>' +
-          '<span class="mono" style="color:var(--text-dim);">$' + Number(pk.spot).toFixed(2) + '</span>' +
-          '<span class="mono" style="font-size:11px; font-weight:700; color:' + gapColor + ';">' + gap + '</span>' +
-          '<span class="mono" style="font-size:11px; color:var(--text-dim);">Put <b style="color:#55e6b5;">' + esc(pk.put_wall) + '</b> / Call <b style="color:#ff8b90;">' + esc(pk.call_wall) + '</b></span>' +
-          '<span style="font-size:11.5px; color:var(--text-dim); flex:1; min-width:180px;">' + esc(pk.reason) + '</span>' +
+          '<span class="mono" style="color:var(--text-dim); font-size:15px; font-weight:700;">$' + Number(pk.spot).toFixed(2) + '</span>' +
+          '<span class="mono" style="font-size:13.5px; font-weight:700; color:' + gapColor + ';">' + gap + '</span>' +
+          '<span class="mono" style="font-size:13.5px; color:var(--text-dim);">Put <b style="color:#55e6b5;">' + esc(pk.put_wall) + '</b> / Call <b style="color:#ff8b90;">' + esc(pk.call_wall) + '</b></span>' +
+          '<span style="font-size:14px; color:var(--text-dim); flex:1; min-width:200px; line-height:1.5;">' + esc(pk.reason) + '</span>' +
           '</div>';
       }).join('');
       boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(function(card){
