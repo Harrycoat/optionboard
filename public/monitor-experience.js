@@ -157,7 +157,7 @@ async function loadMorningThree(){
        cache.set(m.ticker,{ticker:m.ticker,spot:m.spot,call:m.call_wall,put:m.put_wall,hull:null,slope:0,vol:{label:m.volume?'프리마켓 거래량 '+Number(m.volume).toLocaleString('en-US'):'거래량 확인'},state:'WATCH',quoteRealtime:m.quote_realtime===true,quoteTime:d.generated_at,bars:[]});
      }
    }
-   if(morningThree.length && !selected){selected=morningThree[0].ticker;restorePlan(selected)}
+   if(morningThree.length){selected=morningThree[0].ticker;restorePlan(selected)}
    renderRadar();renderStory();renderPlan();
  }catch(e){
    morningThree=[];morningMeta=null;
