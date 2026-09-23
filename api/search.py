@@ -699,6 +699,35 @@ def _finnhub_company_news(ticker, days=2):
     except Exception:
         return []
 
+def _finnhub_company_news_checked(ticker, days=2):
+    """Return verified articles and a safe connection status (never the API key)."""
+    if not FINNHUB_API_KEY:
+        return [], "missing_api_key"
+    end = date.today()
+    start = end - timedelta(days=max(1, int(days)))
+    try:
+        resp = requests.get(
+            "https://finnhub.io/api/v1/company-news",
+            params={"symbol": ticker, "from": start.isoformat(),
+                    "to": end.isoformat(), "token": FINNHUB_API_KEY},
+            timeout=7,
+        )
+        if resp.status_code != 200:
+            return [], f"http_{resp.status_code}"
+        payload = resp.json()
+        if not isinstance(payload, list):
+            return [], "invalid_json_shape"
+        valid = [entry for entry in payload if isinstance(entry, dict)
+                 and str(entry.get("headline") or "").strip()
+                 and str(entry.get("url") or "").startswith("https://")]
+        valid.sort(key=lambda entry: entry.get("datetime") or 0, reverse=True)
+        return valid[:3], "linked" if valid else "no_valid_article"
+    except requests.RequestException:
+        return [], "request_failed"
+    except (ValueError, TypeError):
+        return [], "invalid_response"
+
+
 def _news_reason(headline):
     text = (headline or "").lower()
     groups = [
@@ -947,17 +976,13 @@ def _morning_three():
         if item.get("news_url") and item.get("headline"):
             news_status = "linked"
         elif FINNHUB_API_KEY:
-            verified = _finnhub_company_news(ticker, days=2)
-            latest = next((row for row in verified
-                           if isinstance(row, dict)
-                           and str(row.get("headline") or "").strip()
-                           and str(row.get("url") or "").startswith("https://")), None)
-            if latest:
+            verified, news_status = _finnhub_company_news_checked(ticker, days=2)
+            if verified:
+                latest = verified[0]
                 item["reason"] = _news_reason(latest["headline"])
                 item["headline"] = latest["headline"]
                 item["news_url"] = latest["url"]
                 item["news_time"] = latest.get("datetime")
-                news_status = "linked"
         option_score = 0
         call_wall = put_wall = gamma_flip = expiry = None
         option_state = "unavailable"
