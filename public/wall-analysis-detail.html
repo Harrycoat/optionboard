@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wall 분석 | GEXOption</title>
+<style>
+:root{--bg:#0a0d12;--panel:#10141b;--panel2:#151a22;--line:#263041;--text:#e7e5df;--muted:#8b93a1;--gold:#e0a838;--green:#55e6b5;--red:#ff7278;--blue:#81adff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:900px;margin:auto;padding:22px 18px 60px}.nav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}.nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:7px;background:var(--panel2);font-size:10px;font-weight:800}.hero,.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px;margin-bottom:12px}.hero h1{margin:0;font-size:28px}.hero p{color:var(--muted);font-size:12px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.m{padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px}.m small{display:block;color:var(--muted);font-size:9px}.m b{display:block;margin-top:5px;font-size:18px}.rail{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--green) 50%,var(--red));margin:52px 12px 48px}.pt{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--bg)}.pt span{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:900;text-align:center}.pt.put span,.pt.call span{bottom:18px}.pt.spot span{top:18px}.guide{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.g{padding:11px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}.g b{display:block;font-size:11px}.g span{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.45}.state{font-size:20px;font-weight:900}.copy{margin-top:8px;color:#c7d3df;font-size:13px;line-height:1.7}.note{color:var(--muted);font-size:10px;line-height:1.6}.loading{color:var(--muted)}
+@media(max-width:650px){.metrics,.guide{grid-template-columns:1fr 1fr}.hero h1{font-size:23px}}
+</style></head>
+<body><div class="wrap">
+<div class="nav"><a href="/wall-analysis.html">← 오늘의 Wall 분석</a><a href="/">HOME</a><a href="/monitoring.html">LIVE MONITOR</a></div>
+<section class="hero"><h1 id="title">Wall 분석</h1><p>Put Wall(지지선) · 현재가 · Call Wall(저항선) · HULL21</p></section>
+<div id="content" class="loading">분석 데이터를 불러오는 중...</div>
+</div>
+<script>
+const fmt=(v,d=2)=>v==null||!Number.isFinite(Number(v))?'—':Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
+const t=(new URLSearchParams(location.search).get('ticker')||'NVDA').toUpperCase().replace(/[^A-Z0-9.^-]/g,'').slice(0,12);document.getElementById('title').textContent=t+' Wall 분석';
+function wma(a,n){if(a.length<n)return null;let s=0,w=0;for(let i=0;i<n;i++){const z=i+1;s+=a[a.length-n+i]*z;w+=z}return s/w}
+function hull(a,n=21){const half=Math.floor(n/2),root=Math.max(1,Math.round(Math.sqrt(n))),raw=[],out=[];for(let i=0;i<a.length;i++){const x=a.slice(0,i+1),u=wma(x,half),v=wma(x,n);raw.push(u!=null&&v!=null?2*u-v:null);const r=raw.filter(x=>x!=null);out.push(r.length>=root?wma(r,root):null)}return out}
+function pos(v,min,max){return Math.max(3,Math.min(97,(v-min)/(max-min)*100))}
+Promise.all([
+ fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()),
+ fetch('/api/search?mode=massive_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json())
+]).then(([d,i])=>{
+ const bars=i.bars||[], closes=bars.map(x=>Number(x.close)).filter(Number.isFinite),hs=hull(closes,21),h=hs.at(-1),hp=hs.at(-2),s=h&&hp?(h-hp)/hp*100:0;
+ const spot=bars.length?Number(bars.at(-1).close):Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall);
+ if(![spot,put,call].every(Number.isFinite))throw new Error('data');
+ const lo=Math.min(put,spot),hi=Math.max(call,spot),pad=Math.max((hi-lo)*.15,1),min=lo-pad,max=hi+pad;
+ let state='Wall 사이 관찰',copy='현재가는 지지선과 저항선 사이에 있습니다. HULL21 방향과 거래량 변화를 함께 확인합니다.';
+ if(spot<put){state='지지선 이탈 관찰';copy='현재가가 Put Wall(지지선) 아래에 있습니다. 변동성 확대 여부와 지지선 회복을 관찰합니다.'}
+ else if(spot>=call){state='저항선 돌파 후 지지 전환 확인';copy='현재가가 Call Wall(저항선) 위에 있습니다. 돌파한 가격대가 새로운 지지선으로 전환되는지 확인합니다.'}
+ else if((call-spot)/spot*100<=1.5){state='저항선 근접';copy='현재가가 Call Wall(저항선)에 가까워졌습니다. 저항 반응 또는 돌파 여부를 확인합니다.'}
+ else if((spot-put)/spot*100<=2){state='지지선 근접';copy='현재가가 Put Wall(지지선)에 가까워졌습니다. 지지 유지와 반등 여부를 확인합니다.'}
+ const slope=s>0.03?'▲ 상승':s<-0.03?'▼ 하락':'→ 보합';
+ document.getElementById('content').className='';
+ document.getElementById('content').innerHTML=
+ '<section class="card"><div class="metrics"><div class="m"><small>현재가</small><b>$'+fmt(spot)+'</b></div><div class="m"><small>PUT WALL · 지지선</small><b style="color:var(--blue)">$'+fmt(put,1)+'</b></div><div class="m"><small>CALL WALL · 저항선</small><b style="color:var(--red)">$'+fmt(call,1)+'</b></div><div class="m"><small>HULL21</small><b style="color:var(--green)">'+slope+' '+fmt(h)+'</b></div></div><div class="rail"><i class="pt put" style="left:'+pos(put,min,max)+'%;background:var(--blue)"><span style="color:var(--blue)">지지선<br>$'+fmt(put,1)+'</span></i><i class="pt spot" style="left:'+pos(spot,min,max)+'%;background:white"><span>현재가<br>$'+fmt(spot)+'</span></i><i class="pt call" style="left:'+pos(call,min,max)+'%;background:var(--red)"><span style="color:var(--red)">저항선<br>$'+fmt(call,1)+'</span></i></div><div class="guide"><div class="g"><b style="color:var(--blue)">지지선 반등</b><span>지지 유지와 반등 관찰</span></div><div class="g"><b style="color:var(--gold)">지지선 이탈</b><span>변동성 확대와 헤지 필요성 관찰</span></div><div class="g"><b style="color:var(--red)">저항선 접근</b><span>저항 또는 돌파 여부 관찰</span></div><div class="g"><b style="color:var(--green)">돌파 후 지지</b><span>저항선→지지선 전환 여부 확인</span></div></div></section>'+
+ '<section class="card"><div class="state">'+state+'</div><div class="copy">'+copy+'</div></section>'+
+ '<div class="note">5분봉 기반 가격 데이터는 약 15분 지연될 수 있습니다. 본 내용은 교육 및 시장 관찰용이며 투자 판단은 사용자가 직접 결정해야 합니다.</div>';
+}).catch(()=>{document.getElementById('content').innerHTML='<section class="card">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</section>'});
+</script></body></html>
