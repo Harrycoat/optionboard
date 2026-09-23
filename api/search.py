@@ -983,6 +983,7 @@ def _morning_three():
                 item["headline"] = latest["headline"]
                 item["news_url"] = latest["url"]
                 item["news_time"] = latest.get("datetime")
+                item["score_parts"]["catalyst"] = 20 if item["reason"] == "OFFERING" else 30
         option_score = 0
         call_wall = put_wall = gamma_flip = expiry = None
         option_state = "unavailable"
