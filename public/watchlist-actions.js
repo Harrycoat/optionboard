@@ -1,13 +1,33 @@
 (function(){
   'use strict';
   const BASE_KEY='gexoption_watchlist_v1';
+  const MONITOR_KEY='gexoption_monitor_list_v1';
   const USER_KEY='gexoption_active_watchlist_user';
   const LIMIT=20;
+  const MONITOR_LIMIT=10;
   const clean=value=>String(value||'').trim().toUpperCase().replace(/[^A-Z0-9.\-]/g,'').slice(0,12);
   const parse=value=>{try{return JSON.parse(value||'[]')}catch(_){return[]}};
   function userId(){return localStorage.getItem(USER_KEY)||''}
   function scopedKey(){const id=userId();return id?`${BASE_KEY}_${id}`:''}
+  function monitorScopedKey(){const id=userId();return id?`${MONITOR_KEY}_${id}`:''}
   function list(){const key=scopedKey();return key?parse(localStorage.getItem(key)).map(clean).filter(Boolean):[]}
+  function monitorList(){const key=monitorScopedKey();return key?parse(localStorage.getItem(key)).map(clean).filter(Boolean).slice(0,MONITOR_LIMIT):[]}
+  function setMonitor(tickers){
+    const key=monitorScopedKey();
+    if(!key)return false;
+    const next=[...new Set((tickers||[]).map(clean).filter(Boolean))].slice(0,MONITOR_LIMIT);
+    localStorage.setItem(key,JSON.stringify(next));
+    window.dispatchEvent(new CustomEvent('gex-monitor-list-change',{detail:{list:next}}));
+    return next;
+  }
+  function addMonitor(ticker){
+    ticker=clean(ticker); const key=monitorScopedKey(); if(!key)return false;
+    const current=monitorList(); if(!ticker)return false;
+    if(current.includes(ticker))return true;
+    if(current.length>=MONITOR_LIMIT){alert(`LIVE MONITOR는 최대 ${MONITOR_LIMIT}개까지 표시할 수 있습니다.`);return false}
+    setMonitor([...current,ticker]); return true;
+  }
+  function removeMonitor(ticker){ ticker=clean(ticker); return setMonitor(monitorList().filter(item=>item!==ticker)); }
   function refresh(root=document){
     const saved=new Set(list());
     root.querySelectorAll('[data-watch-add]').forEach(button=>{
@@ -59,5 +79,5 @@
   const style=document.createElement('style');
   style.textContent='.gex-watch-add{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:6px 9px;border:1px solid #e0a838;border-radius:6px;background:rgba(224,168,56,.08);color:#f2bd4c;font:800 11px Arial,"Noto Sans KR",sans-serif;white-space:nowrap;cursor:pointer}.gex-watch-add:hover{background:rgba(224,168,56,.18)}.gex-watch-add.is-saved{border-color:#55e6b5;background:rgba(85,230,181,.1);color:#55e6b5}';
   document.head.appendChild(style);
-  window.GexWatchlist={add,remove,list,refresh};
+  window.GexWatchlist={add,remove,list,refresh,monitorList,setMonitor,addMonitor,removeMonitor};
 })();
