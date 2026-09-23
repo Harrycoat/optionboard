@@ -56,6 +56,8 @@ const clean=v=>String(v||'').trim().toUpperCase().replace(/[^A-Z0-9.\-]/g,'').sl
 const FALLBACK=['NVDA','AMD','TSLA','PLTR','AVGO','MU','MRVL','AMZN','BE','INTC'];
 
 function getList(){
+ const monitor=(window.GexWatchlist&&window.GexWatchlist.monitorList)?window.GexWatchlist.monitorList():[];
+ if(monitor.length)return monitor.slice(0,10);
  const saved=(window.GexWatchlist&&window.GexWatchlist.list)?window.GexWatchlist.list():[];
  return (saved.length?saved:FALLBACK).slice(0,10);
 }
@@ -173,7 +175,8 @@ async function refresh(){
 $('addBtn').onclick=()=>{
  const t=clean($('tickerInput').value);
  if(!t)return;
- if(window.GexWatchlist)window.GexWatchlist.add(t);
+ if(window.GexWatchlist&&window.GexWatchlist.addMonitor)window.GexWatchlist.addMonitor(t);
+ else if(window.GexWatchlist)window.GexWatchlist.add(t);
  $('tickerInput').value='';
  refresh();
 };
@@ -182,12 +185,16 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('[data-remove]');
  if(!b)return;
  const t=b.dataset.remove;
- if(window.GexWatchlist&&window.GexWatchlist.remove){
+ if(window.GexWatchlist&&window.GexWatchlist.removeMonitor){
+   window.GexWatchlist.removeMonitor(t);
+   refresh();
+ }else if(window.GexWatchlist&&window.GexWatchlist.remove){
    window.GexWatchlist.remove(t);
    refresh();
  }
 });
 window.addEventListener('gex-watchlist-change',refresh);
+window.addEventListener('gex-monitor-list-change',refresh);
 window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
 </script>
 </body>
