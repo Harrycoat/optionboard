@@ -1959,7 +1959,7 @@ function paperPositionGuideHTML(position,last){
   else if(callGap<=1){ stage='④ 수익 보호 준비', message='Call Wall 접근 · 신규 추격매수보다 수익 보호를 준비하세요.'; caution='반드시 저항 확인 후 실행'; recommended=['CC','HEDGE']; nextAction='저항 확인 · CC 또는 Put 헤지 선택'; }
   const currentPct=hasWalls?Math.max(4,Math.min(96,(spot-put)/(call-put)*100)):50;
   const button=(mode,label)=>`<button class="paper-guide-action${recommended.includes(mode)?' recommended':''}" type="button" onclick="openPaperTrade('${mode}','${ticker}')">${label}</button>`;
-  const rail=hasWalls?`<div class="paper-level-rail"><i class="paper-level-point" style="left:0;color:${DOWN};background:${DOWN}"><span>Put Wall<br>$${fmtNum(put)}</span></i><i class="paper-level-point paper-level-current" style="left:${currentPct}%;color:#55e6b5;background:#55e6b5"><span>현재가<br>$${fmtNum(spot)}</span></i><i class="paper-level-point" style="left:100%;color:${UP};background:${UP}"><span>Call Wall<br>$${fmtNum(call)}</span></i></div>`:'<div class="paper-guide-advice">↻ 갱신을 누르면 Put Wall·현재가·Call Wall 게이지가 표시됩니다.</div>';
+  const rail=hasWalls?`<div class="paper-level-rail"><i class="paper-level-point" style="left:0;color:${DOWN};background:${DOWN}"><span>Put Wall (지지선)<br>$${fmtNum(put)}</span></i><i class="paper-level-point paper-level-current" style="left:${currentPct}%;color:#55e6b5;background:#55e6b5"><span>현재가<br>$${fmtNum(spot)}</span></i><i class="paper-level-point" style="left:100%;color:${UP};background:${UP}"><span>Call Wall (저항선)<br>$${fmtNum(call)}</span></i></div>`:'<div class="paper-guide-advice">↻ 갱신을 누르면 Put Wall·현재가·Call Wall 게이지가 표시됩니다.</div>';
   const lessonOpen=(hasWalls&&(callGap<=1||spot>=call))||calls.length||hedges.length;
   const resultCashflow=(calls.length||hedges.length)?`<div class="paper-option-cashflow"><span>CC 받은 프리미엄 <b class="received">+$${fmtNum(ccReceived)}</b></span><span>Put 헤지 지급액 <b class="paid">-$${fmtNum(hedgePaid)}</b></span><span>현재 옵션 평가손익 <b class="${optionEvaluationPnl>=0?'received':'paid'}">${optionEvaluationPnl>=0?'+':''}$${fmtNum(optionEvaluationPnl)}</b></span><span>통합손익 <b class="${integratedPnl>=0?'received':'paid'}">${integratedPnl>=0?'+':''}$${fmtNum(integratedPnl)}</b></span></div>`:`<div class="paper-option-cashflow"><span>아직 실행한 CC·Put 헤지가 없습니다.</span><span>통합손익 <b class="${integratedPnl>=0?'received':'paid'}">${integratedPnl>=0?'+':''}$${fmtNum(integratedPnl)}</b></span></div>`;
   const ccLiability=openCalls.reduce((sum,option)=>sum+Number(option.currentPremium??option.premium??0)*100*Number(option.contracts||0),0);
@@ -2773,21 +2773,21 @@ function positionAndPlanHTML(d){
   const pos=value=>Math.max(2,Math.min(98,((value-min)/(max-min))*100));
   const putDist=((spot-put)/spot)*100, callDist=((call-spot)/spot)*100;
   let decision='Wall 사이 박스권', detail='지지와 저항 사이에서 방향을 관찰합니다.';
-  if(spot>=call){ decision='Call Wall 돌파 · 지지 확인'; detail='돌파 후 Call Wall 위 지지가 유지되는지 확인하세요.'; }
-  else if(callDist<=1.5){ decision='Call Wall 근접 · 저항 주의'; detail=`Call Wall까지 ${Math.abs(callDist).toFixed(2)}% · 추격매수보다 반응을 관찰하세요.`; }
-  else if(putDist<=2){ decision='Put Wall 근접 · 반등 관찰'; detail=`Put Wall 위 지지와 거래량 반등을 확인하세요.`; }
+  if(spot>=call){ decision='Call Wall(저항선) 돌파 · 지지 전환 확인'; detail='돌파한 저항선이 새로운 지지선으로 전환되는지 확인하세요.'; }
+  else if(callDist<=1.5){ decision='Call Wall(저항선) 근접 · 저항 주의'; detail=`저항선까지 ${Math.abs(callDist).toFixed(2)}% · 돌파 여부와 저항 반응을 관찰하세요.`; }
+  else if(putDist<=2){ decision='Put Wall(지지선) 근접 · 반등 관찰'; detail=`지지선 유지와 거래량 반등을 확인하세요.`; }
   return `<div class="price-position">
     <div class="price-position-head"><span>현재가의 Wall 위치</span><b>현재 판단: ${decision}</b></div>
     <div class="price-rail">
-      <div class="price-marker" style="left:${pos(put)}%; background:${DOWN};"><span class="above" style="color:${DOWN};">Put Wall<br>$${fmtNum(put,1)}</span></div>
+      <div class="price-marker" style="left:${pos(put)}%; background:${DOWN};"><span class="above" style="color:${DOWN};">Put Wall (지지선)<br>$${fmtNum(put,1)}</span></div>
       ${Number.isFinite(flip)?`<div class="price-marker" style="left:${pos(flip)}%; background:${GOLD};"><span class="below" style="color:${GOLD};">Gamma Flip<br>$${fmtNum(flip,1)}</span></div>`:''}
       <div class="price-marker" style="left:${pos(spot)}%; background:${GOLD}; box-shadow:0 0 0 3px ${GOLD}33;"><span class="above" style="color:${GOLD};">현재가<br>$${fmtNum(spot)}</span></div>
-      <div class="price-marker" style="left:${pos(call)}%; background:${UP};"><span class="below" style="color:${UP};">Call Wall<br>$${fmtNum(call,1)}</span></div>
+      <div class="price-marker" style="left:${pos(call)}%; background:${UP};"><span class="below" style="color:${UP};">Call Wall (저항선)<br>$${fmtNum(call,1)}</span></div>
     </div>
     <div class="trade-plan-grid">
-      <div class="trade-plan buy"><div class="trade-plan-label" style="color:${DOWN};">↗ 매수 관찰</div><div class="trade-plan-main">Put Wall $${fmtNum(put,1)} · 반등 확인</div><div class="trade-plan-sub">지지와 거래량 반등, HULL 21 상승 전환을 함께 확인</div></div>
+      <div class="trade-plan buy"><div class="trade-plan-label" style="color:${DOWN};">지지선 관찰</div><div class="trade-plan-main">Put Wall(지지선) ${fmtNum(put,1)} · 반등 확인</div><div class="trade-plan-sub">지지 유지 · 거래량 반등 · HULL21 상승 전환을 함께 확인</div></div>
       <div class="trade-plan now"><div class="trade-plan-label" style="color:${GOLD};">◎ 현재 판단</div><div class="trade-plan-main">${decision}</div><div class="trade-plan-sub">${detail}</div></div>
-      <div class="trade-plan breakout"><div class="trade-plan-label" style="color:${UP};">↗ 돌파 계획</div><div class="trade-plan-main">$${fmtNum(call,1)} 돌파·지지 시 재진입</div><div class="trade-plan-sub">5분봉 종가와 거래량을 확인한 뒤 추세 지속 여부 판단</div></div>
+      <div class="trade-plan breakout"><div class="trade-plan-label" style="color:${UP};">저항선 돌파 관찰</div><div class="trade-plan-main">Call Wall(저항선) ${fmtNum(call,1)} 돌파 후 지지 전환 확인</div><div class="trade-plan-sub">5분봉 종가와 거래량으로 저항선→지지선 전환 여부를 확인</div></div>
     </div>
   </div>`;
 }
