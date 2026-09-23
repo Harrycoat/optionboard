@@ -3,6 +3,7 @@
 'use strict';
 const $=id=>document.getElementById(id);
 const cache=new Map();
+let morningThree=[],morningMeta=null;
 let selected='',planMode='breakout',lastData=null,restoredTicker='';
 const planFields=['planConfirmation','planInvalidReason','planTarget','riskDollars','riskSlippage','riskAccount','riskPercent','riskEntry','riskStop'];
 const planKey=t=>'gexoption_daytrade_plan_v1_'+(localStorage.getItem('gexoption_active_watchlist_user')||'guest')+'_'+t;
@@ -40,13 +41,15 @@ function select(t){
  const node=$('tickerStory');if(node)node.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderRadar(){
- const list=typeof getList==='function'?getList().slice(0,3):[...cache.keys()].slice(0,3);
- $('radarCount').textContent=list.length+'개 빠른 보기';
- $('radarList').innerHTML=list.length?list.map(t=>{
-   const x=cache.get(t);
-   return '<button class="ex-radar-button '+(selected===t?'selected':'')+'" type="button" data-radar="'+esc(t)+'"><span class="ex-radar-ticker">'+esc(t)+'</span><span class="ex-radar-summary">'+esc(condition(x))+'</span><span class="ex-radar-price">'+(x?cash(x.spot):'조회 중')+'</span></button>';
- }).join(''):'<div class="ex-muted">모니터할 종목을 추가해 주세요.</div>';
- $('radarNote').textContent='관심종목 순서대로 최대 3개 표시 · 자동 추천/순위 아님 · 가격 기준시각은 종목 상세 참고';
+ const rows=morningThree.length?morningThree:(typeof getList==='function'?getList().slice(0,3).map(t=>({ticker:t,fallback:true})):[]);
+ $('radarCount').textContent=morningThree.length?(morningMeta&&morningMeta.market_state?morningMeta.market_state:morningThree.length+'개 압축'):'데이터 확인 중';
+ $('radarList').innerHTML=rows.length?rows.map((m,idx)=>{
+   const t=m.ticker, x=cache.get(t), price=m.spot!=null?m.spot:(x?x.spot:null);
+   const summary=m.fallback?condition(x):((m.reason||'MARKET')+' · '+(m.observe||'가격 반응 확인'));
+   const score=m.score!=null?' · '+m.score+'/100':'';
+   return '<button class="ex-radar-button '+(selected===t?'selected':'')+'" type="button" data-radar="'+esc(t)+'"><span class="ex-radar-ticker">'+esc(t)+'</span><span class="ex-radar-summary">'+esc((idx+1)+'. '+summary+score)+'</span><span class="ex-radar-price">'+(price!=null?cash(price):'조회 중')+'</span></button>';
+ }).join(''):'<div class="ex-muted">근거와 유동성 기준을 충족한 후보가 없습니다. 관망 우위입니다.</div>';
+ $('radarNote').textContent=morningMeta&&morningMeta.generated_at?'Morning 3 생성 '+validTimestamp(morningMeta.generated_at)+' · 촉매 30 / 유동성 25 / 가격구조 20 / 옵션구조 15 / 시장·섹터 10':'실시간 후보를 압축하는 중입니다.';
 }
 function narrative(x){
  if(!x)return '종목을 선택하면 가격과 Wall 위치를 기반으로 확인할 조건을 표시합니다.';
@@ -78,7 +81,8 @@ function renderStory(){
  $('storyVolume').textContent=x?x.vol.label:'—';
  $('storyQuoteTime').textContent=x?(x.quoteRealtime?'Schwab 실시간 표기 · ':'Schwab 실시간 여부 미확인 · ')+validTimestamp(x.quoteTime)+(priceFresh(x)?' · 최근 갱신':' · 갱신 시각 재확인 필요'):'시세 기준시각 확인 중';
  $('storyWallTime').textContent='옵션 Wall: 별도 API · 기준 시각 표시 기능 준비 중';
- $('storyNews').textContent='뉴스·공시 원문은 아직 이 모니터에 연결되지 않았습니다. 움직이는 이유는 확인된 출처가 있을 때만 표시합니다.';
+ const mc=morningThree.find(m=>m.ticker===selected);
+ $('storyNews').textContent=mc?(mc.headline||'확인된 뉴스 촉매 없음'):'뉴스·공시 원문은 아직 이 모니터에 연결되지 않았습니다. 움직이는 이유는 확인된 출처가 있을 때만 표시합니다.';
  $('storyStructure').textContent=x?'Put '+cash(x.put,1)+' / 현재 '+cash(x.spot)+' / Call '+cash(x.call,1):'Wall 데이터 확인 중';
  $('storyFlow').textContent=x?'HULL21 '+$('storyHull').textContent+' · 5분 거래량 '+x.vol.label:'Schwab 5분봉 확인 중';
  chart(x&&x.bars);
@@ -140,6 +144,28 @@ $('saveScenario').addEventListener('click',()=>{
  try{localStorage.setItem(planKey(selected),JSON.stringify(value));$('planSaveStatus').textContent='✓ 저장됨 · '+validTimestamp(value.saved_at)+' · 이 브라우저에서 다시 열 수 있습니다.'}
  catch(_){$('planSaveStatus').textContent='저장에 실패했습니다. 브라우저 저장 공간과 권한을 확인하세요.'}
 });
+async function loadMorningThree(){
+ $('radarCount').textContent='시장·뉴스·옵션 확인 중';
+ try{
+   const r=await fetch('/api/search?mode=morning_three',{cache:'no-store'});
+   const d=await r.json();
+   if(d.error)throw new Error(d.error);
+   morningThree=Array.isArray(d.candidates)?d.candidates:[];
+   morningMeta=d;
+   for(const m of morningThree){
+     if(!cache.has(m.ticker)){
+       cache.set(m.ticker,{ticker:m.ticker,spot:m.spot,call:m.call_wall,put:m.put_wall,hull:null,slope:0,vol:{label:m.volume?'프리마켓 거래량 '+Number(m.volume).toLocaleString('en-US'):'거래량 확인'},state:'WATCH',quoteRealtime:m.quote_realtime===true,quoteTime:d.generated_at,bars:[]});
+     }
+   }
+   if(morningThree.length && !selected){selected=morningThree[0].ticker;restorePlan(selected)}
+   renderRadar();renderStory();renderPlan();
+ }catch(e){
+   morningThree=[];morningMeta=null;
+   $('radarCount').textContent='Morning 3 조회 실패';
+   $('radarNote').textContent='기존 관심종목을 표시합니다. '+e.message;
+   renderRadar();
+ }
+}
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-radar],[data-select],[data-plan-mode]');
  if(!b)return;
@@ -164,5 +190,5 @@ window.addEventListener('gex-monitor-list-change',()=>{
  if(!list.includes(selected))selected=list[0]||'';
  restorePlan(selected);renderRadar();renderStory();renderPlan();
 });
-window.addEventListener('load',()=>{const list=typeof getList==='function'?getList():[];selected=list[0]||'';restorePlan(selected);renderRadar();renderStory();renderPlan()});
+window.addEventListener('load',()=>{const list=typeof getList==='function'?getList():[];selected=list[0]||'';restorePlan(selected);renderRadar();renderStory();renderPlan();loadMorningThree()});
 })();
