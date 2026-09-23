@@ -850,6 +850,7 @@
       <div class="section-title" id="interestTitle">⭐ 나의 관심종목</div>
       <div class="interest-actions">
         <span class="interest-count" id="interestCount">0 / 20 · 옵션 15분 지연</span>
+        <button class="interest-refresh" id="sendToMonitorBtn" type="button" style="border-color:#55e6b5;color:#55e6b5;">📡 관심종목 → LIVE MONITOR</button>
         <button class="interest-refresh" id="interestRefreshBtn" type="button">↻ 새로고침</button>
       </div>
     </div>
@@ -2545,6 +2546,20 @@ async function syncWatchlistToCloud(tickers, userId = currentUser?.id, sessionVe
   return true;
 }
 
+function sendWatchlistToMonitor(){
+  if(!currentUser){ openAuthModal(); showToast('로그인 후 관심종목을 LIVE MONITOR로 보낼 수 있습니다'); return; }
+  const tickers=getPersonalWatchlist();
+  if(!tickers.length){ showToast('먼저 관심종목을 추가해주세요'); return; }
+  const limit=10;
+  const selected=tickers.slice(0,limit);
+  if(window.GexWatchlist?.setMonitor) window.GexWatchlist.setMonitor(selected);
+  else {
+    try{ localStorage.setItem(`gexoption_monitor_list_v1_${currentUser.id}`,JSON.stringify(selected)); }catch(e){}
+  }
+  if(tickers.length>limit) showToast(`LIVE MONITOR에는 앞의 ${limit}개 종목을 보냅니다`);
+  else showToast(`${selected.length}개 관심종목을 LIVE MONITOR로 보냈습니다`);
+  setTimeout(()=>{ location.href='/monitoring.html'; },350);
+}
 async function refreshPersonalWatchlist(){
   if(!currentUser) return;
   const refresh = document.getElementById('interestRefreshBtn');
@@ -3513,6 +3528,7 @@ if(isIndustryView()){
 initMemberAccount();
 const initialTicker = validWatchTicker(new URLSearchParams(location.search).get('ticker'));
 if(initialTicker) searchTicker(initialTicker);
+document.getElementById('sendToMonitorBtn').addEventListener('click', sendWatchlistToMonitor);
 document.getElementById('memberHeroSignup').addEventListener('click', openWatchlistView);
 document.getElementById('nvdaSignupBtn').addEventListener('click', openWatchlistView);
 document.getElementById('memberHeroSearch').addEventListener('click', () => { document.getElementById('tickerInput').focus(); window.scrollTo({top:0,behavior:'smooth'}); });
