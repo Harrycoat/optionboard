@@ -637,7 +637,7 @@
   body.watchlist-view .market-float,
   body.watchlist-view #marketStatusBanner,
   body.watchlist-view #aiLeaderMap,
-  body.watchlist-view #todayBuySignalSection{ display:none; }
+  body.watchlist-view #morning3Section{ display:none; }
   body.watchlist-view #searchAdSlot{ display:none !important; min-height:0 !important; margin:0 !important; }
   body.watchlist-view #detailSection{ margin-top:12px; }
   body.watchlist-view #detailSection > .section-title{ margin-top:16px; margin-bottom:8px; }
@@ -653,7 +653,7 @@
   body.holdings-view .market-float,
   body.holdings-view #marketStatusBanner,
   body.holdings-view #aiLeaderMap,
-  body.holdings-view #todayBuySignalSection,
+  body.holdings-view #morning3Section,
   body.holdings-view #searchAdSlot,
   body.holdings-view .watchlist-page-title,
   body.holdings-view #interestSection > .interest-head,
@@ -938,13 +938,48 @@
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
 </div>
-<section id="todayBuySignalSection">
-  <div class="section-title" id="today-buy-signal">🎯 오늘의 매수 신호</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">주가가 장기 추세 기준인 200일 이동평균선을 상향 돌파했는지 먼저 확인하고, Hull21 눌림목·거래량·GEX 위치로 진입 가능성을 다시 점검합니다.</p>
-  <div class="updated-note" id="reentryUpdatedNote">불러오는 중...</div>
-  <div id="reentryCurrentSignal" class="reentry-current-signal" aria-live="polite"><div class="leader-empty" style="padding:14px 16px;">현재 신호를 분석하고 있습니다.</div></div>
-  <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
+<section id="morning3Section">
+  <div class="section-title">☀️ 오늘의 Morning 3</div>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">매일 아침 선정된 종목을 시가에 가상 매수, 당일 종가에 전량 매도합니다. 이긴 날도 진 날도 바로 아래 저녁 복기에서 그대로 공개합니다.</p>
+  <div class="updated-note" id="m3SectionNote">불러오는 중...</div>
+  <div id="m3SectionBoard"><div class="leader-empty">불러오는 중...</div></div>
+  <div style="margin-top:10px;"><a href="/morning-three.html" style="font-size:13px; font-weight:700; color:#e0a838;">Morning 3 자세히 보기 →</a></div>
 </section>
+<script>
+(function(){
+  var noteEl = document.getElementById('m3SectionNote');
+  var boardEl = document.getElementById('m3SectionBoard');
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  fetch('/morning-today.json', {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('no data'); return r.json(); })
+    .then(function(d){
+      var picks = d.picks || [];
+      if(noteEl){
+        try { noteEl.textContent = '선정 시각: ' + new Date(d.generated_at).toLocaleString('ko-KR',{timeZone:'America/Los_Angeles'}); }
+        catch(e){ noteEl.textContent = ''; }
+      }
+      if(!picks.length){ boardEl.innerHTML = '<div class="leader-empty">오늘의 선정 종목이 없습니다.</div>'; return; }
+      boardEl.innerHTML = picks.map(function(pk){
+        var gap = (Number(pk.gap_pct) >= 0 ? '+' : '') + Number(pk.gap_pct).toFixed(2) + '%';
+        var gapColor = Number(pk.gap_pct) >= 0 ? 'var(--up)' : 'var(--down)';
+        return '<div class="leader-card" data-ticker="' + esc(pk.ticker) + '">' +
+          '<span class="leader-ticker">' + esc(pk.ticker) + '</span>' +
+          '<span class="mono" style="color:var(--text-dim);">$' + Number(pk.spot).toFixed(2) + '</span>' +
+          '<span class="mono" style="font-size:11px; font-weight:700; color:' + gapColor + ';">' + gap + '</span>' +
+          '<span class="mono" style="font-size:11px; color:var(--text-dim);">Put <b style="color:#55e6b5;">' + esc(pk.put_wall) + '</b> / Call <b style="color:#ff8b90;">' + esc(pk.call_wall) + '</b></span>' +
+          '<span style="font-size:11.5px; color:var(--text-dim); flex:1; min-width:180px;">' + esc(pk.reason) + '</span>' +
+          '</div>';
+      }).join('');
+      boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(function(card){
+        card.addEventListener('click', function(){ searchTicker(card.dataset.ticker); });
+      });
+    })
+    .catch(function(){
+      if(noteEl) noteEl.textContent = '';
+      boardEl.innerHTML = '<div class="leader-empty">오늘의 Morning 3를 불러오지 못했습니다.</div>';
+    });
+})();
+</script>
 <section id="eveningReviewSection">
   <div class="section-title">🌙 저녁 복기 — Morning 3 가상 트랙레코드</div>
   <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">매일 아침 Morning 3 3종목을 시가에 가상 매수, 당일 종가에 전량 매도한 데일리 트레이딩 기록입니다. 실제 매매가 아니며, 이긴 날도 진 날도 그대로 공개합니다.</p>
@@ -1340,177 +1375,6 @@ async function loadMacroStrip(){
   el.querySelectorAll('.wcard[data-ticker]').forEach(card=>{
     card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
   });
-}
-// ---------- 오늘의 매수 신호 (Hull21 Dev% 재진입 스캐너 — HULL 스테이지1~2) ----------
-const STAGE_COLORS = { 1: GOLD, 2: UP };
-function reentrySignalRowHTML(r){
-  const devColor = r.dev_pct >= 0 ? UP : DOWN;
-  const devText = `${r.dev_pct >= 0 ? '+' : ''}${fmtNum(r.dev_pct,2)}%`;
-  const stageColor = STAGE_COLORS[r.stage] || GOLD;
-  const signalAge = Number(r.signal_age) || 0;
-  const ageLabel = signalAge === 0 ? '오늘' : `D-${signalAge}`;
-  return `
-    <div class="leader-card" data-ticker="${r.ticker}">
-      <span class="leader-ticker">${r.ticker}</span>
-      <span style="font-size:9px; font-weight:800; color:${signalAge===0?UP:'#81adff'};">${ageLabel}</span>
-      <span class="mono" style="color:var(--text-dim); min-width:70px;">$${fmtNum(r.spot)}</span>
-      <span style="font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; background:${stageColor}22; color:${stageColor};">${r.stage_label}</span>
-      ${Number.isFinite(Number(r.ma200)) ? `<span class="mono" style="font-size:11px; color:var(--text-dim);">MA200 <b style="color:${r.above_ma200?'#55e6b5':GOLD}">${fmtNum(r.ma200,2)}</b></span>` : ''}
-      <span class="mono" style="font-size:11px; color:var(--text-dim);">Hull21 <b style="color:${GOLD}">${fmtNum(r.hull21,2)}</b></span>
-      <span class="mono" style="font-size:11px; color:${devColor};">Dev% <b>${devText}</b></span>
-      ${r.volume_confirmed ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GREEN_OK}22; color:${GREEN_OK};">거래량 확인</span>` : ''}
-      ${r.slope_accelerating ? `<span style="font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:${GOLD}22; color:${GOLD};">기울기 가속</span>` : ''}
-      <span class="reentry-row-actions"><button type="button" data-reentry-watch="${r.ticker}">${getPersonalWatchlist().includes(r.ticker)?'★ 관심종목':'☆ 관심추가'}</button><button type="button" data-reentry-gex="${r.ticker}">GEX 조회</button></span>
-    </div>
-  `;
-}
-function refreshReentryWatchButtons(){
-  const saved=new Set(getPersonalWatchlist());
-  document.querySelectorAll('[data-reentry-watch]').forEach(button=>{
-    const active=saved.has(validWatchTicker(button.dataset.reentryWatch));
-    button.textContent=active?'★ 관심종목':'☆ 관심추가';
-    button.classList.toggle('is-saved',active);
-  });
-}
-function reentryTrendChartHTML(r){
-  const points = (r.trend_chart || []).map(p=>({
-    close:Number(p.close), ma200:Number(p.ma200), volume:Number(p.volume)||0, time:String(p.time||'')
-  })).filter(p=>Number.isFinite(p.close) && Number.isFinite(p.ma200));
-  if(points.length < 2) return `<div class="reentry-trend-chart"><div class="leader-empty">200일선 추세 차트는 다음 자동 계산 후 표시됩니다.</div></div>`;
-  const width=720, height=230, left=28, right=18, top=16, priceBottom=158, volumeTop=178, volumeBottom=218;
-  const values=points.flatMap(p=>[p.close,p.ma200]);
-  const rawMin=Math.min(...values), rawMax=Math.max(...values), pad=Math.max((rawMax-rawMin)*.12,rawMax*.01,0.5);
-  const min=rawMin-pad, max=rawMax+pad, x=i=>left+i*(width-left-right)/Math.max(1,points.length-1);
-  const y=value=>top+(max-value)/(max-min)*(priceBottom-top);
-  const maxVolume=Math.max(...points.map(p=>p.volume),1), barWidth=Math.max(2,(width-left-right)/points.length*.55);
-  const pricePath=points.map((p,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(p.close).toFixed(1)}`).join(' ');
-  const maPath=points.map((p,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(p.ma200).toFixed(1)}`).join(' ');
-  let crossIndex=-1;
-  for(let i=1;i<points.length;i++) if(points[i-1].close<=points[i-1].ma200 && points[i].close>points[i].ma200) crossIndex=i;
-  const bars=points.map((p,i)=>{const h=p.volume/maxVolume*(volumeBottom-volumeTop);return `<rect x="${(x(i)-barWidth/2).toFixed(1)}" y="${(volumeBottom-h).toFixed(1)}" width="${barWidth.toFixed(1)}" height="${h.toFixed(1)}" fill="${i>=Math.max(0,crossIndex-1)?'#55e6b5':'#26364b'}" opacity="${i>=Math.max(0,crossIndex-1)?'.72':'.8'}"/>`;}).join('');
-  const crossMark=crossIndex>=0?`<line x1="${x(crossIndex)}" y1="${top}" x2="${x(crossIndex)}" y2="${priceBottom}" stroke="#ff676d" stroke-dasharray="4 4"/><circle cx="${x(crossIndex)}" cy="${y(points[crossIndex].close)}" r="5" fill="#ff676d" stroke="#0b1119" stroke-width="2"/><text x="${Math.min(x(crossIndex)+8,width-135)}" y="${top+12}" fill="#ff8b90" font-size="9">200일선 상향 돌파</text>`:'';
-  const age=Number(r.signal_age)||0, activeStep=r.above_ma200?(age===0?2:3):1;
-  return `<div class="reentry-trend-chart">
-    <div class="reentry-trend-chart-head"><b>주가와 200일 이동평균선 · 일봉</b><div class="reentry-trend-legend"><span><i style="background:#55e6b5"></i>주가</span><span><i style="background:#e0a838"></i>200일선</span><span>막대 · 거래량</span></div></div>
-    <svg class="reentry-trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${r.ticker} 주가, 200일 이동평균선과 거래량 추세 차트">
-      <line x1="${left}" y1="${top}" x2="${width-right}" y2="${top}" stroke="#202b3a"/><line x1="${left}" y1="${(top+priceBottom)/2}" x2="${width-right}" y2="${(top+priceBottom)/2}" stroke="#202b3a"/><line x1="${left}" y1="${priceBottom}" x2="${width-right}" y2="${priceBottom}" stroke="#202b3a"/>
-      <path d="${maPath}" fill="none" stroke="#e0a838" stroke-width="2"/><path d="${pricePath}" fill="none" stroke="#55e6b5" stroke-width="2.5"/>
-      ${crossMark}<line x1="${left}" y1="${volumeTop-7}" x2="${width-right}" y2="${volumeTop-7}" stroke="#202b3a"/>${bars}
-      <text x="${left}" y="${height-2}" fill="#728198" font-size="9">${points[0].time}</text><text x="${width-right}" y="${height-2}" fill="#728198" font-size="9" text-anchor="end">${points[points.length-1].time}</text>
-      <text x="${width-right}" y="${Math.max(top+10,y(points[points.length-1].close)-7)}" fill="#55e6b5" font-size="9" text-anchor="end">현재 $${fmtNum(points[points.length-1].close)}</text>
-      <text x="${width-right}" y="${Math.min(priceBottom-3,y(points[points.length-1].ma200)+12)}" fill="#e0a838" font-size="9" text-anchor="end">MA200 $${fmtNum(points[points.length-1].ma200)}</text>
-    </svg></div>
-    <div class="reentry-trend-status">${['200일선 아래 · 관찰','상향 돌파 · 추세 전환','200일선 지지 · 진입 검토','상승 지속 · 보유 관리'].map((label,i)=>`<span class="reentry-trend-step${activeStep===i+1?' active':''}">${i+1}. ${label}</span>`).join('')}</div>`;
-}
-function reentryCurrentSignalHTML(r, isConfirmed){
-  if(!r) return `<div class="leader-empty" style="padding:14px 16px;">현재 조건을 충족한 신호와 관찰 후보가 없습니다.</div>`;
-  const signalType = r.signal_type || '';
-  const isTrend = signalType === 'trend_cross' || r.trend_cross;
-  const isHull = signalType === 'hull_reentry' || r.hull_reentry;
-  const signalTitle = isTrend
-    ? '200일선 상향 돌파 · 장기 추세 전환'
-    : isHull ? 'Hull21 눌림목 재진입' : (r.signal_label || r.stage_label || '신호 임박 · 관찰 후보');
-  const meaning = isTrend
-    ? '주가가 장기 추세 기준인 200일 이동평균선을 상향 돌파했습니다. 향후 상승추세로 전환될 가능성이 생긴 초기 신호입니다.'
-    : isHull
-      ? 'Dev%가 하단 밴드 아래에서 다시 올라오고 Hull21 상승 조건이 확인된 눌림목 재진입 신호입니다.'
-      : '아직 진입 조건이 모두 확인된 매수 신호는 아닙니다. Hull21·추세·거래량 조건이 완성되는지 관찰하는 후보입니다.';
-  const spot = Number(r.spot);
-  const put = Number(r.put_wall);
-  const call = Number(r.call_wall);
-  const hasSpot = Number.isFinite(spot);
-  const hasPut = Number.isFinite(put);
-  const hasCall = Number.isFinite(call);
-  const ma200 = Number(r.ma200);
-  const hasMa200 = Number.isFinite(ma200);
-  let action = '가격 구조와 거래량 확인 전에는 신규 진입을 서두르지 않습니다.';
-  if(isTrend && hasMa200){
-    action = r.above_ma200
-      ? `200일선 $${fmtNum(ma200)} 위에서 지지가 이어지는지 확인합니다. 거래량을 유지하며 지지하면 진입을 검토하고, 다시 200일선 아래로 내려가면 신호를 무효로 봅니다.`
-      : `현재가가 다시 200일선 $${fmtNum(ma200)} 아래로 내려왔습니다. 200일선 회복 전까지 신규 진입을 보류합니다.`;
-  }else if(hasSpot && hasPut && hasCall){
-    if(spot < put) action = `현재가가 Put Wall $${fmtNum(put)} 아래입니다. Put Wall 회복이 확인되기 전까지 신규 진입을 보류합니다.`;
-    else if(spot >= call) action = `현재가가 Call Wall $${fmtNum(call)}에 도달했습니다. 돌파 후 지지 전환을 확인하고 보유 또는 진입을 판단합니다.`;
-    else action = `Put Wall $${fmtNum(put)} 지지를 유지하면 진입을 검토하고, Call Wall $${fmtNum(call)} 접근 시 추격매수보다 돌파·저항 반응을 확인합니다.`;
-  }else if(hasSpot && hasPut){
-    action = spot >= put
-      ? `Put Wall $${fmtNum(put)} 지지 유지 여부를 확인하며 진입을 검토합니다.`
-      : `Put Wall $${fmtNum(put)} 회복이 확인되기 전까지 신규 진입을 보류합니다.`;
-  }
-  const badges = [
-    r.stage ? `STAGE ${r.stage}` : '',
-    hasMa200 ? (r.above_ma200 ? '200일선 위' : '200일선 아래') : '',
-    r.volume_confirmed ? `거래량 ${r.volume_ratio ? fmtNum(r.volume_ratio,2)+'배' : '확인'}` : '',
-    r.gex_confirmed ? 'GEX 확인' : '',
-    !isConfirmed ? '관찰 후보' : ''
-  ].filter(Boolean).map(v=>`<span class="reentry-current-badge">${v}</span>`).join('');
-  return `
-    <div class="reentry-current-head">
-      <div><div class="reentry-current-kicker">${isConfirmed ? '현재 최우선 신호' : '현재 최우선 관찰 후보'}</div><div class="reentry-current-title"><b>${r.ticker}</b> · ${signalTitle}</div></div>
-      <div class="reentry-current-badges">${badges}</div>
-    </div>
-    ${reentryTrendChartHTML(r)}
-    <div class="reentry-current-body">
-      <div class="reentry-current-copy"><strong>왜 표시됐나요?</strong><span>${meaning}</span></div>
-      <div class="reentry-current-action"><strong>현재 대응</strong><span>${action}</span></div>
-    </div>
-    <div class="reentry-current-levels">
-      <div class="reentry-current-level put"><small>PUT WALL · 하방 지지</small><b>${hasPut ? '$'+fmtNum(put) : '—'}</b></div>
-      <div class="reentry-current-level spot"><small>현재가</small><b>${hasSpot ? '$'+fmtNum(spot) : '—'}</b></div>
-      <div class="reentry-current-level call"><small>CALL WALL · 상방 저항</small><b>${hasCall ? '$'+fmtNum(call) : '—'}</b></div>
-    </div>`;
-}
-async function loadReentrySignals(){
-  const boardEl = document.getElementById('reentrySignalBoard');
-  const note = document.getElementById('reentryUpdatedNote');
-  const currentSignalEl = document.getElementById('reentryCurrentSignal');
-  boardEl.innerHTML = '<div class="leader-empty">불러오는 중...</div>';
-  let report;
-  try{
-    const res = await fetch('/leaders_report.json', { cache: 'no-store' });
-    if(!res.ok) throw new Error('로드 실패');
-    report = await res.json();
-  }catch(e){
-    boardEl.innerHTML = '<div class="leader-empty">매수 신호 데이터를 불러오지 못했습니다</div>';
-    currentSignalEl.innerHTML = '<div class="leader-empty" style="padding:14px 16px;">현재 신호를 확인하지 못했습니다.</div>';
-    note.textContent = '';
-    return;
-  }
-  const longList = report.dev_reentry_long || [];
-  const confirmedList = [
-    ...(report.dev_reentry_trend || []),
-    ...(report.dev_reentry_hull || [])
-  ];
-  const topPick = report.dev_reentry_top_pick || confirmedList[0] || longList[0] || null;
-  const isConfirmed = Boolean(topPick && (report.dev_reentry_top_pick || confirmedList.some(r=>r.ticker === topPick.ticker)));
-  currentSignalEl.innerHTML = reentryCurrentSignalHTML(topPick, isConfirmed);
-  if(!longList.length){
-    boardEl.innerHTML = '<div class="leader-empty">최근 5거래일 신호와 임박 후보가 없습니다</div>';
-    const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
-    note.textContent = generatedAt ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}` : '매일 장마감 후 자동 계산';
-    return;
-  }
-  boardEl.innerHTML =
-    longList.map(reentrySignalRowHTML).join('') +
-    `<div style="font-size:10px; color:var(--text-dim); opacity:0.7; margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">
-      ⚠️ Hull21 이동평균 기반 되돌림 신호이며 매수를 권유하는 투자자문이 아닙니다. 매매 판단은 본인이 결정하시기 바랍니다.
-    </div>`;
-  boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(card=>{
-    card.addEventListener('click', ()=> searchTicker(card.dataset.ticker));
-  });
-  boardEl.querySelectorAll('[data-reentry-watch]').forEach(button=>button.addEventListener('click',event=>{
-    event.preventDefault(); event.stopPropagation();
-    togglePersonalWatchlist(button.dataset.reentryWatch);
-    refreshReentryWatchButtons();
-  }));
-  boardEl.querySelectorAll('[data-reentry-gex]').forEach(button=>button.addEventListener('click',event=>{
-    event.preventDefault(); event.stopPropagation();
-    searchTicker(button.dataset.reentryGex);
-  }));
-  const generatedAt = report.generated_at ? new Date(report.generated_at) : null;
-  note.textContent = generatedAt
-    ? `매일 장마감 후 자동 계산 · 마지막 갱신: ${generatedAt.toLocaleString('ko-KR')}`
-    : '매일 장마감 후 자동 계산';
 }
 // ---------- 오늘의 이상 옵션 거래 (Unusual Options Activity — Vol/OI 비율 상위) ----------
 function unusualOptionRowHTML(r, rank){
@@ -2350,7 +2214,6 @@ function savePersonalWatchlist(tickers){
   try{ localStorage.setItem(storageKey, JSON.stringify(clean)); }catch(e){}
   updateInterestButton();
   refreshAiWatchButtons();
-  refreshReentryWatchButtons();
   if(currentUser){
     const snapshot = [...clean];
     const syncUserId = currentUser.id;
@@ -3469,7 +3332,6 @@ if(isIndustryView()){
   loadMarketStatusBanner();
   loadAiLeaderMap();
   loadTradingJournal();
-  loadReentrySignals();
   setInterval(loadMarketFloat, 60000);
 }
 initMemberAccount();
