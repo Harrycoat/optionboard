@@ -14,7 +14,7 @@
 .legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend b{color:var(--text)}
 @media(max-width:720px){.wrap{padding:10px}.top{flex-direction:column;align-items:flex-start}.brand{font-size:20px}.nav{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.nav a{text-align:center}.toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%}.toolbar input,.toolbar button{width:100%}.row{min-width:900px}.card{padding:10px}}
 </style>
-<link rel="stylesheet" href="/monitor-experience.css?v=1">
+<link rel="stylesheet" href="/monitor-experience.css?v=2">
 <script src="/watchlist-actions.js" defer></script>
 </head>
 <body>
@@ -86,20 +86,25 @@
       <div>
         <div class="ex-plan-controls"><button class="active" type="button" data-plan-mode="breakout">돌파 관찰</button><button type="button" data-plan-mode="pullback">눌림 관찰</button><button type="button" data-plan-mode="wait">관망</button></div>
         <div class="ex-plan-box"><strong id="planTitle">시나리오 확인 중</strong><p id="planBody"></p><div class="ex-warning" id="planInvalid">무효화 조건을 확인하세요.</div></div>
-        <p class="ex-caption">표시되는 가격 구간은 관찰용입니다. 실제 진입·손절 가격은 본인이 직접 입력합니다.</p>
+        <p class="ex-caption">표시되는 가격 구간은 관찰용입니다. 실제 확인 조건·무효화 가격·진입 가정은 본인이 직접 입력합니다.</p>
+        <div class="ex-plan-form"><label style="grid-column:1/-1">내 확인 조건<input id="planConfirmation" type="text" maxlength="240" placeholder="예: 5분봉 종가가 저항선 위에서 유지되고 거래량 확인"></label><label style="grid-column:1/-1">무효화 이유<input id="planInvalidReason" type="text" maxlength="240" placeholder="예: 돌파한 저항선 아래로 5분봉 복귀"></label><label>목표 구간 ($ · 선택)<input id="planTarget" type="number" min="0" step="0.01" placeholder="직접 입력"></label><label>시세 기준시각<input id="planSourceTime" type="text" readonly placeholder="Schwab 시세 확인 중"></label></div>
       </div>
       <div>
         <h3 style="margin:12px 0 5px">포지션 사이즈 계산</h3>
         <div class="ex-plan-form">
-          <label>계좌 규모 ($)<input id="riskAccount" type="number" min="0" step="100" placeholder="직접 입력"></label>
-          <label>거래당 위험 (%)<input id="riskPercent" type="number" min="0.01" max="100" step="0.1" placeholder="직접 입력"></label>
+          <label>허용 손실 ($ · 기본)<input id="riskDollars" type="number" min="0" step="1" placeholder="예: 100"></label>
+          <label>슬리피지 여유 (% · 가정)<input id="riskSlippage" type="number" min="0" max="20" step="0.1" value="0.5"></label>
+          <label>계좌 규모 ($ · 선택)<input id="riskAccount" type="number" min="0" step="100" placeholder="직접 입력"></label>
+          <label>거래당 위험 (% · 선택)<input id="riskPercent" type="number" min="0.01" max="100" step="0.1" placeholder="직접 입력"></label>
           <label>진입가 ($)<input id="riskEntry" type="number" min="0" step="0.01" placeholder="직접 입력"></label>
           <label>손절가 ($)<input id="riskStop" type="number" min="0" step="0.01" placeholder="직접 입력"></label>
         </div>
         <div class="ex-result"><small>계산 수량</small><div><strong id="riskResult">—</strong></div><small>예상 손실 <b id="riskLoss">값을 입력하면 계산됩니다</b></small></div>
         <p id="riskError" class="ex-caption"></p>
+        <button id="saveScenario" class="ex-button" type="button" disabled style="width:100%;margin-bottom:8px">내 시나리오 저장</button>
+        <p id="planSaveStatus" class="ex-caption" role="status">저장은 이 브라우저에만 적용됩니다. 다른 기기와 동기화되지 않습니다.</p>
         <button id="copyScenario" class="ex-button secondary" type="button" disabled style="width:100%">시나리오 요약 복사</button>
-        <p class="ex-disclosure">수수료·슬리피지·갭 리스크 미반영. 투자 권유가 아닌 개인 계획용 계산입니다.</p>
+        <p class="ex-disclosure">슬리피지는 입력한 여유만 계산합니다. 수수료·실제 체결 차이·갭 손실은 별도이며 주문은 실행되지 않습니다.</p>
       </div>
     </div>
   </section>
@@ -303,6 +308,6 @@ window.addEventListener('gex-watchlist-change',refresh);
 window.addEventListener('gex-monitor-list-change',refresh);
 window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
 </script>
-<script src="/monitor-experience.js?v=1" defer></script>
+<script src="/monitor-experience.js?v=2" defer></script>
 </body>
 </html>
