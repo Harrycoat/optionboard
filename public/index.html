@@ -742,6 +742,7 @@
   </div>
   <div class="header-actions">
     <a class="home-btn" href="/gex-manual.html">📘 사용법 매뉴얼</a>
+    <a class="home-btn" id="liveMonitorBtn" href="/monitoring.html" style="display:none;border-color:#55e6b5;color:#55e6b5;">📡 LIVE MONITOR</a>
     <button class="account-btn" id="accountBtn" type="button">👤 로그인</button>
     <a class="home-btn" href="/en/" aria-label="Open English version" style="border-color:#81adff;color:#9fc0ff;">🌐 EN</a>
   </div>
@@ -2296,6 +2297,7 @@ function updateAccountUI(){
   const note = document.getElementById('interestStorageNote');
   const quickAdd = document.querySelector('.interest-quick-add');
   const refreshButton = document.getElementById('interestRefreshBtn');
+  const liveMonitorButton = document.getElementById('liveMonitorBtn');
   button.classList.toggle('signed-in', Boolean(currentUser));
   button.textContent = currentUser ? '● 내 계정' : '👤 로그인';
   signedOut.style.display = currentUser ? 'none' : 'block';
@@ -2306,6 +2308,7 @@ function updateAccountUI(){
     : '로그인하면 내 관심종목을 안전하게 저장하고 여러 기기에서 확인할 수 있습니다.';
   if(quickAdd) quickAdd.style.display = currentUser ? 'flex' : 'none';
   if(refreshButton) refreshButton.style.display = currentUser ? 'inline-flex' : 'none';
+  if(liveMonitorButton) liveMonitorButton.style.display = currentUser ? 'inline-flex' : 'none';
   const heroButton = document.getElementById('memberHeroSignup');
   const previewButton = document.getElementById('nvdaSignupBtn');
   if(heroButton) heroButton.textContent = '내 관심종목 보기 →';
