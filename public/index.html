@@ -903,6 +903,64 @@
   <div id="reentryCurrentSignal" class="reentry-current-signal" aria-live="polite"><div class="leader-empty" style="padding:14px 16px;">현재 신호를 분석하고 있습니다.</div></div>
   <div id="reentrySignalBoard"><div class="leader-empty">불러오는 중...</div></div>
 </section>
+<section id="eveningReviewSection">
+  <div class="section-title">🌙 저녁 복기 — Morning 3 가상 트랙레코드</div>
+  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">매일 아침 Morning 3 3종목을 시가에 가상 매수, 당일 종가에 전량 매도한 데일리 트레이딩 기록입니다. 실제 매매가 아니며, 이긴 날도 진 날도 그대로 공개합니다.</p>
+  <div class="updated-note" id="paperUpdatedNote">불러오는 중...</div>
+  <div id="paperStats"></div>
+  <div id="paperToday"></div>
+</section>
+<script>
+(function(){
+  var noteEl = document.getElementById('paperUpdatedNote');
+  fetch('/paper/track-record.json', {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('no record'); return r.json(); })
+    .then(render)
+    .catch(function(){
+      if(noteEl) noteEl.textContent = '아직 기록이 없습니다. 첫 복기는 오늘 장 마감 후 업데이트됩니다.';
+    });
+  function render(rec){
+    var stats = rec.stats || {};
+    var days = stats.days || 0;
+    var winRate = days ? Math.round((stats.wins / days) * 100) : 0;
+    var tot = stats.total_return_pct || 0;
+    var totColor = tot >= 0 ? 'var(--up)' : 'var(--down)';
+    if(noteEl && rec.updated_at){
+      try {
+        var d = new Date(rec.updated_at);
+        noteEl.textContent = '업데이트: ' + d.toLocaleString('ko-KR', {timeZone:'America/Los_Angeles'});
+      } catch(e){ noteEl.textContent = ''; }
+    }
+    var hist = rec.history || [];
+    var last = hist[hist.length - 1];
+    var html = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">' +
+      statBox('누적 일수', days + '일') +
+      statBox('승 / 패', (stats.wins||0) + ' / ' + (stats.losses||0)) +
+      statBox('승률', winRate + '%') +
+      '<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:110px;"><div style="font-size:11px;color:var(--text-dim);">누적 수익률</div><div style="font-size:19px;font-weight:700;color:' + totColor + ';">' + (tot>=0?'+':'') + tot.toFixed(2) + '%</div></div>' +
+      '</div>';
+    document.getElementById('paperStats').innerHTML = html;
+    if(last && last.picks){
+      var rows = last.picks.map(function(p){
+        var c = p.return_pct >= 0 ? 'var(--up)' : 'var(--down)';
+        var s = p.return_pct >= 0 ? '+' : '';
+        return '<tr><td><b>' + p.ticker + '</b></td><td class="mono">$' + p.open.toFixed(2) + '</td><td class="mono">$' + p.close.toFixed(2) + '</td><td class="mono" style="color:' + c + ';font-weight:700;">' + s + p.return_pct.toFixed(2) + '%</td></tr>';
+      }).join('');
+      var dc = last.day_return_pct >= 0 ? 'var(--up)' : 'var(--down)';
+      var ds = last.day_return_pct >= 0 ? '+' : '';
+      document.getElementById('paperToday').innerHTML =
+        '<div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">최근 복기 (' + last.date + ') — 당일 결과 <b class="mono" style="color:' + dc + ';">' + ds + last.day_return_pct.toFixed(2) + '%</b></div>' +
+        '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:420px;">' +
+        '<tr style="color:var(--text-dim);font-size:12px;"><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">종목</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">시가 (매수)</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">종가 (매도)</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">수익률</th></tr>' +
+        rows + '</table></div>' +
+        '<div style="margin-top:10px;font-size:13px;"><a href="/column" style="color:var(--gold);text-decoration:none;">복기 칼럼 전체 보기 →</a></div>';
+    }
+  }
+  function statBox(k, v){
+    return '<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:110px;"><div style="font-size:11px;color:var(--text-dim);">' + k + '</div><div style="font-size:19px;font-weight:700;">' + v + '</div></div>';
+  }
+})();
+</script>
   <div id="detailSection" style="display:none;">
     <div class="section-title">상세 분석</div>
     <button class="decision-close-btn" id="decisionCloseBtn" type="button" style="display:none;">상세 분석 닫기 ↑</button>
