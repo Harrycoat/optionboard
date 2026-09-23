@@ -14,7 +14,7 @@
 .legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend b{color:var(--text)}
 @media(max-width:720px){.wrap{padding:10px}.top{flex-direction:column;align-items:flex-start}.brand{font-size:20px}.nav{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.nav a{text-align:center}.toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%}.toolbar input,.toolbar button{width:100%}.row{min-width:900px}.card{padding:10px}}
 </style>
-<link rel="stylesheet" href="/monitor-experience.css?v=2">
+<link rel="stylesheet" href="/monitor-experience.css?v=3">
 <script src="/watchlist-actions.js" defer></script>
 </head>
 <body>
@@ -40,7 +40,7 @@
   <section id="morningRadar">
     <div class="experience-heading">MORNING RADAR / 01</div>
     <h1 class="experience-title">오늘 볼 종목,<br>세 개면 충분해요.</h1>
-    <p class="experience-lead">내 관심종목에서 빠르게 확인할 3개를 먼저 보여줍니다. 자동 선정·추천 순위가 아닙니다.</p>
+    <p class="experience-lead">연결된 시세·뉴스·섹터·옵션 구조를 압축해 아침에 확인할 후보를 최대 3개만 보여줍니다. 기준 미달이면 3개를 억지로 채우지 않습니다.</p>
     <div class="experience-market"><span>가격 <b>Schwab API</b></span><span>5분봉 <b>Schwab</b></span><span>옵션 Wall <b>별도 데이터</b></span></div>
   </section>
   <div class="card">
@@ -54,9 +54,9 @@
 
   <div class="experience-layout">
     <section class="experience-panel" aria-labelledby="radarTitle">
-      <div class="ex-row"><div><span class="ex-pill">관심종목 빠른 보기</span><h2 id="radarTitle" style="margin-top:9px">오늘 확인할 종목</h2></div><b id="radarCount" class="ex-muted">조회 중</b></div>
+      <div class="ex-row"><div><span class="ex-pill">MORNING 3</span><h2 id="radarTitle" style="margin-top:9px">오늘 먼저 볼 3종목</h2></div><b id="radarCount" class="ex-muted">조회 중</b></div>
       <div id="radarList" class="ex-radar-list"></div><p id="radarNote" class="ex-caption"></p>
-      <div class="ex-warning" style="margin-top:12px">가격이 움직이는 뉴스·공시의 원문은 아직 이 화면에 연결되지 않았습니다. 확인되지 않은 촉매나 신호 점수는 만들어 표시하지 않습니다.</div>
+      <div class="ex-warning" style="margin-top:12px">후보는 촉매·유동성·가격 구조·옵션 구조·시장/섹터 근거를 합쳐 압축합니다. 근거가 약하거나 스프레드가 과하면 제외하고, 3개 미만이면 관망 우위로 표시합니다.</div>
     </section>
     <section id="tickerStory" class="experience-panel" aria-labelledby="storyHeading">
       <div class="experience-heading">STOCK STORY / 02</div>
@@ -308,6 +308,6 @@ window.addEventListener('gex-watchlist-change',refresh);
 window.addEventListener('gex-monitor-list-change',refresh);
 window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
 </script>
-<script src="/monitor-experience.js?v=2" defer></script>
+<script src="/monitor-experience.js?v=3" defer></script>
 </body>
 </html>
