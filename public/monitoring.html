@@ -116,12 +116,75 @@ function row(x,i){
  const sc=x.state==='HEDGE WATCH'?'red':x.state==='ADD WATCH'||x.state==='BREAKOUT'?'green':x.state==='HOLD'?'blue':'gold';
  const hs=x.slope>0.03?'▲ UP':x.slope<-0.03?'▼ DOWN':'→ FLAT';
  const hc=x.slope>0.03?'green':x.slope<-0.03?'red':'gold';
- return '<div class="row"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price">$'+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
+ return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price">
+$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
+$('refreshBtn').onclick=refresh;
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-remove]');
+ if(!b)return;
+ const t=b.dataset.remove;
+ if(window.GexWatchlist&&window.GexWatchlist.remove){
+   window.GexWatchlist.remove(t);
+   refresh();
+ }
+});
+window.addEventListener('gex-watchlist-change',refresh);
+window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
+</script>
+</body>
+</html>+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'
+$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
+$('refreshBtn').onclick=refresh;
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-remove]');
+ if(!b)return;
+ const t=b.dataset.remove;
+ if(window.GexWatchlist&&window.GexWatchlist.remove){
+   window.GexWatchlist.remove(t);
+   refresh();
+ }
+});
+window.addEventListener('gex-watchlist-change',refresh);
+window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
+</script>
+</body>
+</html>+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'
+$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
+$('refreshBtn').onclick=refresh;
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-remove]');
+ if(!b)return;
+ const t=b.dataset.remove;
+ if(window.GexWatchlist&&window.GexWatchlist.remove){
+   window.GexWatchlist.remove(t);
+   refresh();
+ }
+});
+window.addEventListener('gex-watchlist-change',refresh);
+window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
+</script>
+</body>
+</html>+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
+}
+function loadingRow(t,i){
+ return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+t+'</span><span class="status">loading…</span><span>—</span><span>—</span><span class="status">loading…</span><span>—</span><span>—</span><span>—</span><span>—</span><button class="delbtn" data-remove="'+t+'">X</button></div>';
 }
 async function refresh(){
- const list=getList();$('status').textContent='Updating '+list.length+' stocks…';
- const out=[];for(let i=0;i<list.length;i++){out.push(await fetchOne(list[i]));await sleep(120)}
- $('board').innerHTML=out.map(row).join('')||'<div class="empty">관심종목이 없습니다.</div>';
+ const list=getList();
+ if(!list.length){$('board').innerHTML='<div class="empty">관심종목이 없습니다.</div>';$('status').textContent='No monitored stocks';return;}
+ $('status').textContent='Updating '+list.length+' stocks…';
+ $('board').innerHTML=list.map(loadingRow).join('');
+ let done=0;
+ const jobs=list.map((t,i)=>fetchOne(t).then(x=>{
+   const el=document.getElementById('row-'+i);
+   if(el)el.outerHTML=row(x,i);
+   done++;$('status').textContent='Updated '+done+'/'+list.length+' stocks…';
+ }).catch(()=>{
+   const el=document.getElementById('row-'+i);
+   if(el)el.querySelector('.status').textContent='data error';
+   done++;
+ }));
+ await Promise.allSettled(jobs);
  $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · Schwab 5M volume';
 }
 $('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
