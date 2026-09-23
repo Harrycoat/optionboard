@@ -660,6 +660,7 @@
   @media(max-width:1450px){.mijoostock-side-banner{display:none}}
   @media(max-width:900px){.main-category-nav .main-category-inner{justify-content:flex-start;padding:8px 12px}.member-hero-inner{grid-template-columns:1fr}.member-benefits{grid-template-columns:1fr}.nvda-preview-grid{grid-template-columns:1fr}.nvda-signup{border-left:0;border-top:1px solid var(--line);padding:16px 0 0}.nvda-kpis{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:600px){.member-video-btn{width:100%}.response-video-modal{padding:10px}.response-video-dialog{grid-template-columns:1fr;gap:16px;padding:16px}.response-video-player{max-width:260px;margin:0 auto}.response-video-copy{text-align:center;padding:0}.response-video-copy h2{font-size:19px}.response-video-points{text-align:left}}
+  .interest-monitor-btn{margin-top:10px;width:100%;min-height:32px;border:1px solid #55e6b5;border-radius:6px;background:rgba(85,230,181,.07);color:#55e6b5;font-size:10px;font-weight:900;cursor:pointer}.interest-monitor-btn:hover{background:rgba(85,230,181,.15)}.interest-monitor-btn.is-monitoring{background:rgba(85,230,181,.16);color:#7df0c7}
   .chart-btn{
     display:inline-flex; align-items:center; gap:6px;
     background: var(--panel-2); color: var(--text); border:1px solid var(--line);
@@ -831,7 +832,6 @@
       <div class="section-title" id="interestTitle">⭐ 나의 관심종목</div>
       <div class="interest-actions">
         <span class="interest-count" id="interestCount">0 / 20 · 옵션 15분 지연</span>
-        <button class="interest-refresh" id="sendToMonitorBtn" type="button" style="border-color:#55e6b5;color:#55e6b5;">📡 LIVE MONITOR로 보내기</button>
         <button class="interest-refresh" id="interestRefreshBtn" type="button">↻ 새로고침</button>
       </div>
     </div>
@@ -2404,19 +2404,6 @@ async function syncWatchlistToCloud(tickers, userId = currentUser?.id, sessionVe
   return true;
 }
 
-function sendWatchlistToMonitor(){
-  if(!currentUser){ openAuthModal(); showToast('로그인 후 관심종목을 LIVE MONITOR로 보낼 수 있습니다'); return; }
-  const tickers=getPersonalWatchlist();
-  if(!tickers.length){ showToast('먼저 관심종목을 추가해주세요'); return; }
-  const selected=tickers.slice(0,10);
-  if(window.GexWatchlist?.setMonitor){
-    window.GexWatchlist.setMonitor(selected);
-  }else{
-    try{ localStorage.setItem('gexoption_monitor_list_v1_'+currentUser.id, JSON.stringify(selected)); }catch(e){}
-  }
-  showToast(selected.length+'개 관심종목을 LIVE MONITOR로 보냈습니다');
-  setTimeout(()=>{ location.href='/monitoring.html'; },300);
-}
 async function refreshPersonalWatchlist(){
   if(!currentUser) return;
   const refresh = document.getElementById('interestRefreshBtn');
@@ -2453,7 +2440,7 @@ function watchlistStatus(d){
 }
 function personalWatchCardHTML(ticker, d){
   if(!d || d.error){
-    return `<article class="wcard interest-card" data-ticker="${ticker}"><button class="interest-remove" type="button" data-remove="${ticker}" aria-label="${ticker} 삭제">×</button><div class="t mono">${ticker}</div><div class="rows"><div class="r"><span>데이터</span><b>불러오기 실패</b></div></div></article>`;
+    return `<article class="wcard interest-card" data-ticker="${ticker}"><button class="interest-remove" type="button" data-remove="${ticker}" aria-label="${ticker} 삭제">×</button><div class="t mono">${ticker}</div><div class="rows"><div class="r"><span>데이터</span><b>불러오기 실패</b></div></div><button class="interest-monitor-btn" type="button" data-monitor-add="${ticker}">📡 MONITOR</button></article>`;
   }
   const pct = Number(d.price_change_pct);
   const pctText = Number.isFinite(pct) ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%` : '—';
@@ -2464,7 +2451,8 @@ function personalWatchCardHTML(ticker, d){
     <div class="t mono">${ticker}</div><div class="spot">$${fmtNum(d.spot)}</div>
     <div class="mono" style="font-size:11px; color:${pctColor}; margin-top:3px;">${pctText}</div>
     <span class="interest-status" style="color:${status.color}; background:${status.color}1f;">${status.text}</span>
-    <div class="rows"><div class="r"><span>Put Wall</span><b>$${fmtNum(d.put_wall,1)}</b></div><div class="r"><span>Call Wall</span><b>$${fmtNum(d.call_wall,1)}</b></div></div>
+    <div class="rows"><div class="r"><span>Put Wall</span><b>${fmtNum(d.put_wall,1)}</b></div><div class="r"><span>Call Wall</span><b>${fmtNum(d.call_wall,1)}</b></div></div>
+    <button class="interest-monitor-btn" type="button" data-monitor-add="${ticker}">📡 MONITOR</button>
   </article>`;
 }
 function decisionMeta(d){
@@ -3385,7 +3373,28 @@ if(isIndustryView()){
 initMemberAccount();
 const initialTicker = validWatchTicker(new URLSearchParams(location.search).get('ticker'));
 if(initialTicker) searchTicker(initialTicker);
-document.getElementById('sendToMonitorBtn').addEventListener('click', sendWatchlistToMonitor);
+document.addEventListener('click',event=>{
+  const button=event.target.closest('[data-monitor-add]');
+  if(!button)return;
+  event.preventDefault(); event.stopPropagation();
+  if(!currentUser){ openAuthModal(); showToast('로그인 후 LIVE MONITOR에 추가할 수 있습니다'); return; }
+  const ticker=validWatchTicker(button.dataset.monitorAdd);
+  if(!ticker)return;
+  if(window.GexWatchlist?.addMonitor){
+    const before=window.GexWatchlist.monitorList?.()||[];
+    const ok=window.GexWatchlist.addMonitor(ticker);
+    if(ok){
+      button.textContent='✓ MONITORING';
+      button.classList.add('is-monitoring');
+      showToast(before.includes(ticker)?ticker+'는 이미 LIVE MONITOR에 있습니다':ticker+'를 LIVE MONITOR에 추가했습니다');
+    }
+  }else{
+    const key='gexoption_monitor_list_v1_'+currentUser.id;
+    let list=[]; try{list=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+    if(!list.includes(ticker)){ if(list.length>=10){showToast('LIVE MONITOR는 최대 10개입니다');return;} list.push(ticker); localStorage.setItem(key,JSON.stringify(list)); }
+    button.textContent='✓ MONITORING'; button.classList.add('is-monitoring'); showToast(ticker+'를 LIVE MONITOR에 추가했습니다');
+  }
+});
 document.getElementById('memberHeroSignup').addEventListener('click', openWatchlistView);
 document.getElementById('nvdaSignupBtn').addEventListener('click', openWatchlistView);
 document.getElementById('memberHeroSearch').addEventListener('click', () => { document.getElementById('tickerInput').focus(); window.scrollTo({top:0,behavior:'smooth'}); });
