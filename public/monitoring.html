@@ -57,11 +57,30 @@ const fmt=(v,d=2)=>v==null?'—':Number(v).toLocaleString('en-US',{maximumFracti
 const clean=v=>String(v||'').trim().toUpperCase().replace(/[^A-Z0-9.\-]/g,'').slice(0,12);
 const FALLBACK=['NVDA','AMD','TSLA','PLTR','AVGO','MU','MRVL','AMZN','BE','INTC'];
 
+const GUEST_MONITOR_KEY='gexoption_monitor_list_guest_v1';
+function currentMonitorKey(){
+ const user=localStorage.getItem('gexoption_active_watchlist_user');
+ return user?'gexoption_monitor_list_v1_'+user:GUEST_MONITOR_KEY;
+}
 function getList(){
- const monitor=(window.GexWatchlist&&window.GexWatchlist.monitorList)?window.GexWatchlist.monitorList():[];
- if(monitor.length)return monitor.slice(0,10);
+ const key=currentMonitorKey();
+ // An explicit empty list means the user has removed all monitored stocks.
+ if(localStorage.getItem(key)!==null){
+   try{return [...new Set(JSON.parse(localStorage.getItem(key)||'[]').map(clean).filter(Boolean))].slice(0,10)}
+   catch(_){return []}
+ }
  const saved=(window.GexWatchlist&&window.GexWatchlist.list)?window.GexWatchlist.list():[];
  return (saved.length?saved:FALLBACK).slice(0,10);
+}
+function saveMonitorList(list){
+ const next=[...new Set((list||[]).map(clean).filter(Boolean))].slice(0,10);
+ const key=currentMonitorKey();
+ if(key!==GUEST_MONITOR_KEY&&window.GexWatchlist&&window.GexWatchlist.setMonitor){
+   return window.GexWatchlist.setMonitor(next)!==false;
+ }
+ localStorage.setItem(key,JSON.stringify(next));
+ window.dispatchEvent(new CustomEvent('gex-monitor-list-change',{detail:{list:next}}));
+ return true;
 }
 function wma(vals,n){
  if(vals.length<n)return null;
@@ -194,23 +213,24 @@ async function refresh(){
 $('addBtn').onclick=()=>{
  const t=clean($('tickerInput').value);
  if(!t)return;
- if(window.GexWatchlist&&window.GexWatchlist.addMonitor)window.GexWatchlist.addMonitor(t);
- else if(window.GexWatchlist)window.GexWatchlist.add(t);
- $('tickerInput').value='';
- refresh();
+ const current=getList();
+ if(!current.includes(t)&&current.length>=10){
+   $('status').textContent='LIVE MONITOR는 최대 10개까지 표시할 수 있습니다.';
+   return;
+ }
+ if(saveMonitorList([...current,t])){
+   $('tickerInput').value='';
+   refresh();
+ }
 };
 $('refreshBtn').onclick=refresh;
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-remove]');
  if(!b)return;
- const t=b.dataset.remove;
- if(window.GexWatchlist&&window.GexWatchlist.removeMonitor){
-   window.GexWatchlist.removeMonitor(t);
-   refresh();
- }else if(window.GexWatchlist&&window.GexWatchlist.remove){
-   window.GexWatchlist.remove(t);
-   refresh();
- }
+ e.preventDefault();
+ const t=clean(b.dataset.remove);
+ if(!t)return;
+ if(saveMonitorList(getList().filter(item=>item!==t)))refresh();
 });
 window.addEventListener('gex-watchlist-change',refresh);
 window.addEventListener('gex-monitor-list-change',refresh);
