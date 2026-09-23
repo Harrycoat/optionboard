@@ -820,7 +820,7 @@ def _morning_three():
     This is a market-observation shortlist, not a personalized buy/sell recommendation.
     It intentionally returns fewer than three names when evidence or liquidity is weak.
     """
-    scan = _premarket_scan(limit=12, min_gap=0.5)
+    scan = _premarket_scan(limit=25, min_gap=0.5)
     movers = list(scan.get("movers") or [])
     market = _fetch_cnn_fear_greed()
 
@@ -842,11 +842,20 @@ def _morning_three():
             if mid > 0:
                 spread_pct = (ask - bid) / mid * 100.0
 
+        sector_stats = (scan.get("sector_stats") or {}).get(item.get("sector")) or {}
+        sector_count = int(item.get("sector_positive_count") or sector_stats.get("positive_count") or 0)
         reason = str(item.get("reason") or "")
         headline = str(item.get("headline") or "")
-        has_catalyst = bool(headline and reason not in ("MOMENTUM / CHECK NEWS", ""))
-        sector_count = int(item.get("sector_positive_count") or 0)
-        sector_support = reason == "SECTOR MOVE" or sector_count >= 2
+        # A sector-wide move is not an independently verified company-news catalyst.
+        # Never count synthetic SECTOR MOVE headlines as news evidence.
+        has_catalyst = bool(item.get("news_url") and headline and reason not in ("SECTOR MOVE", "MOMENTUM / CHECK NEWS", ""))
+        sector_support = sector_count >= 2
+        if not reason and sector_support:
+            reason = "SECTOR MOVE"
+            headline = f'{item.get("sector")}: {sector_count} peers are also up'
+        item["reason"] = reason
+        item["headline"] = headline
+        item["sector_positive_count"] = sector_count
 
         # Product plan exclusion rule: weak/unclear catalyst and excessive spreads do not
         # get forced into the top-three list.
@@ -903,11 +912,24 @@ def _morning_three():
         })
 
     prelim.sort(key=lambda x: (x["_pre_score"], x.get("gap_pct") or 0), reverse=True)
+    # Reserve options-analysis slots across distinct sectors BEFORE the costly
+    # per-ticker option calls. Otherwise a strong software morning consumes all
+    # five slots and other sectors never reach the final selection.
+    distinct_prelim = []
+    seen_prelim_sectors = set()
+    for item in prelim:
+        sector = item.get("sector") or "OTHER"
+        if sector in seen_prelim_sectors:
+            continue
+        distinct_prelim.append(item)
+        seen_prelim_sectors.add(sector)
+        if len(distinct_prelim) >= 5:
+            break
     finalists = []
 
     # Options analysis is intentionally limited to the strongest preliminary names
     # so the serverless request remains bounded.
-    for item in prelim[:5]:
+    for item in distinct_prelim:
         ticker = item["ticker"]
         option_score = 0
         call_wall = put_wall = gamma_flip = expiry = None
@@ -988,11 +1010,23 @@ def _morning_three():
         })
 
     finalists.sort(key=lambda x: x["score"], reverse=True)
-    top = finalists[:3]
+    # Maximum one ticker per sector. Fewer than three is a valid result when
+    # only one or two distinct sectors pass the evidence/liquidity filters.
+    top = []
+    selected_sectors = set()
+    for item in finalists:
+        sector = item.get("sector") or "OTHER"
+        if sector in selected_sectors:
+            continue
+        top.append(item)
+        selected_sectors.add(sector)
+        if len(top) == 3:
+            break
     return {
         "count": len(top),
         "candidates": top,
-        "market_state": "관망 우위" if len(top) < 3 else "후보 3개 압축",
+        "market_state": "관망 우위 · 섹터 분산 기준" if len(top) < 3 else "서로 다른 섹터 3개 압축",
+        "selection_policy": "maximum_one_stock_per_sector",
         "method": {
             "catalyst": 30,
             "liquidity": 25,
