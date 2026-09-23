@@ -45,7 +45,7 @@
   <div class="card legend">
     <span><b>▲ 증가</b> = 현재 5분 거래량 &gt; 직전 5분 거래량</span>
     <span><b>▼ 감소</b> = 현재 5분 거래량 &lt; 직전 5분 거래량</span>
-    <span><b>→ 보합</b> = 두 거래량이 비슷함 (±5%)</span>
+    <span><b>→ 보합</b> = 두 거래량이 비슷함 (±5%)</span><span><b>CALL REJECTION</b> = Call Wall 터치 후 밀림</span><span><b>HEDGE READY</b> = Call Wall 거절 + HULL21 하향 이탈 + HULL21 FLAT/DOWN</span>
   </div>
 </div>
 <script>
@@ -87,13 +87,29 @@ function volumeState(bars){
  if(ratio<0.95)return {label:'▼ 감소',cls:'vol-down',ratio};
  return {label:'→ 보합',cls:'vol-flat',ratio};
 }
-function signal(spot,put,call,hSlope,vol){
+function signal(spot,put,call,hSlope,vol,bars,hull){
  if(spot==null)return 'WATCH';
- if(call!=null){
-   const dc=(call-spot)/spot*100;
+
+ if(call!=null&&bars&&bars.length){
+   const recent=bars.slice(-6);
+   const touched=recent.some(b=>Number(b.high||0)>=Number(call)*0.998);
+   const latest=recent[recent.length-1];
+   const latestClose=latest?Number(latest.close):null;
+
    if(spot>call)return 'BREAKOUT';
+
+   if(touched&&latestClose!=null&&latestClose<call){
+     if(hull!=null&&latestClose<hull){
+       if(hSlope<=0)return 'HEDGE READY';
+       return 'HULL21 BREAK';
+     }
+     return 'CALL REJECTION';
+   }
+
+   const dc=(call-spot)/spot*100;
    if(Math.abs(dc)<=1.5&&hSlope<0)return 'HEDGE WATCH';
  }
+
  if(put!=null){
    const dp=(spot-put)/spot*100;
    if(Math.abs(dp)<=1.5&&hSlope>0&&vol.label.includes('증가'))return 'ADD WATCH';
@@ -119,10 +135,10 @@ async function fetchOne(t){
  const slope=(h!=null&&hp!=null&&hp!==0)?(h-hp)/hp*100:0;
  const vol=volumeState(bars);
  const spot=sumR.spot!=null?Number(sumR.spot):(bars.length?Number(bars[bars.length-1].close):null);
- return {ticker:t,spot,change:sumR.price_change_pct,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,state:signal(spot,sumR.put_wall,sumR.call_wall,slope,vol)};
+ return {ticker:t,spot,change:sumR.price_change_pct,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,state:signal(spot,sumR.put_wall,sumR.call_wall,slope,vol,bars,h)};
 }
 function row(x,i){
- const sc=x.state==='HEDGE WATCH'?'red':x.state==='ADD WATCH'||x.state==='BREAKOUT'?'green':x.state==='HOLD'?'blue':'gold';
+ const sc=['HEDGE WATCH','CALL REJECTION','HULL21 BREAK','HEDGE READY'].includes(x.state)?'red':x.state==='ADD WATCH'||x.state==='BREAKOUT'?'green':x.state==='HOLD'?'blue':'gold';
  const hs=x.slope>0.03?'▲ UP':x.slope<-0.03?'▼ DOWN':'→ FLAT';
  const hc=x.slope>0.03?'green':x.slope<-0.03?'red':'gold';
  return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price">$'+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
