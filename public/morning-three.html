@@ -42,13 +42,14 @@ function render(d){
   card.append(head);
   card.append(node('p','summary',x.headline||'확인된 뉴스 촉매가 없습니다. 섹터와 가격 움직임을 따로 확인하세요.'));
   const facts=node('div','facts');
-  for(const [label,value] of [['PUT WALL · 지지선',fmt(x.put_wall,1)],['CALL WALL · 저항선',fmt(x.call_wall,1)],['갭 / 스프레드',(num(x.spread_pct)===null?'스프레드 미확인':Number(x.spread_pct).toFixed(2)+'%')]]){const box=node('div','fact');box.append(node('small','',label),node('b','',value));facts.append(box)}
+  for(const [label,value] of [['PUT WALL · 지지선',fmt(x.put_wall,1)],['CALL WALL · 저항선',fmt(x.call_wall,1)],['누적 거래량',num(x.volume)===null?'확인 불가':Number(x.volume).toLocaleString('en-US')+'주'],['갭 / 스프레드',(num(x.spread_pct)===null?'스프레드 미확인':Number(x.spread_pct).toFixed(2)+'%')]]){const box=node('div','fact');box.append(node('small','',label),node('b','',value));facts.append(box)}
   card.append(facts);
+  card.append(node('p','muted','거래량: Schwab 누적 거래량이며 프리마켓 전용 거래량이나 상대 거래량은 아닙니다. · 시세 '+stamp(x.quote_time)));
   card.append(node('div','observe','오늘 확인할 조건: '+(x.observe||'가격 반응과 거래량 확인')));
   if(Array.isArray(x.risks)&&x.risks.length)card.append(node('p','risks','주의: '+x.risks.join(' · ')));
   const source=node('div','source','뉴스: ');
   const url=safeUrl(x.news_url);
-  if(url){const a=node('a','',x.reason||'뉴스 원문 확인');a.href=url;a.target='_blank';a.rel='noopener noreferrer';source.append(a)}else source.append(node('span','','연결된 원문 없음 · 촉매 직접 확인 필요'));
+  if(url){const a=node('a','',x.reason||'뉴스 원문 확인');a.href=url;a.target='_blank';a.rel='noopener noreferrer';source.append(a);source.append(node('span','',' · 발표 '+stamp(x.news_time)))}else source.append(node('span','',x.news_status==='not_configured'?'Finnhub 뉴스 키 미설정 · 촉매 직접 확인 필요':'연결된 원문 없음 · 촉매 직접 확인 필요'));
   source.append(node('span','',' · 옵션 데이터 및 시세의 개별 기준 시각은 상세 화면에서 재확인'));
   card.append(source);
   const actions=node('div','actions');
