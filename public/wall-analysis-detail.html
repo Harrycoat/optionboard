@@ -2,7 +2,7 @@
 <html lang="ko">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wall 분석 | GEXOption</title>
 <style>
-:root{--bg:#0a0d12;--panel:#10141b;--panel2:#151a22;--line:#263041;--text:#e7e5df;--muted:#8b93a1;--gold:#e0a838;--green:#55e6b5;--red:#ff7278;--blue:#81adff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:900px;margin:auto;padding:22px 18px 60px}.nav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}.nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:7px;background:var(--panel2);font-size:10px;font-weight:800}.hero,.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px;margin-bottom:12px}.hero h1{margin:0;font-size:28px}.hero p{color:var(--muted);font-size:12px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.m{padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px}.m small{display:block;color:var(--muted);font-size:9px}.m b{display:block;margin-top:5px;font-size:18px}.rail{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--green) 50%,var(--red));margin:52px 12px 48px}.pt{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--bg)}.pt span{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:900;text-align:center}.pt.put span,.pt.call span{bottom:18px}.pt.spot span{top:18px}.guide{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.g{padding:11px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}.g b{display:block;font-size:11px}.g span{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.45}.state{font-size:20px;font-weight:900}.copy{margin-top:8px;color:#c7d3df;font-size:13px;line-height:1.7}.note{color:var(--muted);font-size:10px;line-height:1.6}.loading{color:var(--muted)}
+:root{--bg:#0a0d12;--panel:#10141b;--panel2:#151a22;--line:#263041;--text:#e7e5df;--muted:#8b93a1;--gold:#e0a838;--green:#55e6b5;--red:#ff7278;--blue:#81adff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:900px;margin:auto;padding:22px 18px 60px}.nav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}.nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:7px;background:var(--panel2);font-size:10px;font-weight:800}.hero,.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px;margin-bottom:12px}.hero h1{margin:0;font-size:28px}.hero p{color:var(--muted);font-size:12px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.m{padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px}.m small{display:block;color:var(--muted);font-size:9px}.m b{display:block;margin-top:5px;font-size:18px}.rail{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--green) 50%,var(--red));margin:52px 12px 48px}.pt{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--bg)}.pt span{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:900;text-align:center}.pt.put span,.pt.call span{bottom:18px}.pt.spot span{top:18px}.guide{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.g{padding:11px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}.g b{display:block;font-size:11px}.g span{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.45}.state{font-size:20px;font-weight:900}.copy{margin-top:8px;color:#c7d3df;font-size:13px;line-height:1.7}.blog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.blog-head h2{margin:0;font-size:17px}.copybtn{border:1px solid var(--gold);border-radius:7px;background:rgba(224,168,56,.08);color:var(--gold);padding:8px 10px;font-size:10px;font-weight:900;cursor:pointer}.blog-copy{white-space:pre-line;color:#c7d3df;font-size:13px;line-height:1.85}.note{color:var(--muted);font-size:10px;line-height:1.6}.loading{color:var(--muted)}
 @media(max-width:650px){.metrics,.guide{grid-template-columns:1fr 1fr}.hero h1{font-size:23px}}
 </style></head>
 <body><div class="wrap">
@@ -16,6 +16,7 @@ const t=(new URLSearchParams(location.search).get('ticker')||'NVDA').toUpperCase
 function wma(a,n){if(a.length<n)return null;let s=0,w=0;for(let i=0;i<n;i++){const z=i+1;s+=a[a.length-n+i]*z;w+=z}return s/w}
 function hull(a,n=21){const half=Math.floor(n/2),root=Math.max(1,Math.round(Math.sqrt(n))),raw=[],out=[];for(let i=0;i<a.length;i++){const x=a.slice(0,i+1),u=wma(x,half),v=wma(x,n);raw.push(u!=null&&v!=null?2*u-v:null);const r=raw.filter(x=>x!=null);out.push(r.length>=root?wma(r,root):null)}return out}
 function pos(v,min,max){return Math.max(3,Math.min(97,(v-min)/(max-min)*100))}
+function showFallbackCopy(text){const a=document.createElement('textarea');a.value=text;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();const b=document.getElementById('copyBlogBtn');if(b){b.textContent='✓ 복사됨';setTimeout(()=>b.textContent='📋 글 복사',1400)}}
 Promise.all([
  fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()),
  fetch('/api/search?mode=massive_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json())
@@ -24,16 +25,59 @@ Promise.all([
  const spot=bars.length?Number(bars.at(-1).close):Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall);
  if(![spot,put,call].every(Number.isFinite))throw new Error('data');
  const lo=Math.min(put,spot),hi=Math.max(call,spot),pad=Math.max((hi-lo)*.15,1),min=lo-pad,max=hi+pad;
- let state='Wall 사이 관찰',copy='현재가는 지지선과 저항선 사이에 있습니다. HULL21 방향과 거래량 변화를 함께 확인합니다.';
- if(spot<put){state='지지선 이탈 관찰';copy='현재가가 Put Wall(지지선) 아래에 있습니다. 변동성 확대 여부와 지지선 회복을 관찰합니다.'}
- else if(spot>=call){state='저항선 돌파 후 지지 전환 확인';copy='현재가가 Call Wall(저항선) 위에 있습니다. 돌파한 가격대가 새로운 지지선으로 전환되는지 확인합니다.'}
- else if((call-spot)/spot*100<=1.5){state='저항선 근접';copy='현재가가 Call Wall(저항선)에 가까워졌습니다. 저항 반응 또는 돌파 여부를 확인합니다.'}
- else if((spot-put)/spot*100<=2){state='지지선 근접';copy='현재가가 Put Wall(지지선)에 가까워졌습니다. 지지 유지와 반등 여부를 확인합니다.'}
+ let state='Wall 사이 관찰',copy='현재가는 Put Wall(지지선)과 Call Wall(저항선) 사이에 있습니다. 이 구간에서는 한쪽 Wall에 가까워질수록 가격 반응이 중요해집니다. HULL21 방향과 5분 거래량이 함께 강해지는지 확인하면 단순한 가격 접근인지 실제 추세 전환인지 구분하는 데 도움이 됩니다.';
+ if(spot<put){
+   state='지지선 이탈 관찰';
+   copy='현재가가 Put Wall(지지선) 아래로 내려왔습니다. 지지선 이탈 이후에는 가격 변동이 커질 수 있으므로 지지선 회복 여부와 HULL21 방향을 함께 확인합니다. 특히 HULL21이 하락하고 거래량이 증가한다면 하락 압력이 이어지는지 관찰할 필요가 있습니다. 반대로 가격이 다시 Put Wall 위로 회복하고 HULL21이 상승으로 돌아선다면 지지선 회복 신호로 볼 수 있습니다.';
+ }
+ else if(spot>=call){
+   state='저항선 돌파 후 지지 전환 확인';
+   copy='현재가가 Call Wall(저항선)을 돌파했습니다. 중요한 것은 돌파 자체보다 돌파한 가격대가 새로운 지지선으로 전환되는지 여부입니다. 가격이 Call Wall 위에서 유지되고 HULL21이 상승하며 거래량이 뒷받침되면 추세 지속 가능성을 관찰할 수 있습니다. 반대로 다시 Call Wall 아래로 밀리면 돌파 실패 또는 저항 재확인 구간이 될 수 있습니다.';
+ }
+ else if((call-spot)/spot*100<=1.5){
+   state='저항선 근접';
+   copy='현재가가 Call Wall(저항선)에 가까워지고 있습니다. 이 구간에서는 두 가지 흐름을 구분해서 봅니다. 첫째, 저항선 부근에서 거래량이 줄고 가격이 밀리면 저항 반응이 나타나는지 확인합니다. 둘째, 거래량이 증가하면서 5분봉이 Call Wall 위에서 유지되면 돌파 가능성을 관찰합니다. 돌파 후에는 Call Wall이 새로운 지지선으로 바뀌는지가 다음 핵심 포인트입니다.';
+ }
+ else if((spot-put)/spot*100<=2){
+   state='지지선 근접';
+   copy='현재가가 Put Wall(지지선) 부근에 접근했습니다. 이 구간에서는 단순히 가격이 닿았다는 이유보다 실제 지지 반응이 나타나는지가 중요합니다. 가격이 Put Wall 위에서 유지되고 거래량이 회복되며 HULL21이 상승으로 전환되면 반등 흐름을 관찰할 수 있습니다. 반대로 Put Wall 아래에서 머물고 HULL21도 하락하면 지지선 이탈 가능성을 확인합니다.';
+ }
  const slope=s>0.03?'▲ 상승':s<-0.03?'▼ 하락':'→ 보합';
+ const callGap=((call-spot)/spot*100);
+ const putGap=((spot-put)/spot*100);
+ const blogTitle=t+' 오늘의 Wall 분석 — '+state;
+ const blogText=
+`${t} 오늘의 Wall 분석
+
+현재가: ${fmt(spot)}
+Put Wall(지지선): ${fmt(put,1)}
+Call Wall(저항선): ${fmt(call,1)}
+HULL21: ${slope} ${fmt(h)}
+
+현재 상태
+${copy}
+
+오늘 확인할 포인트
+• 현재가에서 Call Wall까지: ${Math.abs(callGap).toFixed(2)}%
+• 현재가에서 Put Wall까지: ${Math.abs(putGap).toFixed(2)}%
+• HULL21 방향: ${slope}
+• 저항선에서는 저항 반응과 돌파 여부를 구분해서 관찰합니다.
+• 저항선 돌파 후에는 기존 Call Wall이 지지선으로 전환되는지 확인합니다.
+• 지지선 이탈 시에는 변동성 확대 여부와 Put Wall 회복 여부를 함께 확인합니다.
+
+GEXOption의 Wall 분석은 Put Wall을 지지선, Call Wall을 저항선 관점으로 단순화해 현재 가격의 위치를 이해하는 데 초점을 둡니다. Wall 하나만으로 판단하기보다 HULL21 방향과 거래량 변화를 함께 보는 것이 중요합니다.
+
+※ 본 내용은 시장 관찰 및 교육 목적이며 특정 매매를 권유하지 않습니다.`;
  document.getElementById('content').className='';
  document.getElementById('content').innerHTML=
  '<section class="card"><div class="metrics"><div class="m"><small>현재가</small><b>$'+fmt(spot)+'</b></div><div class="m"><small>PUT WALL · 지지선</small><b style="color:var(--blue)">$'+fmt(put,1)+'</b></div><div class="m"><small>CALL WALL · 저항선</small><b style="color:var(--red)">$'+fmt(call,1)+'</b></div><div class="m"><small>HULL21</small><b style="color:var(--green)">'+slope+' '+fmt(h)+'</b></div></div><div class="rail"><i class="pt put" style="left:'+pos(put,min,max)+'%;background:var(--blue)"><span style="color:var(--blue)">지지선<br>$'+fmt(put,1)+'</span></i><i class="pt spot" style="left:'+pos(spot,min,max)+'%;background:white"><span>현재가<br>$'+fmt(spot)+'</span></i><i class="pt call" style="left:'+pos(call,min,max)+'%;background:var(--red)"><span style="color:var(--red)">저항선<br>$'+fmt(call,1)+'</span></i></div><div class="guide"><div class="g"><b style="color:var(--blue)">지지선 반등</b><span>지지 유지와 반등 관찰</span></div><div class="g"><b style="color:var(--gold)">지지선 이탈</b><span>변동성 확대와 헤지 필요성 관찰</span></div><div class="g"><b style="color:var(--red)">저항선 접근</b><span>저항 또는 돌파 여부 관찰</span></div><div class="g"><b style="color:var(--green)">돌파 후 지지</b><span>저항선→지지선 전환 여부 확인</span></div></div></section>'+
  '<section class="card"><div class="state">'+state+'</div><div class="copy">'+copy+'</div></section>'+
+ '<section class="card"><div class="blog-head"><h2>블로그용 해설</h2><button class="copybtn" id="copyBlogBtn" type="button">📋 글 복사</button></div><div class="blog-copy" id="blogCopy"></div></section>'+
  '<div class="note">5분봉 기반 가격 데이터는 약 15분 지연될 수 있습니다. 본 내용은 교육 및 시장 관찰용이며 투자 판단은 사용자가 직접 결정해야 합니다.</div>';
+ document.getElementById('blogCopy').textContent=blogText;
+ document.getElementById('copyBlogBtn').onclick=async()=>{
+   try{await navigator.clipboard.writeText(blogText);document.getElementById('copyBlogBtn').textContent='✓ 복사됨';setTimeout(()=>document.getElementById('copyBlogBtn').textContent='📋 글 복사',1400)}
+   catch(e){showFallbackCopy(blogText)}
+ };
 }).catch(()=>{document.getElementById('content').innerHTML='<section class="card">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</section>'});
 </script></body></html>
