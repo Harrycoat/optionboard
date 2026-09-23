@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <div><div class="brand">LIVE MONITOR</div><div class="sub">관심종목 실시간 감시 · Price · Call/Put Wall · HULL21 · Volume Trend</div></div>
+    <div><div class="brand">LIVE MONITOR <span style="font-size:11px;color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:4px 7px;vertical-align:middle;">15 MIN DELAYED</span></div><div class="sub">회원 모니터링 · 15 MIN DELAY · Price · Call/Put Wall · HULL21 · Volume Trend</div></div>
     <div class="nav">
       <a href="/premarket-scanner.html">PREMARKET</a>
       <a href="/option-swing-scanner.html">REGULAR MARKET</a>
@@ -125,7 +125,7 @@ function wallHtml(put,spot,call){
 async function fetchOne(t){
  const [sumR,intraR]=await Promise.all([
    fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),
-   fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
+   fetch('/api/search?mode=massive_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
  ]);
  const bars=intraR.bars||[];
  const closes=bars.map(x=>Number(x.close)).filter(Number.isFinite);
@@ -134,7 +134,7 @@ async function fetchOne(t){
  const hp=hs.length>1?hs[hs.length-2]:null;
  const slope=(h!=null&&hp!=null&&hp!==0)?(h-hp)/hp*100:0;
  const vol=volumeState(bars);
- const spot=sumR.spot!=null?Number(sumR.spot):(bars.length?Number(bars[bars.length-1].close):null);
+ const spot=bars.length?Number(bars[bars.length-1].close):(sumR.spot!=null?Number(sumR.spot):null);
  return {ticker:t,spot,change:sumR.price_change_pct,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,state:signal(spot,sumR.put_wall,sumR.call_wall,slope,vol,bars,h)};
 }
 function row(x,i){
@@ -167,7 +167,7 @@ async function refresh(){
    done++;
  }));
  await Promise.allSettled(jobs);
- $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · Schwab 5M volume';
+ $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · 15 MIN DELAYED DATA';
 }
 $('addBtn').onclick=()=>{
  const t=clean($('tickerInput').value);
