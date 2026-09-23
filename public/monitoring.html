@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <div><div class="brand">LIVE MONITOR <span style="font-size:11px;color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:4px 7px;vertical-align:middle;">15 MIN DELAYED</span></div><div class="sub">회원 모니터링 · 15 MIN DELAY · Price · Call/Put Wall · HULL21 · Volume Trend</div></div>
+    <div><div class="brand">LIVE MONITOR <span style="font-size:11px;color:var(--green);border:1px solid var(--green);border-radius:999px;padding:4px 7px;vertical-align:middle;">SCHWAB LIVE QUOTES</span></div><div class="sub">회원 모니터링 · Schwab 시세/5분봉 · 옵션 Wall은 별도 데이터 · HULL21 · Volume Trend</div></div>
     <div class="nav">
       <a href="/">HOME</a>
       <a href="/premarket-scanner.html">PREMARKET</a>
@@ -127,11 +127,13 @@ function wallHtml(put,spot,call){
  const pos=v=>Math.max(3,Math.min(97,(v-min)/(max-min)*100));
  return '<div><div class="wall"><i class="dot" style="left:'+pos(spot)+'%"></i></div><div class="wallmeta"><span>Put '+fmt(put,1)+'</span><span>'+fmt(spot,2)+'</span><span>Call '+fmt(call,1)+'</span></div><div class="wallguide"><span class="put">풋월 반등 · 보유</span><span class="risk">풋월 이탈 · 헤지</span><span class="call">콜월 접근 · 저항</span><span class="reup">돌파 후 지지 · 재매수</span></div></div>';
 }
-async function fetchOne(t){
+async function fetchOne(t,quote){
+ if(!quote||quote.error||quote.last==null||!Number.isFinite(Number(quote.last)))throw new Error('Schwab quote unavailable for '+t);
  const [sumR,intraR]=await Promise.all([
    fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),
-   fetch('/api/search?mode=massive_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
+   fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
  ]);
+ if(intraR.error)throw new Error(intraR.error);
  const bars=intraR.bars||[];
  const closes=bars.map(x=>Number(x.close)).filter(Number.isFinite);
  const hs=hullSeries(closes,21);
@@ -139,14 +141,14 @@ async function fetchOne(t){
  const hp=hs.length>1?hs[hs.length-2]:null;
  const slope=(h!=null&&hp!=null&&hp!==0)?(h-hp)/hp*100:0;
  const vol=volumeState(bars);
- const spot=bars.length?Number(bars[bars.length-1].close):(sumR.spot!=null?Number(sumR.spot):null);
- return {ticker:t,spot,change:sumR.price_change_pct,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,state:signal(spot,sumR.put_wall,sumR.call_wall,slope,vol,bars,h)};
+ const spot=Number(quote.last);
+ return {ticker:t,spot,change:quote.net_percent_change,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,quoteRealtime:quote.realtime===true,quoteTime:quote.quote_time||quote.trade_time,hasBars:bars.length>0,state:bars.length?signal(spot,sumR.put_wall,sumR.call_wall,slope,vol,bars,h):'QUOTE ONLY'};
 }
 function row(x,i){
  const sc=['HEDGE WATCH','CALL REJECTION','HULL21 BREAK','HEDGE READY'].includes(x.state)?'red':x.state==='ADD WATCH'||x.state==='BREAKOUT'?'green':x.state==='HOLD'?'blue':'gold';
  const hs=x.slope>0.03?'▲ UP':x.slope<-0.03?'▼ DOWN':'→ FLAT';
  const hc=x.slope>0.03?'green':x.slope<-0.03?'red':'gold';
- return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price">$'+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
+ return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price" title="Schwab 시세 · '+(x.quoteRealtime?'실시간 표기':'실시간 여부 미확인')+'"><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
 }
 function loadingRow(t,i){
  return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+t+'</span><span class="status">loading…</span><span>—</span><span>—</span><span class="status">loading…</span><span>—</span><span>—</span><span>—</span><span>—</span><button class="delbtn" data-remove="'+t+'">X</button></div>';
@@ -160,19 +162,103 @@ async function refresh(){
  }
  $('status').textContent='Updating '+list.length+' stocks…';
  $('board').innerHTML=list.map(loadingRow).join('');
- let done=0;
- const jobs=list.map((t,i)=>fetchOne(t).then(x=>{
+ let quotes={};
+ try{
+   const chunks=[];
+   for(let i=0;i<list.length;i+=5)chunks.push(list.slice(i,i+5));
+   const batches=await Promise.all(chunks.map(a=>fetch('/api/search?mode=schwab_quote&symbols='+encodeURIComponent(a.join(',')),{cache:'no-store'}).then(r=>r.json())));
+   for(const b of batches){
+     if(b.error)throw new Error(b.error);
+     Object.assign(quotes,b.quotes||{});
+   }
+ }catch(e){
+   $('status').textContent='Schwab 시세 연결 오류: '+e.message;
+   $('board').innerHTML='<div class="empty">Schwab 데이터를 불러오지 못했습니다. 지연 시세로 대체하지 않습니다. REFRESH를 눌러 다시 시도해주세요.</div>';
+   return;
+ }
+ let done=0,fail=0,delayed=0;
+ const jobs=list.map((t,i)=>fetchOne(t,quotes[t]).then(x=>{
    const el=document.getElementById('row-'+i);
    if(el)el.outerHTML=row(x,i);
+   if(!x.quoteRealtime)delayed++;
    done++;
    $('status').textContent='Updated '+done+'/'+list.length+' stocks…';
- }).catch(()=>{
+ }).catch((err)=>{
    const el=document.getElementById('row-'+i);
-   if(el)el.querySelector('.status').textContent='data error';
-   done++;
+   if(el)el.querySelector('.status').textContent='Schwab data error';
+   fail++;done++;
  }));
  await Promise.allSettled(jobs);
- $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · 15 MIN DELAYED DATA';
+ $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · Schwab quotes'+(delayed?' · '+delayed+'개 실시간 여부 미확인':'')+(fail?' · '+fail+'개 오류':'')+' · 옵션 Wall 별도 갱신';
+}
+$('addBtn').onclick=()=>{
+ const t=clean($('tickerInput').value);
+ if(!t)return;
+ if(window.GexWatchlist&&window.GexWatchlist.addMonitor)window.GexWatchlist.addMonitor(t);
+ else if(window.GexWatchlist)window.GexWatchlist.add(t);
+ $('tickerInput').value='';
+ refresh();
+};
+$('refreshBtn').onclick=refresh;
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-remove]');
+ if(!b)return;
+ const t=b.dataset.remove;
+ if(window.GexWatchlist&&window.GexWatchlist.removeMonitor){
+   window.GexWatchlist.removeMonitor(t);
+   refresh();
+ }else if(window.GexWatchlist&&window.GexWatchlist.remove){
+   window.GexWatchlist.remove(t);
+   refresh();
+ }
+});
+window.addEventListener('gex-watchlist-change',refresh);
+window.addEventListener('gex-monitor-list-change',refresh);
+window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
+</script>
+</body>
+</html>+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
+}
+function loadingRow(t,i){
+ return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+t+'</span><span class="status">loading…</span><span>—</span><span>—</span><span class="status">loading…</span><span>—</span><span>—</span><span>—</span><span>—</span><button class="delbtn" data-remove="'+t+'">X</button></div>';
+}
+async function refresh(){
+ const list=getList();
+ if(!list.length){
+   $('board').innerHTML='<div class="empty">관심종목이 없습니다.</div>';
+   $('status').textContent='No monitored stocks';
+   return;
+ }
+ $('status').textContent='Updating '+list.length+' stocks…';
+ $('board').innerHTML=list.map(loadingRow).join('');
+ let quotes={};
+ try{
+   const chunks=[];
+   for(let i=0;i<list.length;i+=5)chunks.push(list.slice(i,i+5));
+   const batches=await Promise.all(chunks.map(a=>fetch('/api/search?mode=schwab_quote&symbols='+encodeURIComponent(a.join(',')),{cache:'no-store'}).then(r=>r.json())));
+   for(const b of batches){
+     if(b.error)throw new Error(b.error);
+     Object.assign(quotes,b.quotes||{});
+   }
+ }catch(e){
+   $('status').textContent='Schwab 시세 연결 오류: '+e.message;
+   $('board').innerHTML='<div class="empty">Schwab 데이터를 불러오지 못했습니다. 지연 시세로 대체하지 않습니다. REFRESH를 눌러 다시 시도해주세요.</div>';
+   return;
+ }
+ let done=0,fail=0,delayed=0;
+ const jobs=list.map((t,i)=>fetchOne(t,quotes[t]).then(x=>{
+   const el=document.getElementById('row-'+i);
+   if(el)el.outerHTML=row(x,i);
+   if(!x.quoteRealtime)delayed++;
+   done++;
+   $('status').textContent='Updated '+done+'/'+list.length+' stocks…';
+ }).catch((err)=>{
+   const el=document.getElementById('row-'+i);
+   if(el)el.querySelector('.status').textContent='Schwab data error';
+   fail++;done++;
+ }));
+ await Promise.allSettled(jobs);
+ $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · Schwab quotes'+(delayed?' · '+delayed+'개 실시간 여부 미확인':'')+(fail?' · '+fail+'개 오류':'')+' · 옵션 Wall 별도 갱신';
 }
 $('addBtn').onclick=()=>{
  const t=clean($('tickerInput').value);
