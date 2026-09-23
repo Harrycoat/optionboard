@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Morning 3 | GEXOption</title>
+<meta name="description" content="Schwab 시세·뉴스·옵션 Wall·섹터 정보를 바탕으로 아침에 확인할 종목을 최대 세 개로 압축한 GEXOption Morning 3.">
+<style>
+:root{--ink:#152724;--green:#08795f;--muted:#60756e;--line:#dce7e3;--bg:#f7faf9;--risk:#ac493e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1060px;margin:auto;padding:25px 20px 65px}.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.brand{font-size:19px;font-weight:900}.links{display:flex;flex-wrap:wrap;gap:7px}.links a{font-size:11px;font-weight:800;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;text-decoration:none}.links a.active{background:var(--green);color:white}.eyebrow{color:var(--green);font-size:11px;font-weight:900;letter-spacing:.13em;margin:38px 0 10px}h1{font-size:clamp(29px,5vw,44px);line-height:1.25;letter-spacing:-.035em;margin:0}p{line-height:1.7}.muted{color:var(--muted);font-size:12px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0}.pill{display:inline-block;border-radius:6px;background:#e5f5ee;color:var(--green);font-size:11px;font-weight:900;padding:7px 10px}button{cursor:pointer;border:0;background:var(--green);color:white;border-radius:8px;padding:11px 16px;font-weight:900}.cards{display:grid;gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 5px 20px rgba(25,60,50,.03)}.card h2{font-size:28px;margin:8px 0}.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.price{font-weight:900;font-size:22px}.gap{font-size:12px;color:var(--green)}.summary{font-size:15px;font-weight:800;line-height:1.5;margin:14px 0}.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.fact{background:#f6f9f8;border:1px solid #e5eeea;padding:11px;border-radius:8px;min-width:0}.fact small{display:block;color:var(--muted);font-size:10px;margin-bottom:7px}.fact b{font-size:13px;overflow-wrap:anywhere}.observe{margin:13px 0;padding:13px 15px;border-left:3px solid var(--green);background:#f2faf6;font-size:13px;line-height:1.65}.risks{font-size:11px;color:var(--risk);margin:9px 0}.source{color:var(--muted);font-size:11px;overflow-wrap:anywhere}.source a{color:#176d8b}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.actions a{background:var(--green);color:white;text-decoration:none;border-radius:8px;padding:11px 13px;font-weight:900;font-size:12px}.actions a.secondary{background:#e8f2ee;color:#126852}.empty{padding:28px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--muted)}.foot{border-top:1px solid var(--line);margin-top:22px;padding-top:16px;color:var(--muted);font-size:11px;line-height:1.7}
+@media(max-width:650px){.wrap{padding:17px 13px 45px}.card{padding:15px}.facts{grid-template-columns:1fr}.top{align-items:flex-start}.price{font-size:20px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="nav"><div class="brand">GEXOPTION</div><nav class="links" aria-label="페이지"><a href="/">HOME</a><a class="active" href="/morning-three.html">MORNING 3</a><a href="/monitoring.html">LIVE MONITOR</a><a href="/trade-tracker.html">TRADE TRACKER</a></nav></header>
+<div class="eyebrow">MORNING RADAR / 01</div>
+<h1>아침에는<br>세 종목이면 충분합니다.</h1>
+<p class="muted">현재 연결된 시세·뉴스·섹터·옵션 구조를 확인해 관찰 후보를 최대 3개만 표시합니다. 거래를 권유하거나 자동으로 주문하지 않습니다.</p>
+<div class="top"><div><span id="state" class="pill">조회 중</span><div id="stamp" class="muted" style="margin-top:8px">데이터 기준 시각 확인 중</div></div><button id="refresh" type="button">다시 분석</button></div>
+<div id="cards" class="cards" aria-live="polite"><div class="empty">Schwab 시세, 뉴스 및 옵션 구조를 확인하고 있습니다…</div></div>
+<div class="foot">가격은 Schwab, 뉴스는 연결된 Finnhub, 옵션 레벨은 GEXOption 옵션 엔진 기준입니다. 공급자별 데이터 갱신 시각이 다를 수 있습니다. 제공 범위는 사이트의 유동성 중심 종목군이며 미국 전체 상장주를 망라하지 않습니다. 점수는 근거 압축용이지 수익률·승률이나 매수 추천 점수가 아닙니다.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const num=v=>v===null||v===undefined||v===''||!Number.isFinite(Number(v))?null:Number(v);
+const fmt=(v,d=2)=>num(v)===null?'—':'$'+num(v).toLocaleString('en-US',{maximumFractionDigits:d});
+const safeUrl=u=>{try{const x=new URL(u);return x.protocol==='https:'?x.href:null}catch(_){return null}};
+const stamp=v=>{if(!v)return '기준 시각 미확인';const d=new Date(typeof v==='number'&&v<1e11?v*1000:v);return Number.isNaN(d.getTime())?'기준 시각 미확인':d.toLocaleString('ko-KR')};
+function node(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function render(d){
+ const rows=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];
+ $('state').textContent=rows.length===3?'관찰 후보 3개':rows.length?rows.length+'개 · 나머지는 관망':'관망 우위 · 기준 충족 후보 없음';
+ $('stamp').textContent='분석 생성 '+stamp(d.generated_at)+' · 화면을 다시 열거나 다시 분석을 눌러 최신 데이터 확인';
+ $('cards').replaceChildren();
+ if(!rows.length){$('cards').append(node('div','empty','현재 확인 가능한 근거와 유동성 기준을 충족한 후보가 없습니다. 강제로 3종목을 채우지 않습니다.'));return}
+ for(let i=0;i<rows.length;i++){
+  const x=rows[i],card=node('article','card'),head=node('div','card-head'),left=node('div');
+  left.append(node('span','pill','후보 '+(i+1)+' · 관찰용'));
+  left.append(node('h2','',x.ticker||'티커 미확인'));
+  left.append(node('div','muted',x.sector||'섹터 확인 중'));
+  head.append(left);
+  const price=node('div','price',fmt(x.spot));price.append(node('div','gap',num(x.gap_pct)===null?'등락률 확인 중':(x.gap_pct>=0?'+':'')+Number(x.gap_pct).toFixed(2)+'% · 전일 종가 대비'));head.append(price);
+  card.append(head);
+  card.append(node('p','summary',x.headline||'확인된 뉴스 촉매가 없습니다. 섹터와 가격 움직임을 따로 확인하세요.'));
+  const facts=node('div','facts');
+  for(const [label,value] of [['PUT WALL · 지지선',fmt(x.put_wall,1)],['CALL WALL · 저항선',fmt(x.call_wall,1)],['갭 / 스프레드',(num(x.spread_pct)===null?'스프레드 미확인':Number(x.spread_pct).toFixed(2)+'%')]]){const box=node('div','fact');box.append(node('small','',label),node('b','',value));facts.append(box)}
+  card.append(facts);
+  card.append(node('div','observe','오늘 확인할 조건: '+(x.observe||'가격 반응과 거래량 확인')));
+  if(Array.isArray(x.risks)&&x.risks.length)card.append(node('p','risks','주의: '+x.risks.join(' · ')));
+  const source=node('div','source','뉴스: ');
+  const url=safeUrl(x.news_url);
+  if(url){const a=node('a','',x.reason||'뉴스 원문 확인');a.href=url;a.target='_blank';a.rel='noopener noreferrer';source.append(a)}else source.append(node('span','','연결된 원문 없음 · 촉매 직접 확인 필요'));
+  source.append(node('span','',' · 옵션 데이터 및 시세의 개별 기준 시각은 상세 화면에서 재확인'));
+  card.append(source);
+  const actions=node('div','actions');
+  const tracker=node('a','','5분봉 상세 보기 →');tracker.href='/trade-tracker.html?ticker='+encodeURIComponent(x.ticker||'');actions.append(tracker);
+  const live=node('a','secondary','Live Monitor 열기 →');live.href='/monitoring.html';actions.append(live);
+  card.append(actions);$('cards').append(card);
+ }
+}
+async function load(){
+ $('refresh').disabled=true;$('state').textContent='분석 중';$('cards').replaceChildren(node('div','empty','시세·뉴스·옵션 구조를 확인하고 있습니다…'));
+ try{const r=await fetch('/api/search?mode=morning_three',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(d.error)throw Error(d.error);render(d)}
+ catch(e){$('state').textContent='데이터 조회 실패';$('stamp').textContent='서버 상태 또는 데이터 공급자를 확인하세요.';$('cards').replaceChildren(node('div','empty','Morning 3 데이터를 가져오지 못했습니다. 지연된 이전 값을 현재값처럼 표시하지 않습니다. 다시 분석을 눌러주세요.'))}
+ finally{$('refresh').disabled=false}
+}
+$('refresh').addEventListener('click',load);load();
+</script>
+</body></html>
