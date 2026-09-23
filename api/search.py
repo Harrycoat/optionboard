@@ -1617,6 +1617,25 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(_schwab_quote(ticker), ensure_ascii=False).encode())
             return
 
+        if mode == "massive_intraday":
+            ticker = (query.get("ticker", [""])[0]).strip().upper()
+            if not ticker or len(ticker) > 10 or not ticker.replace("-", "").replace(".", "").isalnum():
+                self.wfile.write(json.dumps({"error": "올바른 미국 주식 티커가 필요합니다."}, ensure_ascii=False).encode())
+                return
+            try:
+                bars = _latest_regular_session_bars(_intraday_five_minute_bars(ticker))
+                self.wfile.write(json.dumps({
+                    "ticker": ticker,
+                    "bars": bars[-120:],
+                    "source": "Massive delayed stock API",
+                    "realtime": False,
+                    "delay_minutes": 15,
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                }, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
+            return
+
         if mode == "schwab_intraday":
             ticker = (query.get("ticker", [""])[0]).strip().upper()
             if not ticker or len(ticker) > 10 or not ticker.replace("-", "").replace(".", "").isalnum():
