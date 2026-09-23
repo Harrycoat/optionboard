@@ -814,6 +814,204 @@ def _premarket_scan(limit=16, min_gap=1.0):
     }
 
 
+def _morning_three():
+    """Return up to three evidence-backed morning watch candidates.
+
+    This is a market-observation shortlist, not a personalized buy/sell recommendation.
+    It intentionally returns fewer than three names when evidence or liquidity is weak.
+    """
+    scan = _premarket_scan(limit=12, min_gap=0.5)
+    movers = list(scan.get("movers") or [])
+    market = _fetch_cnn_fear_greed()
+
+    prelim = []
+    for item in movers:
+        bid = item.get("bid")
+        ask = item.get("ask")
+        spot = item.get("spot")
+        try:
+            bid = float(bid) if bid is not None else None
+            ask = float(ask) if ask is not None else None
+            spot = float(spot)
+        except (TypeError, ValueError):
+            continue
+
+        spread_pct = None
+        if bid is not None and ask is not None and bid > 0 and ask >= bid:
+            mid = (bid + ask) / 2.0
+            if mid > 0:
+                spread_pct = (ask - bid) / mid * 100.0
+
+        reason = str(item.get("reason") or "")
+        headline = str(item.get("headline") or "")
+        has_catalyst = bool(headline and reason not in ("MOMENTUM / CHECK NEWS", ""))
+        sector_count = int(item.get("sector_positive_count") or 0)
+        sector_support = reason == "SECTOR MOVE" or sector_count >= 2
+
+        # Product plan exclusion rule: weak/unclear catalyst and excessive spreads do not
+        # get forced into the top-three list.
+        if spread_pct is not None and spread_pct > 1.0:
+            continue
+        if not has_catalyst and not sector_support:
+            continue
+
+        catalyst_score = 30 if has_catalyst else 18
+        if reason == "OFFERING":
+            catalyst_score = 20
+
+        if spread_pct is None:
+            liquidity_score = 12
+        elif spread_pct <= 0.15:
+            liquidity_score = 25
+        elif spread_pct <= 0.35:
+            liquidity_score = 21
+        elif spread_pct <= 0.60:
+            liquidity_score = 16
+        else:
+            liquidity_score = 10
+
+        gap = float(item.get("gap_pct") or 0)
+        if 1.5 <= gap <= 8.0:
+            price_score = 20
+        elif 0.5 <= gap < 1.5:
+            price_score = 15
+        elif 8.0 < gap <= 12.0:
+            price_score = 13
+        else:
+            price_score = 8
+
+        if sector_count >= 3:
+            sector_score = 10
+        elif sector_count >= 2:
+            sector_score = 8
+        elif (item.get("sector_avg_gap_pct") or 0) > 0:
+            sector_score = 5
+        else:
+            sector_score = 2
+
+        prelim.append({
+            **item,
+            "spread_pct": spread_pct,
+            "score_parts": {
+                "catalyst": catalyst_score,
+                "liquidity": liquidity_score,
+                "price_structure": price_score,
+                "options_structure": 0,
+                "market_sector": sector_score,
+            },
+            "_pre_score": catalyst_score + liquidity_score + price_score + sector_score,
+        })
+
+    prelim.sort(key=lambda x: (x["_pre_score"], x.get("gap_pct") or 0), reverse=True)
+    finalists = []
+
+    # Options analysis is intentionally limited to the strongest preliminary names
+    # so the serverless request remains bounded.
+    for item in prelim[:5]:
+        ticker = item["ticker"]
+        option_score = 0
+        call_wall = put_wall = gamma_flip = expiry = None
+        option_state = "unavailable"
+        try:
+            opt = analyze_ticker_cached(ticker, ttl=300, skip_stage=True)
+            call_wall = opt.get("call_wall")
+            put_wall = opt.get("put_wall")
+            gamma_flip = opt.get("gamma_flip")
+            expiry = opt.get("expiry_used")
+            option_state = "available"
+            option_score = 8
+            spot = float(item["spot"])
+            distances = []
+            for level in (call_wall, put_wall, gamma_flip):
+                try:
+                    level = float(level)
+                    if spot > 0:
+                        distances.append(abs(level - spot) / spot * 100.0)
+                except (TypeError, ValueError):
+                    pass
+            if distances and min(distances) <= 3.0:
+                option_score = 15
+            elif distances and min(distances) <= 6.0:
+                option_score = 12
+        except Exception:
+            option_state = "unavailable"
+
+        item["score_parts"]["options_structure"] = option_score
+        total = sum(item["score_parts"].values())
+        risks = []
+        if (item.get("gap_pct") or 0) > 8:
+            risks.append("갭 확대")
+        if item.get("spread_pct") is None:
+            risks.append("스프레드 확인 필요")
+        elif item["spread_pct"] > 0.35:
+            risks.append("스프레드 주의")
+        if not item.get("news_url") and item.get("reason") != "SECTOR MOVE":
+            risks.append("원문 촉매 링크 없음")
+        if option_state != "available":
+            risks.append("옵션 구조 확인 필요")
+
+        spot = float(item["spot"])
+        observe = "5분봉과 거래량으로 가격 반응 확인"
+        try:
+            cw = float(call_wall) if call_wall is not None else None
+            pw = float(put_wall) if put_wall is not None else None
+            if cw is not None and spot >= cw:
+                observe = "Call Wall 돌파 후 지지 전환 여부 확인"
+            elif cw is not None and abs(cw - spot) / spot * 100 <= 2.0:
+                observe = "Call Wall 저항 반응 또는 돌파 여부 확인"
+            elif pw is not None and abs(spot - pw) / spot * 100 <= 2.0:
+                observe = "Put Wall 지지 유지와 반등 여부 확인"
+        except Exception:
+            pass
+
+        finalists.append({
+            "ticker": ticker,
+            "description": item.get("description"),
+            "sector": item.get("sector"),
+            "spot": item.get("spot"),
+            "gap_pct": item.get("gap_pct"),
+            "volume": item.get("volume"),
+            "spread_pct": item.get("spread_pct"),
+            "reason": item.get("reason"),
+            "headline": item.get("headline"),
+            "news_url": item.get("news_url"),
+            "news_time": item.get("news_time"),
+            "call_wall": call_wall,
+            "put_wall": put_wall,
+            "gamma_flip": gamma_flip,
+            "expiry_used": expiry,
+            "score": total,
+            "score_parts": item["score_parts"],
+            "observe": observe,
+            "risks": risks,
+            "quote_realtime": item.get("realtime"),
+        })
+
+    finalists.sort(key=lambda x: x["score"], reverse=True)
+    top = finalists[:3]
+    return {
+        "count": len(top),
+        "candidates": top,
+        "market_state": "관망 우위" if len(top) < 3 else "후보 3개 압축",
+        "method": {
+            "catalyst": 30,
+            "liquidity": 25,
+            "price_structure": 20,
+            "options_structure": 15,
+            "market_sector": 10,
+        },
+        "market_context": market,
+        "sources": {
+            "price": scan.get("price_source"),
+            "news": scan.get("news_source"),
+            "options": "GEXOption options engine",
+        },
+        "scope": "Focused liquid-growth universe; not the entire U.S. market.",
+        "note": "정보 제공용 아침 후보 압축입니다. 자동 주문 또는 개인화된 매수·매도 권고가 아닙니다.",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 def _sector_rotation_scan(top_n=2):
     """Rank fixed sector ETFs, then split top-sector stocks into day momentum and swing pullback lists."""
     top_n = max(1, min(int(top_n), 4))
@@ -1550,6 +1748,14 @@ class handler(BaseHTTPRequestHandler):
 
         if mode == "fear_greed":
             self.wfile.write(json.dumps(_fetch_cnn_fear_greed(), ensure_ascii=False).encode())
+            return
+
+        if mode == "morning_three":
+            try:
+                result = _morning_three()
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
             return
 
         if mode == "premarket_scan":
