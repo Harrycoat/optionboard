@@ -52,25 +52,29 @@
 const $=id=>document.getElementById(id);
 const fmt=(v,d=2)=>v==null?'—':Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
 const clean=v=>String(v||'').trim().toUpperCase().replace(/[^A-Z0-9.\-]/g,'').slice(0,12);
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const FALLBACK=['NVDA','AMD','TSLA','PLTR','AVGO','MU','MRVL','AMZN','BE','INTC'];
+
 function getList(){
  const saved=(window.GexWatchlist&&window.GexWatchlist.list)?window.GexWatchlist.list():[];
  return (saved.length?saved:FALLBACK).slice(0,10);
 }
 function wma(vals,n){
- if(vals.length<n)return null;let s=0,w=0;for(let i=0;i<n;i++){const wt=i+1;s+=vals[vals.length-n+i]*wt;w+=wt}return s/w;
+ if(vals.length<n)return null;
+ let s=0,w=0;
+ for(let i=0;i<n;i++){const wt=i+1;s+=vals[vals.length-n+i]*wt;w+=wt}
+ return s/w;
 }
 function hullSeries(vals,n=21){
- const out=[];const half=Math.floor(n/2),root=Math.max(1,Math.round(Math.sqrt(n)));
+ const out=[],half=Math.floor(n/2),root=Math.max(1,Math.round(Math.sqrt(n)));
  for(let i=0;i<vals.length;i++){
-  const sub=vals.slice(0,i+1),a=wma(sub,half),b=wma(sub,n);
-  if(a==null||b==null){out.push(null);continue}
-  const raw=[];
-  for(let j=Math.max(0,i-root+1);j<=i;j++){
-   const ss=vals.slice(0,j+1),aa=wma(ss,half),bb=wma(ss,n);if(aa!=null&&bb!=null)raw.push(2*aa-bb);
-  }
-  out.push(raw.length>=root?wma(raw,root):null);
+   const sub=vals.slice(0,i+1),a=wma(sub,half),b=wma(sub,n);
+   if(a==null||b==null){out.push(null);continue}
+   const raw=[];
+   for(let j=Math.max(0,i-root+1);j<=i;j++){
+     const ss=vals.slice(0,j+1),aa=wma(ss,half),bb=wma(ss,n);
+     if(aa!=null&&bb!=null)raw.push(2*aa-bb);
+   }
+   out.push(raw.length>=root?wma(raw,root):null);
  }
  return out;
 }
@@ -86,13 +90,13 @@ function volumeState(bars){
 function signal(spot,put,call,hSlope,vol){
  if(spot==null)return 'WATCH';
  if(call!=null){
-  const dc=(call-spot)/spot*100;
-  if(spot>call)return 'BREAKOUT';
-  if(Math.abs(dc)<=1.5 && hSlope<0)return 'HEDGE WATCH';
+   const dc=(call-spot)/spot*100;
+   if(spot>call)return 'BREAKOUT';
+   if(Math.abs(dc)<=1.5&&hSlope<0)return 'HEDGE WATCH';
  }
  if(put!=null){
-  const dp=(spot-put)/spot*100;
-  if(Math.abs(dp)<=1.5 && hSlope>0 && vol.label.includes('증가'))return 'ADD WATCH';
+   const dp=(spot-put)/spot*100;
+   if(Math.abs(dp)<=1.5&&hSlope>0&&vol.label.includes('증가'))return 'ADD WATCH';
  }
  return 'HOLD';
 }
@@ -104,81 +108,43 @@ function wallHtml(put,spot,call){
 }
 async function fetchOne(t){
  const [sumR,intraR]=await Promise.all([
-  fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),
-  fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
+   fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),
+   fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
  ]);
- const bars=intraR.bars||[], closes=bars.map(x=>Number(x.close)).filter(Number.isFinite), hs=hullSeries(closes,21);
- const h=hs.length?hs[hs.length-1]:null, hp=hs.length>1?hs[hs.length-2]:null, slope=(h!=null&&hp!=null&&hp!==0)?(h-hp)/hp*100:0;
- const vol=volumeState(bars), spot=sumR.spot!=null?Number(sumR.spot):(bars.length?Number(bars[bars.length-1].close):null);
+ const bars=intraR.bars||[];
+ const closes=bars.map(x=>Number(x.close)).filter(Number.isFinite);
+ const hs=hullSeries(closes,21);
+ const h=hs.length?hs[hs.length-1]:null;
+ const hp=hs.length>1?hs[hs.length-2]:null;
+ const slope=(h!=null&&hp!=null&&hp!==0)?(h-hp)/hp*100:0;
+ const vol=volumeState(bars);
+ const spot=sumR.spot!=null?Number(sumR.spot):(bars.length?Number(bars[bars.length-1].close):null);
  return {ticker:t,spot,change:sumR.price_change_pct,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,state:signal(spot,sumR.put_wall,sumR.call_wall,slope,vol)};
 }
 function row(x,i){
  const sc=x.state==='HEDGE WATCH'?'red':x.state==='ADD WATCH'||x.state==='BREAKOUT'?'green':x.state==='HOLD'?'blue':'gold';
  const hs=x.slope>0.03?'▲ UP':x.slope<-0.03?'▼ DOWN':'→ FLAT';
  const hc=x.slope>0.03?'green':x.slope<-0.03?'red':'gold';
- return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price">
-$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
-$('refreshBtn').onclick=refresh;
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-remove]');
- if(!b)return;
- const t=b.dataset.remove;
- if(window.GexWatchlist&&window.GexWatchlist.remove){
-   window.GexWatchlist.remove(t);
-   refresh();
- }
-});
-window.addEventListener('gex-watchlist-change',refresh);
-window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
-</script>
-</body>
-</html>+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'
-$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
-$('refreshBtn').onclick=refresh;
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-remove]');
- if(!b)return;
- const t=b.dataset.remove;
- if(window.GexWatchlist&&window.GexWatchlist.remove){
-   window.GexWatchlist.remove(t);
-   refresh();
- }
-});
-window.addEventListener('gex-watchlist-change',refresh);
-window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
-</script>
-</body>
-</html>+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'
-$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
-$('refreshBtn').onclick=refresh;
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-remove]');
- if(!b)return;
- const t=b.dataset.remove;
- if(window.GexWatchlist&&window.GexWatchlist.remove){
-   window.GexWatchlist.remove(t);
-   refresh();
- }
-});
-window.addEventListener('gex-watchlist-change',refresh);
-window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
-</script>
-</body>
-</html>+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
+ return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price">$'+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
 }
 function loadingRow(t,i){
  return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+t+'</span><span class="status">loading…</span><span>—</span><span>—</span><span class="status">loading…</span><span>—</span><span>—</span><span>—</span><span>—</span><button class="delbtn" data-remove="'+t+'">X</button></div>';
 }
 async function refresh(){
  const list=getList();
- if(!list.length){$('board').innerHTML='<div class="empty">관심종목이 없습니다.</div>';$('status').textContent='No monitored stocks';return;}
+ if(!list.length){
+   $('board').innerHTML='<div class="empty">관심종목이 없습니다.</div>';
+   $('status').textContent='No monitored stocks';
+   return;
+ }
  $('status').textContent='Updating '+list.length+' stocks…';
  $('board').innerHTML=list.map(loadingRow).join('');
  let done=0;
  const jobs=list.map((t,i)=>fetchOne(t).then(x=>{
    const el=document.getElementById('row-'+i);
    if(el)el.outerHTML=row(x,i);
-   done++;$('status').textContent='Updated '+done+'/'+list.length+' stocks…';
+   done++;
+   $('status').textContent='Updated '+done+'/'+list.length+' stocks…';
  }).catch(()=>{
    const el=document.getElementById('row-'+i);
    if(el)el.querySelector('.status').textContent='data error';
@@ -187,7 +153,13 @@ async function refresh(){
  await Promise.allSettled(jobs);
  $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · Schwab 5M volume';
 }
-$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
+$('addBtn').onclick=()=>{
+ const t=clean($('tickerInput').value);
+ if(!t)return;
+ if(window.GexWatchlist)window.GexWatchlist.add(t);
+ $('tickerInput').value='';
+ refresh();
+};
 $('refreshBtn').onclick=refresh;
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-remove]');
