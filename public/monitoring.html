@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · Live Monitor</title>
+<style>
+:root{--bg:#08111d;--panel:#0d1724;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#09131f);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1280px;margin:auto;padding:14px 18px 30px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.brand{font-size:26px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:4px}.nav{display:flex;gap:7px;flex-wrap:wrap}.nav a{padding:9px 11px;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-size:11px;font-weight:900;background:#101826}.nav a.active{background:var(--blue);border-color:var(--blue);color:#07101b}
+.card{background:rgba(13,23,36,.96);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar input{min-height:40px;background:#09131f;border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;text-transform:uppercase;font-weight:800}.toolbar button{min-height:40px;border:0;border-radius:8px;padding:0 14px;font-weight:900;cursor:pointer;background:var(--gold)}.status{color:var(--muted);font-size:11px}
+.table{overflow-x:auto}.row{min-width:1120px;display:grid;grid-template-columns:48px 100px 110px 110px 110px 250px 110px 110px 140px 70px;gap:8px;align-items:center;padding:10px 6px;border-top:1px solid var(--line);font-size:11px}.row.header{border-top:0;color:var(--muted);font-size:10px;position:sticky;top:0;background:var(--panel);z-index:2}.ticker{font-size:15px;font-weight:900}.price{font-weight:900;font-size:14px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
+.wall{height:8px;border-radius:999px;background:linear-gradient(90deg,#2d86ff,#52e0c4 50%,#ff6673);position:relative}.dot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid #08111d;background:white}.wallmeta{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:5px}.badge{display:inline-flex;align-items:center;justify-content:center;min-height:30px;border:1px solid currentColor;border-radius:8px;padding:5px 8px;font-weight:900;font-size:10px}.vol-up{color:var(--green)}.vol-down{color:var(--red)}.vol-flat{color:var(--gold)}.signal{font-weight:900}.btnlink{color:var(--blue);text-decoration:none;font-weight:900}.empty{padding:24px;color:var(--muted);text-align:center}
+.legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend b{color:var(--text)}
+@media(max-width:720px){.wrap{padding:10px}.top{flex-direction:column;align-items:flex-start}.brand{font-size:20px}.nav{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.nav a{text-align:center}.toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%}.toolbar input,.toolbar button{width:100%}.row{min-width:980px}.card{padding:10px}}
+</style>
+<script src="/watchlist-actions.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="brand">LIVE MONITOR</div><div class="sub">관심종목 실시간 감시 · Price · Call/Put Wall · HULL21 · Volume Trend</div></div>
+    <div class="nav">
+      <a href="/premarket-scanner.html">PREMARKET</a>
+      <a href="/option-swing-scanner.html">REGULAR MARKET</a>
+      <a href="/trade-tracker.html">TRADE TRACKER</a>
+      <a class="active" href="/monitoring.html">LIVE MONITOR</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="toolbar">
+      <input id="tickerInput" placeholder="TICKER">
+      <button id="addBtn">+ MONITOR</button>
+      <button id="refreshBtn">REFRESH</button>
+      <span class="status" id="status">관심종목 최대 10개를 모니터링합니다.</span>
+    </div>
+  </div>
+
+  <div class="card table">
+    <div class="row header"><span>#</span><span>종목</span><span>현재가</span><span>Call Wall</span><span>Put Wall</span><span>Put / Current / Call</span><span>HULL21</span><span>거래량 추세</span><span>상태</span><span>상세</span></div>
+    <div id="board"><div class="empty">모니터 데이터를 불러오는 중...</div></div>
+  </div>
+
+  <div class="card legend">
+    <span><b>▲ 증가</b> = 현재 5분 거래량 &gt; 직전 5분 거래량</span>
+    <span><b>▼ 감소</b> = 현재 5분 거래량 &lt; 직전 5분 거래량</span>
+    <span><b>→ 보합</b> = 두 거래량이 비슷함 (±5%)</span>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(v,d=2)=>v==null?'—':Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
+const clean=v=>String(v||'').trim().toUpperCase().replace(/[^A-Z0-9.\-]/g,'').slice(0,12);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const FALLBACK=['NVDA','AMD','TSLA','PLTR','AVGO','MU','MRVL','AMZN','BE','INTC'];
+function getList(){
+ const saved=(window.GexWatchlist&&window.GexWatchlist.list)?window.GexWatchlist.list():[];
+ return (saved.length?saved:FALLBACK).slice(0,10);
+}
+function wma(vals,n){
+ if(vals.length<n)return null;let s=0,w=0;for(let i=0;i<n;i++){const wt=i+1;s+=vals[vals.length-n+i]*wt;w+=wt}return s/w;
+}
+function hullSeries(vals,n=21){
+ const out=[];const half=Math.floor(n/2),root=Math.max(1,Math.round(Math.sqrt(n)));
+ for(let i=0;i<vals.length;i++){
+  const sub=vals.slice(0,i+1),a=wma(sub,half),b=wma(sub,n);
+  if(a==null||b==null){out.push(null);continue}
+  const raw=[];
+  for(let j=Math.max(0,i-root+1);j<=i;j++){
+   const ss=vals.slice(0,j+1),aa=wma(ss,half),bb=wma(ss,n);if(aa!=null&&bb!=null)raw.push(2*aa-bb);
+  }
+  out.push(raw.length>=root?wma(raw,root):null);
+ }
+ return out;
+}
+function volumeState(bars){
+ if(!bars||bars.length<2)return {label:'—',cls:'',ratio:null};
+ const cur=Number(bars[bars.length-1].volume||0),prev=Number(bars[bars.length-2].volume||0);
+ if(prev<=0)return {label:'—',cls:'',ratio:null};
+ const ratio=cur/prev;
+ if(ratio>1.05)return {label:'▲ 증가',cls:'vol-up',ratio};
+ if(ratio<0.95)return {label:'▼ 감소',cls:'vol-down',ratio};
+ return {label:'→ 보합',cls:'vol-flat',ratio};
+}
+function signal(spot,put,call,hSlope,vol){
+ if(spot==null)return 'WATCH';
+ if(call!=null){
+  const dc=(call-spot)/spot*100;
+  if(spot>call)return 'BREAKOUT';
+  if(Math.abs(dc)<=1.5 && hSlope<0)return 'HEDGE WATCH';
+ }
+ if(put!=null){
+  const dp=(spot-put)/spot*100;
+  if(Math.abs(dp)<=1.5 && hSlope>0 && vol.label.includes('증가'))return 'ADD WATCH';
+ }
+ return 'HOLD';
+}
+function wallHtml(put,spot,call){
+ if(put==null||spot==null||call==null||call===put)return '<span class="status">Wall data —</span>';
+ const lo=Math.min(put,spot),hi=Math.max(call,spot),pad=Math.max((hi-lo)*.15,1),min=lo-pad,max=hi+pad;
+ const pos=v=>Math.max(3,Math.min(97,(v-min)/(max-min)*100));
+ return '<div><div class="wall"><i class="dot" style="left:'+pos(spot)+'%"></i></div><div class="wallmeta"><span>Put '+fmt(put,1)+'</span><span>'+fmt(spot,2)+'</span><span>Call '+fmt(call,1)+'</span></div></div>';
+}
+async function fetchOne(t){
+ const [sumR,intraR]=await Promise.all([
+  fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),
+  fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
+ ]);
+ const bars=intraR.bars||[], closes=bars.map(x=>Number(x.close)).filter(Number.isFinite), hs=hullSeries(closes,21);
+ const h=hs.length?hs[hs.length-1]:null, hp=hs.length>1?hs[hs.length-2]:null, slope=(h!=null&&hp!=null&&hp!==0)?(h-hp)/hp*100:0;
+ const vol=volumeState(bars), spot=sumR.spot!=null?Number(sumR.spot):(bars.length?Number(bars[bars.length-1].close):null);
+ return {ticker:t,spot,change:sumR.price_change_pct,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,state:signal(spot,sumR.put_wall,sumR.call_wall,slope,vol)};
+}
+function row(x,i){
+ const sc=x.state==='HEDGE WATCH'?'red':x.state==='ADD WATCH'||x.state==='BREAKOUT'?'green':x.state==='HOLD'?'blue':'gold';
+ const hs=x.slope>0.03?'▲ UP':x.slope<-0.03?'▼ DOWN':'→ FLAT';
+ const hc=x.slope>0.03?'green':x.slope<-0.03?'red':'gold';
+ return '<div class="row"><span>'+(i+1)+'</span><span class="ticker">'+x.ticker+'</span><span class="price">$'+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+(x.vol.ratio?' '+fmt(x.vol.ratio,2)+'x':'')+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a></div>';
+}
+async function refresh(){
+ const list=getList();$('status').textContent='Updating '+list.length+' stocks…';
+ const out=[];for(let i=0;i<list.length;i++){out.push(await fetchOne(list[i]));await sleep(120)}
+ $('board').innerHTML=out.map(row).join('')||'<div class="empty">관심종목이 없습니다.</div>';
+ $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · Schwab 5M volume';
+}
+$('addBtn').onclick=()=>{const t=clean($('tickerInput').value);if(!t)return;if(window.GexWatchlist)window.GexWatchlist.add(t);$('tickerInput').value='';refresh()};
+$('refreshBtn').onclick=refresh;
+window.addEventListener('gex-watchlist-change',refresh);
+window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
+</script>
+</body>
+</html>
