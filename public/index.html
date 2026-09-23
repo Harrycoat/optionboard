@@ -606,6 +606,18 @@
   .response-video-link{ display:inline-block; margin-top:16px; padding:9px 12px; border:1px solid #ff5a65; border-radius:7px; color:#ff8b92; font-size:11px; font-weight:900; text-decoration:none; }
   .response-video-close{ position:absolute; top:10px; right:10px; z-index:2; width:34px; height:34px; border:1px solid var(--line); border-radius:50%; background:#151b24; color:var(--text); font-size:20px; cursor:pointer; }
   .hero-rail-card{ align-self:center; background:rgba(10,13,18,.72); border:1px solid var(--line); border-radius:11px; padding:22px 18px 16px; }.hero-rail-title{ font-size:11px; color:var(--text-dim); letter-spacing:.08em; }.hero-rail{ position:relative; height:5px; border-radius:6px; background:linear-gradient(90deg,var(--down),#65748d 50%,var(--up)); margin:54px 16px 38px; }
+  .hero-m3-card{ align-self:center; background:rgba(10,13,18,.72); border:1px solid rgba(224,168,56,.38); border-radius:11px; padding:18px; min-width:0; }
+  .hero-m3-head{ display:flex; justify-content:space-between; align-items:baseline; font-size:13.5px; font-weight:800; color:var(--gold); margin-bottom:6px; }
+  .hero-m3-date{ font-size:11px; color:var(--text-dim); font-weight:400; }
+  .hero-m3-row{ padding:10px 0; border-top:1px solid var(--line); }
+  .hero-m3-row:first-of-type{ border-top:none; }
+  .hero-m3-ticker{ font-size:16px; font-weight:800; color:#f0f6fc; }
+  .hero-m3-walls{ font-size:11.5px; font-weight:400; color:var(--text-dim); margin-left:8px; }
+  .hero-m3-why{ font-size:12.5px; color:var(--text-dim); line-height:1.55; margin-top:3px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .hero-m3-foot{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; padding-top:10px; border-top:1px solid var(--line); font-size:12px; }
+  .hero-m3-track{ color:var(--text-dim); }
+  .hero-m3-more{ color:var(--gold); text-decoration:none; font-weight:700; white-space:nowrap; }
+  .hero-m3-empty{ font-size:12.5px; color:var(--text-dim); padding:14px 0; text-align:center; }
   .hero-rail-point{ position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; border:2px solid var(--panel); }.hero-rail-point span{ position:absolute; left:50%; bottom:17px; transform:translateX(-50%); white-space:nowrap; font:700 11px 'JetBrains Mono',monospace; text-align:center; line-height:1.5; }
   .member-benefits{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }.member-benefit{ display:flex; gap:12px; align-items:center; padding:15px 17px; background:var(--panel); border:1px solid var(--line); border-radius:9px; }.member-benefit-icon{ display:grid; place-items:center; width:42px; height:42px; flex:0 0 42px; border:1px solid rgba(224,168,56,.45); border-radius:9px; color:var(--gold); font-size:20px; }.member-benefit b{ display:block; font-size:14px; }.member-benefit span{ display:block; color:var(--text-dim); font-size:11px; margin-top:4px; line-height:1.4; }
   .nvda-preview{ margin:18px 0 22px; padding:20px; border:1px solid var(--line); border-radius:11px; background:var(--panel); }.nvda-preview-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:15px; }.nvda-preview-title{ font-weight:800; }.nvda-preview-label{ color:var(--text-dim); font-size:11px; }.nvda-preview-grid{ display:grid; grid-template-columns:190px 1fr 225px; gap:18px; align-items:center; }.nvda-symbol{ font:800 19px 'JetBrains Mono',monospace; }.nvda-price{ font:700 29px 'JetBrains Mono',monospace; margin-top:5px; }.nvda-regime{ display:inline-block; margin-top:10px; padding:6px 10px; border:1px solid #22c55e; border-radius:20px; color:#55e6b5; font-size:11px; }.nvda-kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:7px; }.nvda-kpi{ background:var(--panel-2); border:1px solid var(--line); border-radius:7px; padding:9px 6px; text-align:center; }.nvda-kpi small{ display:block; color:var(--text-dim); font-size:9px; }.nvda-kpi b{ display:block; margin-top:4px; font:700 14px 'JetBrains Mono',monospace; }.nvda-mini-rail{ position:relative; height:4px; border-radius:5px; background:linear-gradient(90deg,var(--down),#68758a 50%,var(--up)); margin:34px 12px 18px; }.nvda-mini-marker{ position:absolute; top:50%; transform:translate(-50%,-50%); width:10px; height:10px; border-radius:50%; }.nvda-mini-marker span{ position:absolute; left:50%; bottom:13px; transform:translateX(-50%); white-space:nowrap; font:700 9px 'JetBrains Mono',monospace; }.nvda-signup{ border-left:1px solid var(--line); padding-left:18px; text-align:center; }.nvda-signup b{ font-size:13px; line-height:1.5; }.nvda-signup button{ width:100%; margin-top:12px; border:0; border-radius:7px; padding:11px; background:var(--gold); color:#111; font-weight:800; cursor:pointer; }
@@ -787,7 +799,37 @@
       <div class="member-hero-actions"><button class="member-cta" id="memberHeroSignup" type="button">내 관심종목 보기 →</button><button class="member-demo-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="member-holdings-btn" id="memberHeroHoldings" type="button">📊 내 종목</button><button class="member-video-btn" id="memberHeroVideo" type="button">🎬 실전 대응 영상 · 매일 업데이트</button></div>
       <div class="member-holdings-note">관심종목 중 실제 보유종목의 수량 · 평균단가 · 투자금액 · 평가손익 · 수익률을 확인합니다.</div>
     </div>
-    <div class="hero-rail-card"><div class="hero-rail-title">GEX OPTION · OPTIONS PRICE MAP</div><div class="hero-rail"><i class="hero-rail-point" style="left:20%;background:var(--down);box-shadow:0 0 12px var(--down)"><span style="color:#66a1fa">Put Wall<br>170</span></i><i class="hero-rail-point" style="left:57%;background:var(--gold);box-shadow:0 0 12px var(--gold)"><span style="color:var(--gold)">현재가<br>177.64</span></i><i class="hero-rail-point" style="left:78%;background:var(--up);box-shadow:0 0 12px var(--up)"><span style="color:#ff7278">Call Wall<br>180</span></i></div></div>
+    <div class="hero-m3-card" id="heroM3Card">
+      <div class="hero-m3-head"><span>☀️ 오늘의 Morning 3</span><span class="hero-m3-date" id="heroM3Date"></span></div>
+      <div id="heroM3List"><div class="hero-m3-empty">불러오는 중...</div></div>
+      <div class="hero-m3-foot"><span class="hero-m3-track" id="heroM3Track"></span><a class="hero-m3-more" href="/morning-three.html">자세히 보기 →</a></div>
+    </div>
+    <script>
+    (function(){
+      function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+      fetch('/morning-today.json', {cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+        var dt = document.getElementById('heroM3Date');
+        if(dt && d.date) dt.textContent = d.date.slice(5).replace('-','/');
+        var picks = d.picks || [];
+        document.getElementById('heroM3List').innerHTML = picks.length ? picks.map(function(p){
+          var walls = [];
+          if(p.put_wall!=null) walls.push('P '+p.put_wall);
+          if(p.call_wall!=null) walls.push('C '+p.call_wall);
+          return '<div class="hero-m3-row"><div class="hero-m3-ticker">'+esc(p.ticker)+
+            (walls.length ? ' <span class="hero-m3-walls">'+esc(walls.join(' · '))+'</span>' : '')+'</div>'+
+            (p.reason ? '<div class="hero-m3-why">'+esc(p.reason)+'</div>' : '')+'</div>';
+        }).join('') : '<div class="hero-m3-empty">오늘의 종목은 오전 6시에 업데이트됩니다.</div>';
+      }).catch(function(){
+        document.getElementById('heroM3List').innerHTML = '<div class="hero-m3-empty">오늘의 종목은 오전 6시에 업데이트됩니다.</div>';
+      });
+      fetch('/paper/track-record.json', {cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(t){
+        var s = t.stats || {}, el = document.getElementById('heroM3Track');
+        if(!el || !s.days) return;
+        var tot = s.total_return_pct || 0;
+        el.textContent = '가상 트랙레코드 누적 '+(tot>=0?'+':'')+tot.toFixed(1)+'% · '+s.days+'일';
+      }).catch(function(){});
+    })();
+    </script>
   </div>
   <div class="member-benefits"><div class="member-benefit"><div class="member-benefit-icon">★</div><div><b>관심종목 저장</b><span>PC와 휴대전화에서 동일하게 확인</span></div></div><div class="member-benefit"><div class="member-benefit-icon">▥</div><div><b>핵심 가격 자동 표시</b><span>Put Wall · Call Wall · Gamma Flip</span></div></div><div class="member-benefit"><div class="member-benefit-icon">↻</div><div><b>매일 업데이트</b><span>시장 국면과 관심종목 변화를 빠르게 확인</span></div></div></div>
 </section>
