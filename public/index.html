@@ -438,6 +438,11 @@
   .server-narrative p{ margin:0 0 7px; font-size:13px; line-height:1.7; color:var(--text); }
   .server-narrative p:last-child{ margin-bottom:0; }
   @media(max-width:760px){ .wall-change-grid{ grid-template-columns:1fr 1fr; } }
+  .expiry-card{ margin:0 0 14px; padding:13px 16px; background:rgba(129,173,255,.06); border:1px solid rgba(129,173,255,.4); border-radius:10px; }
+  .expiry-card-title{ font-size:12.5px; font-weight:900; color:#81adff; margin-bottom:6px; }
+  .expiry-card-title span{ color:var(--text-dim); font-weight:400; font-size:11.5px; }
+  .expiry-card p{ margin:0 0 5px; font-size:13.5px; line-height:1.65; color:var(--text); }
+  .expiry-card-sub{ font-size:11px !important; color:var(--text-dim) !important; margin:0 !important; }
   .price-position-head{ display:flex; justify-content:space-between; gap:12px; margin-bottom:20px; font-size:12px; color:var(--text-dim); }
   .price-position-head b{ color:var(--gold); font-size:13px; }
   .price-rail{ position:relative; height:8px; border-radius:10px; background:linear-gradient(90deg,var(--down),#7688a5 48%,#b06d68 70%,var(--up)); margin:30px 10px 32px; }
@@ -2828,6 +2833,16 @@ function callOiTrendBadgeHTML(rows) {
 }
 
 let currentDetail = null;
+function expiryCardHTML(d){
+  const mp=Number(d.max_pain), spot=Number(d.spot);
+  if(!Number.isFinite(mp) || !d.expiry_used) return '';
+  let days=null;
+  try{ days=Math.max(Math.ceil((new Date(d.expiry_used)-new Date())/86400000),0); }catch(e){}
+  const distPct=Number.isFinite(spot)?((mp-spot)/spot*100):null;
+  return `<div class="expiry-card"><div class="expiry-card-title">⏰ 옵션 만기 ${days!=null?('D-'+days):''} <span>${d.expiry_used}</span></div>
+  <p>만기일이 다가올수록 주가가 <b>$${fmtNum(mp,1)}</b> 근처로 끌려가는 경향이 있다는 이론(Max Pain)이 있어요.${distPct!=null?` 현재가에서 ${distPct>=0?'+':''}${distPct.toFixed(2)}% 거리입니다.`:''}</p>
+  <p class="expiry-card-sub">이론일 뿐 예측이 아니에요. 참고용으로만 보세요.</p></div>`;
+}
 function plainSummaryHTML(d){
   const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall);
   if(![spot,put,call].every(Number.isFinite)) return '';
@@ -2915,6 +2930,7 @@ function renderDetail(d){
       </div>
     </div>
     ${plainSummaryHTML(d)}
+    ${expiryCardHTML(d)}
     ${wallChangeHTML(d)}
     <div id="interestSaveHint" style="margin-top:10px;padding:9px 12px;border:1px solid rgba(224,168,56,.32);border-radius:7px;background:rgba(224,168,56,.055);color:var(--text-dim);font-size:11px;line-height:1.55;">
       ★ 이 종목을 계속 보고 싶다면 <b style="color:var(--gold);">관심종목으로 저장</b>하세요. 처음 방문한 경우 저장 버튼을 누르면 로그인/회원가입 창이 열리고, 로그인 후 자동으로 저장됩니다.
