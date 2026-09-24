@@ -20,6 +20,9 @@
     },
     "api/schwabquote.py": {
       "maxDuration": 30
+    },
+    "api/filings.py": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
