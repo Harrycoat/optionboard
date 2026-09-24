@@ -2970,7 +2970,7 @@ function renderDetail(d){
         <button class="interest-add-btn" id="interestAddBtn" type="button" onclick="togglePersonalWatchlist(currentDetail.ticker)" aria-pressed="false" style="border-color:#e0a838;background:rgba(224,168,56,.14);color:#f2bd4c;font-weight:900;">
           ★ 관심종목으로 저장
         </button>
-        <button class="share-x-btn" onclick="shareToX(currentDetail)" title="검색한 종목의 한·영 홍보 문구 복사">
+        <button class="share-x-btn" onclick="shareToX(currentDetail)" title="X·Threads용 홍보 문구 복사 (280자 이내)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.65l7.73-8.84L1.24 2.25h6.83l4.72 6.24 5.45-6.24Zm-1.17 17.52h1.83L7.02 4.13H5.06l12.01 15.64Z"/></svg>
           홍보 문구 복사 · Copy
         </button>
@@ -3197,50 +3197,25 @@ function renderOiGexChart(containerId, d){
   el.innerHTML = svg;
 }
 function buildXShareText(d){
-  const lines = [
-    `🚨 $${d.ticker} $${fmtNum(d.spot)} — Buy or Sell Now?`,
-    '',
-    '“Buy near the Put Wall, manage risk near the Call Wall.”',
-    'Put Wall에서 반등을 확인하고, Call Wall에서 저항과 수익실현 여부를 판단하세요.',
-    '',
-  ];
+  // X(280자)·Threads(500자)에 바로 붙여넣을 수 있는 짧은 홍보 문구
+  const L = [];
+  const px = d.spot != null ? ` $${fmtNum(d.spot)}` : '';
+  L.push(`\uD83D\uDEA8 $${d.ticker}${px} \u2014 Put Wall\u00B7Call Wall \uCCB4\uD06C`);
   if(d.put_wall != null){
-    const pctTxt = d.spot ? ` (${(((d.put_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.put_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
-    lines.push(`📍 Put Wall $${fmtNum(d.put_wall,1)}${pctTxt} — Potential BUY ZONE`);
-    lines.push(`$${fmtNum(d.put_wall,1)} 지지와 반등을 확인하세요.`);
-    lines.push('Watch for support, volume, and HULL 21 turning upward.');
+    const pct = d.spot ? ` (${(((d.put_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.put_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
+    L.push(`\uD83D\uDCCD Put Wall $${fmtNum(d.put_wall,1)}${pct} \u2192 \uC9C0\uC9C0\u00B7\uBC18\uB4F1 \uC790\uB9AC`);
   }
   if(d.call_wall != null){
-    const pctTxt = d.spot ? ` (${(((d.call_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.call_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
-    lines.push('');
-    lines.push(`📍 Call Wall $${fmtNum(d.call_wall,1)}${pctTxt} — SELL · TAKE-PROFIT ZONE`);
-    lines.push(`$${fmtNum(d.call_wall,1)}에서 저항을 받고 H21 TOP이 나타나면 일부 수익실현이나 헤지를 검토합니다.`);
-    lines.push(`A rejection near $${fmtNum(d.call_wall,1)} may signal a short-term top.`);
+    const pct = d.spot ? ` (${(((d.call_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.call_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
+    L.push(`\uD83D\uDCCD Call Wall $${fmtNum(d.call_wall,1)}${pct} \u2192 \uC800\uD56D\u00B7\uC218\uC775\uC2E4\uD604 \uC790\uB9AC`);
   }
-  if(d.call_wall != null){
-    lines.push('');
-    lines.push('🚀 Call Wall Breakout — RE-ENTRY ZONE');
-    lines.push(`5분봉이 $${fmtNum(d.call_wall,1)} 위에서 마감하고 거래량과 H21 상승이 확인되면 재진입 후보입니다.`);
-    lines.push('When resistance breaks and becomes support, momentum may continue higher.');
-  }
-  lines.push('');
-  lines.push('The GEX Swing-Trading Framework');
-  lines.push('Put Wall Bounce → Entry Setup');
-  lines.push('Call Wall Rejection → Take Profit or Hedge');
-  lines.push('Call Wall Breakout → Re-entry Setup');
-  lines.push('');
-  lines.push('오늘의 실시간 Put Wall · Call Wall · GEX 데이터 확인');
-  lines.push('Check today’s real-time GEX levels 👇');
-  lines.push('👉 gexoption.com');
-  lines.push('');
-  lines.push('⚠️ For educational and informational purposes only. Not investment advice.');
-  lines.push('Wall levels can change during the trading session.');
-  lines.push('모든 투자 판단과 책임은 투자자 본인에게 있습니다.');
-  lines.push('');
-  lines.push(`#${d.ticker} #GEX #PutWall #CallWall #OptionsTrading #SwingTrading #StockMarket #미국주식 #옵션매매 #스윙트레이딩`);
-  return lines.join('\n');
+  L.push('\uD48B\uC6D4\uC5D0\uC11C \uBC18\uB4F1 \uD655\uC778, \uCF5C\uC6D4\uC5D0\uC11C \uB9AC\uC2A4\uD06C \uAD00\uB9AC.');
+  L.push('\uC2E4\uC2DC\uAC04 \uC6D4 \uD83D\uDC49 https://www.gexoption.com');
+  L.push(`#${d.ticker} #PutWall #CallWall #\uBBF8\uAD6D\uC8FC\uC2DD`);
+  L.push('\u26A0\uFE0F \uC815\uBCF4\u00B7\uAD50\uC721 \uBAA9\uC801. \uD22C\uC790 \uAD8C\uC720 \uC544\uB2D8.');
+  return L.join('\n');
 }
-  function showToast(msg){
+function showToast(msg){
   let toast = document.getElementById('shareToast');
   if(!toast){
     toast = document.createElement('div');
