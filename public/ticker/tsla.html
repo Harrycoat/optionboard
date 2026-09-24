@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>테슬라 풋월·콜월 실시간 조회 | TSLA 옵션 월 분석 — GEX Option</title>
+<meta name="description" content="테슬라(TSLA) 옵션 풋월·콜월·감마플립·맥스페인을 실시간으로 확인하세요. 딜러 헤지 구간으로 지지와 저항을 읽는 한국어 옵션 월 분석.">
+<link rel="canonical" href="https://gexoption.com/ticker/tsla.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="테슬라 풋월·콜월 실시간 조회 | GEX Option">
+<meta property="og:description" content="테슬라(TSLA) 옵션 풋월·콜월·감마플립·맥스페인을 실시간으로 확인하세요. 딜러 헤지 구간으로 지지와 저항을 읽는 한국어 옵션 월 분석.">
+<meta property="og:url" content="https://gexoption.com/ticker/tsla.html">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="테슬라 풋월·콜월 실시간 조회 | GEX Option">
+<meta name="twitter:description" content="테슬라(TSLA) 옵션 풋월·콜월·감마플립·맥스페인을 실시간으로 확인하세요. 딜러 헤지 구간으로 지지와 저항을 읽는 한국어 옵션 월 분석.">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","name":"테슬라 풋월·콜월 실시간 조회 | GEX Option","url":"https://gexoption.com/ticker/tsla.html","description":"테슬라(TSLA) 옵션 풋월·콜월·감마플립·맥스페인을 실시간으로 확인하세요. 딜러 헤지 구간으로 지지와 저항을 읽는 한국어 옵션 월 분석.","inLanguage":"ko","about":{"@type":"Thing","name":"테슬라(TSLA) 옵션 월"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"테슬라 풋월(Put Wall)이란 무엇인가요?","acceptedAnswer":{"@type":"Answer","text":"풋옵션 미결제약정이 가장 많이 쌓인 행사가입니다. 딜러들이 주가 하락에 대비해 해당 구간 아래에서 헤지 매수를 하기 때문에 지지선처럼 작용할 수 있습니다."}},{"@type":"Question","name":"풋월이 깨지면 어떻게 되나요?","acceptedAnswer":{"@type":"Answer","text":"풋월 아래에서 종가가 마감되면 딜러 헤지 물량이 풀리면서 하락이 가속될 수 있습니다. 다만 일시적인 장중 이탈인지 종가 기준 이탈인지 구분해서 보는 것이 중요합니다."}},{"@type":"Question","name":"테슬라 콜월(Call Wall)은 어떻게 활용하나요?","acceptedAnswer":{"@type":"Answer","text":"콜옵션 미결제약정이 가장 많이 쌓인 행사가로, 위에서 저항선 역할을 할 수 있습니다. 콜월 근처에서는 수익 실현이나 헤지를 검토하는 구간으로 활용합니다."}},{"@type":"Question","name":"감마플립(Gamma Flip)이란 무엇인가요?","acceptedAnswer":{"@type":"Answer","text":"옵션 딜러들의 순 감마가 음수에서 양수로 바뀌는 지점입니다. 감마플립 위에서는 딜러 헤지가 가격을 안정시키는 방향으로, 아래에서는 변동성을 키우는 방향으로 작용할 수 있습니다."}}]}]}</script>
+<style>
+  body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;line-height:1.75;margin:0;padding:0}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 64px}
+  a{color:#58a6ff}
+  h1{font-size:26px;margin:0 0 6px;line-height:1.4}
+  h2{font-size:19px;margin:32px 0 8px;color:#f0f6fc}
+  p,li{color:#c9d1d9}
+  p{margin:10px 0}
+  ul{padding-left:20px;margin:10px 0}
+  li{margin:8px 0}
+  .date{font-size:13px;color:#8b949e;margin-bottom:20px}
+  .nav{font-size:14px;margin-bottom:28px;color:#8b949e}
+  .nav a{margin-right:14px;text-decoration:none}
+  .live{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px;margin:20px 0}
+  .live .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .live .cell{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px 14px}
+  .live .k{font-size:12px;color:#8b949e}
+  .live .v{font-size:19px;font-weight:700;margin-top:2px}
+  .live .narr{font-size:14px;color:#c9d1d9;margin-top:12px;border-top:1px solid #30363d;padding-top:12px}
+  .live .upd{font-size:12px;color:#8b949e;margin-top:8px}
+  .faq{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px 18px;margin:12px 0}
+  .faq .q{font-weight:700;color:#f0f6fc;margin-bottom:6px}
+  .rel{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+  .rel a{border:1px solid #30363d;border-radius:8px;padding:8px 14px;text-decoration:none;font-size:14px;background:#161b22}
+  .disc{font-size:13px;color:#8b949e;border-top:1px solid #30363d;margin-top:36px;padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="/">← 홈</a><a href="/column">칼럼</a><a href="/morning-three.html">Morning 3</a><a href="/education-put-wall.html">풋월 가이드</a></div>
+  <h1>테슬라(TSLA) 풋월 · 콜월</h1>
+  <div class="date">Tesla · 실시간 옵션 월 데이터</div>
+
+  <div class="live" id="live">
+    <div style="font-size:15px;font-weight:700">📡 실시간 월 데이터 <span style="font-weight:400;color:#8b949e">불러오는 중…</span></div>
+  </div>
+
+  <h2>풋월·콜월이란?</h2>
+  <p><b>풋월(Put Wall)</b>은 풋옵션 미결제약정이 가장 많이 쌓인 행사가입니다. 딜러들이 주가 하락에 대비해 이 구간 아래에서 헤지 매수를 하기 때문에 지지선처럼 작용할 수 있습니다. <b>콜월(Call Wall)</b>은 콜옵션 미결제약정이 가장 많이 쌓인 행사가로, 위에서 저항선 역할을 할 수 있습니다.</p>
+  <p><b>감마플립(Gamma Flip)</b>은 딜러들의 순 감마가 음수에서 양수로 바뀌는 지점입니다. 이 지점 위에서는 헤지가 가격을 안정시키는 방향으로, 아래에서는 변동성을 키우는 방향으로 작용할 수 있습니다. <b>맥스페인(Max Pain)</b>은 만기일에 옵션 매수자들의 손실이 가장 커지는 가격으로, 만기가 다가올수록 주가가 이 근처로 끌려가는 경향이 있습니다.</p>
+
+  <h2>테슬라(TSLA) 월 읽는 법</h2>
+  <ul>
+    <li>변동성이 큰 종목이라 Put Wall과 Call Wall이 자주 이동합니다. 장 시작 후 30분~1시간 뒤 월을 다시 확인하는 것이 좋습니다.</li>
+    <li>0DTE 거래가 활발해 만기일에는 월이 특히 빠르게 바뀔 수 있습니다.</li>
+    <li>실적 발표나 이벤트가 있는 날은 월 사이 박스권이 넓어지는 경향이 있습니다.</li>
+    <li>콜월 위에서 종가가 마감되면 다음 거래일 추가 상승 가능성을, 풋월 아래에서 마감되면 하락 압력을 염두에 둡니다. 종가 기준 확인이 중요합니다.</li>
+  </ul>
+
+  <h2>자주 묻는 질문</h2>
+  <div class="faq"><div class="q">Q. 테슬라 풋월(Put Wall)이란 무엇인가요?</div><div>풋옵션 미결제약정이 가장 많이 쌓인 행사가입니다. 딜러들이 주가 하락에 대비해 해당 구간 아래에서 헤지 매수를 하기 때문에 지지선처럼 작용할 수 있습니다.</div></div>
+  <div class="faq"><div class="q">Q. 풋월이 깨지면 어떻게 되나요?</div><div>풋월 아래에서 종가가 마감되면 딜러 헤지 물량이 풀리면서 하락이 가속될 수 있습니다. 다만 일시적인 장중 이탈인지 종가 기준 이탈인지 구분해서 보는 것이 중요합니다.</div></div>
+  <div class="faq"><div class="q">Q. 테슬라 콜월(Call Wall)은 어떻게 활용하나요?</div><div>콜옵션 미결제약정이 가장 많이 쌓인 행사가로, 위에서 저항선 역할을 할 수 있습니다. 콜월 근처에서는 수익 실현이나 헤지를 검토하는 구간으로 활용합니다.</div></div>
+  <div class="faq"><div class="q">Q. 감마플립(Gamma Flip)이란 무엇인가요?</div><div>옵션 딜러들의 순 감마가 음수에서 양수로 바뀌는 지점입니다. 감마플립 위에서는 딜러 헤지가 가격을 안정시키는 방향으로, 아래에서는 변동성을 키우는 방향으로 작용할 수 있습니다.</div></div>
+
+  <h2>관련 종목 월 분석</h2>
+  <div class="rel">
+    <a href="/ticker/nvda.html">엔비디아(NVDA) 풋월·콜월</a>
+    <a href="/ticker/aapl.html">애플(AAPL) 풋월·콜월</a>
+    <a href="/ticker/spy.html">S&P500(SPY) 풋월·콜월</a>
+    <a href="/ticker/qqq.html">나스닥100(QQQ) 풋월·콜월</a>
+    <a href="/ticker/pltr.html">팔란티어(PLTR) 풋월·콜월</a>
+  </div>
+  <p style="font-size:14px"><a href="/education-put-wall.html">📚 풋월 가이드 보기</a> · <a href="/education-call-wall.html">📚 콜월 가이드 보기</a> · <a href="/gex-manual.html">📖 GEX 트레이딩 플레이북</a></p>
+
+  <div class="disc">⚠️ 이 페이지는 정보·교육 목적으로 제공되며 투자 권유가 아닙니다. 옵션 및 주식 투자에는 원금 손실 위험이 있습니다. 모든 투자 판단과 책임은 투자자 본인에게 있습니다.</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('live');
+  function fmt(x, d){ return (x == null) ? '—' : '$' + Number(x).toFixed(d == null ? 1 : d); }
+  fetch('/api/search?ticker=TSLA').then(function(r){ return r.json(); }).then(function(d){
+    var pct = (d.spot != null && d.price_change_pct != null)
+      ? ' <span style="font-size:13px;color:' + (d.price_change_pct >= 0 ? '#3fb950' : '#f85149') + '">(' + (d.price_change_pct >= 0 ? '+' : '') + Number(d.price_change_pct).toFixed(2) + '%)</span>' : '';
+    var stale = d.is_stale_price ? ' <span style="font-size:12px;color:#8b949e">(지연 시세)</span>' : '';
+    var html = '<div style="font-size:15px;font-weight:700">📡 실시간 월 데이터' + stale + '</div>'
+      + '<div class="grid">'
+      + '<div class="cell"><div class="k">현재가</div><div class="v">' + fmt(d.spot, 2) + pct + '</div></div>'
+      + '<div class="cell"><div class="k">맥스페인 (Max Pain)</div><div class="v">' + fmt(d.max_pain, 1) + '</div></div>'
+      + '<div class="cell"><div class="k">풋월 (Put Wall) · 지지</div><div class="v">' + fmt(d.put_wall, 1) + '</div></div>'
+      + '<div class="cell"><div class="k">콜월 (Call Wall) · 저항</div><div class="v">' + fmt(d.call_wall, 1) + '</div></div>'
+      + '<div class="cell"><div class="k">감마플립 (Gamma Flip)</div><div class="v">' + fmt(d.gamma_flip, 1) + '</div></div>'
+      + '<div class="cell"><div class="k">만기</div><div class="v" style="font-size:15px">' + (d.expiry_used || '—') + '</div></div>'
+      + '</div>'
+      + (d.narrative ? '<div class="narr">💬 ' + d.narrative + '</div>' : '')
+      + (d.generated_at ? '<div class="upd">업데이트: ' + d.generated_at + '</div>' : '');
+    el.innerHTML = html;
+  }).catch(function(){
+    el.innerHTML = '<div style="font-size:15px">데이터를 불러오지 못했습니다. <a href="/">홈 검색</a>에서 TSLA를 직접 조회해 보세요.</div>';
+  });
+})();
+</script>
+</body>
+</html>
