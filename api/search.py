@@ -19,6 +19,7 @@ from options_engine import (  # noqa: E402
     MASSIVE_API_BASE,
     _massive_get,
     analyze_ticker_cached,
+    fetch_daily_ohlc,
     quote_paper_option_contracts,
     recommend_paper_option_contracts,
 )
@@ -1930,6 +1931,30 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(result, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
+            return
+
+        if mode == "daily_bars":
+            ticker = (query.get("ticker", [""])[0]).strip().upper()
+            try:
+                bars, ohlc_debug = fetch_daily_ohlc(ticker)
+                levels = {}
+                try:
+                    gex = analyze_ticker_cached(ticker, ttl=90, skip_stage=True)
+                    levels = {
+                        "spot": gex.get("spot"),
+                        "max_pain": gex.get("max_pain"),
+                        "call_wall": gex.get("call_wall"),
+                        "put_wall": gex.get("put_wall"),
+                        "gamma_flip": gex.get("gamma_flip"),
+                        "max_oi_wall": gex.get("max_oi_wall"),
+                    }
+                except Exception:
+                    pass
+                self.wfile.write(json.dumps({
+                    "ticker": ticker, "bars": bars, "levels": levels,
+                }, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
             return
 
         if mode == "sector_rotation_scan":
