@@ -463,6 +463,28 @@
   .trade-plan{ background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:14px; }
   .trade-plan.buy{ border-color:rgba(61,127,224,.7); }.trade-plan.now{ border-color:rgba(224,168,56,.75); }.trade-plan.breakout{ border-color:rgba(229,72,77,.65); }
   .trade-plan-label{ font-size:12px; font-weight:800; margin-bottom:7px; }.trade-plan-main{ font-size:14px; font-weight:800; }.trade-plan-sub{ margin-top:6px; color:var(--text-dim); font-size:11px; line-height:1.5; }
+  .strip{ position:relative; height:250px; margin:6px 4px 2px; }
+  .strip-zone{ position:absolute; top:104px; height:52px; border-radius:6px; }
+  .sz-sup{ background:rgba(61,127,224,.10); }
+  .sz-box{ background:rgba(224,168,56,.10); }
+  .sz-brk{ background:rgba(229,72,77,.10); }
+  .strip-line{ position:absolute; top:130px; left:0; right:0; height:2px; background:#2a3348; }
+  .strip-dot{ position:absolute; top:130px; width:10px; height:10px; border-radius:50%; transform:translate(-50%,-50%); }
+  .strip-dot.big{ width:18px; height:18px; box-shadow:0 0 0 4px rgba(240,242,245,.16); }
+  .strip-mini{ position:absolute; bottom:120px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:3px; pointer-events:none; }
+  .strip-mini span{ font-size:10px; color:var(--c); white-space:nowrap; }
+  .strip-mini em{ width:1px; height:12px; background:var(--c); }
+  .strip-mini i{ width:6px; height:6px; border-radius:50%; background:var(--c); }
+  .strip-tag{ position:absolute; transform:translateX(-50%); background:#141a26; border:1.5px solid var(--c); border-radius:8px; padding:6px 12px; text-align:center; white-space:nowrap; }
+  .strip-tag b{ display:block; font-size:12px; color:var(--c); }
+  .strip-tag span{ font-size:13px; color:#f0f2f5; font-weight:700; }
+  .strip-tag.big{ padding:8px 16px; border-width:2px; }
+  .strip-tag.big b{ font-size:13px; } .strip-tag.big span{ font-size:15px; }
+  .strip-tag.above{ bottom:140px; } .strip-tag.above2{ bottom:198px; } .strip-tag.below{ top:150px; }
+  .strip-tag::after{ content:''; position:absolute; left:50%; width:1.5px; background:var(--c); }
+  .strip-tag.above::after{ top:100%; height:20px; } .strip-tag.above2::after{ top:100%; height:78px; } .strip-tag.below::after{ bottom:100%; height:20px; }
+  .strip-legend{ display:flex; gap:16px; justify-content:center; margin:0 0 4px; font-size:11px; color:var(--text-dim); }
+  .strip-legend i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
   @media(max-width:760px){ .trade-plan-grid{ grid-template-columns:1fr; }.price-position{ padding:15px 10px; }.price-marker span{ font-size:9px; } }
   footer{ text-align:center; color: var(--text-dim); font-size:11px; padding: 30px 20px; }
   @media (max-width: 560px){
@@ -2772,22 +2794,53 @@ function gammaFlipBadgeHTML(d) {
   `;
 }
 function positionAndPlanHTML(d){
-  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall), flip=Number(d.gamma_flip);
+  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall),
+        flip=Number(d.gamma_flip), mp=Number(d.max_pain), moiw=Number(d.max_oi_wall);
   if(![spot,put,call].every(Number.isFinite) || call<=put) return '';
-  const padding=(call-put)*0.18, min=put-padding, max=call+padding;
+  const lv=[spot,put,call,flip,mp,moiw].filter(Number.isFinite);
+  const lo=Math.min(...lv), hi=Math.max(...lv);
+  const pad=Math.max((hi-lo)*0.12,(call-put)*0.15,0.5);
+  const min=lo-pad, max=hi+pad;
   const pos=value=>Math.max(2,Math.min(98,((value-min)/(max-min))*100));
+  const cpos=value=>Math.max(8,Math.min(92,pos(value)));
   const putDist=((spot-put)/spot)*100, callDist=((call-spot)/spot)*100;
   let decision='Wall 사이 박스권', detail='지지와 저항 사이에서 방향을 관찰합니다.';
   if(spot>=call){ decision='Call Wall(저항선) 돌파 · 지지 전환 확인'; detail='돌파한 저항선이 새로운 지지선으로 전환되는지 확인하세요.'; }
   else if(callDist<=1.5){ decision='Call Wall(저항선) 근접 · 저항 주의'; detail=`저항선까지 ${Math.abs(callDist).toFixed(2)}% · 돌파 여부와 저항 반응을 관찰하세요.`; }
   else if(putDist<=2){ decision='Put Wall(지지선) 근접 · 반등 관찰'; detail=`지지선 유지와 거래량 반등을 확인하세요.`; }
+  // 미니 마커 (감마플립/맥스페인): 겹치면 옆으로 밀기
+  const minis=[];
+  if(Number.isFinite(flip)) minis.push({v:flip,c:GOLD,t:'GF',p:fmtNum(flip,1)});
+  if(Number.isFinite(mp)) minis.push({v:mp,c:'#8b93a1',t:'MP',p:fmtNum(mp,1)});
+  let lastX=-10;
+  const miniHTML=minis.map(m=>{
+    let x=pos(m.v);
+    if(x-lastX<4.5) x=lastX+4.5;
+    lastX=x;
+    return `<div class="strip-mini" style="left:${x}%;--c:${m.c};"><span>${m.t} ${m.p}</span><em></em><i></i></div>`;
+  }).join('');
+  const tag=(v,c,title,price,cls,big)=>`
+    <div class="strip-dot${big?' big':''}" style="left:${pos(v)}%;background:${c};"></div>
+    <div class="strip-tag ${cls}${big?' big':''}" style="left:${cpos(v)}%;--c:${c};"><b>${title}</b><span>$${price}</span></div>`;
+  const showMoiw=Number.isFinite(moiw)&&Math.abs(moiw-call)>0.001&&Math.abs(moiw-put)>0.001;
+  const moiwCls=(showMoiw&&Math.abs(pos(moiw)-pos(spot))<11)?'above2':'above';
   return `<div class="price-position">
     <div class="price-position-head"><span>현재가의 Wall 위치</span><b>현재 판단: ${decision}</b></div>
-    <div class="price-rail">
-      <div class="price-marker" style="left:${pos(put)}%; background:${DOWN};"><span class="above" style="color:${DOWN};">Put Wall (지지선)<br>$${fmtNum(put,1)}</span></div>
-      ${Number.isFinite(flip)?`<div class="price-marker" style="left:${pos(flip)}%; background:${GOLD};"><span class="below" style="color:${GOLD};">Gamma Flip<br>$${fmtNum(flip,1)}</span></div>`:''}
-      <div class="price-marker" style="left:${pos(spot)}%; background:${GOLD}; box-shadow:0 0 0 3px ${GOLD}33;"><span class="above" style="color:${GOLD};">현재가<br>$${fmtNum(spot)}</span></div>
-      <div class="price-marker" style="left:${pos(call)}%; background:${UP};"><span class="below" style="color:${UP};">Call Wall (저항선)<br>$${fmtNum(call,1)}</span></div>
+    <div class="strip">
+      <div class="strip-zone sz-sup" style="left:0;width:${pos(put)}%;"></div>
+      <div class="strip-zone sz-box" style="left:${pos(put)}%;width:${Math.max(0,pos(call)-pos(put))}%;"></div>
+      <div class="strip-zone sz-brk" style="left:${pos(call)}%;width:${Math.max(0,100-pos(call))}%;"></div>
+      <div class="strip-line"></div>
+      ${miniHTML}
+      ${tag(put,DOWN,'Put Wall (지지)',fmtNum(put,1),'below')}
+      ${tag(call,UP,'Call Wall (저항)',fmtNum(call,1),'below')}
+      ${tag(spot,'#f0f2f5','현재가',fmtNum(spot),'above',true)}
+      ${showMoiw?tag(moiw,'#22c55e','Max OI Wall (다음 저항)',fmtNum(moiw,1),moiwCls):''}
+    </div>
+    <div class="strip-legend">
+      <span><i style="background:rgba(61,127,224,.35);"></i>지지 구간</span>
+      <span><i style="background:rgba(224,168,56,.35);"></i>박스권</span>
+      <span><i style="background:rgba(229,72,77,.35);"></i>돌파 구간</span>
     </div>
     <div class="trade-plan-grid">
       <div class="trade-plan buy"><div class="trade-plan-label" style="color:${DOWN};">지지선 관찰</div><div class="trade-plan-main">Put Wall(지지선) ${fmtNum(put,1)} · 반등 확인</div><div class="trade-plan-sub">지지 유지 · 거래량 반등 · HULL21 상승 전환을 함께 확인</div></div>
