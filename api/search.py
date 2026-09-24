@@ -1976,6 +1976,30 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"error": "ticker 파라미터가 필요합니다. 예: /api/search?ticker=AAPL"}, ensure_ascii=False).encode())
             return
 
+        if mode == "ticker_news":
+            try:
+                days = int((query.get("days", ["3"])[0] or "3"))
+            except ValueError:
+                days = 3
+            days = max(1, min(days, 7))
+            try:
+                articles, status = _finnhub_company_news_checked(ticker, days=days)
+                slim = [{
+                    "headline": a.get("headline"),
+                    "summary": (a.get("summary") or "")[:220],
+                    "source": a.get("source"),
+                    "url": a.get("url"),
+                    "datetime": a.get("datetime"),
+                } for a in articles]
+                self.wfile.write(json.dumps(
+                    {"ticker": ticker.upper(), "articles": slim, "news_status": status},
+                    ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps(
+                    {"error": str(e), "ticker": ticker.upper(), "news_status": "error"},
+                    ensure_ascii=False).encode())
+            return
+
         if mode == "paper_options":
             try:
                 result = recommend_paper_option_contracts(ticker)
