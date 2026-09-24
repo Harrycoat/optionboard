@@ -1508,7 +1508,7 @@ async function loadTradingJournal(){
   const sortedOpenTrades = allOpenTrades.slice().sort((a,b)=> parseTradeDate(b.buy_date) - parseTradeDate(a.buy_date));
   const openTrades = sortedOpenTrades.slice(0, 1);
   const moreCount = allOpenTrades.length - openTrades.length;
-  const moreLinkHTML = `<a href="/journal_drafts.html" style="display:block; margin-top:10px; font-size:12px; color:${GOLD};">전체 트레이드 기록 & 블로그 초안 보기 →${moreCount > 0 ? ` (진행중 ${moreCount}건 더)` : ''}</a>`;
+  const moreLinkHTML = '';
   if(!openTrades.length){
     openEl.innerHTML = '<div class="leader-empty">진행중인 포지션이 없습니다</div>' + moreLinkHTML;
   }else{
