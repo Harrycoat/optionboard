@@ -1880,6 +1880,13 @@ def _option_swing_setup_payload(ticker):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        path_only = urlparse(self.path).path
+        if not path_only.startswith("/api/"):
+            self.send_response(404)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(b"<html><body>404 Not Found</body></html>")
+            return
         query = parse_qs(urlparse(self.path).query)
         mode = (query.get("mode", [""])[0]).strip()
         view = (query.get("view", [""])[0]).strip()
