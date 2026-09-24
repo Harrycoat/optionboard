@@ -421,6 +421,23 @@
   .qf-value.stage4{ color: var(--down); }
   .qf-value.stage1, .qf-value.stage3{ color: var(--gold); }
   .price-position{ margin:16px 0 14px; padding:18px 18px 15px; background:var(--panel-2); border:1px solid var(--line); border-radius:9px; }
+  .plain-summary{ margin:14px 0; padding:16px 18px; background:linear-gradient(135deg, rgba(224,168,56,.10), rgba(224,168,56,.03)); border:1px solid rgba(224,168,56,.45); border-radius:10px; }
+  .plain-summary-title{ font-size:13px; font-weight:900; color:var(--gold); margin-bottom:8px; }
+  .plain-summary p{ margin:0 0 6px; font-size:14.5px; line-height:1.65; color:var(--text); }
+  .plain-summary p:last-child{ margin-bottom:0; }
+  .wall-change{ margin:0 0 14px; padding:13px 16px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; }
+  .wall-change-title{ font-size:12.5px; font-weight:900; color:var(--text); margin-bottom:8px; }
+  .wall-change-title span{ color:var(--text-dim); font-weight:400; font-size:11.5px; }
+  .wall-change-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .wall-change-grid>div{ font-size:11px; color:var(--text-dim); }
+  .wall-change-grid b{ display:block; font-size:13px; color:var(--text); margin-top:2px; font-family:'JetBrains Mono',monospace; }
+  .wall-change-grid b span{ color:var(--gold); }
+  .wall-change-hint{ margin-top:8px; font-size:11px; color:var(--text-dim); line-height:1.55; }
+  .server-narrative{ margin:14px 0; padding:16px 18px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; }
+  .server-narrative-title{ font-size:13px; font-weight:900; color:var(--text); margin-bottom:8px; }
+  .server-narrative p{ margin:0 0 7px; font-size:13px; line-height:1.7; color:var(--text); }
+  .server-narrative p:last-child{ margin-bottom:0; }
+  @media(max-width:760px){ .wall-change-grid{ grid-template-columns:1fr 1fr; } }
   .price-position-head{ display:flex; justify-content:space-between; gap:12px; margin-bottom:20px; font-size:12px; color:var(--text-dim); }
   .price-position-head b{ color:var(--gold); font-size:13px; }
   .price-rail{ position:relative; height:8px; border-radius:10px; background:linear-gradient(90deg,var(--down),#7688a5 48%,#b06d68 70%,var(--up)); margin:30px 10px 32px; }
@@ -2830,6 +2847,51 @@ function callOiTrendBadgeHTML(rows) {
 }
 
 let currentDetail = null;
+function plainSummaryHTML(d){
+  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall);
+  if(![spot,put,call].every(Number.isFinite)) return '';
+  const callPct=((call-spot)/spot)*100, putPct=((spot-put)/spot)*100;
+  let line='';
+  if(spot>=call) line=`지금 <b>$${fmtNum(spot)}</b> — 저항선 $${fmtNum(call,1)}을 넘어선 상태예요. 돌파가 유지되는지 확인하는 구간입니다.`;
+  else if(callPct<=1.5) line=`지금 <b>$${fmtNum(spot)}</b> — 저항선 $${fmtNum(call,1)} 바로 아래예요. 뚫고 올라가는지, 막히고 내려오는지 보는 자리입니다.`;
+  else if(putPct<=2) line=`지금 <b>$${fmtNum(spot)}</b> — 지지선 $${fmtNum(put,1)} 바로 위예요. 버티고 반등하는지, 깨고 내려가는지 보는 자리입니다.`;
+  else line=`지금 <b>$${fmtNum(spot)}</b> — 지지선 $${fmtNum(put,1)}와 저항선 $${fmtNum(call,1)} 사이에서 움직이는 중예요.`;
+  const regime = d.regime==='positive'
+    ? '딜러들이 가격을 안정시키는 구간이라 급등락보다 박스권 흐름이 나올 수 있어요.'
+    : '가격 변동이 평소보다 커질 수 있는 구간이라 등락에 주의하세요.';
+  return `<div class="plain-summary"><div class="plain-summary-title">💬 한 줄 요약</div><p>${line}</p><p>${regime}</p></div>`;
+}
+function wallChangeHTML(d){
+  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall), flip=Number(d.gamma_flip);
+  if(![spot,put,call].every(Number.isFinite)) return '';
+  let prev=null;
+  try{ prev=(JSON.parse(localStorage.getItem('gex_last_walls')||'{}'))[d.ticker]; }catch(e){}
+  let html='';
+  if(prev && Number.isFinite(prev.put) && Number.isFinite(prev.call)){
+    const dPut=put-prev.put, dCall=call-prev.call;
+    const dFlip=(Number.isFinite(flip)&&Number.isFinite(prev.flip))?flip-prev.flip:null;
+    const arrow=v=>v>0?'▲':v<0?'▼':'—';
+    const fD=v=>`${v>0?'+':''}${v.toFixed(1)}`;
+    html=`<div class="wall-change"><div class="wall-change-title">🔄 지난번 확인 대비 <span>${prev.date||''}에 본 수치</span></div>
+    <div class="wall-change-grid">
+      <div>지지선 (Put Wall)<b>$${fmtNum(prev.put,1)} → $${fmtNum(put,1)} <span>${arrow(dPut)}${fD(dPut)}</span></b></div>
+      <div>저항선 (Call Wall)<b>$${fmtNum(prev.call,1)} → $${fmtNum(call,1)} <span>${arrow(dCall)}${fD(dCall)}</span></b></div>
+      ${dFlip!=null?`<div>Gamma Flip<b>$${fmtNum(prev.flip,1)} → $${fmtNum(flip,1)} <span>${arrow(dFlip)}${fD(dFlip)}</span></b></div>`:''}
+    </div>
+    <div class="wall-change-hint">벽이 위로 이동하면 지지·저항도 함께 올라간 거예요. 매일 확인하면 흐름이 보입니다.</div></div>`;
+  }
+  try{
+    const all=JSON.parse(localStorage.getItem('gex_last_walls')||'{}');
+    const t=new Date(); const ds=`${t.getMonth()+1}/${t.getDate()}`;
+    all[d.ticker]={put:put,call:call,flip:Number.isFinite(flip)?flip:null,spot:spot,date:ds};
+    localStorage.setItem('gex_last_walls', JSON.stringify(all));
+  }catch(e){}
+  return html;
+}
+function serverNarrativeHTML(d){
+  if(!d.narrative || !d.narrative.length) return '';
+  return `<div class="server-narrative"><div class="server-narrative-title">📝 오늘의 해석</div>${d.narrative.map(n=>`<p>${n}</p>`).join('')}</div>`;
+}
 function renderDetail(d){
   currentDetail = d;
   const detail = document.getElementById('detail');
@@ -2871,6 +2933,8 @@ function renderDetail(d){
         </button>
       </div>
     </div>
+    ${plainSummaryHTML(d)}
+    ${wallChangeHTML(d)}
     <div id="interestSaveHint" style="margin-top:10px;padding:9px 12px;border:1px solid rgba(224,168,56,.32);border-radius:7px;background:rgba(224,168,56,.055);color:var(--text-dim);font-size:11px;line-height:1.55;">
       ★ 이 종목을 계속 보고 싶다면 <b style="color:var(--gold);">관심종목으로 저장</b>하세요. 처음 방문한 경우 저장 버튼을 누르면 로그인/회원가입 창이 열리고, 로그인 후 자동으로 저장됩니다.
     </div>
@@ -2878,6 +2942,7 @@ function renderDetail(d){
       만기 ${d.expiry_used} 기준 Max Pain · 근접 만기 ${d.expiries_included_in_gex.length}개 합산 GEX
     </div>
     ${positionAndPlanHTML(d)}
+    ${serverNarrativeHTML(d)}
     ${gammaFlipBadgeHTML(d)}
     <div class="kpi-grid">
       <div class="kpi"><div class="label">Max Pain</div><div class="value">${fmtNum(d.max_pain,1)}</div></div>
