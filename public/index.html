@@ -443,6 +443,15 @@
   .expiry-card-title span{ color:var(--text-dim); font-weight:400; font-size:11.5px; }
   .expiry-card p{ margin:0 0 5px; font-size:13.5px; line-height:1.65; color:var(--text); }
   .expiry-card-sub{ font-size:11px !important; color:var(--text-dim) !important; margin:0 !important; }
+  .news-card{ margin:14px 0; padding:14px 16px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; }
+  .news-card-title{ font-size:13px; font-weight:900; color:var(--text); margin-bottom:10px; }
+  .news-item{ display:block; padding:9px 0; border-top:1px solid var(--line); text-decoration:none; }
+  .news-item:first-of-type{ border-top:none; padding-top:0; }
+  .news-item-head{ font-size:13.5px; font-weight:700; color:var(--text); line-height:1.5; }
+  .news-item:hover .news-item-head{ color:var(--gold); }
+  .news-item-meta{ font-size:11px; color:var(--text-dim); margin-top:3px; }
+  .news-item-sum{ font-size:12px; color:var(--text-dim); line-height:1.55; margin-top:4px; }
+  .news-empty{ font-size:12px; color:var(--text-dim); }
   .price-position-head{ display:flex; justify-content:space-between; gap:12px; margin-bottom:20px; font-size:12px; color:var(--text-dim); }
   .price-position-head b{ color:var(--gold); font-size:13px; }
   .price-rail{ position:relative; height:8px; border-radius:10px; background:linear-gradient(90deg,var(--down),#7688a5 48%,#b06d68 70%,var(--up)); margin:30px 10px 32px; }
@@ -2833,6 +2842,44 @@ function callOiTrendBadgeHTML(rows) {
 }
 
 let currentDetail = null;
+function escHTML(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+async function loadTickerNews(ticker){
+  const el = document.getElementById('tickerNewsSection');
+  if(!el) return;
+  el.innerHTML = `<div class="news-empty">최근 뉴스 확인 중...</div>`;
+  try{
+    const res = await fetch(`/api/search?mode=ticker_news&ticker=${encodeURIComponent(ticker)}&days=3`);
+    const data = await res.json();
+    const arts = data.articles || [];
+    if(!arts.length){ el.innerHTML = ''; return; }
+    el.innerHTML = `<div class="news-card"><div class="news-card-title">📰 최근 뉴스</div>` + arts.map(a=>{
+      const dt = a.datetime ? new Date(a.datetime*1000) : null;
+      const ds = dt ? `${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}` : '';
+      return `<a class="news-item" href="${escHTML(a.url)}" target="_blank" rel="noopener">
+        <div class="news-item-head">${escHTML(a.headline)}</div>
+        <div class="news-item-meta">${escHTML(a.source||'')}${ds?' · '+ds:''}</div>
+        ${a.summary?`<div class="news-item-sum">${escHTML(a.summary)}</div>`:''}
+      </a>`;
+    }).join('') + `</div>`;
+  }catch(e){ el.innerHTML = ''; }
+}
+async function loadFilings(ticker){
+  const el = document.getElementById('filingsSection');
+  if(!el) return;
+  el.innerHTML = `<div class="news-empty">최근 공시 확인 중...</div>`;
+  try{
+    const res = await fetch(`/api/filings?ticker=${encodeURIComponent(ticker)}`);
+    const data = await res.json();
+    const fl = data.filings || [];
+    if(!fl.length){ el.innerHTML = ''; return; }
+    el.innerHTML = `<div class="news-card"><div class="news-card-title">📋 최근 공시 <span style="font-weight:400;font-size:11px;color:var(--text-dim);">SEC EDGAR</span></div>` + fl.map(f=>
+      `<a class="news-item" href="${escHTML(f.url)}" target="_blank" rel="noopener">
+        <div class="news-item-head">[${escHTML(f.form)}] ${escHTML(f.label)}</div>
+        <div class="news-item-meta">${escHTML(f.date)}</div>
+      </a>`
+    ).join('') + `</div>`;
+  }catch(e){ el.innerHTML = ''; }
+}
 function expiryCardHTML(d){
   const mp=Number(d.max_pain), spot=Number(d.spot);
   if(!Number.isFinite(mp) || !d.expiry_used) return '';
@@ -2940,6 +2987,8 @@ function renderDetail(d){
     </div>
     ${positionAndPlanHTML(d)}
     ${serverNarrativeHTML(d)}
+    <div id="tickerNewsSection" style="margin-top:4px;"></div>
+    <div id="filingsSection" style="margin-top:4px;"></div>
     ${gammaFlipBadgeHTML(d)}
     <div class="kpi-grid">
       <div class="kpi"><div class="label">Max Pain</div><div class="value">${fmtNum(d.max_pain,1)}</div></div>
@@ -3000,6 +3049,8 @@ function renderDetail(d){
   expertCharts?.addEventListener('toggle', renderExpertCharts);
   renderExpertCharts();
   loadOiChange(d.ticker);
+  loadTickerNews(d.ticker);
+  loadFilings(d.ticker);
 }
 async function loadOiChange(ticker){
   const el = document.getElementById('oiChangeSection');
