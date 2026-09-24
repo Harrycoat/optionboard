@@ -2783,25 +2783,6 @@ function positionAndPlanHTML(d){
     </div>
   </div>`;
 }
-function conciseNarrativeHTML(d){
-  const spot=Number(d.spot), put=Number(d.put_wall), call=Number(d.call_wall), flip=Number(d.gamma_flip);
-  if(![spot,put,call].every(Number.isFinite)) return '';
-  const callPct=((call-spot)/spot)*100;
-  const putPct=((spot-put)/spot)*100;
-  const aboveCall=spot>=call;
-  const regimeText=d.regime==='positive'
-    ? '현재는 양의 감마 구간으로 급격한 추세보다 박스권 흐름이 나타날 수 있습니다.'
-    : '현재는 음의 감마 구간으로 가격 변동이 평소보다 확대될 수 있습니다.';
-  return `<div style="font-size:12px; line-height:1.75;">
-    <p style="margin:0 0 9px; font-weight:800; color:var(--text);">오늘의 핵심 해석</p>
-    <p style="margin:0 0 6px;">• 현재가 <b>$${fmtNum(spot)}</b>는 Call Wall <b>$${fmtNum(call,1)}</b> ${aboveCall?'위에 있습니다.':'아래에 있습니다.'}</p>
-    <p style="margin:0 0 6px;">• Call Wall까지 <b>${Math.abs(callPct).toFixed(2)}%</b>입니다. ${aboveCall?'돌파 가격대가 새로운 지지선으로 전환되는지 확인합니다.':'추격매수보다 저항 반응을 먼저 확인합니다.'}</p>
-    <p style="margin:0 0 6px;">• $${fmtNum(call,1)}에서 밀리면 일부 수익실현이나 헤지를 검토하고, 거래량과 함께 돌파·지지하면 재진입 후보로 관찰합니다.</p>
-    <p style="margin:0 0 6px;">• 조정 시 ${Number.isFinite(flip)?`Gamma Flip <b>$${fmtNum(flip,1)}</b>과 `:''}Put Wall <b>$${fmtNum(put,1)}</b>을 다음 지지 구간으로 관찰합니다. 현재가에서 Put Wall까지는 ${Math.abs(putPct).toFixed(2)}%입니다.</p>
-    <p style="margin:0;">• ${regimeText}</p>
-  </div>`;
-}
-
 // ========================================================================
 // 신규 추가 2: 콜 OI 증가 배지
 // ========================================================================
@@ -2985,8 +2966,7 @@ function renderDetail(d){
     </details>
     <div id="oiChangeSection" style="margin-top:18px;"></div>
     <div class="note">
-      ${conciseNarrativeHTML(d)}
-      <p style="margin:12px 0 0; color:var(--text-dim); font-size:11px;">
+      <p style="margin:0; color:var(--text-dim); font-size:11px;">
         ⚠️ 데이터는 약 15분 지연되며 참고용 정보일 뿐 투자 권유가 아닙니다. 실제 매매 전 가격을 다시 확인하세요.
       </p>
     </div>
