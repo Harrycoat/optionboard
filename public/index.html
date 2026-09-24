@@ -3200,7 +3200,7 @@ function buildXShareText(d){
   // X 스레드(3트윗, 각 280자 이내) · Threads는 전체를 한 번에 붙여넣기
   const px = d.spot != null ? ` $${fmtNum(d.spot)}` : '';
   const t1 = [];
-  t1.push(`\uD83D\uDEA8 $${d.ticker}${px} \u2014 Put Wall\u00B7Call Wall \uCCB4\uD06C \uD83E\uDDF51/3`);
+  t1.push(`\uD83D\uDEA8 $${d.ticker}${px} \u2014 Buy or Sell Now? \uD83E\uDDF51/3`);
   if(d.put_wall != null){
     const pct = d.spot ? ` (${(((d.put_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.put_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
     t1.push(`\uD83D\uDCCD Put Wall $${fmtNum(d.put_wall,1)}${pct} \u2192 \uC9C0\uC9C0\u00B7\uBC18\uB4F1 \uC790\uB9AC`);
@@ -3212,6 +3212,7 @@ function buildXShareText(d){
   if(d.gamma_flip != null){
     t1.push(`\uD83D\uDCCA Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
   }
+  t1.push('"\uD48B\uC6D4 \uADFC\uCC98\uC5D0\uC11C \uB9E4\uC218, \uCF5C\uC6D4 \uADFC\uCC98\uC5D0\uC11C \uB9AC\uC2A4\uD06C \uAD00\uB9AC"');
   t1.push('\uC2E4\uC2DC\uAC04 \uC6D4 \uD83D\uDC49 https://www.gexoption.com');
   const t2 = [
     '\uD83E\uDDF52/3 GEX \uC2A4\uC719 \uD504\uB808\uC784\uC6CC\uD06C',
