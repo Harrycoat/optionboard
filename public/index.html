@@ -2970,7 +2970,7 @@ function renderDetail(d){
         <button class="interest-add-btn" id="interestAddBtn" type="button" onclick="togglePersonalWatchlist(currentDetail.ticker)" aria-pressed="false" style="border-color:#e0a838;background:rgba(224,168,56,.14);color:#f2bd4c;font-weight:900;">
           ★ 관심종목으로 저장
         </button>
-        <button class="share-x-btn" onclick="shareToX(currentDetail)" title="X·Threads용 홍보 문구 복사 (280자 이내)">
+        <button class="share-x-btn" onclick="shareToX(currentDetail)" title="X 스레드(3트윗) 홍보 문구 복사 — 각 트윗 280자 이내">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.65l7.73-8.84L1.24 2.25h6.83l4.72 6.24 5.45-6.24Zm-1.17 17.52h1.83L7.02 4.13H5.06l12.01 15.64Z"/></svg>
           홍보 문구 복사 · Copy
         </button>
@@ -3197,23 +3197,36 @@ function renderOiGexChart(containerId, d){
   el.innerHTML = svg;
 }
 function buildXShareText(d){
-  // X(280자)·Threads(500자)에 바로 붙여넣을 수 있는 짧은 홍보 문구
-  const L = [];
+  // X 스레드(3트윗, 각 280자 이내) · Threads는 전체를 한 번에 붙여넣기
   const px = d.spot != null ? ` $${fmtNum(d.spot)}` : '';
-  L.push(`\uD83D\uDEA8 $${d.ticker}${px} \u2014 Put Wall\u00B7Call Wall \uCCB4\uD06C`);
+  const t1 = [];
+  t1.push(`\uD83D\uDEA8 $${d.ticker}${px} \u2014 Put Wall\u00B7Call Wall \uCCB4\uD06C \uD83E\uDDF51/3`);
   if(d.put_wall != null){
     const pct = d.spot ? ` (${(((d.put_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.put_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
-    L.push(`\uD83D\uDCCD Put Wall $${fmtNum(d.put_wall,1)}${pct} \u2192 \uC9C0\uC9C0\u00B7\uBC18\uB4F1 \uC790\uB9AC`);
+    t1.push(`\uD83D\uDCCD Put Wall $${fmtNum(d.put_wall,1)}${pct} \u2192 \uC9C0\uC9C0\u00B7\uBC18\uB4F1 \uC790\uB9AC`);
   }
   if(d.call_wall != null){
     const pct = d.spot ? ` (${(((d.call_wall - d.spot) / d.spot * 100) >= 0 ? '+' : '')}${((d.call_wall - d.spot) / d.spot * 100).toFixed(1)}%)` : '';
-    L.push(`\uD83D\uDCCD Call Wall $${fmtNum(d.call_wall,1)}${pct} \u2192 \uC800\uD56D\u00B7\uC218\uC775\uC2E4\uD604 \uC790\uB9AC`);
+    t1.push(`\uD83D\uDCCD Call Wall $${fmtNum(d.call_wall,1)}${pct} \u2192 \uC800\uD56D\u00B7\uC218\uC775\uC2E4\uD604 \uC790\uB9AC`);
   }
-  L.push('\uD48B\uC6D4\uC5D0\uC11C \uBC18\uB4F1 \uD655\uC778, \uCF5C\uC6D4\uC5D0\uC11C \uB9AC\uC2A4\uD06C \uAD00\uB9AC.');
-  L.push('\uC2E4\uC2DC\uAC04 \uC6D4 \uD83D\uDC49 https://www.gexoption.com');
-  L.push(`#${d.ticker} #PutWall #CallWall #\uBBF8\uAD6D\uC8FC\uC2DD`);
-  L.push('\u26A0\uFE0F \uC815\uBCF4\u00B7\uAD50\uC721 \uBAA9\uC801. \uD22C\uC790 \uAD8C\uC720 \uC544\uB2D8.');
-  return L.join('\n');
+  if(d.gamma_flip != null){
+    t1.push(`\uD83D\uDCCA Gamma Flip $${fmtNum(d.gamma_flip,1)}`);
+  }
+  t1.push('\uC2E4\uC2DC\uAC04 \uC6D4 \uD83D\uDC49 https://www.gexoption.com');
+  const t2 = [
+    '\uD83E\uDDF52/3 GEX \uC2A4\uC719 \uD504\uB808\uC784\uC6CC\uD06C',
+    '\u2022 \uD48B\uC6D4 \uBC18\uB4F1 + \uAC70\uB798\uB7C9\u00B7HULL21 \uC0C1\uC2B9 \u2192 \uC9C4\uC785 \uC14B\uC5C5',
+    '\u2022 \uCF5C\uC6D4 \uC800\uD56D + H21 TOP \u2192 \uC218\uC775\uC2E4\uD604\u00B7\uD5E4\uC9C0',
+    '\u2022 \uCF5C\uC6D4 \uB3CC\uD30C \uD6C4 \uC548\uCC29 \u2192 \uC7AC\uC9C4\uC785 \uD6C4\uBCF4',
+    '\uD48B\uC6D4\uC5D0\uC11C \uBC18\uB4F1 \uD655\uC778, \uCF5C\uC6D4\uC5D0\uC11C \uB9AC\uC2A4\uD06C \uAD00\uB9AC.'
+  ];
+  const t3 = [
+    '\uD83E\uDDF53/3 \uC624\uB298\uC758 \uC2E4\uC2DC\uAC04 Put Wall\u00B7Call Wall\u00B7GEX \uD83D\uDC47',
+    'https://www.gexoption.com',
+    `#${d.ticker} #PutWall #CallWall #\uBBF8\uAD6D\uC8FC\uC2DD #\uC635\uC158\uB9E4\uB9E4`,
+    '\u26A0\uFE0F \uC815\uBCF4\u00B7\uAD50\uC721 \uBAA9\uC801. \uD22C\uC790 \uAD8C\uC720 \uC544\uB2D8.'
+  ];
+  return t1.join('\n') + '\n\n' + t2.join('\n') + '\n\n' + t3.join('\n');
 }
 function showToast(msg){
   let toast = document.getElementById('shareToast');
