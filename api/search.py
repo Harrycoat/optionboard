@@ -728,6 +728,63 @@ def _finnhub_company_news_checked(ticker, days=2):
         return [], "invalid_response"
 
 
+_SEC_UA = {"User-Agent": "gexoption/1.0 (tmartbakersfield@gmail.com)", "Accept": "application/json"}
+_SEC_FORM_LABELS = {
+    "8-K": "주요 공시", "8-K/A": "주요 공시(정정)",
+    "10-Q": "분기보고서", "10-Q/A": "분기보고서(정정)",
+    "10-K": "연간보고서", "10-K/A": "연간보고서(정정)",
+    "S-1": "증권신고서", "S-3": "증권신고서", "424B4": "공모 확정서",
+    "6-K": "외국기업 공시", "DEF 14A": "주주총회 위임장",
+    "4": "내부자 거래", "4/A": "내부자 거래(정정)", "3": "내부자 보유",
+    "5": "내부자 연간보고", "13D": "5% 이상 보유", "13G": "5% 이상 보유(간이)",
+    "144": "대주주 매각 예정",
+}
+_SEC_WANT = set(_SEC_FORM_LABELS.keys())
+_sec_ticker_map = None
+
+def _sec_ticker_map_load():
+    global _sec_ticker_map
+    if _sec_ticker_map is None:
+        r = requests.get("https://www.sec.gov/files/company_tickers.json",
+                         headers=_SEC_UA, timeout=10)
+        r.raise_for_status()
+        _sec_ticker_map = {v["ticker"].upper(): str(v["cik_str"]) for v in r.json().values()}
+    return _sec_ticker_map
+
+def _sec_recent_filings(ticker):
+    """Return (filings list, status). No API key needed (SEC EDGAR)."""
+    try:
+        cik = _sec_ticker_map_load().get(ticker.upper())
+        if not cik:
+            return [], "unknown_ticker"
+        r = requests.get(f"https://data.sec.gov/submissions/CIK{cik.zfill(10)}.json",
+                         headers=_SEC_UA, timeout=10)
+        if r.status_code != 200:
+            return [], f"http_{r.status_code}"
+        recent = r.json().get("filings", {}).get("recent", {})
+        forms = recent.get("form", [])
+        dates = recent.get("filingDate", [])
+        accs = recent.get("accessionNumber", [])
+        docs = recent.get("primaryDocument", [])
+        out = []
+        for i, form in enumerate(forms):
+            if form not in _SEC_WANT:
+                continue
+            acc = accs[i].replace("-", "")
+            out.append({
+                "form": form,
+                "label": _SEC_FORM_LABELS.get(form, form),
+                "date": dates[i],
+                "url": f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc}/{docs[i]}",
+            })
+            if len(out) >= 5:
+                break
+        return out, "ok"
+    except requests.RequestException:
+        return [], "request_failed"
+    except (ValueError, TypeError, KeyError):
+        return [], "invalid_response"
+
 def _news_reason(headline):
     text = (headline or "").lower()
     groups = [
@@ -1997,6 +2054,18 @@ class handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self.wfile.write(json.dumps(
                     {"error": str(e), "ticker": ticker.upper(), "news_status": "error"},
+                    ensure_ascii=False).encode())
+            return
+
+        if mode == "ticker_filings":
+            try:
+                filings, status = _sec_recent_filings(ticker)
+                self.wfile.write(json.dumps(
+                    {"ticker": ticker.upper(), "filings": filings, "filings_status": status},
+                    ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps(
+                    {"error": str(e), "ticker": ticker.upper(), "filings_status": "error"},
                     ensure_ascii=False).encode())
             return
 
