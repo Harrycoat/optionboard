@@ -2868,7 +2868,7 @@ async function loadFilings(ticker){
   if(!el) return;
   el.innerHTML = `<div class="news-empty">최근 공시 확인 중...</div>`;
   try{
-    const res = await fetch(`/api/filings?ticker=${encodeURIComponent(ticker)}`);
+    const res = await fetch(`/api/search?mode=ticker_filings&ticker=${encodeURIComponent(ticker)}`);
     const data = await res.json();
     const fl = data.filings || [];
     if(!fl.length){ el.innerHTML = ''; return; }
