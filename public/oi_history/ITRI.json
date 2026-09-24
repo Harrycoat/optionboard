@@ -1,178 +1,6 @@
 [
   {
     "ticker": "ITRI",
-    "date": "2026-09-07",
-    "spot": 97.01,
-    "expiries_used": [
-      "2026-09-18",
-      "2026-10-16"
-    ],
-    "strikes": [
-      {
-        "strike": 45,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 50,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 55,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 60,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 65,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 70,
-        "call_oi": 0.0,
-        "put_oi": 2.0,
-        "call_volume": 0.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 75,
-        "call_oi": 0.0,
-        "put_oi": 5.0,
-        "call_volume": 0.0,
-        "put_volume": 3.0
-      },
-      {
-        "strike": 80,
-        "call_oi": 0.0,
-        "put_oi": 6.0,
-        "call_volume": 0.0,
-        "put_volume": 3.0
-      },
-      {
-        "strike": 85,
-        "call_oi": 0.0,
-        "put_oi": 13.0,
-        "call_volume": 0.0,
-        "put_volume": 12.0
-      },
-      {
-        "strike": 90,
-        "call_oi": 10.0,
-        "put_oi": 10.0,
-        "call_volume": 2.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 95,
-        "call_oi": 1.0,
-        "put_oi": 49.0,
-        "call_volume": 1.0,
-        "put_volume": 30.0
-      },
-      {
-        "strike": 100,
-        "call_oi": 39.0,
-        "put_oi": 52.0,
-        "call_volume": 15.0,
-        "put_volume": 6.0
-      },
-      {
-        "strike": 105,
-        "call_oi": 46.0,
-        "put_oi": 6.0,
-        "call_volume": 5.0,
-        "put_volume": 2.0
-      },
-      {
-        "strike": 110,
-        "call_oi": 72.0,
-        "put_oi": 1.0,
-        "call_volume": 5.0,
-        "put_volume": 2.0
-      },
-      {
-        "strike": 115,
-        "call_oi": 6.0,
-        "put_oi": 0.0,
-        "call_volume": 5.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 120,
-        "call_oi": 7.0,
-        "put_oi": 0.0,
-        "call_volume": 1.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 125,
-        "call_oi": 1.0,
-        "put_oi": 0.0,
-        "call_volume": 1.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 130,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 135,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 140,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 145,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 150,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 155,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      }
-    ]
-  },
-  {
-    "ticker": "ITRI",
     "date": "2026-09-08",
     "spot": 96.57,
     "expiries_used": [
@@ -2331,6 +2159,178 @@
       {
         "strike": 105,
         "call_oi": 276.0,
+        "put_oi": 0.0,
+        "call_volume": 252.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 110,
+        "call_oi": 326.0,
+        "put_oi": 0.0,
+        "call_volume": 3.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 115,
+        "call_oi": 1442.0,
+        "put_oi": 0.0,
+        "call_volume": 2030.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 120,
+        "call_oi": 4.0,
+        "put_oi": 0.0,
+        "call_volume": 1.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 125,
+        "call_oi": 11.0,
+        "put_oi": 5.0,
+        "call_volume": 10.0,
+        "put_volume": 5.0
+      },
+      {
+        "strike": 130,
+        "call_oi": 1.0,
+        "put_oi": 0.0,
+        "call_volume": 1.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 135,
+        "call_oi": 3.0,
+        "put_oi": 0.0,
+        "call_volume": 2.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 140,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 145,
+        "call_oi": 251.0,
+        "put_oi": 0.0,
+        "call_volume": 251.0,
+        "put_volume": 10.0
+      },
+      {
+        "strike": 150,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 155,
+        "call_oi": 1.0,
+        "put_oi": 0.0,
+        "call_volume": 1.0,
+        "put_volume": 0.0
+      }
+    ]
+  },
+  {
+    "ticker": "ITRI",
+    "date": "2026-09-24",
+    "spot": 91.26,
+    "expiries_used": [
+      "2026-10-16",
+      "2026-11-20"
+    ],
+    "strikes": [
+      {
+        "strike": 45,
+        "call_oi": 0.0,
+        "put_oi": 10.0,
+        "call_volume": 0.0,
+        "put_volume": 4.0
+      },
+      {
+        "strike": 50,
+        "call_oi": 0.0,
+        "put_oi": 6.0,
+        "call_volume": 0.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 55,
+        "call_oi": 1.0,
+        "put_oi": 2.0,
+        "call_volume": 1.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 60,
+        "call_oi": 6.0,
+        "put_oi": 3.0,
+        "call_volume": 2.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 65,
+        "call_oi": 0.0,
+        "put_oi": 2.0,
+        "call_volume": 0.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 70,
+        "call_oi": 2.0,
+        "put_oi": 21.0,
+        "call_volume": 3.0,
+        "put_volume": 5.0
+      },
+      {
+        "strike": 75,
+        "call_oi": 0.0,
+        "put_oi": 31.0,
+        "call_volume": 0.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 80,
+        "call_oi": 20.0,
+        "put_oi": 17.0,
+        "call_volume": 1.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 85,
+        "call_oi": 8.0,
+        "put_oi": 275.0,
+        "call_volume": 3.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 90,
+        "call_oi": 17.0,
+        "put_oi": 18.0,
+        "call_volume": 9.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 95,
+        "call_oi": 90.0,
+        "put_oi": 124.0,
+        "call_volume": 13.0,
+        "put_volume": 14.0
+      },
+      {
+        "strike": 100,
+        "call_oi": 2953.0,
+        "put_oi": 40.0,
+        "call_volume": 2.0,
+        "put_volume": 13.0
+      },
+      {
+        "strike": 105,
+        "call_oi": 278.0,
         "put_oi": 0.0,
         "call_volume": 252.0,
         "put_volume": 0.0

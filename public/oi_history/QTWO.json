@@ -1,115 +1,6 @@
 [
   {
     "ticker": "QTWO",
-    "date": "2026-09-07",
-    "spot": 62.13,
-    "expiries_used": [
-      "2026-09-18",
-      "2026-10-16"
-    ],
-    "strikes": [
-      {
-        "strike": 30,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 35,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 40,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 45,
-        "call_oi": 1.0,
-        "put_oi": 26.0,
-        "call_volume": 1.0,
-        "put_volume": 25.0
-      },
-      {
-        "strike": 50,
-        "call_oi": 1.0,
-        "put_oi": 1.0,
-        "call_volume": 1.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 55,
-        "call_oi": 3.0,
-        "put_oi": 4.0,
-        "call_volume": 6.0,
-        "put_volume": 4.0
-      },
-      {
-        "strike": 60,
-        "call_oi": 10.0,
-        "put_oi": 6.0,
-        "call_volume": 2.0,
-        "put_volume": 5.0
-      },
-      {
-        "strike": 65,
-        "call_oi": 68.0,
-        "put_oi": 8.0,
-        "call_volume": 2.0,
-        "put_volume": 4.0
-      },
-      {
-        "strike": 70,
-        "call_oi": 201.0,
-        "put_oi": 0.0,
-        "call_volume": 9.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 75,
-        "call_oi": 21.0,
-        "put_oi": 0.0,
-        "call_volume": 4.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 80,
-        "call_oi": 4.0,
-        "put_oi": 0.0,
-        "call_volume": 4.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 85,
-        "call_oi": 1.0,
-        "put_oi": 0.0,
-        "call_volume": 1.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 90,
-        "call_oi": 90.0,
-        "put_oi": 0.0,
-        "call_volume": 9.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 95,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      }
-    ]
-  },
-  {
-    "ticker": "QTWO",
     "date": "2026-09-08",
     "spot": 60.38,
     "expiries_used": [
@@ -1554,6 +1445,136 @@
       {
         "strike": 65,
         "call_oi": 90.0,
+        "put_oi": 45.0,
+        "call_volume": 7.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 70,
+        "call_oi": 115.0,
+        "put_oi": 0.0,
+        "call_volume": 100.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 75,
+        "call_oi": 66.0,
+        "put_oi": 18.0,
+        "call_volume": 7.0,
+        "put_volume": 18.0
+      },
+      {
+        "strike": 80,
+        "call_oi": 4.0,
+        "put_oi": 0.0,
+        "call_volume": 1.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 85,
+        "call_oi": 9.0,
+        "put_oi": 0.0,
+        "call_volume": 8.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 90,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 95,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 100,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      }
+    ]
+  },
+  {
+    "ticker": "QTWO",
+    "date": "2026-09-24",
+    "spot": 56.025,
+    "expiries_used": [
+      "2026-10-16",
+      "2026-11-20"
+    ],
+    "strikes": [
+      {
+        "strike": 22.5,
+        "call_oi": 0.0,
+        "put_oi": 4.0,
+        "call_volume": 0.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 25,
+        "call_oi": 0.0,
+        "put_oi": 29.0,
+        "call_volume": 0.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 30,
+        "call_oi": 0.0,
+        "put_oi": 21.0,
+        "call_volume": 0.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 35,
+        "call_oi": 0.0,
+        "put_oi": 8.0,
+        "call_volume": 0.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 40,
+        "call_oi": 0.0,
+        "put_oi": 4.0,
+        "call_volume": 2.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 45,
+        "call_oi": 7.0,
+        "put_oi": 9.0,
+        "call_volume": 1.0,
+        "put_volume": 4.0
+      },
+      {
+        "strike": 50,
+        "call_oi": 46.0,
+        "put_oi": 4.0,
+        "call_volume": 5.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 55,
+        "call_oi": 8.0,
+        "put_oi": 20.0,
+        "call_volume": 2.0,
+        "put_volume": 4.0
+      },
+      {
+        "strike": 60,
+        "call_oi": 91.0,
+        "put_oi": 6.0,
+        "call_volume": 32.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 65,
+        "call_oi": 91.0,
         "put_oi": 45.0,
         "call_volume": 7.0,
         "put_volume": 1.0
