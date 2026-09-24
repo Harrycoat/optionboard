@@ -6,6 +6,9 @@
     "api/candles.py": {
       "maxDuration": 30
     },
+    "api/bars.py": {
+      "maxDuration": 30
+    },
     "api/call_wall_monitor.py": {
       "maxDuration": 30
     },
