@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
   :root{
     --bg: #0a0d12;
@@ -1211,9 +1212,7 @@
     <button class="modal-close" onclick="closeCandleChart()">&times;</button>
     <div class="modal-title" id="chartModalTitle">캔들차트</div>
     <div class="modal-sub" id="chartModalSub">일봉 · 최근 6개월</div>
-    <div id="candleChart" style="min-height:200px; display:flex; align-items:center; justify-content:center;">
-      <img id="candleChartImg" style="width:100%; height:auto; border-radius:6px; display:none;" alt="캔들차트">
-    </div>
+    <div id="candleChart"></div>
     <div class="chart-legend">
       <span><span class="sw" style="background:#e5484d"></span>Call Wall (저항)</span>
       <span><span class="sw" style="background:#3d7fe0"></span>Put Wall (지지)</span>
@@ -3319,26 +3318,58 @@ function drawGexChart(d){
   });
 }
 let candleChartInstance = null;
+let candleChartObj = null;
 async function openCandleChart(d){
   if(!d){ showToast('먼저 종목을 조회해주세요'); return; }
   const overlay = document.getElementById('chartModal');
   const title = document.getElementById('chartModalTitle');
   const sub = document.getElementById('chartModalSub');
-  const img = document.getElementById('candleChartImg');
+  const box = document.getElementById('candleChart');
   title.textContent = `${d.ticker} 캔들차트`;
   sub.textContent = '차트 생성 중...';
-  img.style.display = 'none';
+  box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:420px;color:var(--text-dim);font-size:13px;">차트 생성 중...</div>';
   overlay.classList.add('open');
-  const src = `/api/candle_image?ticker=${encodeURIComponent(d.ticker)}&_=${Date.now()}`;
-  img.onload = () => {
-    img.style.display = 'block';
-    sub.textContent = `일봉 · Call Wall/Put Wall/Gamma Flip/Max Pain/Max OI Wall/20일선 표시`;
-  };
-  img.onerror = () => {
-    img.style.display = 'none';
-    sub.textContent = '차트 이미지를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
-  };
-  img.src = src;
+  if(candleChartObj){ try{ candleChartObj.remove(); }catch(e){} candleChartObj = null; }
+  try{
+    const res = await fetch(`/api/bars?ticker=${encodeURIComponent(d.ticker)}`);
+    const j = await res.json();
+    if(j.error || !j.bars || !j.bars.length) throw new Error(j.error || '데이터 없음');
+    const lib = window.LightweightCharts;
+    if(!lib) throw new Error('차트 라이브러리 로드 실패');
+    box.innerHTML = '';
+    candleChartObj = lib.createChart(box, {
+      width: box.clientWidth || 860,
+      height: 420,
+      layout: { background: { color: 'transparent' }, textColor: '#8b93a1', fontSize: 11 },
+      grid: { vertLines: { color: 'rgba(42,51,72,.45)' }, horzLines: { color: 'rgba(42,51,72,.45)' } },
+      timeScale: { borderColor: '#2a3348', timeVisible: false },
+      rightPriceScale: { borderColor: '#2a3348' },
+    });
+    const cs = candleChartObj.addCandlestickSeries({
+      upColor: '#e5484d', downColor: '#3d7fe0',
+      wickUpColor: '#e5484d', wickDownColor: '#3d7fe0',
+      borderVisible: false,
+    });
+    cs.setData(j.bars);
+    const lv = j.levels || {};
+    [
+      { v: lv.call_wall, c: '#e5484d', t: 'Call Wall (저항)' },
+      { v: lv.put_wall, c: '#3d7fe0', t: 'Put Wall (지지)' },
+      { v: lv.gamma_flip, c: '#e0a838', t: 'Gamma Flip' },
+      { v: lv.max_pain, c: '#8b93a1', t: 'Max Pain' },
+      { v: lv.max_oi_wall, c: '#22c55e', t: 'Max OI Wall' },
+    ].forEach(L => {
+      const pv = Number(L.v);
+      if(Number.isFinite(pv)){
+        cs.createPriceLine({ price: pv, color: L.c, lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: L.t });
+      }
+    });
+    candleChartObj.timeScale().fitContent();
+    sub.textContent = `일봉 · 최근 ${j.bars.length} 거래일 · Call Wall/Put Wall/Gamma Flip/Max Pain/Max OI Wall 표시`;
+  }catch(e){
+    box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:420px;color:var(--text-dim);font-size:13px;">차트를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</div>';
+    sub.textContent = '차트 로드 실패';
+  }
 }
 function closeCandleChart(){
   document.getElementById('chartModal').classList.remove('open');
