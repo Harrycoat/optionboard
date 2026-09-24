@@ -2978,16 +2978,6 @@ function renderDetail(d){
     <div style="color:var(--text-dim); font-size:12px; margin-top:8px;">
       만기 ${d.expiry_used} 기준 Max Pain · 근접 만기 ${d.expiries_included_in_gex.length}개 합산 GEX
     </div>
-    ${positionAndPlanHTML(d)}
-    ${plainSummaryHTML(d)}
-    ${expiryCardHTML(d)}
-    ${wallChangeHTML(d)}
-    <div id="interestSaveHint" style="margin-top:10px;padding:9px 12px;border:1px solid rgba(224,168,56,.32);border-radius:7px;background:rgba(224,168,56,.055);color:var(--text-dim);font-size:11px;line-height:1.55;">
-      ★ 이 종목을 계속 보고 싶다면 <b style="color:var(--gold);">관심종목으로 저장</b>하세요. 처음 방문한 경우 저장 버튼을 누르면 로그인/회원가입 창이 열리고, 로그인 후 자동으로 저장됩니다.
-    </div>
-    ${serverNarrativeHTML(d)}
-    <div id="tickerNewsSection" style="margin-top:4px;"></div>
-    <div id="filingsSection" style="margin-top:4px;"></div>
     ${gammaFlipBadgeHTML(d)}
     <div class="kpi-grid">
       <div class="kpi"><div class="label">Max Pain</div><div class="value">${fmtNum(d.max_pain,1)}</div></div>
@@ -2998,6 +2988,17 @@ function renderDetail(d){
       <div class="kpi"><div class="label">Net GEX</div><div class="value" style="color:${regimePos?UP:DOWN}">${fmtCompact(d.net_gex_total)}</div></div>
       <div class="kpi"><div class="label">체제</div><div class="value" style="color:${regimePos?UP:DOWN}">${regimePos?'양의 감마':'음의 감마'}</div></div>
     </div>
+    ${positionAndPlanHTML(d)}
+    ${plainSummaryHTML(d)}
+    ${expiryCardHTML(d)}
+    ${wallChangeHTML(d)}
+    <div id="interestSaveHint" style="margin-top:10px;padding:9px 12px;border:1px solid rgba(224,168,56,.32);border-radius:7px;background:rgba(224,168,56,.055);color:var(--text-dim);font-size:11px;line-height:1.55;">
+      ★ 이 종목을 계속 보고 싶다면 <b style="color:var(--gold);">관심종목으로 저장</b>하세요. 처음 방문한 경우 저장 버튼을 누르면 로그인/회원가입 창이 열리고, 로그인 후 자동으로 저장됩니다.
+    </div>
+    ${serverNarrativeHTML(d)}
+    <div id="tickerNewsSection" style="margin-top:4px;"></div>
+    <div id="filingsSection" style="margin-top:4px;"></div>
+    ${expertChartButtonsHTML(d)}
     <details class="expert-chart-box" id="expertGexCharts" open>
       <summary>전문가용 GEX 차트 보기<small>스트라이크별 Call·Put GEX와 OI 원본 데이터</small></summary>
       <div class="expert-chart-content">
@@ -3331,7 +3332,7 @@ async function openCandleChart(d){
   overlay.classList.add('open');
   if(candleChartObj){ try{ candleChartObj.remove(); }catch(e){} candleChartObj = null; }
   try{
-    const res = await fetch(`/api/bars?ticker=${encodeURIComponent(d.ticker)}`);
+    const res = await fetch(`/api/search?mode=daily_bars&ticker=${encodeURIComponent(d.ticker)}`);
     const j = await res.json();
     if(j.error || !j.bars || !j.bars.length) throw new Error(j.error || '데이터 없음');
     const lib = window.LightweightCharts;
