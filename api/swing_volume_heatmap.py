@@ -57,31 +57,65 @@ def pressure(c):
     clv=((close-lo)-(hi-close))/rng
     return clv*vol
 
+def _ema(values, length):
+    alpha = 2.0 / (length + 1.0)
+    out = []
+    ema = None
+    for value in values:
+        ema = value if ema is None else (alpha * value + (1.0 - alpha) * ema)
+        out.append(ema)
+    return out
+
 def analyze(sym,access):
     cs=candles(sym,access)
     if len(cs)<25: raise RuntimeError(f"{sym}: insufficient daily candles")
-    recent=cs[-25:]; ps=[pressure(x) for x in recent]; vols=[float(x.get("volume") or 0) for x in recent]
-    p0,p1,p2=ps[-1],ps[-2],ps[-3]
+    recent=cs[-25:]
+    vols=[float(x.get("volume") or 0) for x in recent]
+
+    # Exact OrderFlow_Simple_v1 math supplied by the user:
+    # buy_ratio=(close-low)/(high-low), sell_ratio=(high-close)/(high-low)
+    # net_delta=buy_vol-sell_vol, smoothDelta=EMA(net_delta,5)
+    # deltaSlope=smoothDelta-smoothDelta[3]
+    deltas=[]; buy_vols=[]; sell_vols=[]
+    for bar in recent:
+        hi=float(bar.get("high") or 0); lo=float(bar.get("low") or 0)
+        close=float(bar.get("close") or 0); vol=float(bar.get("volume") or 0)
+        rng=hi-lo
+        buy_ratio=0.5 if rng==0 else (close-lo)/rng
+        sell_ratio=0.5 if rng==0 else (hi-close)/rng
+        bv=vol*buy_ratio; sv=vol*sell_ratio
+        buy_vols.append(bv); sell_vols.append(sv); deltas.append(bv-sv)
+
+    smooths=_ema(deltas,5)
+    smooth=smooths[-1]
+    slope=smooth-smooths[-4]  # ThinkScript smoothDelta - smoothDelta[3]
+    strong_buy=smooth>0 and slope>=0
+    weak_buy=smooth>0 and slope<0
+    strong_sell=smooth<0 and slope<=0
+    weak_sell=smooth<0 and slope>0
+
+    if strong_buy: state="GREEN"
+    elif weak_buy: state="YELLOW"
+    elif strong_sell: state="RED"
+    else: state="SKY"
+
+    tot=buy_vols[-1]+sell_vols[-1]
+    buy_pct=50 if tot==0 else round(buy_vols[-1]/tot*100)
     avg20=sum(vols[-21:-1])/20 if sum(vols[-21:-1]) else 1
     vr=vols[-1]/avg20
-    # normalized pressure makes unlike-sized stocks comparable
-    norm=p0/max(vols[-1],1)
-    prev=p1/max(vols[-2],1)
-    slope=norm-prev
-    delta_up=(norm>prev and prev>(p2/max(vols[-3],1)))
-    # State is volume-pressure first; price % is display only.
-    if norm<=-.35: state="RED"
-    elif norm<-.08: state="YELLOW"
-    elif norm<=.12: state="SKY"
-    elif norm<.42: state="GOLD"
-    else: state="GREEN"
     o=float(recent[-1].get("open") or 0); close=float(recent[-1].get("close") or 0)
     ch=((close/o)-1)*100 if o else 0
-    score=(2 if state=="SKY" else 0)+(3 if delta_up else 0)+min(vr,2)
-    return {"ticker":sym,"state":state,"delta_up":delta_up,"pressure":round(norm,4),
-            "pressure_prev":round(prev,4),"pressure_slope":round(slope,4),
+    cross_up=smooth>0 and smooths[-2]<=0
+    cross_down=smooth<0 and smooths[-2]>=0
+
+    return {"ticker":sym,"state":state,"delta_up":slope>0,
+            "smooth_delta":round(smooth,0),"delta_slope":round(slope,0),
+            "buy_pct":buy_pct,"buy_volume":round(buy_vols[-1]),"sell_volume":round(sell_vols[-1]),
+            "zero_cross_up":cross_up,"zero_cross_down":cross_down,
             "volume":int(vols[-1]),"volume_ratio":round(vr,2),"price":round(close,2),
-            "day_change_pct":round(ch,2),"score":round(score,2)}
+            "day_change_pct":round(ch,2),
+            "status":("매수 추세" if strong_buy else "매수세 둔화" if weak_buy else "매도 추세" if strong_sell else "매도세 둔화(반등임박)")}
+
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -95,9 +129,9 @@ class handler(BaseHTTPRequestHandler):
                     try: rows.append(analyze(sym,access))
                     except Exception as e: rows.append({"ticker":sym,"error":str(e)})
                 sectors[sector]=rows; flat += [x for x in rows if not x.get("error")]
-            turns=sorted([x for x in flat if x["state"] in ("SKY","GOLD") and x["delta_up"]],
-                         key=lambda x:(x["state"]!="SKY",-x["pressure_slope"]))[:12]
+            turns=sorted([x for x in flat if x["state"] == "SKY" and x["delta_up"]],
+                         key=lambda x:-x["delta_slope"])[:12]
             out(self,200,{"timeframe":"DAILY","source":"Schwab Trader API",
-                "delta_method":"ESTIMATED daily volume pressure (CLV × volume); not true bid/ask trade delta",
+                "delta_method":"OrderFlow_Simple_v1: estimated buy/sell volume from daily candle location; EMA(5), slope(3)",
                 "sectors":sectors,"delta_turn":turns})
         except Exception as e: out(self,500,{"error":str(e),"source":"Schwab Trader API"})
