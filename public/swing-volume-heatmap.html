@@ -18,11 +18,19 @@ button{background:#e2bb46;border:0;border-radius:9px;padding:11px 16px;font-weig
 const fmt=n=>n==null?'—':Number(n).toLocaleString(); const pc=n=>n==null?'—':(n>=0?'+':'')+Number(n).toFixed(2)+'%';
 function tile(x){if(x.error)return '<div class="tile err"><b>'+x.ticker+'</b><div class="meta">DATA ERROR</div></div>';
 return '<div class="tile '+x.state+'"><b>'+x.ticker+(x.delta_up?' · Δ↑':'')+'</b><div class="meta">$'+x.price+' · Vol '+fmt(x.volume)+'<br>Buy '+x.buy_pct+'% · Vol '+x.volume_ratio+'×<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope '+(x.delta_slope>=0?'↑':'↓')+'<br>Price '+pc(x.day_change_pct)+'</div></div>'}
-async function load(){document.getElementById('refresh').disabled=true;document.getElementById('grid').innerHTML='<div class="note">Schwab 일봉 데이터를 불러오는 중…</div>';try{
-const jobs=Array.from({length:12},(_,i)=>fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'}).then(r=>r.json()));
-const all=await Promise.all(jobs);const bad=all.find(x=>x.error);if(bad)throw Error(bad.error);
-let turns=all.flatMap(x=>x.delta_turn||[]).sort((a,b)=>(a.state==='SKY'?0:1)-(b.state==='SKY'?0:1)||b.delta_slope-a.delta_slope).slice(0,12);
-document.getElementById('turns').innerHTML=turns.map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑'</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>';
-document.getElementById('grid').innerHTML=all.map(x=>'<section class="sector"><h3>'+x.sector+'</h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div></section>').join('');
-}catch(e){document.getElementById('grid').innerHTML='<div class="foot">오류: '+e.message+'</div>'}finally{document.getElementById('refresh').disabled=false}}
+async function load(){
+const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
+btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
+let turns=[],done=0;
+function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
+async function one(i){
+ const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
+ try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
+ slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
+ turns.push(...(x.delta_turn||[]));drawTurns();
+ }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
+ finally{done++;if(done===12)btn.disabled=false}
+}
+for(let i=0;i<12;i++) await one(i);
+}
 document.getElementById('refresh').onclick=load;load();</script></body></html>
