@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-25T18:01:14.246134+00:00",
+  "generated_at": "2026-09-25T22:34:19.588251+00:00",
   "categories": {
     "wave1": [
       {
         "ticker": "ANET",
         "sector": "NETWORKING",
-        "spot": 209.02,
-        "call_wall": 210,
-        "put_wall": 190,
-        "call_wall_distance_pct": 0.47,
+        "spot": 206.55,
+        "call_wall": 207.5,
+        "put_wall": 205,
+        "call_wall_distance_pct": 0.46,
         "gamma_flip": 207.5,
         "gamma_regime": "positive",
         "price_change_pct": 2.9,
@@ -23,11 +23,11 @@
       {
         "ticker": "PLTR",
         "sector": "SOFTWARE",
-        "spot": 191.73,
-        "call_wall": 192.5,
-        "put_wall": 190,
-        "call_wall_distance_pct": 0.4,
-        "gamma_flip": 192.5,
+        "spot": 189.67,
+        "call_wall": 190,
+        "put_wall": 187.5,
+        "call_wall_distance_pct": 0.17,
+        "gamma_flip": 190,
         "gamma_regime": "positive",
         "price_change_pct": 1.79,
         "volume": 22675761.0,
@@ -41,16 +41,16 @@
       {
         "ticker": "AMZN",
         "sector": "CONSUMER",
-        "spot": 249.93,
+        "spot": 249.67,
         "call_wall": 250,
         "put_wall": 247.5,
-        "call_wall_distance_pct": 0.03,
-        "gamma_flip": 255,
+        "call_wall_distance_pct": 0.13,
+        "gamma_flip": 250,
         "gamma_regime": "positive",
         "price_change_pct": 1.37,
         "volume": 33040052.0,
-        "stage": 2,
-        "stage_label": "상승국면",
+        "stage": 3,
+        "stage_label": "천정권",
         "vex_total": 0.0,
         "cex_total": 0.0,
         "vanna_charm_expiry_days": 0,
@@ -59,10 +59,10 @@
       {
         "ticker": "GOOGL",
         "sector": "TECH",
-        "spot": 344.13,
+        "spot": 343.92,
         "call_wall": 345,
         "put_wall": 342.5,
-        "call_wall_distance_pct": 0.25,
+        "call_wall_distance_pct": 0.31,
         "gamma_flip": 345,
         "gamma_regime": "positive",
         "price_change_pct": 1.83,
@@ -77,10 +77,10 @@
       {
         "ticker": "MSFT",
         "sector": "TECH",
-        "spot": 515.77,
+        "spot": 516.17,
         "call_wall": 520,
         "put_wall": 500,
-        "call_wall_distance_pct": 0.82,
+        "call_wall_distance_pct": 0.74,
         "gamma_flip": 505,
         "gamma_regime": "positive",
         "price_change_pct": 0.58,
@@ -95,11 +95,11 @@
       {
         "ticker": "CRWD",
         "sector": "SECURITY",
-        "spot": 255.44,
-        "call_wall": 260,
-        "put_wall": 255,
-        "call_wall_distance_pct": 1.79,
-        "gamma_flip": 255,
+        "spot": 252.13,
+        "call_wall": 255,
+        "put_wall": 250,
+        "call_wall_distance_pct": 1.14,
+        "gamma_flip": 270,
         "gamma_regime": "positive",
         "price_change_pct": -0.8,
         "volume": 8399279.0,
@@ -113,11 +113,11 @@
       {
         "ticker": "FTNT",
         "sector": "SECURITY",
-        "spot": 174.67,
-        "call_wall": 180,
+        "spot": 173.46,
+        "call_wall": 175,
         "put_wall": 165,
-        "call_wall_distance_pct": 3.05,
-        "gamma_flip": 180,
+        "call_wall_distance_pct": 0.89,
+        "gamma_flip": 175,
         "gamma_regime": "positive",
         "price_change_pct": 0.01,
         "volume": 3759633.0,
@@ -131,11 +131,11 @@
       {
         "ticker": "PANW",
         "sector": "SECURITY",
-        "spot": 377.88,
-        "call_wall": 380,
-        "put_wall": 375,
-        "call_wall_distance_pct": 0.56,
-        "gamma_flip": 380,
+        "spot": 374.74,
+        "call_wall": 375,
+        "put_wall": 360,
+        "call_wall_distance_pct": 0.07,
+        "gamma_flip": 372.5,
         "gamma_regime": "positive",
         "price_change_pct": -0.64,
         "volume": 3970224.0,
@@ -149,10 +149,10 @@
       {
         "ticker": "NET",
         "sector": "SECURITY",
-        "spot": 349.23,
+        "spot": 349.02,
         "call_wall": 350,
-        "put_wall": 342.5,
-        "call_wall_distance_pct": 0.22,
+        "put_wall": 347.5,
+        "call_wall_distance_pct": 0.28,
         "gamma_flip": 350,
         "gamma_regime": "positive",
         "price_change_pct": 2.58,
@@ -167,11 +167,11 @@
       {
         "ticker": "DELL",
         "sector": "HARDWARE",
-        "spot": 571.04,
-        "call_wall": 575,
-        "put_wall": 570,
-        "call_wall_distance_pct": 0.69,
-        "gamma_flip": 562.5,
+        "spot": 562.89,
+        "call_wall": 565,
+        "put_wall": 560,
+        "call_wall_distance_pct": 0.37,
+        "gamma_flip": 565,
         "gamma_regime": "positive",
         "price_change_pct": 0.01,
         "volume": 7962968.0,
@@ -187,11 +187,11 @@
       {
         "ticker": "SNDK",
         "sector": "SEMIS",
-        "spot": 1784.38,
-        "call_wall": 1800,
-        "put_wall": 1780,
-        "call_wall_distance_pct": 0.88,
-        "gamma_flip": 1790,
+        "spot": 1777.8,
+        "call_wall": 1780,
+        "put_wall": 1770,
+        "call_wall_distance_pct": 0.12,
+        "gamma_flip": 1782.5,
         "gamma_regime": "positive",
         "price_change_pct": -1.78,
         "volume": 8231652.0,
@@ -205,11 +205,11 @@
       {
         "ticker": "MU",
         "sector": "SEMIS",
-        "spot": 1082.89,
-        "call_wall": 1100,
-        "put_wall": 1070,
-        "call_wall_distance_pct": 1.58,
-        "gamma_flip": 1075,
+        "spot": 1082.28,
+        "call_wall": 1085,
+        "put_wall": 1080,
+        "call_wall_distance_pct": 0.25,
+        "gamma_flip": 1085,
         "gamma_regime": "positive",
         "price_change_pct": 2.93,
         "volume": 22069916.0,
@@ -223,12 +223,12 @@
       {
         "ticker": "WDC",
         "sector": "SEMIS",
-        "spot": 457.69,
+        "spot": 456.81,
         "call_wall": 460,
         "put_wall": 455,
-        "call_wall_distance_pct": 0.51,
-        "gamma_flip": 322.5,
-        "gamma_regime": "negative",
+        "call_wall_distance_pct": 0.7,
+        "gamma_flip": 500,
+        "gamma_regime": "positive",
         "price_change_pct": -3.31,
         "volume": 7212533.0,
         "stage": 3,
@@ -241,10 +241,10 @@
       {
         "ticker": "STX",
         "sector": "SEMIS",
-        "spot": 920.86,
-        "call_wall": 930,
-        "put_wall": 920,
-        "call_wall_distance_pct": 0.99,
+        "spot": 916.83,
+        "call_wall": 920,
+        "put_wall": 910,
+        "call_wall_distance_pct": 0.35,
         "gamma_flip": 920,
         "gamma_regime": "positive",
         "price_change_pct": -0.96,
@@ -259,10 +259,10 @@
       {
         "ticker": "TER",
         "sector": "SEMIS",
-        "spot": 397.52,
+        "spot": 398.38,
         "call_wall": 400,
         "put_wall": 350,
-        "call_wall_distance_pct": 0.62,
+        "call_wall_distance_pct": 0.41,
         "gamma_flip": 400,
         "gamma_regime": "positive",
         "price_change_pct": 1.21,
@@ -277,11 +277,11 @@
       {
         "ticker": "LRCX",
         "sector": "SEMIS",
-        "spot": 314.51,
-        "call_wall": 315,
-        "put_wall": 310,
-        "call_wall_distance_pct": 0.15,
-        "gamma_flip": 315,
+        "spot": 315.21,
+        "call_wall": 317.5,
+        "put_wall": 315,
+        "call_wall_distance_pct": 0.73,
+        "gamma_flip": 317.5,
         "gamma_regime": "positive",
         "price_change_pct": 1.76,
         "volume": 7903993.0,
@@ -295,18 +295,18 @@
       {
         "ticker": "MKSI",
         "sector": "SEMIS",
-        "spot": 260.7,
+        "spot": 260.82,
         "call_wall": 280,
         "put_wall": 230,
-        "call_wall_distance_pct": 7.4,
-        "gamma_flip": 231.0,
+        "call_wall_distance_pct": 7.35,
+        "gamma_flip": 230.52,
         "gamma_regime": "positive",
         "price_change_pct": 0.52,
         "volume": 695452,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": 14155994.021846708,
-        "cex_total": -212834663.8942179,
+        "vex_total": 12821501.861171816,
+        "cex_total": -214419157.31900176,
         "vanna_charm_expiry_days": 21,
         "status": "ok"
       }
@@ -315,28 +315,28 @@
       {
         "ticker": "UCTT",
         "sector": "SEMIS",
-        "spot": 77.41,
+        "spot": 77.69,
         "call_wall": 95,
         "put_wall": 60,
-        "call_wall_distance_pct": 22.72,
-        "gamma_flip": 58.46,
+        "call_wall_distance_pct": 22.28,
+        "gamma_flip": 58.51,
         "gamma_regime": "positive",
         "price_change_pct": 1.92,
         "volume": 587516,
         "stage": 3,
         "stage_label": "천정권",
-        "vex_total": -998558.3977772086,
-        "cex_total": -38846961.80056563,
+        "vex_total": -1079370.6289737923,
+        "cex_total": -37704675.04977543,
         "vanna_charm_expiry_days": 21,
         "status": "ok"
       },
       {
         "ticker": "AEHR",
         "sector": "SEMIS",
-        "spot": 101.5,
+        "spot": 104.39,
         "call_wall": 110,
         "put_wall": 100,
-        "call_wall_distance_pct": 8.37,
+        "call_wall_distance_pct": 5.37,
         "gamma_flip": 100,
         "gamma_regime": "positive",
         "price_change_pct": 2.76,
@@ -351,11 +351,11 @@
       {
         "ticker": "ACMR",
         "sector": "SEMIS",
-        "spot": 77.86,
+        "spot": 77.3,
         "call_wall": 79,
         "put_wall": 72,
-        "call_wall_distance_pct": 1.46,
-        "gamma_flip": 75,
+        "call_wall_distance_pct": 2.2,
+        "gamma_flip": 66,
         "gamma_regime": "positive",
         "price_change_pct": -2.46,
         "volume": 1583600.0,
@@ -369,28 +369,28 @@
       {
         "ticker": "FORM",
         "sector": "SEMIS",
-        "spot": 129.88,
+        "spot": 129.69,
         "call_wall": 140,
         "put_wall": 110,
-        "call_wall_distance_pct": 7.8,
-        "gamma_flip": 105.99,
+        "call_wall_distance_pct": 7.95,
+        "gamma_flip": 106.63,
         "gamma_regime": "positive",
         "price_change_pct": 1.62,
         "volume": 931158,
         "stage": 2,
         "stage_label": "상승국면",
-        "vex_total": -53982.91657037767,
-        "cex_total": -146836699.0394842,
+        "vex_total": 203843.37723671476,
+        "cex_total": -156283072.8645466,
         "vanna_charm_expiry_days": 21,
         "status": "ok"
       },
       {
         "ticker": "LASR",
         "sector": "SEMIS",
-        "spot": 40.27,
+        "spot": 40.33,
         "call_wall": 45,
         "put_wall": 40,
-        "call_wall_distance_pct": 11.75,
+        "call_wall_distance_pct": 11.58,
         "gamma_flip": 41,
         "gamma_regime": "positive",
         "price_change_pct": 1.52,
@@ -406,74 +406,74 @@
   },
   "top10_gamma_flip": [
     {
-      "ticker": "KO",
-      "spot": 87.98,
-      "gamma_flip": 88,
+      "ticker": "WMT",
+      "spot": 107.98,
+      "gamma_flip": 108,
       "gamma_regime": "positive",
       "flip_distance_pct": 0.02
     },
     {
-      "ticker": "V",
-      "spot": 367.44,
-      "gamma_flip": 367.5,
+      "ticker": "NVDA",
+      "spot": 225.07,
+      "gamma_flip": 225,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.02
+      "flip_distance_pct": 0.03
     },
     {
-      "ticker": "BRK.B",
-      "spot": 504.79,
-      "gamma_flip": 505,
+      "ticker": "WFC",
+      "spot": 82.97,
+      "gamma_flip": 83,
       "gamma_regime": "positive",
       "flip_distance_pct": 0.04
     },
     {
-      "ticker": "PG",
-      "spot": 146.08,
-      "gamma_flip": 146,
+      "ticker": "DAL",
+      "spot": 84.94,
+      "gamma_flip": 85,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.05
+      "flip_distance_pct": 0.07
     },
     {
-      "ticker": "GOOG",
-      "spot": 340.89,
-      "gamma_flip": 340,
+      "ticker": "PANW",
+      "spot": 374.74,
+      "gamma_flip": 375,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.26
+      "flip_distance_pct": 0.07
     },
     {
-      "ticker": "NKE",
-      "spot": 35.91,
-      "gamma_flip": 36,
+      "ticker": "ARM",
+      "spot": 310.32,
+      "gamma_flip": 310,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.26
+      "flip_distance_pct": 0.1
     },
     {
-      "ticker": "GOOGL",
-      "spot": 344.05,
-      "gamma_flip": 345,
+      "ticker": "ALAB",
+      "spot": 364.62,
+      "gamma_flip": 365,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.28
+      "flip_distance_pct": 0.1
     },
     {
-      "ticker": "COST",
-      "spot": 922.93,
-      "gamma_flip": 920,
+      "ticker": "DIS",
+      "spot": 106.15,
+      "gamma_flip": 106,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.32
+      "flip_distance_pct": 0.14
     },
     {
       "ticker": "JPM",
-      "spot": 341.4,
+      "spot": 343.06,
       "gamma_flip": 342.5,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.32
+      "flip_distance_pct": 0.16
     },
     {
-      "ticker": "LLY",
-      "spot": 1173.73,
-      "gamma_flip": 1170,
+      "ticker": "PG",
+      "spot": 146.23,
+      "gamma_flip": 146,
       "gamma_regime": "positive",
-      "flip_distance_pct": 0.32
+      "flip_distance_pct": 0.16
     }
   ],
   "top_gainers": [
@@ -482,10 +482,10 @@
       "spot": 194.82,
       "price_change_pct": 7.87,
       "volume": 16605461.0,
-      "gamma_flip": 165,
+      "gamma_flip": 155,
       "gamma_regime": "positive",
       "call_wall": 200,
-      "put_wall": 195,
+      "put_wall": 197.5,
       "stage": 2,
       "stage_label": "상승국면"
     },
@@ -494,8 +494,8 @@
       "spot": 127.39,
       "price_change_pct": 5.62,
       "volume": 119296710.0,
-      "gamma_flip": 124,
-      "gamma_regime": "positive",
+      "gamma_flip": 115,
+      "gamma_regime": "negative",
       "call_wall": 125,
       "put_wall": 123,
       "stage": 2,
@@ -506,10 +506,10 @@
       "spot": 73.61,
       "price_change_pct": 5.5,
       "volume": 25304884.0,
-      "gamma_flip": 72,
+      "gamma_flip": 70,
       "gamma_regime": "positive",
-      "call_wall": 75,
-      "put_wall": 74,
+      "call_wall": 74,
+      "put_wall": 70,
       "stage": 4,
       "stage_label": "하락국면"
     },
@@ -518,10 +518,10 @@
       "spot": 243.48,
       "price_change_pct": 5.02,
       "volume": 24334964.0,
-      "gamma_flip": 240,
+      "gamma_flip": 270,
       "gamma_regime": "positive",
       "call_wall": 240,
-      "put_wall": 237.5,
+      "put_wall": 235,
       "stage": 2,
       "stage_label": "상승국면"
     },
@@ -530,10 +530,10 @@
       "spot": 629.26,
       "price_change_pct": 4.83,
       "volume": 25318929.0,
-      "gamma_flip": 627.5,
+      "gamma_flip": 635,
       "gamma_regime": "positive",
-      "call_wall": 630,
-      "put_wall": 625,
+      "call_wall": 632.5,
+      "put_wall": 630,
       "stage": 2,
       "stage_label": "상승국면"
     },
@@ -542,9 +542,9 @@
       "spot": 777.59,
       "price_change_pct": 4.46,
       "volume": 34808495.0,
-      "gamma_flip": 690,
-      "gamma_regime": "positive",
-      "call_wall": 755,
+      "gamma_flip": 590,
+      "gamma_regime": "negative",
+      "call_wall": 800,
       "put_wall": 750,
       "stage": 2,
       "stage_label": "상승국면"
@@ -554,10 +554,10 @@
       "spot": 63.52,
       "price_change_pct": 4.03,
       "volume": 21472925.0,
-      "gamma_flip": 60,
+      "gamma_flip": 58,
       "gamma_regime": "positive",
-      "call_wall": 65,
-      "put_wall": 64,
+      "call_wall": 63,
+      "put_wall": 60,
       "stage": 2,
       "stage_label": "상승국면"
     },
@@ -566,7 +566,7 @@
       "spot": 145.16,
       "price_change_pct": 3.27,
       "volume": 9462595.0,
-      "gamma_flip": 135,
+      "gamma_flip": 143,
       "gamma_regime": "positive",
       "call_wall": 143,
       "put_wall": 142,
@@ -578,7 +578,7 @@
       "spot": 83.08,
       "price_change_pct": 3.22,
       "volume": 11712127.0,
-      "gamma_flip": 80.06,
+      "gamma_flip": 79.95,
       "gamma_regime": "positive",
       "call_wall": 85,
       "put_wall": 65,
@@ -590,10 +590,10 @@
       "spot": 1080.53,
       "price_change_pct": 2.93,
       "volume": 22069916.0,
-      "gamma_flip": 1045,
+      "gamma_flip": 1085,
       "gamma_regime": "positive",
-      "call_wall": 1100,
-      "put_wall": 1070,
+      "call_wall": 1085,
+      "put_wall": 1080,
       "stage": 2,
       "stage_label": "상승국면"
     }
@@ -604,31 +604,31 @@
       "ticker": "MKSI",
       "sector": "SEMIS",
       "category": "wave2",
-      "spot": 260.7,
+      "spot": 260.82,
       "price_change_pct": 0.52,
-      "vex_total": 14155994.021846708
+      "vex_total": 12821501.861171816
     },
     {
       "ticker": "UCTT",
       "sector": "SEMIS",
       "category": "speculative",
-      "spot": 77.41,
+      "spot": 77.69,
       "price_change_pct": 1.92,
-      "vex_total": -998558.3977772086
+      "vex_total": -1079370.6289737923
     },
     {
       "ticker": "FORM",
       "sector": "SEMIS",
       "category": "speculative",
-      "spot": 129.88,
+      "spot": 129.69,
       "price_change_pct": 1.62,
-      "vex_total": -53982.91657037767
+      "vex_total": 203843.37723671476
     },
     {
       "ticker": "ANET",
       "sector": "NETWORKING",
       "category": "wave1",
-      "spot": 209.02,
+      "spot": 206.55,
       "price_change_pct": 2.9,
       "vex_total": 0.0
     },
@@ -636,7 +636,7 @@
       "ticker": "PLTR",
       "sector": "SOFTWARE",
       "category": "wave1",
-      "spot": 191.73,
+      "spot": 189.67,
       "price_change_pct": 1.79,
       "vex_total": 0.0
     },
@@ -644,7 +644,7 @@
       "ticker": "AMZN",
       "sector": "CONSUMER",
       "category": "wave1",
-      "spot": 249.93,
+      "spot": 249.67,
       "price_change_pct": 1.37,
       "vex_total": 0.0
     },
@@ -652,7 +652,7 @@
       "ticker": "GOOGL",
       "sector": "TECH",
       "category": "wave1",
-      "spot": 344.13,
+      "spot": 343.92,
       "price_change_pct": 1.83,
       "vex_total": 0.0
     },
@@ -660,7 +660,7 @@
       "ticker": "MSFT",
       "sector": "TECH",
       "category": "wave1",
-      "spot": 515.77,
+      "spot": 516.17,
       "price_change_pct": 0.58,
       "vex_total": 0.0
     }
@@ -670,7 +670,7 @@
       "ticker": "ANET",
       "sector": "NETWORKING",
       "category": "wave1",
-      "spot": 209.02,
+      "spot": 206.55,
       "days_to_expiry": 0,
       "cex_total": 0.0,
       "gamma_flip": 207.5
@@ -679,25 +679,25 @@
       "ticker": "PLTR",
       "sector": "SOFTWARE",
       "category": "wave1",
-      "spot": 191.73,
+      "spot": 189.67,
       "days_to_expiry": 0,
       "cex_total": 0.0,
-      "gamma_flip": 192.5
+      "gamma_flip": 190
     },
     {
       "ticker": "AMZN",
       "sector": "CONSUMER",
       "category": "wave1",
-      "spot": 249.93,
+      "spot": 249.67,
       "days_to_expiry": 0,
       "cex_total": 0.0,
-      "gamma_flip": 255
+      "gamma_flip": 250
     },
     {
       "ticker": "GOOGL",
       "sector": "TECH",
       "category": "wave1",
-      "spot": 344.13,
+      "spot": 343.92,
       "days_to_expiry": 0,
       "cex_total": 0.0,
       "gamma_flip": 345
@@ -706,7 +706,7 @@
       "ticker": "MSFT",
       "sector": "TECH",
       "category": "wave1",
-      "spot": 515.77,
+      "spot": 516.17,
       "days_to_expiry": 0,
       "cex_total": 0.0,
       "gamma_flip": 505
@@ -715,314 +715,142 @@
       "ticker": "CRWD",
       "sector": "SECURITY",
       "category": "wave1",
-      "spot": 255.44,
+      "spot": 252.13,
       "days_to_expiry": 0,
       "cex_total": 0.0,
-      "gamma_flip": 255
+      "gamma_flip": 270
     },
     {
       "ticker": "FTNT",
       "sector": "SECURITY",
       "category": "wave1",
-      "spot": 174.67,
+      "spot": 173.46,
       "days_to_expiry": 0,
       "cex_total": 0.0,
-      "gamma_flip": 180
+      "gamma_flip": 175
     },
     {
       "ticker": "PANW",
       "sector": "SECURITY",
       "category": "wave1",
-      "spot": 377.88,
+      "spot": 374.74,
       "days_to_expiry": 0,
       "cex_total": 0.0,
-      "gamma_flip": 380
+      "gamma_flip": 372.5
     }
   ],
   "wall_shift_radar": [
     {
-      "ticker": "AEHR",
-      "sector": "SEMIS",
-      "spot": 101.5,
-      "gamma_regime": "positive",
-      "shift_label": "상승 이동 확인",
-      "shift_type": "bullish",
-      "movement_score": 17.73,
-      "ranking_score": 19.82,
-      "price_confirmed": true,
-      "previous_spot": 97.42,
-      "spot_change": 4.08,
-      "spot_change_pct": 4.19,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 100,
-      "call_wall": 110,
-      "call_wall_delta": 10.0,
-      "previous_put_wall": 92,
-      "put_wall": 100,
-      "put_wall_delta": 8.0,
-      "previous_gamma_flip": 93.82,
-      "gamma_flip": 100,
-      "gamma_flip_delta": 6.18,
-      "call_wall_upside_pct": 8.37,
-      "put_wall_distance_pct": 1.48
-    },
-    {
-      "ticker": "DELL",
-      "sector": "HARDWARE",
-      "spot": 571.04,
-      "gamma_regime": "positive",
-      "shift_label": "상승 이동 확인",
-      "shift_type": "bullish",
-      "movement_score": 9.63,
-      "ranking_score": 12.89,
-      "price_confirmed": true,
-      "previous_spot": 536.02,
-      "spot_change": 35.02,
-      "spot_change_pct": 6.53,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 560,
-      "call_wall": 575,
-      "call_wall_delta": 15.0,
-      "previous_put_wall": 530,
-      "put_wall": 570,
-      "put_wall_delta": 40.0,
-      "previous_gamma_flip": 549.09,
-      "gamma_flip": 562.5,
-      "gamma_flip_delta": 13.41,
-      "call_wall_upside_pct": 0.69,
-      "put_wall_distance_pct": 0.18
-    },
-    {
       "ticker": "LRCX",
       "sector": "SEMIS",
-      "spot": 314.51,
+      "spot": 315.21,
       "gamma_regime": "positive",
       "shift_label": "상승 이동 확인",
       "shift_type": "bullish",
-      "movement_score": 5.56,
-      "ranking_score": 6.76,
+      "movement_score": 2.38,
+      "ranking_score": 2.49,
       "price_confirmed": true,
-      "previous_spot": 307.16,
-      "spot_change": 7.35,
-      "spot_change_pct": 2.39,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 307.5,
-      "call_wall": 315,
-      "call_wall_delta": 7.5,
-      "previous_put_wall": 300,
-      "put_wall": 310,
-      "put_wall_delta": 10.0,
-      "previous_gamma_flip": 291.04,
-      "gamma_flip": 315,
-      "gamma_flip_delta": 23.96,
-      "call_wall_upside_pct": 0.16,
-      "put_wall_distance_pct": 1.43
-    },
-    {
-      "ticker": "MSFT",
-      "sector": "TECH",
-      "spot": 515.77,
-      "gamma_regime": "positive",
-      "shift_label": "상승 이동 확인",
-      "shift_type": "bullish",
-      "movement_score": 4.85,
-      "ranking_score": 6.64,
-      "price_confirmed": true,
-      "previous_spot": 497.93,
-      "spot_change": 17.84,
-      "spot_change_pct": 3.58,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 505,
-      "call_wall": 520,
-      "call_wall_delta": 15.0,
-      "previous_put_wall": 490,
-      "put_wall": 500,
-      "put_wall_delta": 10.0,
-      "previous_gamma_flip": 496.48,
-      "gamma_flip": 505,
-      "gamma_flip_delta": 8.52,
-      "call_wall_upside_pct": 0.82,
-      "put_wall_distance_pct": 3.06
-    },
-    {
-      "ticker": "STX",
-      "sector": "SEMIS",
-      "spot": 920.86,
-      "gamma_regime": "positive",
-      "shift_label": "상승 이동 확인",
-      "shift_type": "bullish",
-      "movement_score": 5.43,
-      "ranking_score": 6.25,
-      "price_confirmed": true,
-      "previous_spot": 905.92,
-      "spot_change": 14.94,
-      "spot_change_pct": 1.65,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 920,
-      "call_wall": 930,
-      "call_wall_delta": 10.0,
-      "previous_put_wall": 880,
-      "put_wall": 920,
-      "put_wall_delta": 40.0,
-      "previous_gamma_flip": 883.76,
-      "gamma_flip": 920,
-      "gamma_flip_delta": 36.24,
-      "call_wall_upside_pct": 0.99,
-      "put_wall_distance_pct": 0.09
-    },
-    {
-      "ticker": "SNDK",
-      "sector": "SEMIS",
-      "spot": 1784.38,
-      "gamma_regime": "positive",
-      "shift_label": "상승 이동 확인",
-      "shift_type": "bullish",
-      "movement_score": 4.48,
-      "ranking_score": 5.36,
-      "price_confirmed": true,
-      "previous_spot": 1753.62,
-      "spot_change": 30.76,
-      "spot_change_pct": 1.75,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 1800,
-      "call_wall": 1800,
-      "call_wall_delta": 0.0,
-      "previous_put_wall": 1700,
-      "put_wall": 1780,
-      "put_wall_delta": 80.0,
-      "previous_gamma_flip": 1770.45,
-      "gamma_flip": 1790,
-      "gamma_flip_delta": 19.55,
-      "call_wall_upside_pct": 0.88,
-      "put_wall_distance_pct": 0.25
-    },
-    {
-      "ticker": "ACMR",
-      "sector": "SEMIS",
-      "spot": 77.86,
-      "gamma_regime": "positive",
-      "shift_label": "Call Wall 상승 확인",
-      "shift_type": "bullish",
-      "movement_score": 2.57,
-      "ranking_score": 3.67,
-      "price_confirmed": true,
-      "previous_spot": 76.18,
-      "spot_change": 1.68,
-      "spot_change_pct": 2.21,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 77,
-      "call_wall": 79,
-      "call_wall_delta": 2.0,
-      "previous_put_wall": 72,
-      "put_wall": 72,
-      "put_wall_delta": 0.0,
-      "previous_gamma_flip": 67.33,
-      "gamma_flip": 75,
-      "gamma_flip_delta": 7.67,
-      "call_wall_upside_pct": 1.46,
-      "put_wall_distance_pct": 7.53
-    },
-    {
-      "ticker": "PANW",
-      "sector": "SECURITY",
-      "spot": 377.88,
-      "gamma_regime": "positive",
-      "shift_label": "변동 구간 압축",
-      "shift_type": "squeeze",
-      "movement_score": 9.26,
-      "ranking_score": 10.8,
-      "price_confirmed": false,
-      "previous_spot": 389.92,
-      "spot_change": -12.04,
-      "spot_change_pct": -3.09,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 400,
-      "call_wall": 380,
-      "call_wall_delta": -20.0,
-      "previous_put_wall": 360,
-      "put_wall": 375,
-      "put_wall_delta": 15.0,
-      "previous_gamma_flip": 367.28,
-      "gamma_flip": 380,
-      "gamma_flip_delta": 12.72,
-      "call_wall_upside_pct": 0.56,
-      "put_wall_distance_pct": 0.76
-    },
-    {
-      "ticker": "WDC",
-      "sector": "SEMIS",
-      "spot": 457.69,
-      "gamma_regime": "negative",
-      "shift_label": "변동 구간 압축",
-      "shift_type": "squeeze",
-      "movement_score": 3.27,
-      "ranking_score": 4.09,
-      "price_confirmed": false,
-      "previous_spot": 450.31,
-      "spot_change": 7.38,
-      "spot_change_pct": 1.64,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 470,
-      "call_wall": 460,
-      "call_wall_delta": -10.0,
-      "previous_put_wall": 450,
-      "put_wall": 455,
-      "put_wall_delta": 5.0,
-      "previous_gamma_flip": 453.94,
-      "gamma_flip": 322.5,
-      "gamma_flip_delta": -131.44,
-      "call_wall_upside_pct": 0.5,
-      "put_wall_distance_pct": 0.59
-    },
-    {
-      "ticker": "AMZN",
-      "sector": "CONSUMER",
-      "spot": 249.93,
-      "gamma_regime": "positive",
-      "shift_label": "변동 구간 압축",
-      "shift_type": "squeeze",
-      "movement_score": 3.0,
-      "ranking_score": 3.11,
-      "price_confirmed": false,
-      "previous_spot": 249.38,
-      "spot_change": 0.55,
+      "previous_spot": 314.51,
+      "spot_change": 0.7,
       "spot_change_pct": 0.22,
-      "previous_captured_at": "2026-09-24T22:34:59.916147+00:00",
-      "current_captured_at": "2026-09-25T18:01:14.246134+00:00",
-      "previous_call_wall": 255,
-      "call_wall": 250,
-      "call_wall_delta": -5.0,
-      "previous_put_wall": 245,
-      "put_wall": 247.5,
-      "put_wall_delta": 2.5,
-      "previous_gamma_flip": 247.89,
-      "gamma_flip": 255,
-      "gamma_flip_delta": 7.11,
-      "call_wall_upside_pct": 0.03,
-      "put_wall_distance_pct": 0.97
+      "previous_captured_at": "2026-09-25T18:01:14.246134+00:00",
+      "current_captured_at": "2026-09-25T22:34:19.588251+00:00",
+      "previous_call_wall": 315,
+      "call_wall": 317.5,
+      "call_wall_delta": 2.5,
+      "previous_put_wall": 310,
+      "put_wall": 315,
+      "put_wall_delta": 5.0,
+      "previous_gamma_flip": 315,
+      "gamma_flip": 317.5,
+      "gamma_flip_delta": 2.5,
+      "call_wall_upside_pct": 0.73,
+      "put_wall_distance_pct": 0.07
+    },
+    {
+      "ticker": "ANET",
+      "sector": "NETWORKING",
+      "spot": 206.55,
+      "gamma_regime": "positive",
+      "shift_label": "변동 구간 압축",
+      "shift_type": "squeeze",
+      "movement_score": 8.47,
+      "ranking_score": 9.06,
+      "price_confirmed": false,
+      "previous_spot": 209.02,
+      "spot_change": -2.47,
+      "spot_change_pct": -1.18,
+      "previous_captured_at": "2026-09-25T18:01:14.246134+00:00",
+      "current_captured_at": "2026-09-25T22:34:19.588251+00:00",
+      "previous_call_wall": 210,
+      "call_wall": 207.5,
+      "call_wall_delta": -2.5,
+      "previous_put_wall": 190,
+      "put_wall": 205,
+      "put_wall_delta": 15.0,
+      "previous_gamma_flip": 207.5,
+      "gamma_flip": 207.5,
+      "gamma_flip_delta": 0.0,
+      "call_wall_upside_pct": 0.46,
+      "put_wall_distance_pct": 0.75
+    },
+    {
+      "ticker": "MU",
+      "sector": "SEMIS",
+      "spot": 1082.28,
+      "gamma_regime": "positive",
+      "shift_label": "변동 구간 압축",
+      "shift_type": "squeeze",
+      "movement_score": 2.31,
+      "ranking_score": 2.34,
+      "price_confirmed": false,
+      "previous_spot": 1082.89,
+      "spot_change": -0.61,
+      "spot_change_pct": -0.06,
+      "previous_captured_at": "2026-09-25T18:01:14.246134+00:00",
+      "current_captured_at": "2026-09-25T22:34:19.588251+00:00",
+      "previous_call_wall": 1100,
+      "call_wall": 1085,
+      "call_wall_delta": -15.0,
+      "previous_put_wall": 1070,
+      "put_wall": 1080,
+      "put_wall_delta": 10.0,
+      "previous_gamma_flip": 1075,
+      "gamma_flip": 1085,
+      "gamma_flip_delta": 10.0,
+      "call_wall_upside_pct": 0.25,
+      "put_wall_distance_pct": 0.21
+    },
+    {
+      "ticker": "NET",
+      "sector": "SECURITY",
+      "spot": 349.02,
+      "gamma_regime": "positive",
+      "shift_label": "상승 구조·가격 대기",
+      "shift_type": "watch_up",
+      "movement_score": 1.43,
+      "ranking_score": 1.46,
+      "price_confirmed": false,
+      "previous_spot": 349.23,
+      "spot_change": -0.21,
+      "spot_change_pct": -0.06,
+      "previous_captured_at": "2026-09-25T18:01:14.246134+00:00",
+      "current_captured_at": "2026-09-25T22:34:19.588251+00:00",
+      "previous_call_wall": 350,
+      "call_wall": 350,
+      "call_wall_delta": 0.0,
+      "previous_put_wall": 342.5,
+      "put_wall": 347.5,
+      "put_wall_delta": 5.0,
+      "previous_gamma_flip": 350,
+      "gamma_flip": 350,
+      "gamma_flip_delta": 0.0,
+      "call_wall_upside_pct": 0.28,
+      "put_wall_distance_pct": 0.44
     }
   ],
   "wall_history": {
     "ANET": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "NETWORKING",
-        "spot": 197.54,
-        "call_wall": 200,
-        "put_wall": 195,
-        "gamma_flip": 194.03,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -1212,19 +1040,19 @@
         "put_wall": 190,
         "gamma_flip": 207.5,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "NETWORKING",
+        "spot": 206.55,
+        "call_wall": 207.5,
+        "put_wall": 205,
+        "gamma_flip": 207.5,
+        "gamma_regime": "positive"
       }
     ],
     "PLTR": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "SOFTWARE",
-        "spot": 174.34,
-        "call_wall": 180,
-        "put_wall": 170,
-        "gamma_flip": 167.5,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -1414,19 +1242,19 @@
         "put_wall": 190,
         "gamma_flip": 192.5,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "SOFTWARE",
+        "spot": 189.67,
+        "call_wall": 190,
+        "put_wall": 187.5,
+        "gamma_flip": 190,
+        "gamma_regime": "positive"
       }
     ],
     "AMZN": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "CONSUMER",
-        "spot": 245.96,
-        "call_wall": 250,
-        "put_wall": 245,
-        "gamma_flip": 247.41,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -1616,19 +1444,19 @@
         "put_wall": 247.5,
         "gamma_flip": 255,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "CONSUMER",
+        "spot": 249.67,
+        "call_wall": 250,
+        "put_wall": 247.5,
+        "gamma_flip": 250,
+        "gamma_regime": "positive"
       }
     ],
     "GOOGL": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "TECH",
-        "spot": 342.87,
-        "call_wall": 350,
-        "put_wall": 340,
-        "gamma_flip": 341.0,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -1818,19 +1646,19 @@
         "put_wall": 342.5,
         "gamma_flip": 345,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "TECH",
+        "spot": 343.92,
+        "call_wall": 345,
+        "put_wall": 342.5,
+        "gamma_flip": 345,
+        "gamma_regime": "positive"
       }
     ],
     "MSFT": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "TECH",
-        "spot": 490.3,
-        "call_wall": 500,
-        "put_wall": 480,
-        "gamma_flip": 488.56,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -2020,19 +1848,19 @@
         "put_wall": 500,
         "gamma_flip": 505,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "TECH",
+        "spot": 516.17,
+        "call_wall": 520,
+        "put_wall": 500,
+        "gamma_flip": 505,
+        "gamma_regime": "positive"
       }
     ],
     "CRWD": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "SECURITY",
-        "spot": 241.36,
-        "call_wall": 250,
-        "put_wall": 230,
-        "gamma_flip": 231.0,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -2222,19 +2050,19 @@
         "put_wall": 255,
         "gamma_flip": 255,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 252.13,
+        "call_wall": 255,
+        "put_wall": 250,
+        "gamma_flip": 270,
+        "gamma_regime": "positive"
       }
     ],
     "FTNT": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "SECURITY",
-        "spot": 171.77,
-        "call_wall": 175,
-        "put_wall": 155,
-        "gamma_flip": 166.35,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -2424,19 +2252,19 @@
         "put_wall": 165,
         "gamma_flip": 180,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 173.46,
+        "call_wall": 175,
+        "put_wall": 165,
+        "gamma_flip": 175,
+        "gamma_regime": "positive"
       }
     ],
     "PANW": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "SECURITY",
-        "spot": 375.65,
-        "call_wall": 380,
-        "put_wall": 360,
-        "gamma_flip": 359.37,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -2626,19 +2454,19 @@
         "put_wall": 375,
         "gamma_flip": 380,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 374.74,
+        "call_wall": 375,
+        "put_wall": 360,
+        "gamma_flip": 372.5,
+        "gamma_regime": "positive"
       }
     ],
     "NET": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "SECURITY",
-        "spot": 324.65,
-        "call_wall": 330,
-        "put_wall": 300,
-        "gamma_flip": 309.71,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -2828,19 +2656,19 @@
         "put_wall": 342.5,
         "gamma_flip": 350,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "SECURITY",
+        "spot": 349.02,
+        "call_wall": 350,
+        "put_wall": 347.5,
+        "gamma_flip": 350,
+        "gamma_regime": "positive"
       }
     ],
     "DELL": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave1",
-        "sector": "HARDWARE",
-        "spot": 563.29,
-        "call_wall": 600,
-        "put_wall": 550,
-        "gamma_flip": 542.99,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave1",
@@ -3030,19 +2858,19 @@
         "put_wall": 570,
         "gamma_flip": 562.5,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave1",
+        "sector": "HARDWARE",
+        "spot": 562.89,
+        "call_wall": 565,
+        "put_wall": 560,
+        "gamma_flip": 565,
+        "gamma_regime": "positive"
       }
     ],
     "SNDK": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave2",
-        "sector": "SEMIS",
-        "spot": 1519.97,
-        "call_wall": 1600,
-        "put_wall": 1500,
-        "gamma_flip": 1566.23,
-        "gamma_regime": "negative"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave2",
@@ -3232,19 +3060,19 @@
         "put_wall": 1780,
         "gamma_flip": 1790,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 1777.8,
+        "call_wall": 1780,
+        "put_wall": 1770,
+        "gamma_flip": 1782.5,
+        "gamma_regime": "positive"
       }
     ],
     "MU": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave2",
-        "sector": "SEMIS",
-        "spot": 926.55,
-        "call_wall": 950,
-        "put_wall": 900,
-        "gamma_flip": 937.84,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave2",
@@ -3434,19 +3262,19 @@
         "put_wall": 1070,
         "gamma_flip": 1075,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 1082.28,
+        "call_wall": 1085,
+        "put_wall": 1080,
+        "gamma_flip": 1085,
+        "gamma_regime": "positive"
       }
     ],
     "WDC": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave2",
-        "sector": "SEMIS",
-        "spot": 416.97,
-        "call_wall": 425,
-        "put_wall": 400,
-        "gamma_flip": 438.69,
-        "gamma_regime": "negative"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave2",
@@ -3636,19 +3464,19 @@
         "put_wall": 455,
         "gamma_flip": 322.5,
         "gamma_regime": "negative"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 456.81,
+        "call_wall": 460,
+        "put_wall": 455,
+        "gamma_flip": 500,
+        "gamma_regime": "positive"
       }
     ],
     "STX": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave2",
-        "sector": "SEMIS",
-        "spot": 783.18,
-        "call_wall": 850,
-        "put_wall": 780,
-        "gamma_flip": 818.07,
-        "gamma_regime": "negative"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave2",
@@ -3838,19 +3666,19 @@
         "put_wall": 920,
         "gamma_flip": 920,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 916.83,
+        "call_wall": 920,
+        "put_wall": 910,
+        "gamma_flip": 920,
+        "gamma_regime": "positive"
       }
     ],
     "TER": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave2",
-        "sector": "SEMIS",
-        "spot": 341.15,
-        "call_wall": 355,
-        "put_wall": 330,
-        "gamma_flip": 332.88,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave2",
@@ -4040,19 +3868,19 @@
         "put_wall": 350,
         "gamma_flip": 400,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 398.38,
+        "call_wall": 400,
+        "put_wall": 350,
+        "gamma_flip": 400,
+        "gamma_regime": "positive"
       }
     ],
     "LRCX": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave2",
-        "sector": "SEMIS",
-        "spot": 269.23,
-        "call_wall": 280,
-        "put_wall": 260,
-        "gamma_flip": 272.66,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave2",
@@ -4242,19 +4070,19 @@
         "put_wall": 310,
         "gamma_flip": 315,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 315.21,
+        "call_wall": 317.5,
+        "put_wall": 315,
+        "gamma_flip": 317.5,
+        "gamma_regime": "positive"
       }
     ],
     "MKSI": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "wave2",
-        "sector": "SEMIS",
-        "spot": 235.28,
-        "call_wall": 260,
-        "put_wall": 230,
-        "gamma_flip": 252.45,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "wave2",
@@ -4444,19 +4272,19 @@
         "put_wall": 230,
         "gamma_flip": 231.0,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "wave2",
+        "sector": "SEMIS",
+        "spot": 260.82,
+        "call_wall": 280,
+        "put_wall": 230,
+        "gamma_flip": 230.52,
+        "gamma_regime": "positive"
       }
     ],
     "UCTT": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "speculative",
-        "sector": "SEMIS",
-        "spot": 66.53,
-        "call_wall": 70,
-        "put_wall": 60,
-        "gamma_flip": 63.11,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "speculative",
@@ -4646,19 +4474,19 @@
         "put_wall": 60,
         "gamma_flip": 58.46,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 77.69,
+        "call_wall": 95,
+        "put_wall": 60,
+        "gamma_flip": 58.51,
+        "gamma_regime": "positive"
       }
     ],
     "AEHR": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "speculative",
-        "sector": "SEMIS",
-        "spot": 84.25,
-        "call_wall": 88,
-        "put_wall": 80,
-        "gamma_flip": 84.33,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "speculative",
@@ -4848,19 +4676,19 @@
         "put_wall": 100,
         "gamma_flip": 100,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 104.39,
+        "call_wall": 110,
+        "put_wall": 100,
+        "gamma_flip": 100,
+        "gamma_regime": "positive"
       }
     ],
     "ACMR": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "speculative",
-        "sector": "SEMIS",
-        "spot": 64.82,
-        "call_wall": 66,
-        "put_wall": 60,
-        "gamma_flip": 74.86,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "speculative",
@@ -5050,19 +4878,19 @@
         "put_wall": 72,
         "gamma_flip": 75,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 77.3,
+        "call_wall": 79,
+        "put_wall": 72,
+        "gamma_flip": 66,
+        "gamma_regime": "positive"
       }
     ],
     "FORM": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "speculative",
-        "sector": "SEMIS",
-        "spot": 104.82,
-        "call_wall": 110,
-        "put_wall": 100,
-        "gamma_flip": 104.88,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "speculative",
@@ -5252,19 +5080,19 @@
         "put_wall": 110,
         "gamma_flip": 105.99,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 129.69,
+        "call_wall": 140,
+        "put_wall": 110,
+        "gamma_flip": 106.63,
+        "gamma_regime": "positive"
       }
     ],
     "LASR": [
-      {
-        "captured_at": "2026-09-17T07:34:45.194420+00:00",
-        "category": "speculative",
-        "sector": "SEMIS",
-        "spot": 38.56,
-        "call_wall": 45,
-        "put_wall": 35,
-        "gamma_flip": 44.63,
-        "gamma_regime": "positive"
-      },
       {
         "captured_at": "2026-09-17T17:42:28.736396+00:00",
         "category": "speculative",
@@ -5454,17 +5282,27 @@
         "put_wall": 40,
         "gamma_flip": 41,
         "gamma_regime": "positive"
+      },
+      {
+        "captured_at": "2026-09-25T22:34:19.588251+00:00",
+        "category": "speculative",
+        "sector": "SEMIS",
+        "spot": 40.33,
+        "call_wall": 45,
+        "put_wall": 40,
+        "gamma_flip": 41,
+        "gamma_regime": "positive"
       }
     ]
   },
   "dev_reentry_top_pick": {
     "ticker": "SHOP",
-    "spot": 142.41,
+    "spot": 142.25,
     "signal_type": "trend_cross",
     "signal_label": "200일선 상향 돌파",
     "stage": 2,
     "stage_label": "200일선 상향 돌파",
-    "score": 79.0,
+    "score": 73.0,
     "hull21": 125.41,
     "dev_pct": 9.97,
     "band_upper": 12.34,
@@ -5890,9 +5728,9 @@
       },
       {
         "time": "2026-09-25",
-        "close": 142.45,
+        "close": 142.25,
         "ma200": 129.93,
-        "volume": 3198923
+        "volume": 5991761
       }
     ],
     "trend_cross": true,
@@ -5911,22 +5749,22 @@
     "signal_spot": 137.92,
     "put_wall": 142.0,
     "call_wall": 143.0,
-    "gamma_flip": 135.0,
+    "gamma_flip": 143.0,
     "above_put_wall": true,
-    "above_gamma_flip": true,
-    "call_wall_upside_pct": 0.41,
-    "gex_confirmed": true,
+    "above_gamma_flip": false,
+    "call_wall_upside_pct": 0.53,
+    "gex_confirmed": false,
     "gex_available": true
   },
   "dev_reentry_trend": [
     {
       "ticker": "SHOP",
-      "spot": 142.41,
+      "spot": 142.25,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
       "stage_label": "200일선 상향 돌파",
-      "score": 79.0,
+      "score": 73.0,
       "hull21": 125.41,
       "dev_pct": 9.97,
       "band_upper": 12.34,
@@ -6352,9 +6190,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 142.45,
+          "close": 142.25,
           "ma200": 129.93,
-          "volume": 3198923
+          "volume": 5991761
         }
       ],
       "trend_cross": true,
@@ -6373,16 +6211,204 @@
       "signal_spot": 137.92,
       "put_wall": 142.0,
       "call_wall": 143.0,
-      "gamma_flip": 135.0,
+      "gamma_flip": 143.0,
       "above_put_wall": true,
-      "above_gamma_flip": true,
-      "call_wall_upside_pct": 0.41,
-      "gex_confirmed": true,
+      "above_gamma_flip": false,
+      "call_wall_upside_pct": 0.53,
+      "gex_confirmed": false,
       "gex_available": true
     }
   ],
   "dev_reentry_hull": [],
   "dev_reentry_watch": [
+    {
+      "ticker": "Q",
+      "spot": 124.69,
+      "signal_type": "watch",
+      "signal_label": "오늘의 관찰 후보",
+      "stage": 1,
+      "stage_label": "오늘의 관찰 후보",
+      "score": 16.6,
+      "hull21": 121.37,
+      "dev_pct": 2.73,
+      "band_upper": 8.68,
+      "band_lower": -7.64,
+      "ma50": 128.6,
+      "ma100": 140.58,
+      "ma200": 124.58,
+      "above_ma200": true,
+      "trend_chart": [
+        {
+          "time": "2026-08-20",
+          "close": 133.52,
+          "ma200": 119.98,
+          "volume": 4292130
+        },
+        {
+          "time": "2026-08-21",
+          "close": 128.88,
+          "ma200": 120.14,
+          "volume": 1734888
+        },
+        {
+          "time": "2026-08-24",
+          "close": 126.24,
+          "ma200": 120.27,
+          "volume": 1614930
+        },
+        {
+          "time": "2026-08-25",
+          "close": 126.62,
+          "ma200": 120.4,
+          "volume": 945106
+        },
+        {
+          "time": "2026-08-26",
+          "close": 126.2,
+          "ma200": 120.57,
+          "volume": 1456350
+        },
+        {
+          "time": "2026-08-27",
+          "close": 126.35,
+          "ma200": 120.74,
+          "volume": 1130541
+        },
+        {
+          "time": "2026-08-28",
+          "close": 120.26,
+          "ma200": 120.86,
+          "volume": 2005377
+        },
+        {
+          "time": "2026-08-31",
+          "close": 119.43,
+          "ma200": 120.97,
+          "volume": 1946620
+        },
+        {
+          "time": "2026-09-01",
+          "close": 115.49,
+          "ma200": 121.09,
+          "volume": 2794697
+        },
+        {
+          "time": "2026-09-02",
+          "close": 117.69,
+          "ma200": 121.25,
+          "volume": 2101840
+        },
+        {
+          "time": "2026-09-03",
+          "close": 118.47,
+          "ma200": 121.42,
+          "volume": 1537206
+        },
+        {
+          "time": "2026-09-04",
+          "close": 120.47,
+          "ma200": 121.62,
+          "volume": 1311172
+        },
+        {
+          "time": "2026-09-08",
+          "close": 123.28,
+          "ma200": 121.84,
+          "volume": 1397748
+        },
+        {
+          "time": "2026-09-09",
+          "close": 125.47,
+          "ma200": 122.07,
+          "volume": 1256425
+        },
+        {
+          "time": "2026-09-10",
+          "close": 123.32,
+          "ma200": 122.31,
+          "volume": 1644430
+        },
+        {
+          "time": "2026-09-11",
+          "close": 126.4,
+          "ma200": 122.56,
+          "volume": 865583
+        },
+        {
+          "time": "2026-09-14",
+          "close": 117.23,
+          "ma200": 122.78,
+          "volume": 1589221
+        },
+        {
+          "time": "2026-09-15",
+          "close": 114.59,
+          "ma200": 122.96,
+          "volume": 2515665
+        },
+        {
+          "time": "2026-09-16",
+          "close": 114.86,
+          "ma200": 123.14,
+          "volume": 1430537
+        },
+        {
+          "time": "2026-09-17",
+          "close": 117.13,
+          "ma200": 123.32,
+          "volume": 1164807
+        },
+        {
+          "time": "2026-09-18",
+          "close": 120.05,
+          "ma200": 123.53,
+          "volume": 3908403
+        },
+        {
+          "time": "2026-09-21",
+          "close": 121.82,
+          "ma200": 123.74,
+          "volume": 1620348
+        },
+        {
+          "time": "2026-09-22",
+          "close": 124.86,
+          "ma200": 123.97,
+          "volume": 1980744
+        },
+        {
+          "time": "2026-09-23",
+          "close": 124.5,
+          "ma200": 124.17,
+          "volume": 914792
+        },
+        {
+          "time": "2026-09-24",
+          "close": 122.31,
+          "ma200": 124.37,
+          "volume": 1490937
+        },
+        {
+          "time": "2026-09-25",
+          "close": 124.69,
+          "ma200": 124.58,
+          "volume": 829843
+        }
+      ],
+      "trend_cross": true,
+      "trend_active": true,
+      "hull_reentry": false,
+      "above_hull21": true,
+      "hull_rising": true,
+      "slope_accelerating": true,
+      "volume_confirmed": false,
+      "volume_ratio": 0.48,
+      "avg_dollar_volume": 215757919,
+      "liquidity_confirmed": true,
+      "signal_age": 0,
+      "signal_date": "2026-09-25",
+      "signal_ma200": 124.58
+    },
     {
       "ticker": "DIS",
       "spot": 105.56,
@@ -6816,9 +6842,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 105.5,
+          "close": 106.15,
           "ma200": 104.0,
-          "volume": 2535278
+          "volume": 7246737
         }
       ],
       "trend_cross": true,
@@ -7268,9 +7294,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 344.1,
+          "close": 343.92,
           "ma200": 338.21,
-          "volume": 11289330
+          "volume": 21857214
         }
       ],
       "trend_cross": true,
@@ -7720,9 +7746,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 340.9,
+          "close": 341.08,
           "ma200": 336.79,
-          "volume": 6784065
+          "volume": 13836390
         }
       ],
       "trend_cross": true,
@@ -8172,9 +8198,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 82.74,
+          "close": 82.97,
           "ma200": 85.03,
-          "volume": 4864198
+          "volume": 9451220
         }
       ],
       "trend_cross": false,
@@ -8624,9 +8650,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 25.32,
+          "close": 25.38,
           "ma200": 25.15,
-          "volume": 11182226
+          "volume": 22915433
         }
       ],
       "trend_cross": true,
@@ -9076,9 +9102,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 46.95,
+          "close": 47.08,
           "ma200": 46.27,
-          "volume": 5884137
+          "volume": 13417621
         }
       ],
       "trend_cross": false,
@@ -9094,194 +9120,6 @@
       "signal_age": 2,
       "signal_date": "2026-09-23",
       "signal_ma200": 46.22
-    },
-    {
-      "ticker": "Q",
-      "spot": 124.86,
-      "signal_type": "watch",
-      "signal_label": "오늘의 관찰 후보",
-      "stage": 1,
-      "stage_label": "오늘의 관찰 후보",
-      "score": 18.9,
-      "hull21": 118.71,
-      "dev_pct": 5.18,
-      "band_upper": 8.52,
-      "band_lower": -7.66,
-      "ma50": 129.52,
-      "ma100": 141.11,
-      "ma200": 124.57,
-      "above_ma200": false,
-      "trend_chart": [
-        {
-          "time": "2026-08-20",
-          "close": 133.52,
-          "ma200": 119.98,
-          "volume": 4292130
-        },
-        {
-          "time": "2026-08-21",
-          "close": 128.88,
-          "ma200": 120.14,
-          "volume": 1734888
-        },
-        {
-          "time": "2026-08-24",
-          "close": 126.24,
-          "ma200": 120.27,
-          "volume": 1614930
-        },
-        {
-          "time": "2026-08-25",
-          "close": 126.62,
-          "ma200": 120.4,
-          "volume": 945106
-        },
-        {
-          "time": "2026-08-26",
-          "close": 126.2,
-          "ma200": 120.57,
-          "volume": 1456350
-        },
-        {
-          "time": "2026-08-27",
-          "close": 126.35,
-          "ma200": 120.74,
-          "volume": 1130541
-        },
-        {
-          "time": "2026-08-28",
-          "close": 120.26,
-          "ma200": 120.86,
-          "volume": 2005377
-        },
-        {
-          "time": "2026-08-31",
-          "close": 119.43,
-          "ma200": 120.97,
-          "volume": 1946620
-        },
-        {
-          "time": "2026-09-01",
-          "close": 115.49,
-          "ma200": 121.09,
-          "volume": 2794697
-        },
-        {
-          "time": "2026-09-02",
-          "close": 117.69,
-          "ma200": 121.25,
-          "volume": 2101840
-        },
-        {
-          "time": "2026-09-03",
-          "close": 118.47,
-          "ma200": 121.42,
-          "volume": 1537206
-        },
-        {
-          "time": "2026-09-04",
-          "close": 120.47,
-          "ma200": 121.62,
-          "volume": 1311172
-        },
-        {
-          "time": "2026-09-08",
-          "close": 123.28,
-          "ma200": 121.84,
-          "volume": 1397748
-        },
-        {
-          "time": "2026-09-09",
-          "close": 125.47,
-          "ma200": 122.07,
-          "volume": 1256425
-        },
-        {
-          "time": "2026-09-10",
-          "close": 123.32,
-          "ma200": 122.31,
-          "volume": 1644430
-        },
-        {
-          "time": "2026-09-11",
-          "close": 126.4,
-          "ma200": 122.56,
-          "volume": 865583
-        },
-        {
-          "time": "2026-09-14",
-          "close": 117.23,
-          "ma200": 122.78,
-          "volume": 1589221
-        },
-        {
-          "time": "2026-09-15",
-          "close": 114.59,
-          "ma200": 122.96,
-          "volume": 2515665
-        },
-        {
-          "time": "2026-09-16",
-          "close": 114.86,
-          "ma200": 123.14,
-          "volume": 1430537
-        },
-        {
-          "time": "2026-09-17",
-          "close": 117.13,
-          "ma200": 123.32,
-          "volume": 1164807
-        },
-        {
-          "time": "2026-09-18",
-          "close": 120.05,
-          "ma200": 123.53,
-          "volume": 3908403
-        },
-        {
-          "time": "2026-09-21",
-          "close": 121.82,
-          "ma200": 123.74,
-          "volume": 1620348
-        },
-        {
-          "time": "2026-09-22",
-          "close": 124.86,
-          "ma200": 123.97,
-          "volume": 1980744
-        },
-        {
-          "time": "2026-09-23",
-          "close": 124.5,
-          "ma200": 124.17,
-          "volume": 914792
-        },
-        {
-          "time": "2026-09-24",
-          "close": 122.31,
-          "ma200": 124.37,
-          "volume": 1490937
-        },
-        {
-          "time": "2026-09-25",
-          "close": 124.02,
-          "ma200": 124.57,
-          "volume": 353805
-        }
-      ],
-      "trend_cross": true,
-      "trend_active": true,
-      "hull_reentry": false,
-      "above_hull21": true,
-      "hull_rising": false,
-      "slope_accelerating": false,
-      "volume_confirmed": false,
-      "volume_ratio": 1.16,
-      "avg_dollar_volume": 213741628,
-      "liquidity_confirmed": true,
-      "signal_age": 3,
-      "signal_date": "2026-09-22",
-      "signal_ma200": 123.97
     },
     {
       "ticker": "PG",
@@ -9716,9 +9554,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 146.03,
+          "close": 146.23,
           "ma200": 147.53,
-          "volume": 2474337
+          "volume": 5790617
         }
       ],
       "trend_cross": true,
@@ -9749,7 +9587,7 @@
       "band_lower": -6.54,
       "ma50": 1034.49,
       "ma100": 1022.28,
-      "ma200": 959.3,
+      "ma200": 959.32,
       "above_ma200": false,
       "trend_chart": [
         {
@@ -10168,9 +10006,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 931.24,
-          "ma200": 959.3,
-          "volume": 947250
+          "close": 935.45,
+          "ma200": 959.32,
+          "volume": 1955568
         }
       ],
       "trend_cross": true,
@@ -10191,12 +10029,12 @@
   "dev_reentry_long": [
     {
       "ticker": "SHOP",
-      "spot": 142.41,
+      "spot": 142.25,
       "signal_type": "trend_cross",
       "signal_label": "200일선 상향 돌파",
       "stage": 2,
       "stage_label": "200일선 상향 돌파",
-      "score": 79.0,
+      "score": 73.0,
       "hull21": 125.41,
       "dev_pct": 9.97,
       "band_upper": 12.34,
@@ -10622,9 +10460,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 142.45,
+          "close": 142.25,
           "ma200": 129.93,
-          "volume": 3198923
+          "volume": 5991761
         }
       ],
       "trend_cross": true,
@@ -10643,12 +10481,200 @@
       "signal_spot": 137.92,
       "put_wall": 142.0,
       "call_wall": 143.0,
-      "gamma_flip": 135.0,
+      "gamma_flip": 143.0,
       "above_put_wall": true,
-      "above_gamma_flip": true,
-      "call_wall_upside_pct": 0.41,
-      "gex_confirmed": true,
+      "above_gamma_flip": false,
+      "call_wall_upside_pct": 0.53,
+      "gex_confirmed": false,
       "gex_available": true
+    },
+    {
+      "ticker": "Q",
+      "spot": 124.69,
+      "signal_type": "watch",
+      "signal_label": "오늘의 관찰 후보",
+      "stage": 1,
+      "stage_label": "오늘의 관찰 후보",
+      "score": 16.6,
+      "hull21": 121.37,
+      "dev_pct": 2.73,
+      "band_upper": 8.68,
+      "band_lower": -7.64,
+      "ma50": 128.6,
+      "ma100": 140.58,
+      "ma200": 124.58,
+      "above_ma200": true,
+      "trend_chart": [
+        {
+          "time": "2026-08-20",
+          "close": 133.52,
+          "ma200": 119.98,
+          "volume": 4292130
+        },
+        {
+          "time": "2026-08-21",
+          "close": 128.88,
+          "ma200": 120.14,
+          "volume": 1734888
+        },
+        {
+          "time": "2026-08-24",
+          "close": 126.24,
+          "ma200": 120.27,
+          "volume": 1614930
+        },
+        {
+          "time": "2026-08-25",
+          "close": 126.62,
+          "ma200": 120.4,
+          "volume": 945106
+        },
+        {
+          "time": "2026-08-26",
+          "close": 126.2,
+          "ma200": 120.57,
+          "volume": 1456350
+        },
+        {
+          "time": "2026-08-27",
+          "close": 126.35,
+          "ma200": 120.74,
+          "volume": 1130541
+        },
+        {
+          "time": "2026-08-28",
+          "close": 120.26,
+          "ma200": 120.86,
+          "volume": 2005377
+        },
+        {
+          "time": "2026-08-31",
+          "close": 119.43,
+          "ma200": 120.97,
+          "volume": 1946620
+        },
+        {
+          "time": "2026-09-01",
+          "close": 115.49,
+          "ma200": 121.09,
+          "volume": 2794697
+        },
+        {
+          "time": "2026-09-02",
+          "close": 117.69,
+          "ma200": 121.25,
+          "volume": 2101840
+        },
+        {
+          "time": "2026-09-03",
+          "close": 118.47,
+          "ma200": 121.42,
+          "volume": 1537206
+        },
+        {
+          "time": "2026-09-04",
+          "close": 120.47,
+          "ma200": 121.62,
+          "volume": 1311172
+        },
+        {
+          "time": "2026-09-08",
+          "close": 123.28,
+          "ma200": 121.84,
+          "volume": 1397748
+        },
+        {
+          "time": "2026-09-09",
+          "close": 125.47,
+          "ma200": 122.07,
+          "volume": 1256425
+        },
+        {
+          "time": "2026-09-10",
+          "close": 123.32,
+          "ma200": 122.31,
+          "volume": 1644430
+        },
+        {
+          "time": "2026-09-11",
+          "close": 126.4,
+          "ma200": 122.56,
+          "volume": 865583
+        },
+        {
+          "time": "2026-09-14",
+          "close": 117.23,
+          "ma200": 122.78,
+          "volume": 1589221
+        },
+        {
+          "time": "2026-09-15",
+          "close": 114.59,
+          "ma200": 122.96,
+          "volume": 2515665
+        },
+        {
+          "time": "2026-09-16",
+          "close": 114.86,
+          "ma200": 123.14,
+          "volume": 1430537
+        },
+        {
+          "time": "2026-09-17",
+          "close": 117.13,
+          "ma200": 123.32,
+          "volume": 1164807
+        },
+        {
+          "time": "2026-09-18",
+          "close": 120.05,
+          "ma200": 123.53,
+          "volume": 3908403
+        },
+        {
+          "time": "2026-09-21",
+          "close": 121.82,
+          "ma200": 123.74,
+          "volume": 1620348
+        },
+        {
+          "time": "2026-09-22",
+          "close": 124.86,
+          "ma200": 123.97,
+          "volume": 1980744
+        },
+        {
+          "time": "2026-09-23",
+          "close": 124.5,
+          "ma200": 124.17,
+          "volume": 914792
+        },
+        {
+          "time": "2026-09-24",
+          "close": 122.31,
+          "ma200": 124.37,
+          "volume": 1490937
+        },
+        {
+          "time": "2026-09-25",
+          "close": 124.69,
+          "ma200": 124.58,
+          "volume": 829843
+        }
+      ],
+      "trend_cross": true,
+      "trend_active": true,
+      "hull_reentry": false,
+      "above_hull21": true,
+      "hull_rising": true,
+      "slope_accelerating": true,
+      "volume_confirmed": false,
+      "volume_ratio": 0.48,
+      "avg_dollar_volume": 215757919,
+      "liquidity_confirmed": true,
+      "signal_age": 0,
+      "signal_date": "2026-09-25",
+      "signal_ma200": 124.58
     },
     {
       "ticker": "DIS",
@@ -11083,9 +11109,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 105.5,
+          "close": 106.15,
           "ma200": 104.0,
-          "volume": 2535278
+          "volume": 7246737
         }
       ],
       "trend_cross": true,
@@ -11535,9 +11561,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 344.1,
+          "close": 343.92,
           "ma200": 338.21,
-          "volume": 11289330
+          "volume": 21857214
         }
       ],
       "trend_cross": true,
@@ -11987,9 +12013,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 340.9,
+          "close": 341.08,
           "ma200": 336.79,
-          "volume": 6784065
+          "volume": 13836390
         }
       ],
       "trend_cross": true,
@@ -12439,9 +12465,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 82.74,
+          "close": 82.97,
           "ma200": 85.03,
-          "volume": 4864198
+          "volume": 9451220
         }
       ],
       "trend_cross": false,
@@ -12891,9 +12917,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 25.32,
+          "close": 25.38,
           "ma200": 25.15,
-          "volume": 11182226
+          "volume": 22915433
         }
       ],
       "trend_cross": true,
@@ -13343,9 +13369,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 46.95,
+          "close": 47.08,
           "ma200": 46.27,
-          "volume": 5884137
+          "volume": 13417621
         }
       ],
       "trend_cross": false,
@@ -13361,194 +13387,6 @@
       "signal_age": 2,
       "signal_date": "2026-09-23",
       "signal_ma200": 46.22
-    },
-    {
-      "ticker": "Q",
-      "spot": 124.86,
-      "signal_type": "watch",
-      "signal_label": "오늘의 관찰 후보",
-      "stage": 1,
-      "stage_label": "오늘의 관찰 후보",
-      "score": 18.9,
-      "hull21": 118.71,
-      "dev_pct": 5.18,
-      "band_upper": 8.52,
-      "band_lower": -7.66,
-      "ma50": 129.52,
-      "ma100": 141.11,
-      "ma200": 124.57,
-      "above_ma200": false,
-      "trend_chart": [
-        {
-          "time": "2026-08-20",
-          "close": 133.52,
-          "ma200": 119.98,
-          "volume": 4292130
-        },
-        {
-          "time": "2026-08-21",
-          "close": 128.88,
-          "ma200": 120.14,
-          "volume": 1734888
-        },
-        {
-          "time": "2026-08-24",
-          "close": 126.24,
-          "ma200": 120.27,
-          "volume": 1614930
-        },
-        {
-          "time": "2026-08-25",
-          "close": 126.62,
-          "ma200": 120.4,
-          "volume": 945106
-        },
-        {
-          "time": "2026-08-26",
-          "close": 126.2,
-          "ma200": 120.57,
-          "volume": 1456350
-        },
-        {
-          "time": "2026-08-27",
-          "close": 126.35,
-          "ma200": 120.74,
-          "volume": 1130541
-        },
-        {
-          "time": "2026-08-28",
-          "close": 120.26,
-          "ma200": 120.86,
-          "volume": 2005377
-        },
-        {
-          "time": "2026-08-31",
-          "close": 119.43,
-          "ma200": 120.97,
-          "volume": 1946620
-        },
-        {
-          "time": "2026-09-01",
-          "close": 115.49,
-          "ma200": 121.09,
-          "volume": 2794697
-        },
-        {
-          "time": "2026-09-02",
-          "close": 117.69,
-          "ma200": 121.25,
-          "volume": 2101840
-        },
-        {
-          "time": "2026-09-03",
-          "close": 118.47,
-          "ma200": 121.42,
-          "volume": 1537206
-        },
-        {
-          "time": "2026-09-04",
-          "close": 120.47,
-          "ma200": 121.62,
-          "volume": 1311172
-        },
-        {
-          "time": "2026-09-08",
-          "close": 123.28,
-          "ma200": 121.84,
-          "volume": 1397748
-        },
-        {
-          "time": "2026-09-09",
-          "close": 125.47,
-          "ma200": 122.07,
-          "volume": 1256425
-        },
-        {
-          "time": "2026-09-10",
-          "close": 123.32,
-          "ma200": 122.31,
-          "volume": 1644430
-        },
-        {
-          "time": "2026-09-11",
-          "close": 126.4,
-          "ma200": 122.56,
-          "volume": 865583
-        },
-        {
-          "time": "2026-09-14",
-          "close": 117.23,
-          "ma200": 122.78,
-          "volume": 1589221
-        },
-        {
-          "time": "2026-09-15",
-          "close": 114.59,
-          "ma200": 122.96,
-          "volume": 2515665
-        },
-        {
-          "time": "2026-09-16",
-          "close": 114.86,
-          "ma200": 123.14,
-          "volume": 1430537
-        },
-        {
-          "time": "2026-09-17",
-          "close": 117.13,
-          "ma200": 123.32,
-          "volume": 1164807
-        },
-        {
-          "time": "2026-09-18",
-          "close": 120.05,
-          "ma200": 123.53,
-          "volume": 3908403
-        },
-        {
-          "time": "2026-09-21",
-          "close": 121.82,
-          "ma200": 123.74,
-          "volume": 1620348
-        },
-        {
-          "time": "2026-09-22",
-          "close": 124.86,
-          "ma200": 123.97,
-          "volume": 1980744
-        },
-        {
-          "time": "2026-09-23",
-          "close": 124.5,
-          "ma200": 124.17,
-          "volume": 914792
-        },
-        {
-          "time": "2026-09-24",
-          "close": 122.31,
-          "ma200": 124.37,
-          "volume": 1490937
-        },
-        {
-          "time": "2026-09-25",
-          "close": 124.02,
-          "ma200": 124.57,
-          "volume": 353805
-        }
-      ],
-      "trend_cross": true,
-      "trend_active": true,
-      "hull_reentry": false,
-      "above_hull21": true,
-      "hull_rising": false,
-      "slope_accelerating": false,
-      "volume_confirmed": false,
-      "volume_ratio": 1.16,
-      "avg_dollar_volume": 213741628,
-      "liquidity_confirmed": true,
-      "signal_age": 3,
-      "signal_date": "2026-09-22",
-      "signal_ma200": 123.97
     },
     {
       "ticker": "PG",
@@ -13983,9 +13821,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 146.03,
+          "close": 146.23,
           "ma200": 147.53,
-          "volume": 2474337
+          "volume": 5790617
         }
       ],
       "trend_cross": true,
@@ -14016,7 +13854,7 @@
       "band_lower": -6.54,
       "ma50": 1034.49,
       "ma100": 1022.28,
-      "ma200": 959.3,
+      "ma200": 959.32,
       "above_ma200": false,
       "trend_chart": [
         {
@@ -14435,9 +14273,9 @@
         },
         {
           "time": "2026-09-25",
-          "close": 931.24,
-          "ma200": 959.3,
-          "volume": 947250
+          "close": 935.45,
+          "ma200": 959.32,
+          "volume": 1955568
         }
       ],
       "trend_cross": true,
@@ -14459,47 +14297,47 @@
   "unusual_options_activity": [
     {
       "ticker": "MSFT",
-      "spot": 517.88,
+      "spot": 516.17,
       "strike": 520,
       "side": "put",
-      "volume": 3042,
+      "volume": 6412,
       "oi": 2,
-      "vol_oi_ratio": 1521.0,
+      "vol_oi_ratio": 3206.0,
       "is_new_contract": false
     },
     {
       "ticker": "MSFT",
-      "spot": 517.88,
+      "spot": 516.17,
       "strike": 515,
       "side": "put",
-      "volume": 48475,
+      "volume": 76672,
       "oi": 45,
-      "vol_oi_ratio": 1077.22,
+      "vol_oi_ratio": 1703.82,
       "is_new_contract": false
     },
     {
       "ticker": "MSFT",
-      "spot": 517.88,
+      "spot": 516.17,
       "strike": 512.5,
       "side": "put",
-      "volume": 43551,
+      "volume": 50139,
       "oi": 51,
-      "vol_oi_ratio": 853.94,
+      "vol_oi_ratio": 983.12,
       "is_new_contract": false
     },
     {
       "ticker": "DELL",
-      "spot": 569.98,
+      "spot": 562.89,
       "strike": 602.5,
       "side": "put",
-      "volume": 808,
+      "volume": 821,
       "oi": 1,
-      "vol_oi_ratio": 808.0,
+      "vol_oi_ratio": 821.0,
       "is_new_contract": false
     },
     {
       "ticker": "MCD",
-      "spot": 237.44,
+      "spot": 236.5,
       "strike": 265,
       "side": "put",
       "volume": 552,
@@ -14509,17 +14347,17 @@
     },
     {
       "ticker": "QCOM",
-      "spot": 204.36,
+      "spot": 201.97,
       "strike": 207.5,
       "side": "put",
-      "volume": 375,
+      "volume": 390,
       "oi": 1,
-      "vol_oi_ratio": 375.0,
+      "vol_oi_ratio": 390.0,
       "is_new_contract": false
     },
     {
       "ticker": "CRWD",
-      "spot": 255.09,
+      "spot": 252.13,
       "strike": 280,
       "side": "put",
       "volume": 1458,
@@ -14528,8 +14366,18 @@
       "is_new_contract": false
     },
     {
+      "ticker": "QCOM",
+      "spot": 201.97,
+      "strike": 202.5,
+      "side": "put",
+      "volume": 5965,
+      "oi": 21,
+      "vol_oi_ratio": 284.05,
+      "is_new_contract": false
+    },
+    {
       "ticker": "AVGO",
-      "spot": 352.94,
+      "spot": 352.81,
       "strike": 385,
       "side": "put",
       "volume": 432,
@@ -14538,18 +14386,18 @@
       "is_new_contract": false
     },
     {
-      "ticker": "QCOM",
-      "spot": 204.36,
-      "strike": 202.5,
+      "ticker": "AMZN",
+      "spot": 249.67,
+      "strike": 265,
       "side": "put",
-      "volume": 3010,
-      "oi": 21,
-      "vol_oi_ratio": 143.33,
+      "volume": 2018,
+      "oi": 14,
+      "vol_oi_ratio": 144.14,
       "is_new_contract": false
     },
     {
       "ticker": "AVGO",
-      "spot": 352.94,
+      "spot": 352.81,
       "strike": 380,
       "side": "put",
       "volume": 983,
@@ -14558,13 +14406,13 @@
       "is_new_contract": false
     },
     {
-      "ticker": "AMZN",
-      "spot": 250.01,
-      "strike": 265,
-      "side": "put",
-      "volume": 1898,
-      "oi": 14,
-      "vol_oi_ratio": 135.57,
+      "ticker": "TSLA",
+      "spot": 372.11,
+      "strike": 372.5,
+      "side": "call",
+      "volume": 283509,
+      "oi": 2242,
+      "vol_oi_ratio": 126.45,
       "is_new_contract": false
     },
     {
@@ -14578,33 +14426,23 @@
       "is_new_contract": false
     },
     {
+      "ticker": "MSTR",
+      "spot": 158.61,
+      "strike": 217.5,
+      "side": "call",
+      "volume": 617,
+      "oi": 5,
+      "vol_oi_ratio": 123.4,
+      "is_new_contract": false
+    },
+    {
       "ticker": "PG",
-      "spot": 146.04,
+      "spot": 146.23,
       "strike": 141,
       "side": "call",
       "volume": 560,
       "oi": 5,
       "vol_oi_ratio": 112.0,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "TSLA",
-      "spot": 373.4,
-      "strike": 372.5,
-      "side": "call",
-      "volume": 217593,
-      "oi": 2242,
-      "vol_oi_ratio": 97.05,
-      "is_new_contract": false
-    },
-    {
-      "ticker": "QCOM",
-      "spot": 204.36,
-      "strike": 205,
-      "side": "put",
-      "volume": 2193,
-      "oi": 36,
-      "vol_oi_ratio": 60.92,
       "is_new_contract": false
     }
   ]

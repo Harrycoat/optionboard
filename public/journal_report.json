@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T18:23:22.214072+00:00",
+  "generated_at": "2026-09-25T22:53:47.212552+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_return": 0,
@@ -22,15 +22,15 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 373.559,
-      "current_gamma_flip": 367.5,
+      "current_spot": 372.11,
+      "current_gamma_flip": 50,
       "current_regime": "negative",
-      "return_pct": 6.43,
-      "unrealized_pnl": 2255.9,
+      "return_pct": 6.01,
+      "unrealized_pnl": 2111.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 374.77 < Hull50 375.17 (교차 시점은 더 이전)",
-        "⛔ 종가(373.559)가 150일선(380.53) 아래로 이탈"
+        "⚠️ 이미 데드크로스 상태 — Hull21 374.64 < Hull50 375.13 (교차 시점은 더 이전)",
+        "⛔ 종가(372.11)가 150일선(380.52) 아래로 이탈"
       ],
       "live_fetch_error": null
     },
@@ -43,11 +43,11 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 191.69,
-      "current_gamma_flip": 185,
+      "current_spot": 189.67,
+      "current_gamma_flip": 190,
       "current_regime": "positive",
-      "return_pct": 15.96,
-      "unrealized_pnl": 2639.0,
+      "return_pct": 14.74,
+      "unrealized_pnl": 2437.0,
       "structural_status": "구조유지",
       "structural_reasons": [],
       "live_fetch_error": null
@@ -61,14 +61,14 @@
       "quantity": 50.0,
       "status": "진행중",
       "note": "풋월 334 - 350상승 확인 후 1차진입",
-      "current_spot": 353.035,
-      "current_gamma_flip": 455,
+      "current_spot": 352.81,
+      "current_gamma_flip": 370,
       "current_regime": "positive",
-      "return_pct": 0.72,
-      "unrealized_pnl": 126.75,
+      "return_pct": 0.66,
+      "unrealized_pnl": 115.5,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⛔ 종가(353.035)가 150일선(377.29) 아래로 이탈"
+        "⛔ 종가(352.81)가 150일선(377.28) 아래로 이탈"
       ],
       "live_fetch_error": null
     }
