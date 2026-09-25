@@ -10,19 +10,19 @@ button{background:#e2bb46;border:0;border-radius:9px;padding:11px 16px;font-weig
 .err{background:#202a38;color:#a9b6c8}.foot{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:10px;color:var(--mut);font-size:11px}
 @media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.tiles{grid-template-columns:repeat(3,1fr)}.wrap{padding:10px}.tile{padding:7px}.meta{font-size:9px}}
 </style></head><body><div class="wrap"><div class="top"><div><div class="brand">SWING VOLUME HEATMAP <small>BETA</small></div><div class="sub">DAILY = 종목 발견 · 5분봉 = 사용자가 진입 타이밍 확인</div></div><button id="refresh">REFRESH</button></div>
-<div class="legend"><span>🔴 매도압력</span><span>🟡 매도둔화</span><span>🩵 균형 / 관찰</span><span>🟨 매수우세</span><span>🟢 매수확장</span></div>
-<div class="note"><b>핵심:</b> 색상은 가격 등락률이 아니라 일봉 거래량 압력으로 계산합니다. 🩵 + Δ↑를 우선 관찰합니다.</div>
+<div class="legend"><span>🟢 ▲ 매수 추세</span><span>🟡 ● 매수세 둔화</span><span>🔴 ▼ 매도 추세</span><span>🩵 ● 매도세 둔화(반등임박)</span></div>
+<div class="note"><b>핵심:</b> OrderFlow_Simple_v1과 동일한 일봉 수급 계산입니다. 🩵 매도세 둔화 + Δ↑를 우선 관찰합니다.</div>
 <h3>⚡ DAILY DELTA TURN</h3><div id="turns" class="turns"><span class="note">불러오는 중…</span></div><div id="grid" class="grid"></div>
-<div class="foot">BETA 주의: 현재 Schwab 일봉 Price History의 총 거래량으로 계산한 <b>추정 Volume Pressure</b>입니다. 실제 Bid/Ask 체결 기반 Volume Delta가 아닙니다. 실제 aggressor-side trade 데이터가 확인되면 이 계산 모듈만 교체합니다.</div></div>
+<div class="foot">OrderFlow_Simple_v1과 동일한 수학: Buy/Sell 비율 → Net Delta → EMA(5) Smooth → Slope(3). 일봉 OHLCV 기반 추정 수급이며 실제 Bid/Ask aggressor 체결 Delta와는 구분합니다.</div></div>
 <script>
 const fmt=n=>n==null?'—':Number(n).toLocaleString(); const pc=n=>n==null?'—':(n>=0?'+':'')+Number(n).toFixed(2)+'%';
 function tile(x){if(x.error)return '<div class="tile err"><b>'+x.ticker+'</b><div class="meta">DATA ERROR</div></div>';
-return '<div class="tile '+x.state+'"><b>'+x.ticker+(x.delta_up?' · Δ↑':'')+'</b><div class="meta">$'+x.price+' · Vol '+fmt(x.volume)+'<br>Vol '+x.volume_ratio+'× · Pressure '+(x.pressure*100).toFixed(0)+'%<br>Price '+pc(x.day_change_pct)+'</div></div>'}
+return '<div class="tile '+x.state+'"><b>'+x.ticker+(x.delta_up?' · Δ↑':'')+'</b><div class="meta">$'+x.price+' · Vol '+fmt(x.volume)+'<br>Buy '+x.buy_pct+'% · Vol '+x.volume_ratio+'×<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope '+(x.delta_slope>=0?'↑':'↓')+'<br>Price '+pc(x.day_change_pct)+'</div></div>'}
 async function load(){document.getElementById('refresh').disabled=true;document.getElementById('grid').innerHTML='<div class="note">Schwab 일봉 데이터를 불러오는 중…</div>';try{
 const jobs=Array.from({length:12},(_,i)=>fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'}).then(r=>r.json()));
 const all=await Promise.all(jobs);const bad=all.find(x=>x.error);if(bad)throw Error(bad.error);
-let turns=all.flatMap(x=>x.delta_turn||[]).sort((a,b)=>(a.state==='SKY'?0:1)-(b.state==='SKY'?0:1)||b.pressure_slope-a.pressure_slope).slice(0,12);
-document.getElementById('turns').innerHTML=turns.map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.state+' · Vol '+x.volume_ratio+'×<br>Pressure '+(x.pressure*100).toFixed(0)+'%</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>';
+let turns=all.flatMap(x=>x.delta_turn||[]).sort((a,b)=>(a.state==='SKY'?0:1)-(b.state==='SKY'?0:1)||b.delta_slope-a.delta_slope).slice(0,12);
+document.getElementById('turns').innerHTML=turns.map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑'</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>';
 document.getElementById('grid').innerHTML=all.map(x=>'<section class="sector"><h3>'+x.sector+'</h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div></section>').join('');
 }catch(e){document.getElementById('grid').innerHTML='<div class="foot">오류: '+e.message+'</div>'}finally{document.getElementById('refresh').disabled=false}}
 document.getElementById('refresh').onclick=load;load();</script></body></html>
