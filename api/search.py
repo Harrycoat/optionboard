@@ -2076,8 +2076,8 @@ class handler(BaseHTTPRequestHandler):
                     except Exception as exc:
                         rows.append({"ticker": symbol, "error": str(exc)})
                 turns = sorted(
-                    [x for x in rows if not x.get("error") and x.get("state") in ("SKY","GOLD") and x.get("delta_up")],
-                    key=lambda x: (x.get("state") != "SKY", -x.get("pressure_slope", 0))
+                    [x for x in rows if not x.get("error") and x.get("state") == "SKY" and x.get("delta_up")],
+                    key=lambda x: -x.get("delta_slope", 0)
                 )
                 self.wfile.write(json.dumps({
                     "timeframe": "DAILY",
@@ -2085,7 +2085,7 @@ class handler(BaseHTTPRequestHandler):
                     "sector": sector_name,
                     "rows": rows,
                     "delta_turn": turns,
-                    "delta_method": "ESTIMATED daily volume pressure (CLV × volume); not true bid/ask trade delta",
+                    "delta_method": "OrderFlow_Simple_v1: estimated buy/sell volume from daily candle location; EMA(5), slope(3)",
                 }, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
