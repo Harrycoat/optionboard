@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T22:47:44.664225+00:00",
+  "generated_at": "2026-09-25T18:23:22.214072+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_return": 0,
@@ -22,15 +22,15 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 377.94,
+      "current_spot": 373.559,
       "current_gamma_flip": 367.5,
-      "current_regime": "positive",
-      "return_pct": 7.68,
-      "unrealized_pnl": 2694.0,
+      "current_regime": "negative",
+      "return_pct": 6.43,
+      "unrealized_pnl": 2255.9,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 372.29 < Hull50 373.67 (교차 시점은 더 이전)",
-        "⛔ 종가(377.94)가 150일선(380.78) 아래로 이탈"
+        "⚠️ 이미 데드크로스 상태 — Hull21 374.77 < Hull50 375.17 (교차 시점은 더 이전)",
+        "⛔ 종가(373.559)가 150일선(380.53) 아래로 이탈"
       ],
       "live_fetch_error": null
     },
@@ -43,15 +43,13 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 192.59,
-      "current_gamma_flip": 172.5,
+      "current_spot": 191.69,
+      "current_gamma_flip": 185,
       "current_regime": "positive",
-      "return_pct": 16.51,
-      "unrealized_pnl": 2729.0,
-      "structural_status": "청산신호",
-      "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 182.22 < Hull50 182.52 (교차 시점은 더 이전)"
-      ],
+      "return_pct": 15.96,
+      "unrealized_pnl": 2639.0,
+      "structural_status": "구조유지",
+      "structural_reasons": [],
       "live_fetch_error": null
     },
     {
@@ -63,14 +61,14 @@
       "quantity": 50.0,
       "status": "진행중",
       "note": "풋월 334 - 350상승 확인 후 1차진입",
-      "current_spot": 350.36,
-      "current_gamma_flip": 520,
-      "current_regime": "negative",
-      "return_pct": -0.04,
-      "unrealized_pnl": -7.0,
+      "current_spot": 353.035,
+      "current_gamma_flip": 455,
+      "current_regime": "positive",
+      "return_pct": 0.72,
+      "unrealized_pnl": 126.75,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⛔ 종가(350.36)가 150일선(377.15) 아래로 이탈"
+        "⛔ 종가(353.035)가 150일선(377.29) 아래로 이탈"
       ],
       "live_fetch_error": null
     }

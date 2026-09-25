@@ -1,87 +1,6 @@
 [
   {
     "ticker": "IMPP",
-    "date": "2026-09-08",
-    "spot": 5.33,
-    "expiries_used": [
-      "2026-09-18",
-      "2026-10-16"
-    ],
-    "strikes": [
-      {
-        "strike": 1,
-        "call_oi": 23.0,
-        "put_oi": 0.0,
-        "call_volume": 6.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 2,
-        "call_oi": 5.0,
-        "put_oi": 1177.0,
-        "call_volume": 2.0,
-        "put_volume": 1457.0
-      },
-      {
-        "strike": 3,
-        "call_oi": 204.0,
-        "put_oi": 0.0,
-        "call_volume": 97.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 4,
-        "call_oi": 605.0,
-        "put_oi": 2789.0,
-        "call_volume": 578.0,
-        "put_volume": 71.0
-      },
-      {
-        "strike": 5,
-        "call_oi": 4640.0,
-        "put_oi": 882.0,
-        "call_volume": 1050.0,
-        "put_volume": 102.0
-      },
-      {
-        "strike": 6,
-        "call_oi": 2644.0,
-        "put_oi": 10.0,
-        "call_volume": 251.0,
-        "put_volume": 5.0
-      },
-      {
-        "strike": 7,
-        "call_oi": 147.0,
-        "put_oi": 1.0,
-        "call_volume": 22.0,
-        "put_volume": 2.0
-      },
-      {
-        "strike": 8,
-        "call_oi": 11.0,
-        "put_oi": 0.0,
-        "call_volume": 2.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 9,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 10,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      }
-    ]
-  },
-  {
-    "ticker": "IMPP",
     "date": "2026-09-09",
     "spot": 5.36,
     "expiries_used": [
@@ -1129,6 +1048,94 @@
         "call_oi": 1488.0,
         "put_oi": 108.0,
         "call_volume": 64.0,
+        "put_volume": 64.0
+      },
+      {
+        "strike": 7,
+        "call_oi": 153.0,
+        "put_oi": 0.0,
+        "call_volume": 3.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 8,
+        "call_oi": 23.0,
+        "put_oi": 0.0,
+        "call_volume": 30.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 9,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 10,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 11,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      }
+    ]
+  },
+  {
+    "ticker": "IMPP",
+    "date": "2026-09-25",
+    "spot": 5.07,
+    "expiries_used": [
+      "2026-10-16",
+      "2026-11-20"
+    ],
+    "strikes": [
+      {
+        "strike": 1,
+        "call_oi": 20.0,
+        "put_oi": 0.0,
+        "call_volume": 2.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 2,
+        "call_oi": 5.0,
+        "put_oi": 1177.0,
+        "call_volume": 4.0,
+        "put_volume": 1457.0
+      },
+      {
+        "strike": 3,
+        "call_oi": 206.0,
+        "put_oi": 50.0,
+        "call_volume": 2.0,
+        "put_volume": 50.0
+      },
+      {
+        "strike": 4,
+        "call_oi": 778.0,
+        "put_oi": 2788.0,
+        "call_volume": 8.0,
+        "put_volume": 12.0
+      },
+      {
+        "strike": 5,
+        "call_oi": 3403.0,
+        "put_oi": 527.0,
+        "call_volume": 51.0,
+        "put_volume": 92.0
+      },
+      {
+        "strike": 6,
+        "call_oi": 1550.0,
+        "put_oi": 108.0,
+        "call_volume": 74.0,
         "put_volume": 64.0
       },
       {
