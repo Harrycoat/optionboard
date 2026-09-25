@@ -2060,6 +2060,37 @@ class handler(BaseHTTPRequestHandler):
             }).encode("utf-8"))
             return
 
+        if mode == "swing_volume_heatmap":
+            try:
+                from swing_volume_heatmap import UNIVERSE, token as _svh_token, analyze as _svh_analyze
+                sector_index = int((query.get("sector", ["0"])[0] or "0"))
+                items = list(UNIVERSE.items())
+                if sector_index < 0 or sector_index >= len(items):
+                    raise ValueError("invalid sector index")
+                sector_name, symbols = items[sector_index]
+                access = _svh_token()
+                rows = []
+                for symbol in symbols:
+                    try:
+                        rows.append(_svh_analyze(symbol, access))
+                    except Exception as exc:
+                        rows.append({"ticker": symbol, "error": str(exc)})
+                turns = sorted(
+                    [x for x in rows if not x.get("error") and x.get("state") in ("SKY","GOLD") and x.get("delta_up")],
+                    key=lambda x: (x.get("state") != "SKY", -x.get("pressure_slope", 0))
+                )
+                self.wfile.write(json.dumps({
+                    "timeframe": "DAILY",
+                    "source": "Schwab Trader API",
+                    "sector": sector_name,
+                    "rows": rows,
+                    "delta_turn": turns,
+                    "delta_method": "ESTIMATED daily volume pressure (CLV × volume); not true bid/ask trade delta",
+                }, ensure_ascii=False).encode())
+            except Exception as e:
+                self.wfile.write(json.dumps({"error": str(e)}, ensure_ascii=False).encode())
+            return
+
         ticker = (query.get("ticker", [""])[0]).strip()
         if not ticker:
             self.wfile.write(json.dumps({"error": "ticker 파라미터가 필요합니다. 예: /api/search?ticker=AAPL"}, ensure_ascii=False).encode())
