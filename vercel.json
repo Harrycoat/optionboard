@@ -26,6 +26,9 @@
     },
     "api/filings.py": {
       "maxDuration": 30
+    },
+    "api/swing_volume_heatmap.py": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
