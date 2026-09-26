@@ -68,39 +68,22 @@ button{background:#e2bb46;border:0;border-radius:9px;padding:11px 16px;font-weig
 <script>
 const fmt=n=>n==null?'—':Number(n).toLocaleString();
 const pc=n=>n==null?'—':(n>=0?'+':'')+Number(n).toFixed(2)+'%';
-const STORE='gex_swing_virtual_buys_v1';
+let serverTrades=[];
 
-function readTrades(){try{return JSON.parse(localStorage.getItem(STORE)||'[]')}catch(e){return []}}
-function writeTrades(v){try{localStorage.setItem(STORE,JSON.stringify(v))}catch(e){}}
-function todayKey(){return new Date().toISOString().slice(0,10)}
-
-function recordSignal(x,sector){
-  if(x.error)return;
-  const rows=readTrades(),day=todayKey();
-  [['A',x.signal_a],['B',x.signal_b]].forEach(pair=>{
-    const type=pair[0],on=pair[1];
-    if(!on)return;
-    const key=day+'|'+x.ticker+'|'+type;
-    if(rows.some(r=>r.key===key))return;
-    rows.unshift({key,date:day,ticker:x.ticker,sector:sector,type:type,entry:Number(x.price),last:Number(x.price),hull21:x.hull21,smooth:x.smooth_delta,pnl:0});
-  });
-  writeTrades(rows.slice(0,300));
+async function loadServerTrades(){
+  try{
+    const r=await fetch('/swing-virtual-trades.json?ts='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw Error('HTTP '+r.status);
+    const x=await r.json();
+    serverTrades=x.trades||[];
+    drawPaper();
+  }catch(e){
+    serverTrades=[];
+    drawPaper();
+  }
 }
 
-function updateMark(x){
-  if(x.error)return;
-  const rows=readTrades(); let changed=false;
-  rows.forEach(r=>{
-    if(r.ticker===x.ticker){
-      r.last=Number(x.price);
-      r.pnl=r.entry?((r.last/r.entry)-1)*100:0;
-      changed=true;
-    }
-  });
-  if(changed)writeTrades(rows);
-}
-
-function latestTrade(ticker,type){return readTrades().find(r=>r.ticker===ticker&&r.type===type)}
+function latestTrade(ticker,type){return serverTrades.find(r=>r.ticker===ticker&&r.type===type)}
 
 function tile(x){
   if(x.error)return '<div class="tile err"><b>'+x.ticker+'</b><div class="meta">DATA ERROR</div></div>';
@@ -111,7 +94,7 @@ function tile(x){
 }
 
 function drawPaper(){
-  const rows=readTrades(),box=document.getElementById('paperlog');
+  const rows=serverTrades,box=document.getElementById('paperlog');
   if(!rows.length){box.innerHTML='아직 기록 없음';return}
   box.innerHTML='<table><thead><tr><th>날짜</th><th>종목</th><th>산업</th><th>신호</th><th>진입</th><th>현재</th><th>손익</th></tr></thead><tbody>'+
     rows.slice(0,40).map(r=>'<tr><td>'+r.date+'</td><td><b>'+r.ticker+'</b></td><td>'+r.sector+'</td><td>'+r.type+'</td><td>$'+Number(r.entry).toFixed(2)+'</td><td>$'+Number(r.last||r.entry).toFixed(2)+'</td><td class="'+((r.pnl||0)>=0?'up':'dn')+'">'+pc(r.pnl||0)+'</td></tr>').join('')+
@@ -137,7 +120,7 @@ async function load(){
       const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});
       const x=await r.json();
       if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
-      (x.rows||[]).forEach(row=>{recordSignal(row,x.sector);updateMark(row)});
+      // Intraday page viewing does not create trades. Daily close automation records A/B signals.
       slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
       turns.push(...(x.delta_turn||[]));
       drawTurns();
@@ -153,7 +136,7 @@ async function load(){
   for(let i=0;i<12;i++)await one(i);
 }
 
-document.getElementById('refresh').onclick=load;
-drawPaper();
+document.getElementById('refresh').onclick=async()=>{await loadServerTrades();await load();};
+loadServerTrades();
 load();
 </script></body></html>
