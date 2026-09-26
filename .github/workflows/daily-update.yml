@@ -30,6 +30,9 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: python scripts/generate_leaders_report.py
 
+      - name: Update swing virtual trades
+        run: python scripts/update_swing_virtual_trades.py
+
       - name: Save OI history snapshots (오늘의 주도주 기준)
         env:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
@@ -59,5 +62,6 @@ jobs:
           git add public/watchlist_report.json
           git add public/leaders_report.json
           git add public/oi_history/
+          git add public/swing-virtual-trades.json
           git diff --cached --quiet || git commit -m "chore: daily options report update $(date -u +%Y-%m-%d)"
           git push
