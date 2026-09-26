@@ -6,160 +6,109 @@
 button{background:#e2bb46;border:0;border-radius:9px;padding:11px 16px;font-weight:900;cursor:pointer}.legend{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
 .legend span,.turn{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:11px}.turns{display:flex;gap:8px;overflow:auto;margin:10px 0 18px}.turn{min-width:130px;background:#0c1927}.turn b{font-size:15px}.turn em{font-style:normal;color:var(--sky);font-weight:900}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.sector{border:1px solid var(--line);border-radius:13px;background:var(--p);padding:12px}.sector h3{font-size:13px;margin:0 0 9px}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.tile{border-radius:9px;padding:9px;color:#07101b;min-height:68px}.tile b{font-size:14px}.meta{font-size:10px;margin-top:5px;line-height:1.35}.RED{background:var(--r)}.YELLOW{background:var(--y)}.SKY{background:var(--sky)}.GOLD{background:var(--g)}.GREEN{background:var(--gr)}
-.err{background:#202a38;color:#a9b6c8}.sig{display:inline-block;margin-top:5px;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:900;background:#07101b;color:#fff}.sig.b{background:#fff;color:#07101b}.paper{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:var(--p);padding:12px}.paper h3{margin:0 0 8px}.paper table{width:100%;border-collapse:collapse;font-size:11px}.paper th,.paper td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left}.up{color:#45d29a;font-weight:900}.dn{color:#ff6b78;font-weight:900}.foot{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:10px;color:var(--mut);font-size:11px}
-@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.tiles{grid-template-columns:repeat(3,1fr)}.wrap{padding:10px}.tile{padding:7px}.meta{font-size:9px}}
-</style></head><body><div class="wrap"><div class="top"><div><div class="brand">SWING VOLUME HEATMAP <small>BETA</small></div><div class="sub">DAILY = 종목 발견 · 5분봉 = 사용자가 진입 타이밍 확인</div></div><button id="refresh">REFRESH</button></div>
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.tile{border-radius:9px;padding:9px;color:#07101b;min-height:86px}.tile b{font-size:14px}.meta{font-size:10px;margin-top:5px;line-height:1.35}.RED{background:var(--r)}.YELLOW{background:var(--y)}.SKY{background:var(--sky)}.GOLD{background:var(--g)}.GREEN{background:var(--gr)}
+.err{background:#202a38;color:#a9b6c8}.sig{display:inline-block;margin-top:5px;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:900;background:#07101b;color:#fff}.sig.b{background:#fff;color:#07101b}
+.paper{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:var(--p);padding:12px}.paper h3{margin:0 0 8px}.paper table{width:100%;border-collapse:collapse;font-size:11px}.paper th,.paper td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left}.up{color:#45d29a;font-weight:900}.dn{color:#ff6b78;font-weight:900}
+.foot{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:10px;color:var(--mut);font-size:11px}
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.tiles{grid-template-columns:repeat(3,1fr)}.wrap{padding:10px}.tile{padding:7px}.meta{font-size:9px}.paper{overflow:auto}}
+</style></head><body><div class="wrap">
+<div class="top"><div><div class="brand">SWING VOLUME HEATMAP <small>BETA</small></div><div class="sub">DAILY = 종목 발견 · 5분봉 = 사용자가 진입 타이밍 확인</div></div><button id="refresh">REFRESH</button></div>
 <div class="legend"><span>🟢 ▲ 매수 추세</span><span>🟡 ● 매수세 둔화</span><span>🔴 ▼ 매도 추세</span><span>🩵 ● 매도세 둔화(반등임박)</span></div>
 <div class="note"><b>핵심:</b> OrderFlow_Simple_v1과 동일한 일봉 수급 계산입니다. 🩵 매도세 둔화 + Δ↑를 우선 관찰합니다.</div>
-<h3>⚡ DAILY DELTA TURN</h3><div id="turns" class="turns"><span class="note">불러오는 중…</span></div><div id="grid" class="grid"></div>
+<h3>⚡ DAILY DELTA TURN</h3><div id="turns" class="turns"><span class="note">불러오는 중…</span></div>
+<div id="grid" class="grid"></div>
 <div class="paper"><h3>🧪 VIRTUAL BUY TEST</h3><div class="note">A = 🩵 Smooth 기울기 하락→상승 전환 · B = Smooth 상승 + HULL21 아래→위 재진입</div><div id="paperlog" class="note" style="margin-top:8px">아직 기록 없음</div></div>
-<div class="foot">OrderFlow_Simple_v1과 동일한 수학: Buy/Sell 비율 → Net Delta → EMA(5) Smooth → Slope(3). 일봉 OHLCV 기반 추정 수급이며 실제 Bid/Ask aggressor 체결 Delta와는 구분합니다.</div></div>
+<div class="foot">OrderFlow_Simple_v1과 동일한 수학: Buy/Sell 비율 → Net Delta → EMA(5) Smooth → Slope(3). 일봉 OHLCV 기반 추정 수급이며 실제 Bid/Ask aggressor 체결 Delta와는 구분합니다.</div>
+</div>
 <script>
-const fmt=n=>n==null?'—':Number(n).toLocaleString(); const pc=n=>n==null?'—':(n>=0?'+':'')+Number(n).toFixed(2)+'%';
+const fmt=n=>n==null?'—':Number(n).toLocaleString();
+const pc=n=>n==null?'—':(n>=0?'+':'')+Number(n).toFixed(2)+'%';
 const STORE='gex_swing_virtual_buys_v1';
+
 function readTrades(){try{return JSON.parse(localStorage.getItem(STORE)||'[]')}catch(e){return []}}
-function writeTrades(v){localStorage.setItem(STORE,JSON.stringify(v))}
+function writeTrades(v){try{localStorage.setItem(STORE,JSON.stringify(v))}catch(e){}}
 function todayKey(){return new Date().toISOString().slice(0,10)}
+
 function recordSignal(x,sector){
   if(x.error)return;
   const rows=readTrades(),day=todayKey();
-  [['A',x.signal_a],['B',x.signal_b]].forEach(([type,on])=>{
+  [['A',x.signal_a],['B',x.signal_b]].forEach(pair=>{
+    const type=pair[0],on=pair[1];
     if(!on)return;
     const key=day+'|'+x.ticker+'|'+type;
     if(rows.some(r=>r.key===key))return;
-    rows.unshift({key,date:day,ticker:x.ticker,sector,type,entry:Number(x.price),last:Number(x.price),hull21:x.hull21,smooth:x.smooth_delta});
+    rows.unshift({key,date:day,ticker:x.ticker,sector:sector,type:type,entry:Number(x.price),last:Number(x.price),hull21:x.hull21,smooth:x.smooth_delta,pnl:0});
   });
   writeTrades(rows.slice(0,300));
 }
+
 function updateMark(x){
   if(x.error)return;
   const rows=readTrades(); let changed=false;
-  rows.forEach(r=>{if(r.ticker===x.ticker){r.last=Number(x.price);r.pnl=r.entry?((r.last/r.entry)-1)*100:0;changed=true}});
+  rows.forEach(r=>{
+    if(r.ticker===x.ticker){
+      r.last=Number(x.price);
+      r.pnl=r.entry?((r.last/r.entry)-1)*100:0;
+      changed=true;
+    }
+  });
   if(changed)writeTrades(rows);
 }
+
 function latestTrade(ticker,type){return readTrades().find(r=>r.ticker===ticker&&r.type===type)}
-function tile(x){if(x.error)return '<div class="tile err"><b>'+x.ticker+'</b><div class="meta">DATA ERROR</div></div>';
- const a=latestTrade(x.ticker,'A'),b=latestTrade(x.ticker,'B');
- const badges=(x.signal_a?'<span class="sig">A TEST BUY</span> ':'')+(x.signal_b?'<span class="sig b">B HULL21 BUY</span>':'');
- const held=(a?'<br>A 
-async function load(){
-const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
-btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
-let turns=[],done=0;
-function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
-async function one(i){
- const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
- try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
- (x.rows||[]).forEach(row=>{recordSignal(row,x.sector);updateMark(row)});
- slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
- turns.push(...(x.delta_turn||[]));drawTurns();drawPaper();
- }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
- finally{done++;if(done===12)btn.disabled=false}
+
+function tile(x){
+  if(x.error)return '<div class="tile err"><b>'+x.ticker+'</b><div class="meta">DATA ERROR</div></div>';
+  const a=latestTrade(x.ticker,'A'),b=latestTrade(x.ticker,'B');
+  const badges=(x.signal_a?'<span class="sig">A TEST BUY</span> ':'')+(x.signal_b?'<span class="sig b">B HULL21 BUY</span>':'');
+  const held=(a?'<br>A $'+a.entry.toFixed(2)+' '+pc(a.pnl||0):'')+(b?'<br>B $'+b.entry.toFixed(2)+' '+pc(b.pnl||0):'');
+  return '<div class="tile '+x.state+'"><b>'+x.ticker+(x.delta_up?' · Δ↑':'')+'</b><div class="meta">$'+x.price+' · Vol '+fmt(x.volume)+'<br>Buy '+x.buy_pct+'% · Vol '+x.volume_ratio+'×<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope '+(x.delta_slope>=0?'↑':'↓')+'<br>HULL21 '+(x.hull21==null?'—':'$'+x.hull21)+' · Price '+pc(x.day_change_pct)+held+'</div>'+badges+'</div>';
 }
-for(let i=0;i<12;i++) await one(i);
-}
-document.getElementById('refresh').onclick=load;drawPaper();load();</script></body></html>+a.entry.toFixed(2)+' '+pc(a.pnl||0):'')+(b?'<br>B 
-async function load(){
-const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
-btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
-let turns=[],done=0;
-function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
-async function one(i){
- const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
- try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
- slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
- turns.push(...(x.delta_turn||[]));drawTurns();
- }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
- finally{done++;if(done===12)btn.disabled=false}
-}
-for(let i=0;i<12;i++) await one(i);
-}
-document.getElementById('refresh').onclick=load;load();</script></body></html>+b.entry.toFixed(2)+' '+pc(b.pnl||0):'');
-return '<div class="tile '+x.state+'"><b>'+x.ticker+(x.delta_up?' · Δ↑':'')+'</b><div class="meta">
-async function load(){
-const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
-btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
-let turns=[],done=0;
-function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
-async function one(i){
- const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
- try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
- slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
- turns.push(...(x.delta_turn||[]));drawTurns();
- }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
- finally{done++;if(done===12)btn.disabled=false}
-}
-for(let i=0;i<12;i++) await one(i);
-}
-document.getElementById('refresh').onclick=load;load();</script></body></html>+x.price+' · Vol '+fmt(x.volume)+'<br>Buy '+x.buy_pct+'% · Vol '+x.volume_ratio+'×<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope '+(x.delta_slope>=0?'↑':'↓')+'<br>HULL21 '+(x.hull21==null?'—':'
-async function load(){
-const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
-btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
-let turns=[],done=0;
-function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
-async function one(i){
- const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
- try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
- slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
- turns.push(...(x.delta_turn||[]));drawTurns();
- }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
- finally{done++;if(done===12)btn.disabled=false}
-}
-for(let i=0;i<12;i++) await one(i);
-}
-document.getElementById('refresh').onclick=load;load();</script></body></html>+x.hull21)+' · Price '+pc(x.day_change_pct)+held+'</div>'+badges+'</div>'}
+
 function drawPaper(){
- const rows=readTrades();
- const box=document.getElementById('paperlog');
- if(!rows.length){box.innerHTML='아직 기록 없음';return}
- box.innerHTML='<table><thead><tr><th>날짜</th><th>종목</th><th>산업</th><th>신호</th><th>진입</th><th>현재</th><th>손익</th></tr></thead><tbody>'+rows.slice(0,40).map(r=>'<tr><td>'+r.date+'</td><td><b>'+r.ticker+'</b></td><td>'+r.sector+'</td><td>'+r.type+'</td><td>
+  const rows=readTrades(),box=document.getElementById('paperlog');
+  if(!rows.length){box.innerHTML='아직 기록 없음';return}
+  box.innerHTML='<table><thead><tr><th>날짜</th><th>종목</th><th>산업</th><th>신호</th><th>진입</th><th>현재</th><th>손익</th></tr></thead><tbody>'+
+    rows.slice(0,40).map(r=>'<tr><td>'+r.date+'</td><td><b>'+r.ticker+'</b></td><td>'+r.sector+'</td><td>'+r.type+'</td><td>$'+Number(r.entry).toFixed(2)+'</td><td>$'+Number(r.last||r.entry).toFixed(2)+'</td><td class="'+((r.pnl||0)>=0?'up':'dn')+'">'+pc(r.pnl||0)+'</td></tr>').join('')+
+    '</tbody></table>';
+}
+
 async function load(){
-const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
-btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
-let turns=[],done=0;
-function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
-async function one(i){
- const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
- try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
- slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
- turns.push(...(x.delta_turn||[]));drawTurns();
- }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
- finally{done++;if(done===12)btn.disabled=false}
+  const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
+  btn.disabled=true;grid.innerHTML='';turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
+  let turns=[],done=0;
+
+  function drawTurns(){
+    turns.sort((a,b)=>b.delta_slope-a.delta_slope);
+    turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>';
+  }
+
+  async function one(i){
+    const slot=document.createElement('section');
+    slot.className='sector';
+    slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';
+    grid.appendChild(slot);
+    try{
+      const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});
+      const x=await r.json();
+      if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
+      (x.rows||[]).forEach(row=>{recordSignal(row,x.sector);updateMark(row)});
+      slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
+      turns.push(...(x.delta_turn||[]));
+      drawTurns();
+      drawPaper();
+    }catch(e){
+      slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>';
+    }finally{
+      done++;
+      if(done===12)btn.disabled=false;
+    }
+  }
+
+  for(let i=0;i<12;i++)await one(i);
 }
-for(let i=0;i<12;i++) await one(i);
-}
-document.getElementById('refresh').onclick=load;load();</script></body></html>+r.entry.toFixed(2)+'</td><td>
-async function load(){
-const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
-btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
-let turns=[],done=0;
-function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
-async function one(i){
- const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
- try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
- slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
- turns.push(...(x.delta_turn||[]));drawTurns();
- }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
- finally{done++;if(done===12)btn.disabled=false}
-}
-for(let i=0;i<12;i++) await one(i);
-}
-document.getElementById('refresh').onclick=load;load();</script></body></html>+Number(r.last||r.entry).toFixed(2)+'</td><td class="'+((r.pnl||0)>=0?'up':'dn')+'">'+pc(r.pnl||0)+'</td></tr>').join('')+'</tbody></table>';
-}
-async function load(){
-const btn=document.getElementById('refresh'),grid=document.getElementById('grid'),turnBox=document.getElementById('turns');
-btn.disabled=true; grid.innerHTML=''; turnBox.innerHTML='<span class="note">산업별로 불러오는 중…</span>';
-let turns=[],done=0;
-function drawTurns(){turns.sort((a,b)=>b.delta_slope-a.delta_slope);turnBox.innerHTML=turns.slice(0,12).map(x=>'<div class="turn"><b>'+x.ticker+'</b> <em>Δ↑</em><div class="meta">'+x.status+' · Buy '+x.buy_pct+'%<br>Smooth '+Math.round(x.smooth_delta/1000)+'K · Slope ↑</div></div>').join('')||'<span class="note">현재 DAILY DELTA TURN 없음</span>'}
-async function one(i){
- const slot=document.createElement('section');slot.className='sector';slot.innerHTML='<h3>산업 '+(i+1)+' · 업데이트 중…</h3><div class="note">Schwab 데이터 확인 중</div>';grid.appendChild(slot);
- try{const r=await fetch('/api/search?mode=swing_volume_heatmap&sector='+i,{cache:'no-store'});const x=await r.json();if(!r.ok||x.error)throw Error(x.error||('HTTP '+r.status));
- slot.innerHTML='<h3>'+x.sector+' <span class="note">✓</span></h3><div class="tiles">'+(x.rows||[]).map(tile).join('')+'</div>';
- turns.push(...(x.delta_turn||[]));drawTurns();
- }catch(e){slot.innerHTML='<h3>산업 '+(i+1)+'</h3><div class="foot">오류: '+e.message+'</div>'}
- finally{done++;if(done===12)btn.disabled=false}
-}
-for(let i=0;i<12;i++) await one(i);
-}
-document.getElementById('refresh').onclick=load;load();</script></body></html>
+
+document.getElementById('refresh').onclick=load;
+drawPaper();
+load();
+</script></body></html>
