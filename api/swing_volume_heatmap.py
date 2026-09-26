@@ -66,10 +66,33 @@ def _ema(values, length):
         out.append(ema)
     return out
 
+def _wma(values, length):
+    if len(values) < length:
+        return None
+    weights = list(range(1, length + 1))
+    denom = sum(weights)
+    window = values[-length:]
+    return sum(v * w for v, w in zip(window, weights)) / denom
+
+def _hma_at(values, length=21):
+    # Hull Moving Average = WMA(2*WMA(n/2)-WMA(n), sqrt(n))
+    half = max(1, length // 2)
+    root = max(1, int(length ** 0.5))
+    if len(values) < length + root - 1:
+        return None
+    raw = []
+    start = length - 1
+    for end in range(start, len(values)):
+        sub = values[:end + 1]
+        w_half = _wma(sub, half)
+        w_full = _wma(sub, length)
+        raw.append(2 * w_half - w_full)
+    return _wma(raw, root)
+
 def analyze(sym,access):
     cs=candles(sym,access)
     if len(cs)<25: raise RuntimeError(f"{sym}: insufficient daily candles")
-    recent=cs[-25:]
+    recent=cs[-40:]
     vols=[float(x.get("volume") or 0) for x in recent]
 
     # Exact OrderFlow_Simple_v1 math supplied by the user:
@@ -89,6 +112,7 @@ def analyze(sym,access):
     smooths=_ema(deltas,5)
     smooth=smooths[-1]
     slope=smooth-smooths[-4]  # ThinkScript smoothDelta - smoothDelta[3]
+    prev_slope=smooths[-2]-smooths[-5]
     strong_buy=smooth>0 and slope>=0
     weak_buy=smooth>0 and slope<0
     strong_sell=smooth<0 and slope<=0
@@ -108,10 +132,27 @@ def analyze(sym,access):
     cross_up=smooth>0 and smooths[-2]<=0
     cross_down=smooth<0 and smooths[-2]>=0
 
+    closes=[float(x.get("close") or 0) for x in recent]
+    hull21=_hma_at(closes,21)
+    prev_hull21=_hma_at(closes[:-1],21)
+    hull21_reclaim=bool(
+        hull21 is not None and prev_hull21 is not None and
+        closes[-1] >= hull21 and closes[-2] < prev_hull21
+    )
+
+    # Test signals:
+    # A = sell pressure slowdown begins: Smooth slope flips from <=0 to >0 while Smooth remains below zero.
+    # B = A-style improving Smooth plus a fresh HULL21 reclaim.
+    signal_a=bool(smooth < 0 and slope > 0 and prev_slope <= 0)
+    signal_b=bool(slope > 0 and hull21_reclaim)
+
     return {"ticker":sym,"state":state,"delta_up":slope>0,
             "smooth_delta":round(smooth,0),"delta_slope":round(slope,0),
             "buy_pct":buy_pct,"buy_volume":round(buy_vols[-1]),"sell_volume":round(sell_vols[-1]),
             "zero_cross_up":cross_up,"zero_cross_down":cross_down,
+            "signal_a":signal_a,"signal_b":signal_b,
+            "hull21":round(hull21,2) if hull21 is not None else None,
+            "hull21_reclaim":hull21_reclaim,
             "volume":int(vols[-1]),"volume_ratio":round(vr,2),"price":round(close,2),
             "day_change_pct":round(ch,2),
             "status":("매수 추세" if strong_buy else "매수세 둔화" if weak_buy else "매도 추세" if strong_sell else "매도세 둔화(반등임박)")}
