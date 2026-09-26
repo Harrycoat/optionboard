@@ -38,8 +38,11 @@ button{background:#e2bb46;border:0;border-radius:9px;padding:11px 16px;font-weig
   .paper th,.paper td{padding:8px 6px}
   .foot{font-size:12px;line-height:1.55}
 }
-@media(min-width:601px) and (max-width:760px){
-  .tiles{grid-template-columns:repeat(2,1fr)}
+@media(max-width:760px){
+  .grid{grid-template-columns:1fr !important}
+  .tiles{grid-template-columns:1fr !important}
+  .sector{width:100%}
+  .tile{width:100%}
 }
 </style></head><body><div class="wrap">
 <div class="top"><div><div class="brand">SWING VOLUME HEATMAP <small>BETA</small></div><div class="sub">DAILY = 종목 발견 · 5분봉 = 사용자가 진입 타이밍 확인</div></div><button id="refresh">REFRESH</button></div>
