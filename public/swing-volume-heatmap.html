@@ -10,7 +10,37 @@ button{background:#e2bb46;border:0;border-radius:9px;padding:11px 16px;font-weig
 .err{background:#202a38;color:#a9b6c8}.sig{display:inline-block;margin-top:5px;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:900;background:#07101b;color:#fff}.sig.b{background:#fff;color:#07101b}
 .paper{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:var(--p);padding:12px}.paper h3{margin:0 0 8px}.paper table{width:100%;border-collapse:collapse;font-size:11px}.paper th,.paper td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left}.up{color:#45d29a;font-weight:900}.dn{color:#ff6b78;font-weight:900}
 .foot{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:10px;color:var(--mut);font-size:11px}
-@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.tiles{grid-template-columns:repeat(3,1fr)}.wrap{padding:10px}.tile{padding:7px}.meta{font-size:9px}.paper{overflow:auto}}
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr 1fr}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .wrap{padding:10px}
+  .top{align-items:stretch;flex-direction:column}
+  .brand{font-size:21px}
+  .sub,.note{font-size:13px}
+  #refresh{width:100%;font-size:16px;padding:13px}
+  .legend{gap:6px}
+  .legend span{font-size:12px;padding:7px 8px}
+  .turns{gap:7px}
+  .turn{min-width:155px;padding:10px}
+  .grid{grid-template-columns:1fr;gap:10px}
+  .sector{padding:10px}
+  .sector h3{font-size:15px}
+  .tiles{grid-template-columns:1fr;gap:8px}
+  .tile{padding:12px;min-height:110px;border-radius:11px}
+  .tile b{font-size:18px}
+  .meta{font-size:13px;line-height:1.55}
+  .sig{font-size:11px;padding:5px 7px;margin-top:7px}
+  .paper{overflow-x:auto;padding:10px}
+  .paper h3{font-size:16px}
+  .paper table{min-width:620px;font-size:12px}
+  .paper th,.paper td{padding:8px 6px}
+  .foot{font-size:12px;line-height:1.55}
+}
+@media(min-width:601px) and (max-width:760px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+}
 </style></head><body><div class="wrap">
 <div class="top"><div><div class="brand">SWING VOLUME HEATMAP <small>BETA</small></div><div class="sub">DAILY = 종목 발견 · 5분봉 = 사용자가 진입 타이밍 확인</div></div><button id="refresh">REFRESH</button></div>
 <div class="legend"><span>🟢 ▲ 매수 추세</span><span>🟡 ● 매수세 둔화</span><span>🔴 ▼ 매도 추세</span><span>🩵 ● 매도세 둔화(반등임박)</span></div>
