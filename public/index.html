@@ -669,7 +669,11 @@
   .response-video-player{ position:relative; width:100%; aspect-ratio:9/16; overflow:hidden; border:1px solid var(--line); border-radius:11px; background:#05080d; }
   .response-video-player iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   .response-video-copy{ align-self:center; padding-right:8px; }.response-video-copy h2{ margin:0; color:var(--text); font-size:23px; }.response-video-copy h2 span{ color:#ff5a65; }.response-video-copy strong{ display:block; margin-top:18px; color:var(--gold); font-size:16px; }.response-video-copy p{ margin:10px 0 0; color:var(--text-dim); font-size:13px; line-height:1.7; }
-  .response-video-points{ display:grid; gap:8px; margin-top:16px; }.response-video-points span{ padding:10px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); color:var(--text); font-size:11px; font-weight:700; }
+  .response-video-points{ display:grid; gap:8px; margin-top:16px; }
+  .flagship-video{ max-width:1100px; margin:26px auto 0; padding:0 20px; }
+  .flagship-video-sub{ font-size:13px; color:var(--text-dim); margin:6px 0 14px; line-height:1.6; }
+  .flagship-video-frame{ position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border:1px solid var(--line); border-radius:12px; background:#05080d; }
+  .flagship-video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }.response-video-points span{ padding:10px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); color:var(--text); font-size:11px; font-weight:700; }
   .response-video-link{ display:inline-block; margin-top:16px; padding:9px 12px; border:1px solid #ff5a65; border-radius:7px; color:#ff8b92; font-size:11px; font-weight:900; text-decoration:none; }
   .response-video-close{ position:absolute; top:10px; right:10px; z-index:2; width:34px; height:34px; border:1px solid var(--line); border-radius:50%; background:#151b24; color:var(--text); font-size:20px; cursor:pointer; }
   .hero-rail-card{ align-self:center; background:rgba(10,13,18,.72); border:1px solid var(--line); border-radius:11px; padding:22px 18px 16px; }.hero-rail-title{ font-size:11px; color:var(--text-dim); letter-spacing:.08em; }.hero-rail{ position:relative; height:5px; border-radius:6px; background:linear-gradient(90deg,var(--down),#65748d 50%,var(--up)); margin:54px 16px 38px; }
@@ -901,6 +905,11 @@
   </div>
   <div class="member-benefits"><div class="member-benefit"><div class="member-benefit-icon">★</div><div><b>관심종목 저장</b><span>PC와 휴대전화에서 동일하게 확인</span></div></div><div class="member-benefit"><div class="member-benefit-icon">▥</div><div><b>핵심 가격 자동 표시</b><span>Put Wall · Call Wall · Gamma Flip</span></div></div><div class="member-benefit"><div class="member-benefit-icon">↻</div><div><b>매일 업데이트</b><span>시장 국면과 관심종목 변화를 빠르게 확인</span></div></div></div>
   <div class="member-quickstrip"><button class="qs-btn" id="memberHeroSignup" type="button">내 관심종목 보기 →</button><button class="qs-btn" id="memberHeroHoldings" type="button">📊 내 종목</button><button class="qs-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="qs-btn" id="memberHeroVideo" type="button">🎬 실전 대응 영상</button></div>
+</section>
+<section class="flagship-video" aria-labelledby="flagshipVideoTitle">
+  <div class="section-title" id="flagshipVideoTitle">🎬 GEX옵션 대표 영상</div>
+  <p class="flagship-video-sub">세력의 발자국을 따라가라 — Call Wall · Put Wall 실전 원리 (약 9분 30초)</p>
+  <div class="flagship-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/V1DQZr0x6VM" title="세력의 발자국을 따라가라 | GEXOption 투자 원리" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div>
 </section>
 <div class="response-video-modal" id="responseVideoModal" role="dialog" aria-modal="true" aria-labelledby="responseVideoTitle" hidden>
   <div class="response-video-dialog">
