@@ -679,7 +679,27 @@
  .video-card:hover{ transform:translateY(-2px); border-color:rgba(224,168,56,.5); }
  .video-card img{ width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
  .video-card span{ display:block; padding:10px 12px; font-size:12.5px; font-weight:700; color:#f0f6fc; line-height:1.5; }
- .video-card small{ display:block; padding:0 12px 10px; font-size:11px; color:var(--text-dim); }.response-video-points span{ padding:10px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); color:var(--text); font-size:11px; font-weight:700; }
+ .video-card small{ display:block; padding:0 12px 10px; font-size:11px; color:var(--text-dim); }
+ .video-corner-layout{ display:flex; gap:16px; margin-top:14px; align-items:flex-start; }
+ .video-main{ flex:2.2; min-width:0; }
+ .video-playlist{ flex:1; min-width:210px; display:flex; flex-direction:column; gap:8px; max-height:420px; overflow-y:auto; }
+ .video-item{ padding:12px 14px; border:1px solid var(--line); border-radius:8px; background:rgba(10,13,18,.6); cursor:pointer; transition:border-color .15s ease, background .15s ease; }
+ .video-item:hover{ border-color:rgba(224,168,56,.5); }
+ .video-item.active{ border-color:#e0a838; background:rgba(224,168,56,.08); }
+ .video-item .vt{ font-size:13px; font-weight:700; color:#f0f6fc; line-height:1.5; }
+ .video-item .vl{ font-size:11px; color:var(--text-dim); margin-top:4px; }
+ .video-item .vl a{ color:#e0a838; text-decoration:none; }
+ @media (max-width:720px){ .video-corner-layout{ flex-direction:column; } .video-playlist{ max-height:none; width:100%; } }
+ .vc-modal{ position:fixed; inset:0; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; z-index:10000; padding:20px; }
+ .vc-modal[hidden]{ display:none; }
+ .vc-modal-box{ width:min(880px,94vw); }
+ .vc-modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+ .vc-modal-title{ font-size:14px; font-weight:700; color:#f0f6fc; }
+ .vc-modal-close{ background:none; border:1px solid var(--line); color:#f0f6fc; border-radius:8px; padding:6px 12px; cursor:pointer; font-size:13px; }
+ .vc-modal-frame{ position:relative; width:100%; aspect-ratio:16/9; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#05080d; }
+ .vc-modal-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+ .vc-modal-foot{ margin-top:10px; text-align:right; }
+ .vc-modal-foot a{ color:#e0a838; font-size:12px; text-decoration:none; }.response-video-points span{ padding:10px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-2); color:var(--text); font-size:11px; font-weight:700; }
   .response-video-link{ display:inline-block; margin-top:16px; padding:9px 12px; border:1px solid #ff5a65; border-radius:7px; color:#ff8b92; font-size:11px; font-weight:900; text-decoration:none; }
   .response-video-close{ position:absolute; top:10px; right:10px; z-index:2; width:34px; height:34px; border:1px solid var(--line); border-radius:50%; background:#151b24; color:var(--text); font-size:20px; cursor:pointer; }
   .hero-rail-card{ align-self:center; background:rgba(10,13,18,.72); border:1px solid var(--line); border-radius:11px; padding:22px 18px 16px; }.hero-rail-title{ font-size:11px; color:var(--text-dim); letter-spacing:.08em; }.hero-rail{ position:relative; height:5px; border-radius:6px; background:linear-gradient(90deg,var(--down),#65748d 50%,var(--up)); margin:54px 16px 38px; }
@@ -939,23 +959,57 @@
   <p>실전에서는 <strong>천장 근처에서 욕심부리지 않고 일부를 챙기고, 바닥 근처에서는 여유되면 모아가는 식</strong>으로 대응합니다. GEX Option에서는 미국 주식 수천 종목의 콜월 · 풋월 · 감마플립 · 맥스페인을 매일 업데이트합니다.</p>
   <p class="fine">정보·교육 목적이며 투자 권유가 아닙니다. 원금 손실의 위험이 있습니다.</p>
 </section>
-<section class="flagship-video" aria-labelledby="videoCornerTitle">
+<section class="flagship-video" aria-labelledby="videoCornerTitle" style="max-width:1020px">
   <div class="section-title" id="videoCornerTitle">📺 영상 코너</div>
-  <p class="flagship-video-sub">최신 영상부터 차곡차곡 쌓입니다</p>
-  <div class="flagship-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/Vd6WQGYSd48" title="감마 지표가 알려준 테슬라 고점의 비밀 | RVMD +$370 실전 복기 &amp; 다음 주 전략" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div>
-  <div class="video-archive">
-    <a class="video-card" href="https://youtu.be/Vd6WQGYSd48" target="_blank" rel="noopener">
-      <img src="https://img.youtube.com/vi/Vd6WQGYSd48/hqdefault.jpg" alt="주간 매매일지 하이라이트" loading="lazy">
-      <span>감마 지표가 알려준 테슬라 고점의 비밀</span>
-      <small>RVMD +$370 실전 복기 &amp; 다음 주 전략</small>
-    </a>
-    <a class="video-card" href="https://youtu.be/V1DQZr0x6VM" target="_blank" rel="noopener">
-      <img src="https://img.youtube.com/vi/V1DQZr0x6VM/hqdefault.jpg" alt="세력의 발자국을 따라가라" loading="lazy">
-      <span>세력의 발자국을 따라가라 | GEXOption 투자 원리</span>
-      <small>Call Wall · Put Wall 실전 원리</small>
-    </a>
+  <p class="flagship-video-sub">최신 영상부터 차곡차곡 쌓입니다. 우측 목록에서 골라보세요.</p>
+  <div class="video-corner-layout">
+    <div class="video-main">
+      <div class="flagship-video-frame" id="vcMainFrame"><iframe src="https://www.youtube-nocookie.com/embed/Vd6WQGYSd48" title="감마 지표가 알려준 테슬라 고점의 비밀" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div>
+    </div>
+    <div class="video-playlist" id="vcPlaylist"></div>
   </div>
 </section>
+<div class="vc-modal" id="vcModal" role="dialog" aria-modal="true" aria-labelledby="vcModalTitle" hidden>
+  <div class="vc-modal-box">
+    <div class="vc-modal-head">
+      <div class="vc-modal-title" id="vcModalTitle"></div>
+      <button class="vc-modal-close" id="vcModalClose" type="button">닫기 ✕</button>
+    </div>
+    <div class="vc-modal-frame" id="vcModalFrame"></div>
+    <div class="vc-modal-foot"><a id="vcModalLink" href="#" target="_blank" rel="noopener">유튜브에서 보기 ↗</a></div>
+  </div>
+</div>
+<script>
+(function(){
+  var vids=[
+    {id:'Vd6WQGYSd48',title:'감마 지표가 알려준 테슬라 고점의 비밀',sub:'RVMD +$370 실전 복기 & 다음 주 전략'},
+    {id:'V1DQZr0x6VM',title:'세력의 발자국을 따라가라 | GEXOption 투자 원리',sub:'Call Wall · Put Wall 실전 원리'}
+  ];
+  var pl=document.getElementById('vcPlaylist'),modal=document.getElementById('vcModal'),
+      mTitle=document.getElementById('vcModalTitle'),mFrame=document.getElementById('vcModalFrame'),
+      mLink=document.getElementById('vcModalLink');
+  vids.forEach(function(v,i){
+    var d=document.createElement('div');
+    d.className='video-item'+(i===0?' active':'');
+    d.innerHTML='<div class="vt">'+v.title+'</div><div class="vl">'+v.sub+' · <a href="https://youtu.be/'+v.id+'" target="_blank" rel="noopener" data-yt="1">유튜브 ↗</a></div>';
+    d.addEventListener('click',function(e){
+      if(e.target&&e.target.getAttribute&&e.target.getAttribute('data-yt'))return;
+      mTitle.textContent=v.title;
+      mFrame.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1" title="'+v.title+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+      mLink.href='https://youtu.be/'+v.id;
+      modal.hidden=false;
+      document.body.style.overflow='hidden';
+      pl.querySelectorAll('.video-item').forEach(function(x){x.classList.remove('active');});
+      d.classList.add('active');
+    });
+    pl.appendChild(d);
+  });
+  function close(){modal.hidden=true;mFrame.innerHTML='';document.body.style.overflow='';}
+  document.getElementById('vcModalClose').addEventListener('click',close);
+  modal.addEventListener('click',function(e){if(e.target===modal)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!modal.hidden)close();});
+})();
+</script>
 <div class="response-video-modal" id="responseVideoModal" role="dialog" aria-modal="true" aria-labelledby="responseVideoTitle" hidden>
   <div class="response-video-dialog">
     <button class="response-video-close" id="responseVideoClose" type="button" aria-label="영상 창 닫기">×</button>
