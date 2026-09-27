@@ -686,6 +686,17 @@
   .hero-m3-walls{ font-size:11.5px; font-weight:400; color:var(--text-dim); margin-left:8px; }
   .hero-m3-why{ font-size:12.5px; color:var(--text-dim); line-height:1.55; margin-top:3px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   .hero-m3-foot{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; padding-top:10px; border-top:1px solid var(--line); font-size:12px; }
+ .wall-guide{ max-width:1100px; margin:26px auto 0; padding:26px 22px; border:1px solid var(--line); border-radius:12px; background:rgba(16,23,32,.55); }
+ .wall-guide h2{ font-size:18px; font-weight:800; margin:0 0 12px; letter-spacing:-0.01em; }
+ .wall-guide h2 .en{ color:var(--text-dim); font-weight:400; font-size:13px; }
+ .wall-guide p{ font-size:13.5px; line-height:1.8; color:var(--text-dim); margin:0 0 10px; }
+ .wall-guide p strong{ color:#f0f6fc; }
+ .wall-cols{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
+ @media (max-width:640px){ .wall-cols{ grid-template-columns:1fr; } }
+ .wall-col{ border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:rgba(10,13,18,.6); }
+ .wall-col h3{ font-size:14px; margin:0 0 8px; }
+ .wall-col p{ font-size:12.5px; margin:0; }
+ .wall-guide .fine{ font-size:11.5px; opacity:.75; margin:12px 0 0; }
   .hero-m3-track{ color:var(--text-dim); }
   .hero-m3-more{ color:var(--gold); text-decoration:none; font-weight:700; white-space:nowrap; }
   .hero-m3-empty{ font-size:12.5px; color:var(--text-dim); padding:14px 0; text-align:center; }
@@ -905,6 +916,22 @@
   </div>
   <div class="member-benefits"><div class="member-benefit"><div class="member-benefit-icon">★</div><div><b>관심종목 저장</b><span>PC와 휴대전화에서 동일하게 확인</span></div></div><div class="member-benefit"><div class="member-benefit-icon">▥</div><div><b>핵심 가격 자동 표시</b><span>Put Wall · Call Wall · Gamma Flip</span></div></div><div class="member-benefit"><div class="member-benefit-icon">↻</div><div><b>매일 업데이트</b><span>시장 국면과 관심종목 변화를 빠르게 확인</span></div></div></div>
   <div class="member-quickstrip"><button class="qs-btn" id="memberHeroSignup" type="button">내 관심종목 보기 →</button><button class="qs-btn" id="memberHeroHoldings" type="button">📊 내 종목</button><button class="qs-btn" id="memberHeroSearch" type="button">⌕ 종목 바로 조회</button><button class="qs-btn" id="memberHeroVideo" type="button">🎬 실전 대응 영상</button></div>
+</section>
+<section class="wall-guide" aria-label="콜월 풋월 설명">
+  <h2>콜월(Call Wall) · 풋월(Put Wall)이란? <span class="en">옵션 벽으로 보는 지지와 저항</span></h2>
+  <p>주가는 <strong>옵션 시장의 벽</strong>에서 자주 멈춥니다. 콜월은 위에서 누르는 <strong>천장(저항)</strong>, 풋월은 아래에서 받쳐주는 <strong>바닥(지지)</strong>입니다. 차트가 과거를 보여준다면, 벽은 지금 시장의 자리를 보여줍니다.</p>
+  <div class="wall-cols">
+    <div class="wall-col">
+      <h3>콜월 (Call Wall) — 천장</h3>
+      <p>콜옵션이 가장 많이 쌓인 가격대입니다. 주가가 오르면 매물이 쏟아져 뚫기 어렵습니다. 한 번 뚫고 안착하면 그 천장이 새로운 바닥(지지)이 됩니다. 뚫으면 지지 확인하는 자리입니다.</p>
+    </div>
+    <div class="wall-col">
+      <h3>풋월 (Put Wall) — 바닥</h3>
+      <p>풋옵션이 가장 많이 쌓인 가격대입니다. 주가가 내려오면 여기서 받쳐줍니다. 바닥이 두꺼울수록 쉽게 깨지지 않는 자리로 봅니다.</p>
+    </div>
+  </div>
+  <p>실전에서는 <strong>천장 근처에서 욕심부리지 않고 일부를 챙기고, 바닥 근처에서는 여유되면 모아가는 식</strong>으로 대응합니다. GEX Option에서는 미국 주식 수천 종목의 콜월 · 풋월 · 감마플립 · 맥스페인을 매일 업데이트합니다.</p>
+  <p class="fine">정보·교육 목적이며 투자 권유가 아닙니다. 원금 손실의 위험이 있습니다.</p>
 </section>
 <section class="flagship-video" aria-labelledby="flagshipVideoTitle">
   <div class="section-title" id="flagshipVideoTitle">🎬 GEX옵션 대표 영상</div>
