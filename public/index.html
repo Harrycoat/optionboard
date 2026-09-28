@@ -723,6 +723,14 @@
  .wall-col h3{ font-size:14px; margin:0 0 8px; }
  .wall-col p{ font-size:12.5px; margin:0; }
  .wall-guide .fine{ font-size:11.5px; opacity:.75; margin:12px 0 0; }
+ .strategy-guides{ max-width:1100px; margin:26px auto 0; padding:26px 22px; border:1px solid var(--line); border-radius:12px; background:rgba(16,23,32,.55); }
+ .sg-sub{ font-size:13px; color:var(--text-dim); margin:0 0 14px; }
+ .sg-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; }
+ .sg-card{ display:block; border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:rgba(10,13,18,.6); text-decoration:none; }
+ .sg-card:hover{ border-color:var(--gold); }
+ .sg-tag{ display:inline-block; font-size:11px; font-weight:800; color:#0d1117; background:var(--gold); border-radius:4px; padding:2px 8px; margin-bottom:8px; }
+ .sg-title{ font-size:14.5px; font-weight:700; color:#f0f6fc; margin-bottom:6px; }
+ .sg-desc{ font-size:12.5px; color:var(--text-dim); line-height:1.6; margin:0; }
   .hero-m3-track{ color:var(--text-dim); }
   .hero-m3-more{ color:var(--gold); text-decoration:none; font-weight:700; white-space:nowrap; }
   .hero-m3-empty{ font-size:12.5px; color:var(--text-dim); padding:14px 0; text-align:center; }
@@ -958,6 +966,29 @@
   </div>
   <p>실전에서는 <strong>천장 근처에서 욕심부리지 않고 일부를 챙기고, 바닥 근처에서는 여유되면 모아가는 식</strong>으로 대응합니다. GEX Option에서는 미국 주식 수천 종목의 콜월 · 풋월 · 감마플립 · 맥스페인을 매일 업데이트합니다.</p>
   <p class="fine">정보·교육 목적이며 투자 권유가 아닙니다. 원금 손실의 위험이 있습니다.</p>
+</section>
+<section class="strategy-guides" aria-label="실전 전략 가이드">
+  <div class="section-title">📚 실전 전략 가이드</div>
+  <p class="sg-sub">검색에서 가장 많이 찾는 GEX Option의 실전 전략 글입니다. 벽의 원리부터 실전 대응까지.</p>
+  <div class="sg-grid">
+    <a class="sg-card" href="/ftd-strategy.html">
+      <div class="sg-tag">인기</div>
+      <div class="sg-title">FTD 확인 후 순차 매수 전략</div>
+      <p class="sg-desc">하락장 전환점에서 리스크를 관리하며 비중을 늘려가는 피라미딩 방법</p>
+    </a>
+    <a class="sg-card" href="/education-put-wall-bounce.html">
+      <div class="sg-title">Put Wall 반등 확인 방법</div>
+      <p class="sg-desc">바닥(지지) 구간에서 반등이 나오는지 확인하는 법</p>
+    </a>
+    <a class="sg-card" href="/education-call-wall.html">
+      <div class="sg-title">Call Wall이란?</div>
+      <p class="sg-desc">천장(저항) 구간의 의미와 돌파·거절 확인 포인트</p>
+    </a>
+    <a class="sg-card" href="/education.html">
+      <div class="sg-title">교육센터 전체 보기 →</div>
+      <p class="sg-desc">콜월 · 풋월 · 감마플립 기초부터 실전까지 한눈에</p>
+    </a>
+  </div>
 </section>
 <section class="flagship-video" aria-labelledby="videoCornerTitle" style="max-width:1020px">
   <div class="section-title" id="videoCornerTitle">📺 영상 코너</div>
