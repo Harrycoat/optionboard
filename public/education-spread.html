@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>스프레드로 수익 지키는 법 | GEXOption 교육</title>
+<meta name="description" content="옵션 스프레드의 기본 구조와, 네이키드 매수 대비 손실이 제한되는 이유를 설명합니다. 콜월 근처에서 스프레드를 참고하는 관점도 함께 정리했습니다.">
+<link rel="canonical" href="https://gexoption.com/education-spread.html">
+<meta name="keywords" content="옵션 스프레드, 불 콜 스프레드, 스프레드 전략, 콜월 스프레드, 옵션 교육">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"스프레드로 수익 지키는 법","description":"옵션 스프레드의 기본 구조와 손실이 제한되는 이유, 콜월 근처에서의 참고 관점.","datePublished":"2026-09-27","author":{"@type":"Organization","name":"GEX Option"},"publisher":{"@type":"Organization","name":"GEX Option"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://gexoption.com/education-spread.html"}}
+</script>
+<style>
+:root{--bg:#0a0d12;--panel:#10141b;--panel2:#151a22;--line:#1f2530;--text:#e7e5df;--muted:#8b93a1;--gold:#e0a838;--red:#ff676d;--blue:#58a6ff;--green:#55e6b5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif;line-height:1.75}.wrap{max-width:900px;margin:auto;padding:20px 22px 70px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.brand{font-weight:900}.top a{color:var(--gold);text-decoration:none;font-weight:800}.hero{padding:46px 0 24px}.eyebrow{color:var(--gold);font-weight:900;font-size:12px;letter-spacing:.12em}.hero h1{font-size:40px;line-height:1.18;margin:10px 0 14px}.lede{font-size:18px;color:#c7ced8}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:18px 0}.card h2{margin-top:0;font-size:22px}.call{color:var(--red);font-weight:900}.put{color:var(--blue);font-weight:900}.green{color:var(--green);font-weight:900}.gold{color:var(--gold);font-weight:900}.steps{display:grid;gap:10px}.step{padding:14px 16px;background:var(--panel2);border:1px solid var(--line);border-radius:9px}.step b{color:var(--gold)}.note{border-left:4px solid var(--gold);padding:14px 16px;background:rgba(224,168,56,.07);border-radius:8px}.bad{border-left-color:var(--red);background:rgba(255,103,109,.07)}.footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}th,td{border:1px solid var(--line);padding:8px 12px;text-align:center}th{background:var(--panel2);color:var(--text)}td{color:#c7ced8}@media(max-width:640px){.hero h1{font-size:30px}.lede{font-size:16px}.wrap{padding:14px 16px 50px}.card{padding:16px;margin:14px 0}.card h2{font-size:20px}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="top"><div class="brand">GEXOPTION EDUCATION</div><div><a href="/education.html">교육센터</a> · <a href="/">홈</a></div></div>
+<section class="hero"><div class="eyebrow">GEXOPTION EDUCATION</div>
+<h1>스프레드로 수익 지키는 법</h1>
+<p class="lede">옵션을 하나만 사는 대신, 사고파는 것을 묶으면 손실의 크기가 처음부터 정해집니다. 스프레드의 기본 구조를 정리합니다.</p>
+</section>
+
+<div class="card">
+<h2>스프레드란?</h2>
+<p>스프레드는 <b>같은 종목 · 같은 만기</b>의 옵션을 <b>다른 행사가</b>로 하나는 사고 하나는 파는 조합입니다. 대표적인 것이 <span class="gold">불 콜 스프레드(Bull Call Spread)</span>입니다.</p>
+<div class="steps">
+<div class="step"><b>매수:</b> 낮은 행사가 콜옵션 매수 (예: 100 콜)</div>
+<div class="step"><b>매도:</b> 높은 행사가 콜옵션 매도 (예: 110 콜)</div>
+<div class="step"><b>결과:</b> 매도에서 받은 프리미엄만큼 매수 비용이 줄어듭니다.</div>
+</div>
+</div>
+
+<div class="card">
+<h2>왜 "수익을 지킨다"는 걸까</h2>
+<p>콜옵션을 하나만 사는 경우(네이키드 매수)와 비교해 보겠습니다. 아래는 이해를 돕기 위한 가상의 숫자입니다.</p>
+<table>
+<tr><th>구분</th><th>네이키드 콜 매수</th><th>불 콜 스프레드</th></tr>
+<tr><td>100 콜 매수 비용</td><td>$5.00</td><td>$5.00</td></tr>
+<tr><td>110 콜 매도 수령</td><td>—</td><td>-$2.00</td></tr>
+<tr><td><b>순비용 (최대 손실)</b></td><td><b>$5.00</b></td><td><b>$3.00</b></td></tr>
+<tr><td>손익분기점</td><td>$105</td><td>$103</td></tr>
+<tr><td>최대 수익</td><td>무제한</td><td>$7.00 (110 도달 시)</td></tr>
+</table>
+<p>스프레드는 <b>최대 수익에 천장을 치는 대신, 최대 손실을 처음부터 확정</b>합니다. 주가가 예상대로 오르지 않아도 잃을 수 있는 금액이 정해져 있으니, 포지션을 끝까지 가져가기가 수월해집니다.</p>
+</div>
+
+<div class="card">
+<h2>콜월 근처에서 스프레드를 참고하는 이유</h2>
+<p>주가가 <span class="call">콜월(저항)</span> 바로 아래에 있을 때, 위쪽으로 크게 뚫고 올라갈지 확신이 서지 않는 구간이 생깁니다. 이런 자리에서는 방향성 베팅(네이키드 매수)보다 <b>스프레드로 비용을 낮추고 손실 범위를 정해두는 방식</b>을 참고할 수 있습니다.</p>
+<div class="steps">
+<div class="step"><b>콜월 터치 후 밀림(거절) 확인</b> — 주가가 콜월에 닿았다가 아래로 밀리면, 저항이 작동한 것으로 봅니다. 이때 하락 방향 스프레드(예: 베어 풋 스프레드)를 참고하는 관점이 있습니다.</div>
+<div class="step"><b>거절 없이 안착하면 관망</b> — 콜월 위에서 버티면 저항이 지지로 바뀔 수 있으니, 성급하게 방향을 정하지 않습니다.</div>
+</div>
+<div class="note">콜월을 뚫고 안착하면 저항이 지지로 바뀝니다. 스프레드든 네이키드든, 벽에서의 가격 반응을 먼저 확인하는 것이 순서입니다.</div>
+</div>
+
+<div class="card">
+<h2>주의할 점</h2>
+<div class="steps">
+<div class="step"><b>스프레드도 손실이 납니다.</b> 손실이 제한될 뿐, 0이 되는 게 아닙니다.</div>
+<div class="step"><b>만기 관리가 필요합니다.</b> 만기가 가까워지면 시간가치가 빠르게 녹습니다.</div>
+<div class="step"><b>수수료가 두 배</b>로 듭니다. 옵션을 두 개 거래하기 때문입니다.</div>
+<div class="step"><b>유동성이 낮은 종목</b>에서는 매수·매도 호가 차이가 커서 불리할 수 있습니다.</div>
+</div>
+<div class="note bad" style="margin-top:12px">이 글은 옵션 구조에 대한 교육 자료입니다. 특정 전략의 사용을 권유하지 않으며, 모든 투자 판단과 책임은 본인에게 있습니다.</div>
+</div>
+
+<div class="footer">※ 본 콘텐츠는 정보·교육 목적이며 투자 권유가 아닙니다. 옵션 거래에는 원금 손실의 위험이 있습니다.<br>GEXOPTION EDUCATION · <a href="/education.html" style="color:var(--gold)">교육센터</a> · <a href="/" style="color:var(--gold)">홈</a></div>
+</div></body>
+</html>
