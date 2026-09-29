@@ -10,20 +10,20 @@
 </style>
 </head>
 <body><main class="wrap">
-<div class="top"><div><div class="brand">MY TRADING MONITOR <span class="live">SCHWAB LIVE</span></div><div class="sub">Morning 3 + Sector Leaders · Wall Distance → Watch → Confirm → Signal</div></div><div class="nav"><a href="/">HOME</a> <a href="/morning-three.html">MORNING 3</a></div></div>
+<div class="top"><div><div class="brand">MY TRADING MONITOR <span class="live">SCHWAB LIVE</span></div><div class="sub">Daily 3 · Wall Radar · 13F Institutional List</div></div><div class="nav"><a href="/">HOME</a></div></div><div class="filters" id="mainTabs"><button class="active" data-tab="daily">데일리 3</button><button data-tab="wall">WALL RADAR · SECTOR LEADERS</button><button data-tab="f13">13F 공시 리스트</button></div>
 
-<section class="card"><div class="head"><h2>🔥 MORNING 3</h2><span id="morningState" class="pill">조회 중</span></div><div id="morning" class="morning"><div class="empty">오늘의 후보를 확인하고 있습니다…</div></div></section>
+<section class="card tabpage" data-page="daily"><div class="head"><h2>🔥 데일리 3</h2><span id="morningState" class="pill">조회 중</span></div><div id="morning" class="morning"><div class="empty">오늘의 후보를 확인하고 있습니다…</div></div></section>
 
 
-<section class="card"><div class="head"><div><h2>🏦 13F INSTITUTIONAL TOP 20</h2><div class="sub" style="margin-top:4px">2026 Q2 · 신규 포지션 − 완전 청산 기준 · 기관 수 기준 (달러 유입액 아님)</div></div><span class="pill">Q2 2026</span></div>
+<section class="card tabpage" data-page="f13" style="display:none"><div class="head"><div><h2>🏦 13F 공시 리스트 · TOP 20</h2><div class="sub" style="margin-top:4px">2026 Q2 · 신규 포지션 − 완전 청산 기준 · 기관 수 기준 (달러 유입액 아님)</div></div><span class="pill">Q2 2026</span></div>
 <div class="table"><div class="f13row header"><span>순위</span><span>종목</span><span>신규기관</span><span>청산기관</span><span>NET</span><span>분류</span></div><div id="f13board"></div></div>
 <div class="sub" style="margin-top:10px">※ 공개 동일기준 집계는 현재 1–15위까지 검증됨. 16–20위는 임의 종목을 넣지 않고 데이터 확보 시 자동 교체할 자리로 유지.</div></section>
-<section class="card"><div class="head"><div><h2>📡 WALL RADAR · SECTOR LEADERS</h2><div class="sub" style="margin-top:4px">섹터별 대표 주도주만 감시 · 가장 가까운 Call/Put Wall 순서</div></div><button id="refresh" class="refresh">REFRESH</button></div>
+<section class="card tabpage" data-page="wall" style="display:none"><div class="head"><div><h2>📡 WALL RADAR · SECTOR LEADERS</h2><div class="sub" style="margin-top:4px">섹터별 대표 주도주만 감시 · 가장 가까운 Call/Put Wall 순서</div></div><button id="refresh" class="refresh">REFRESH</button></div>
 <div class="filters"><button class="active" data-filter="ALL">ALL</button><button data-filter="WATCH">🟡 WATCH ≤1%</button><button data-filter="PUT">PUT WALL</button><button data-filter="CALL">CALL WALL</button><button data-filter="HULL">HULL21</button></div>
 <div id="status" class="status">데이터 준비 중…</div>
 <div class="table"><div class="row header"><span>종목 / 섹터</span><span>현재가</span><span>Put Wall</span><span>Call Wall</span><span>가까운 Wall</span><span>거리</span><span>HULL21</span><span>거래량</span><span>상태</span></div><div id="board"><div class="empty">Wall Radar를 불러오는 중…</div></div></div>
 </section>
-<div class="card legend"><span><b>⚪ WAIT</b> Wall에서 멀리</span><span><b>🟡 WATCH</b> Wall ±1% 접근</span><span><b>🟢 PUT BOUNCE</b> Put Wall + 상승 확인</span><span><b>🔴 CALL REJECT</b> Call Wall 거절</span><span><b>🟢 BREAKOUT</b> Call Wall 돌파</span><span><b>🔵 HULL TURN</b> HULL21 눌림 후 상승 확인</span></div>
+<div class="card legend tabpage" data-page="wall" style="display:none"><span><b>⚪ WAIT</b> Wall에서 멀리</span><span><b>🟡 WATCH</b> Wall ±1% 접근</span><span><b>🟢 PUT BOUNCE</b> Put Wall + 상승 확인</span><span><b>🔴 CALL REJECT</b> Call Wall 거절</span><span><b>🟢 BREAKOUT</b> Call Wall 돌파</span><span><b>🔵 HULL TURN</b> HULL21 눌림 후 상승 확인</span></div>
 </main>
 <script>
 const $=id=>document.getElementById(id),fmt=(v,d=2)=>v==null?'—':Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
@@ -90,6 +90,8 @@ const F13=[
 [1,'INTC',1066,114,952,'AI SEMI'],[2,'MU',971,123,848,'MEMORY'],[3,'AMD',920,128,792,'AI SEMI'],[4,'MRVL',754,106,648,'AI NETWORK'],[5,'SNDK',714,91,623,'MEMORY'],[6,'AMAT',673,110,563,'SEMI EQUIPMENT'],[7,'STX',550,65,485,'MEMORY'],[8,'DELL',591,111,480,'AI COMPUTE'],[9,'LRCX',573,96,477,'SEMI EQUIPMENT'],[10,'PANW',553,123,430,'CYBER'],[11,'GLW',540,118,422,'AI NETWORK'],[12,'KLAC',492,85,407,'SEMI EQUIPMENT'],[13,'TXN',485,87,398,'AI SEMI'],[14,'CRWD',486,127,359,'CYBER'],[15,'UNH',483,142,341,'HEALTH'],[16,'—',null,null,null,'검증 대기'],[17,'—',null,null,null,'검증 대기'],[18,'—',null,null,null,'검증 대기'],[19,'—',null,null,null,'검증 대기'],[20,'—',null,null,null,'검증 대기']];
 function render13F(){ $('f13board').innerHTML=F13.map(x=>'<div class="f13row"><span class="rank">#'+x[0]+'</span><span class="ticker">'+x[1]+'</span><span>'+fmt(x[2],0)+'</span><span>'+fmt(x[3],0)+'</span><span class="'+(x[4]!=null?'green':'muted')+'">'+(x[4]==null?'—':'+'+fmt(x[4],0))+'</span><span class="sector">'+x[5]+'</span></div>').join('') }
 render13F();
+
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
 $('refresh').onclick=()=>{loadMorning();loadRadar()};loadMorning();loadRadar();setInterval(loadRadar,60000);
 </script></body></html>
