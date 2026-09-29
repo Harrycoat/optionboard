@@ -1,314 +1,86 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GEXOption · Live Monitor</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · Private Trading Monitor</title>
 <style>
-:root{--bg:#08111d;--panel:#0d1724;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07101b,#09131f);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1280px;margin:auto;padding:14px 18px 30px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.brand{font-size:26px;font-weight:900}.sub{color:var(--muted);font-size:12px;margin-top:4px}.nav{display:flex;gap:7px;flex-wrap:wrap}.nav a{padding:9px 11px;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-size:11px;font-weight:900;background:#101826}.nav a.active{background:var(--blue);border-color:var(--blue);color:#07101b}
-.card{background:rgba(13,23,36,.96);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar input{min-height:40px;background:#09131f;border:1px solid var(--line);border-radius:8px;color:var(--text);padding:0 11px;text-transform:uppercase;font-weight:800}.toolbar button{min-height:40px;border:0;border-radius:8px;padding:0 14px;font-weight:900;cursor:pointer;background:var(--gold)}.status{color:var(--muted);font-size:11px}
-.table{overflow-x:auto}.row{min-width:1190px;display:grid;grid-template-columns:42px 92px 104px 104px 104px 300px 104px 82px 126px 64px 58px;gap:7px;align-items:center;padding:10px 5px;border-top:1px solid var(--line);font-size:11px}.row.header{border-top:0;color:var(--muted);font-size:10px;position:sticky;top:0;background:var(--panel);z-index:2}.ticker{font-size:15px;font-weight:900}.price{font-weight:900;font-size:14px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}
-.wall{height:10px;border-radius:999px;background:linear-gradient(90deg,#2d86ff 0%,#43e0a9 20%,#62a5ff 52%,#ff6673 100%);position:relative}.dot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid #08111d;background:white}.wallmeta{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:5px}.wallguide{display:flex;gap:4px;justify-content:space-between;margin-top:6px}.wallguide span{flex:1;min-width:0;padding:3px 4px;border:1px solid var(--line);border-radius:5px;text-align:center;font-size:8px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wallguide .put{color:var(--green);border-color:rgba(67,224,169,.55)}.wallguide .risk{color:var(--gold);border-color:rgba(244,195,79,.55)}.wallguide .call{color:var(--red);border-color:rgba(255,102,115,.55)}.wallguide .reup{color:var(--blue);border-color:rgba(98,165,255,.55)}.badge{display:inline-flex;align-items:center;justify-content:center;min-height:24px;border:1px solid currentColor;border-radius:7px;padding:3px 5px;font-weight:900;font-size:9px;white-space:nowrap}.vol-up{color:var(--green)}.vol-down{color:var(--red)}.vol-flat{color:var(--gold)}.signal{font-weight:900}.btnlink{color:var(--blue);text-decoration:none;font-weight:900}.delbtn{border:1px solid rgba(255,102,115,.7);background:rgba(255,102,115,.08);color:var(--red);border-radius:7px;min-height:26px;padding:2px 8px;font-size:11px;font-weight:900;cursor:pointer}.delbtn:hover{background:rgba(255,102,115,.18)}.empty{padding:24px;color:var(--muted);text-align:center}
-.legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend b{color:var(--text)}
-@media(max-width:720px){.wrap{padding:10px}.top{flex-direction:column;align-items:flex-start}.brand{font-size:20px}.nav{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.nav a{text-align:center}.toolbar{display:grid;grid-template-columns:1fr 1fr;width:100%}.toolbar input,.toolbar button{width:100%}.row{min-width:900px}.card{padding:10px}}
+:root{--bg:#07101b;--panel:#0d1724;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:24px;font-weight:900}.sub,.muted{color:var(--muted);font-size:11px}.live{color:var(--green);border:1px solid var(--green);border-radius:999px;padding:4px 7px;font-size:10px}.nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:11px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.head h2{margin:0;font-size:17px}.pill{font-size:10px;font-weight:900;border:1px solid var(--line);padding:5px 7px;border-radius:999px}.morning{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.mitem{background:#101d2c;border:1px solid var(--line);border-radius:10px;padding:12px}.mitem b{font-size:19px}.mitem p{font-size:11px;color:var(--muted);margin:6px 0 0;line-height:1.4}.filters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.filters button{border:1px solid var(--line);background:#101826;color:var(--text);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.filters button.active{background:var(--blue);color:#07101b}.status{font-size:11px;color:var(--muted)}.table{overflow-x:auto}.row{min-width:930px;display:grid;grid-template-columns:105px 80px 95px 95px 95px 90px 95px 110px 1fr;gap:8px;align-items:center;padding:10px 4px;border-top:1px solid var(--line);font-size:11px}.row.header{color:var(--muted);font-size:10px;border-top:0}.ticker{font-size:15px;font-weight:900}.sector{color:var(--blue);font-size:9px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}.signal{font-weight:900}.distance{font-weight:900}.empty{padding:24px;text-align:center;color:var(--muted)}button.refresh{background:var(--gold);border:0;border-radius:8px;padding:9px 12px;font-weight:900;cursor:pointer}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}.legend b{color:var(--text)}
+@media(max-width:700px){.wrap{padding:10px}.top{align-items:flex-start;flex-direction:column}.brand{font-size:20px}.morning{grid-template-columns:1fr}.row{min-width:850px}.card{padding:10px}}
 </style>
-<link rel="stylesheet" href="/monitor-experience.css?v=3">
-<script src="/watchlist-actions.js" defer></script>
 </head>
-<body>
-<aside class="experience-side" aria-label="모니터 내부 메뉴">
-  <div class="side-logo" aria-hidden="true"></div>
-  <a class="active" href="#morningRadar"><span>▥</span>레이더</a>
-  <a href="#tickerStory"><span>▤</span>스토리</a>
-  <a href="#tradePlan"><span>◎</span>계획</a>
-  <a href="#fullMonitor"><span>≡</span>전체</a>
-</aside>
-<div class="wrap">
-  <div class="top">
-    <div><div class="brand">LIVE MONITOR <span style="font-size:11px;color:var(--green);border:1px solid var(--green);border-radius:999px;padding:4px 7px;vertical-align:middle;">SCHWAB LIVE QUOTES</span></div><div class="sub">회원 모니터링 · Schwab 시세/5분봉 · 옵션 Wall은 별도 데이터 · HULL21 · Volume Trend</div></div>
-    <div class="nav">
-      <a href="/">HOME</a>
-      <a href="/morning-three.html">MORNING 3</a>
-      <a href="/premarket-scanner.html">PREMARKET</a>
-      <a href="/option-swing-scanner.html">REGULAR MARKET</a>
-      <a href="/trade-tracker.html">TRADE TRACKER</a>
-      <a class="active" href="/monitoring.html">LIVE MONITOR</a>
-    </div>
-  </div>
+<body><main class="wrap">
+<div class="top"><div><div class="brand">MY TRADING MONITOR <span class="live">SCHWAB LIVE</span></div><div class="sub">Morning 3 + Sector Leaders · Wall Distance → Watch → Confirm → Signal</div></div><div class="nav"><a href="/">HOME</a> <a href="/morning-three.html">MORNING 3</a></div></div>
 
-  <section id="morningRadar">
-    <div class="experience-heading">MORNING RADAR / 01</div>
-    <h1 class="experience-title">오늘 볼 종목,<br>세 개면 충분해요.</h1>
-    <p class="experience-lead">연결된 시세·뉴스·섹터·옵션 구조를 압축해 아침에 확인할 후보를 최대 3개만 보여줍니다. 기준 미달이면 3개를 억지로 채우지 않습니다.</p>
-    <div class="experience-market"><span>가격 <b>Schwab API</b></span><span>5분봉 <b>Schwab</b></span><span>옵션 Wall <b>별도 데이터</b></span></div>
-  </section>
-  <div class="card">
-    <div class="toolbar">
-      <input id="tickerInput" placeholder="TICKER">
-      <button id="addBtn">+ MONITOR</button>
-      <button id="refreshBtn">REFRESH</button>
-      <span class="status" id="status">관심종목 최대 10개를 모니터링합니다.</span>
-    </div>
-  </div>
+<section class="card"><div class="head"><h2>🔥 MORNING 3</h2><span id="morningState" class="pill">조회 중</span></div><div id="morning" class="morning"><div class="empty">오늘의 후보를 확인하고 있습니다…</div></div></section>
 
-  <div class="experience-layout">
-    <section class="experience-panel" aria-labelledby="radarTitle">
-      <div class="ex-row"><div><span class="ex-pill">MORNING 3</span><h2 id="radarTitle" style="margin-top:9px">오늘 먼저 볼 3종목</h2></div><b id="radarCount" class="ex-muted">조회 중</b></div>
-      <div id="radarList" class="ex-radar-list"></div><p id="radarNote" class="ex-caption"></p>
-      <div class="ex-warning" style="margin-top:12px">후보는 촉매·유동성·가격 구조·옵션 구조·시장/섹터 근거를 합쳐 압축합니다. 근거가 약하거나 스프레드가 과하면 제외하고, 3개 미만이면 관망 우위로 표시합니다.</div>
-    </section>
-    <section id="tickerStory" class="experience-panel" aria-labelledby="storyHeading">
-      <div class="experience-heading">STOCK STORY / 02</div>
-      <div class="ex-row"><h2 id="storyHeading"><span id="storyTicker">종목 선택</span> · 가격 구조</h2><span id="storyBadge" class="ex-pill">조회 중</span></div>
-      <div class="ex-number" id="storyPrice" style="margin-top:12px">—</div>
-      <p class="ex-caption">5분 거래량: <b id="storyVolume">—</b></p>
-      <p id="storyNarrative" class="ex-story">실시간 데이터 확인 중</p>
-      <svg id="storyChart" class="ex-chart" role="img" aria-label="Schwab 5분봉 가격 흐름" viewBox="0 0 540 150" preserveAspectRatio="none"></svg>
-      <div class="ex-metrics">
-        <div class="ex-metric"><small>PUT WALL · 지지선</small><b id="storyPut">—</b></div>
-        <div class="ex-metric"><small>CALL WALL · 저항선</small><b id="storyCall">—</b></div>
-        <div class="ex-metric"><small>HULL21</small><b id="storyHull">—</b></div>
-      </div>
-      <div class="ex-facts">
-        <div class="ex-fact"><b>CATALYST · 확인된 촉매</b><p id="storyNews">출처 확인 중</p></div>
-        <div class="ex-fact"><b>FLOW · 5분 거래량</b><p id="storyFlow">—</p></div>
-        <div class="ex-fact"><b>STRUCTURE · 가격 위치</b><p id="storyStructure">—</p></div>
-      </div>
-      <p class="ex-caption" id="storyQuoteTime" style="margin:13px 0 3px"></p><p class="ex-caption" id="storyWallTime" style="margin:0 0 12px"></p>
-      <a class="ex-button" id="storyTracker" href="/trade-tracker.html" style="display:block;text-align:center;text-decoration:none">선택 종목 Trade Tracker →</a>
-    </section>
-  </div>
-  <section id="tradePlan" class="experience-panel" style="margin-bottom:16px" aria-labelledby="planHeading">
-    <div class="experience-heading">TRADE SCENARIO / 03</div>
-    <div class="ex-row"><div><h2 id="planHeading">맞히는 것보다, 틀렸을 때를 먼저.</h2><p class="ex-muted">내 계획 · <span id="planTicker">종목 선택</span> · 주문 실행 기능 없음</p></div><span class="ex-pill">사용자가 직접 조건 확인</span></div>
-    <div class="experience-layout" style="margin:0">
-      <div>
-        <div class="ex-plan-controls"><button class="active" type="button" data-plan-mode="breakout">돌파 관찰</button><button type="button" data-plan-mode="pullback">눌림 관찰</button><button type="button" data-plan-mode="wait">관망</button></div>
-        <div class="ex-plan-box"><strong id="planTitle">시나리오 확인 중</strong><p id="planBody"></p><div class="ex-warning" id="planInvalid">무효화 조건을 확인하세요.</div></div>
-        <p class="ex-caption">표시되는 가격 구간은 관찰용입니다. 실제 확인 조건·무효화 가격·진입 가정은 본인이 직접 입력합니다.</p>
-        <div class="ex-plan-form"><label style="grid-column:1/-1">내 확인 조건<input id="planConfirmation" type="text" maxlength="240" placeholder="예: 5분봉 종가가 저항선 위에서 유지되고 거래량 확인"></label><label style="grid-column:1/-1">무효화 이유<input id="planInvalidReason" type="text" maxlength="240" placeholder="예: 돌파한 저항선 아래로 5분봉 복귀"></label><label>목표 구간 ($ · 선택)<input id="planTarget" type="number" min="0" step="0.01" placeholder="직접 입력"></label><label>시세 기준시각<input id="planSourceTime" type="text" readonly placeholder="Schwab 시세 확인 중"></label></div>
-      </div>
-      <div>
-        <h3 style="margin:12px 0 5px">포지션 사이즈 계산</h3>
-        <div class="ex-plan-form">
-          <label>허용 손실 ($ · 기본)<input id="riskDollars" type="number" min="0" step="1" placeholder="예: 100"></label>
-          <label>슬리피지 여유 (% · 가정)<input id="riskSlippage" type="number" min="0" max="20" step="0.1" value="0.5"></label>
-          <label>계좌 규모 ($ · 선택)<input id="riskAccount" type="number" min="0" step="100" placeholder="직접 입력"></label>
-          <label>거래당 위험 (% · 선택)<input id="riskPercent" type="number" min="0.01" max="100" step="0.1" placeholder="직접 입력"></label>
-          <label>진입가 ($)<input id="riskEntry" type="number" min="0" step="0.01" placeholder="직접 입력"></label>
-          <label>손절가 ($)<input id="riskStop" type="number" min="0" step="0.01" placeholder="직접 입력"></label>
-        </div>
-        <div class="ex-result"><small>계산 수량</small><div><strong id="riskResult">—</strong></div><small>예상 손실 <b id="riskLoss">값을 입력하면 계산됩니다</b></small></div>
-        <p id="riskError" class="ex-caption"></p>
-        <button id="saveScenario" class="ex-button" type="button" disabled style="width:100%;margin-bottom:8px">내 시나리오 저장</button>
-        <p id="planSaveStatus" class="ex-caption" role="status">저장은 이 브라우저에만 적용됩니다. 다른 기기와 동기화되지 않습니다.</p>
-        <button id="copyScenario" class="ex-button secondary" type="button" disabled style="width:100%">시나리오 요약 복사</button>
-        <p class="ex-disclosure">슬리피지는 입력한 여유만 계산합니다. 수수료·실제 체결 차이·갭 손실은 별도이며 주문은 실행되지 않습니다.</p>
-      </div>
-    </div>
-  </section>
-  <div class="ex-bottom" id="fullMonitor"><h2>전체 LIVE MONITOR</h2><span class="ex-muted">최대 10종목 · X 버튼은 이 모니터 목록에서만 삭제</span></div>
-  <div class="card table">
-    <div class="row header"><span>#</span><span>종목</span><span>현재가</span><span>Call Wall</span><span>Put Wall</span><span>Put / Current / Call</span><span>HULL21</span><span>거래량 추세</span><span>상태</span><span>상세</span><span>삭제</span></div>
-    <div id="board"><div class="empty">모니터 데이터를 불러오는 중...</div></div>
-  </div>
-
-  <div class="card legend">
-    <span><b>풋월 근처 반등</b> = 지지 여부를 확인하며 보유 관점</span>
-    <span><b>풋월 이탈</b> = 음의 감마 가능성 확대 · 헤지 타이밍 관찰</span>
-    <span><b>콜월 근처</b> = 저항 구간 관찰</span>
-    <span><b>콜월 돌파 후 지지 확인</b> = 저항선이 지지선으로 전환되는지 확인 · 재매수 타이밍 관찰</span>
-    <span><b>▲ 증가 / ▼ 감소 / → 보합</b> = 현재 5분 거래량과 직전 5분 거래량 비교</span>
-  </div>
-</div>
+<section class="card"><div class="head"><div><h2>📡 WALL RADAR · SECTOR LEADERS</h2><div class="sub" style="margin-top:4px">섹터별 대표 주도주만 감시 · 가장 가까운 Call/Put Wall 순서</div></div><button id="refresh" class="refresh">REFRESH</button></div>
+<div class="filters"><button class="active" data-filter="ALL">ALL</button><button data-filter="WATCH">🟡 WATCH ≤1%</button><button data-filter="PUT">PUT WALL</button><button data-filter="CALL">CALL WALL</button><button data-filter="HULL">HULL21</button></div>
+<div id="status" class="status">데이터 준비 중…</div>
+<div class="table"><div class="row header"><span>종목 / 섹터</span><span>현재가</span><span>Put Wall</span><span>Call Wall</span><span>가까운 Wall</span><span>거리</span><span>HULL21</span><span>거래량</span><span>상태</span></div><div id="board"><div class="empty">Wall Radar를 불러오는 중…</div></div></div>
+</section>
+<div class="card legend"><span><b>⚪ WAIT</b> Wall에서 멀리</span><span><b>🟡 WATCH</b> Wall ±1% 접근</span><span><b>🟢 PUT BOUNCE</b> Put Wall + 상승 확인</span><span><b>🔴 CALL REJECT</b> Call Wall 거절</span><span><b>🟢 BREAKOUT</b> Call Wall 돌파</span><span><b>🔵 HULL TURN</b> HULL21 눌림 후 상승 확인</span></div>
+</main>
 <script>
-const $=id=>document.getElementById(id);
-const fmt=(v,d=2)=>v==null?'—':Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
-const clean=v=>String(v||'').trim().toUpperCase().replace(/[^A-Z0-9.\-]/g,'').slice(0,12);
-const FALLBACK=['NVDA','AMD','TSLA','PLTR','AVGO','MU','MRVL','AMZN','BE','INTC'];
-
-const GUEST_MONITOR_KEY='gexoption_monitor_list_guest_v1';
-function currentMonitorKey(){
- const user=localStorage.getItem('gexoption_active_watchlist_user');
- return user?'gexoption_monitor_list_v1_'+user:GUEST_MONITOR_KEY;
-}
-function getList(){
- const key=currentMonitorKey();
- // An explicit empty list means the user has removed all monitored stocks.
- if(localStorage.getItem(key)!==null){
-   try{return [...new Set(JSON.parse(localStorage.getItem(key)||'[]').map(clean).filter(Boolean))].slice(0,10)}
-   catch(_){return []}
- }
- const saved=(window.GexWatchlist&&window.GexWatchlist.list)?window.GexWatchlist.list():[];
- return (saved.length?saved:FALLBACK).slice(0,10);
-}
-function saveMonitorList(list){
- const next=[...new Set((list||[]).map(clean).filter(Boolean))].slice(0,10);
- const key=currentMonitorKey();
- if(key!==GUEST_MONITOR_KEY&&window.GexWatchlist&&window.GexWatchlist.setMonitor){
-   return window.GexWatchlist.setMonitor(next)!==false;
- }
- localStorage.setItem(key,JSON.stringify(next));
- window.dispatchEvent(new CustomEvent('gex-monitor-list-change',{detail:{list:next}}));
- return true;
-}
-function wma(vals,n){
- if(vals.length<n)return null;
- let s=0,w=0;
- for(let i=0;i<n;i++){const wt=i+1;s+=vals[vals.length-n+i]*wt;w+=wt}
- return s/w;
-}
-function hullSeries(vals,n=21){
- const out=[],half=Math.floor(n/2),root=Math.max(1,Math.round(Math.sqrt(n)));
- for(let i=0;i<vals.length;i++){
-   const sub=vals.slice(0,i+1),a=wma(sub,half),b=wma(sub,n);
-   if(a==null||b==null){out.push(null);continue}
-   const raw=[];
-   for(let j=Math.max(0,i-root+1);j<=i;j++){
-     const ss=vals.slice(0,j+1),aa=wma(ss,half),bb=wma(ss,n);
-     if(aa!=null&&bb!=null)raw.push(2*aa-bb);
-   }
-   out.push(raw.length>=root?wma(raw,root):null);
- }
- return out;
-}
-function volumeState(bars){
- if(!bars||bars.length<2)return {label:'—',cls:'',ratio:null};
- const cur=Number(bars[bars.length-1].volume||0),prev=Number(bars[bars.length-2].volume||0);
- if(prev<=0)return {label:'—',cls:'',ratio:null};
- const ratio=cur/prev;
- if(ratio>1.05)return {label:'▲ 증가',cls:'vol-up',ratio};
- if(ratio<0.95)return {label:'▼ 감소',cls:'vol-down',ratio};
- return {label:'→ 보합',cls:'vol-flat',ratio};
-}
-function signal(spot,put,call,hSlope,vol,bars,hull){
- if(spot==null)return 'WATCH';
-
- if(call!=null&&bars&&bars.length){
-   const recent=bars.slice(-6);
-   const touched=recent.some(b=>Number(b.high||0)>=Number(call)*0.998);
-   const latest=recent[recent.length-1];
-   const latestClose=latest?Number(latest.close):null;
-
-   if(spot>call)return 'BREAKOUT';
-
-   if(touched&&latestClose!=null&&latestClose<call){
-     if(hull!=null&&latestClose<hull){
-       if(hSlope<=0)return 'HEDGE READY';
-       return 'HULL21 BREAK';
-     }
-     return 'CALL REJECTION';
-   }
-
-   const dc=(call-spot)/spot*100;
-   if(Math.abs(dc)<=1.5&&hSlope<0)return 'HEDGE WATCH';
- }
-
- if(put!=null){
-   const dp=(spot-put)/spot*100;
-   if(Math.abs(dp)<=1.5&&hSlope>0&&vol.label.includes('증가'))return 'ADD WATCH';
- }
- return 'HOLD';
-}
-function wallHtml(put,spot,call){
- if(put==null||spot==null||call==null||call===put)return '<span class="status">Wall data —</span>';
- const lo=Math.min(put,spot),hi=Math.max(call,spot),pad=Math.max((hi-lo)*.15,1),min=lo-pad,max=hi+pad;
- const pos=v=>Math.max(3,Math.min(97,(v-min)/(max-min)*100));
- return '<div><div class="wall"><i class="dot" style="left:'+pos(spot)+'%"></i></div><div class="wallmeta"><span>Put '+fmt(put,1)+'</span><span>'+fmt(spot,2)+'</span><span>Call '+fmt(call,1)+'</span></div><div class="wallguide"><span class="put">풋월 반등 · 보유</span><span class="risk">풋월 이탈 · 헤지</span><span class="call">콜월 접근 · 저항</span><span class="reup">돌파 후 지지 · 재매수</span></div></div>';
-}
-async function fetchOne(t,quote){
- if(!quote||quote.error||quote.last==null||!Number.isFinite(Number(quote.last)))throw new Error('Schwab quote unavailable for '+t);
- const [sumR,intraR]=await Promise.all([
-   fetch('/api/search?ticker='+encodeURIComponent(t)+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),
-   fetch('/api/search?mode=schwab_intraday&ticker='+encodeURIComponent(t),{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))
- ]);
- if(intraR.error)throw new Error(intraR.error);
- const bars=intraR.bars||[];
- const closes=bars.map(x=>Number(x.close)).filter(Number.isFinite);
- const hs=hullSeries(closes,21);
- const h=hs.length?hs[hs.length-1]:null;
- const hp=hs.length>1?hs[hs.length-2]:null;
- const slope=(h!=null&&hp!=null&&hp!==0)?(h-hp)/hp*100:0;
- const vol=volumeState(bars);
- const spot=Number(quote.last);
- return {ticker:t,spot,change:quote.net_percent_change,call:sumR.call_wall,put:sumR.put_wall,hull:h,slope,vol,quoteRealtime:quote.realtime===true,quoteTime:quote.quote_time||quote.trade_time,bars:bars,hasBars:bars.length>0,state:bars.length?signal(spot,sumR.put_wall,sumR.call_wall,slope,vol,bars,h):'QUOTE ONLY'};
-}
-function row(x,i){
- const sc=['HEDGE WATCH','CALL REJECTION','HULL21 BREAK','HEDGE READY'].includes(x.state)?'red':x.state==='ADD WATCH'||x.state==='BREAKOUT'?'green':x.state==='HOLD'?'blue':'gold';
- const hs=x.slope>0.03?'▲ UP':x.slope<-0.03?'▼ DOWN':'→ FLAT';
- const hc=x.slope>0.03?'green':x.slope<-0.03?'red':'gold';
- return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker"><button class="ticker-select" type="button" data-select="'+x.ticker+'">'+x.ticker+'</button></span><span class="price" title="Schwab 시세 · '+(x.quoteRealtime?'실시간 표기':'실시간 여부 미확인')+'">$'+fmt(x.spot)+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span>'+wallHtml(x.put,x.spot,x.call)+'</span><span class="'+hc+'"><b>'+hs+'</b><br><small>'+fmt(x.hull,2)+'</small></span><span class="badge '+x.vol.cls+'">'+x.vol.label+'</span><span class="signal '+sc+'">'+x.state+'</span><a class="btnlink" href="/trade-tracker.html?ticker='+x.ticker+'">TRACK</a><button class="delbtn" data-remove="'+x.ticker+'">X</button></div>';
-}
-function loadingRow(t,i){
- return '<div class="row" id="row-'+i+'"><span>'+(i+1)+'</span><span class="ticker">'+t+'</span><span class="status">loading…</span><span>—</span><span>—</span><span class="status">loading…</span><span>—</span><span>—</span><span>—</span><span>—</span><button class="delbtn" data-remove="'+t+'">X</button></div>';
-}
-async function refresh(){
- const list=getList();
- if(!list.length){
-   $('board').innerHTML='<div class="empty">관심종목이 없습니다.</div>';
-   $('status').textContent='No monitored stocks';
-   return;
- }
- $('status').textContent='Updating '+list.length+' stocks…';
- $('board').innerHTML=list.map(loadingRow).join('');
- let quotes={};
- try{
-   const chunks=[];
-   for(let i=0;i<list.length;i+=5)chunks.push(list.slice(i,i+5));
-   const batches=await Promise.all(chunks.map(a=>fetch('/api/search?mode=schwab_quote&symbols='+encodeURIComponent(a.join(',')),{cache:'no-store'}).then(r=>r.json())));
-   for(const b of batches){
-     if(b.error)throw new Error(b.error);
-     Object.assign(quotes,b.quotes||{});
-   }
- }catch(e){
-   $('status').textContent='Schwab 시세 연결 오류: '+e.message;
-   $('board').innerHTML='<div class="empty">Schwab 데이터를 불러오지 못했습니다. 지연 시세로 대체하지 않습니다. REFRESH를 눌러 다시 시도해주세요.</div>';
-   return;
- }
- let done=0,fail=0,delayed=0;
- const jobs=list.map((t,i)=>fetchOne(t,quotes[t]).then(x=>{
-   const el=document.getElementById('row-'+i);
-   if(el)el.outerHTML=row(x,i);
-   window.dispatchEvent(new CustomEvent('gex-monitor-update',{detail:x}));
-   if(!x.quoteRealtime)delayed++;
-   done++;
-   $('status').textContent='Updated '+done+'/'+list.length+' stocks…';
- }).catch((err)=>{
-   const el=document.getElementById('row-'+i);
-   if(el)el.querySelector('.status').textContent='Schwab data error';
-   fail++;done++;
- }));
- await Promise.allSettled(jobs);
- $('status').textContent='Updated '+new Date().toLocaleTimeString()+' · Schwab quotes'+(delayed?' · '+delayed+'개 실시간 여부 미확인':'')+(fail?' · '+fail+'개 오류':'')+' · 옵션 Wall 별도 갱신';
-}
-$('addBtn').onclick=()=>{
- const t=clean($('tickerInput').value);
- if(!t)return;
- const current=getList();
- if(!current.includes(t)&&current.length>=10){
-   $('status').textContent='LIVE MONITOR는 최대 10개까지 표시할 수 있습니다.';
-   return;
- }
- if(saveMonitorList([...current,t])){
-   $('tickerInput').value='';
-   refresh();
- }
+const $=id=>document.getElementById(id),fmt=(v,d=2)=>v==null?'—':Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
+const SECTORS={
+ 'AI SEMI':['NVDA','AMD','AVGO'],
+ 'AI NETWORK':['ANET','CRDO','MRVL'],
+ 'MEMORY':['MU','SNDK','STX'],
+ 'POWER':['GEV','VRT','ETN'],
+ 'ROBOTICS':['TSLA','ISRG','ROK'],
+ 'CYBER':['CRWD','PANW','FTNT'],
+ 'NUCLEAR':['CEG','VST','CCJ'],
+ 'AI SOFTWARE':['MSFT','GOOGL','NOW'],
+ 'AI HEALTH':['LLY','TMO','ISRG'],
+ 'SPACE/DEFENSE':['PLTR','RKLB','LMT']
 };
-$('refreshBtn').onclick=refresh;
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-remove]');
- if(!b)return;
- e.preventDefault();
- const t=clean(b.dataset.remove);
- if(!t)return;
- if(saveMonitorList(getList().filter(item=>item!==t)))refresh();
-});
-window.addEventListener('gex-watchlist-change',refresh);
-window.addEventListener('gex-monitor-list-change',refresh);
-window.addEventListener('load',()=>{refresh();setInterval(refresh,60000)});
-</script>
-<script src="/monitor-experience.js?v=3" defer></script>
-</body>
-</html>
+const UNIVERSE=[...new Set(Object.values(SECTORS).flat())];
+const sectorOf=t=>Object.entries(SECTORS).find(([,a])=>a.includes(t))?.[0]||'LEADER';
+let data=[],filter='ALL';
+function wma(v,n){if(v.length<n)return null;let s=0,w=0;for(let i=0;i<n;i++){let k=i+1;s+=v[v.length-n+i]*k;w+=k}return s/w}
+function hull(v,n=21){let half=Math.floor(n/2),root=Math.round(Math.sqrt(n)),raw=[];for(let i=0;i<v.length;i++){let s=v.slice(0,i+1),a=wma(s,half),b=wma(s,n);raw.push(a==null||b==null?null:2*a-b)}return raw.filter(x=>x!=null).length>=root?wma(raw.filter(x=>x!=null),root):null}
+function volState(b){if(!b||b.length<2)return '—';let a=+b.at(-1).volume||0,p=+b.at(-2).volume||0;if(!p)return '—';let r=a/p;return r>1.05?'▲ 증가':r<.95?'▼ 감소':'→ 보합'}
+function classify(x){
+ const dp=x.put==null?99:Math.abs((x.spot-x.put)/x.spot*100),dc=x.call==null?99:Math.abs((x.call-x.spot)/x.spot*100),dh=x.hull==null?99:Math.abs((x.spot-x.hull)/x.spot*100);
+ x.near=dp<=dc?'PUT':'CALL';x.dist=Math.min(dp,dc);x.hdist=dh;
+ const recent=(x.bars||[]).slice(-6),last=recent.at(-1),prev=recent.at(-2);
+ const rising=last&&prev&&+last.close>+prev.close;
+ const callTouched=x.call!=null&&recent.some(b=>+b.high>=x.call*.998);
+ const putTouched=x.put!=null&&recent.some(b=>+b.low<=x.put*1.002);
+ if(x.call!=null&&x.spot>x.call&&rising)return ['🟢 BREAKOUT','green'];
+ if(callTouched&&x.spot<x.call&&!rising)return ['🔴 CALL REJECT','red'];
+ if(putTouched&&x.spot>=x.put&&rising)return ['🟢 PUT BOUNCE','green'];
+ if(dh<=.6&&rising)return ['🔵 HULL TURN','blue'];
+ if(x.dist<=1)return ['🟡 '+x.near+' WATCH','gold'];
+ return ['⚪ WAIT',''];
+}
+function render(){
+ let rows=data.slice();
+ if(filter==='WATCH')rows=rows.filter(x=>x.dist<=1);
+ if(filter==='PUT')rows=rows.filter(x=>x.near==='PUT');
+ if(filter==='CALL')rows=rows.filter(x=>x.near==='CALL');
+ if(filter==='HULL')rows=rows.filter(x=>x.hdist<=1);
+ rows.sort((a,b)=>a.dist-b.dist);
+ $('board').innerHTML=rows.length?rows.map(x=>{let s=classify(x);return '<div class="row"><span><b class="ticker">'+x.ticker+'</b><br><span class="sector">'+sectorOf(x.ticker)+'</span></span><span><b>$'+fmt(x.spot)+'</b></span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="'+(x.near==='PUT'?'green':'red')+'">'+x.near+'</span><span class="distance '+(x.dist<=1?'gold':'')+'">'+fmt(x.dist,2)+'%</span><span>'+fmt(x.hull,2)+'<br><small>'+fmt(x.hdist,2)+'%</small></span><span>'+x.vol+'</span><span class="signal '+s[1]+'">'+s[0]+'</span></div>'}).join(''):'<div class="empty">현재 조건에 해당하는 종목이 없습니다.</div>';
+}
+async function one(t,q){
+ const [w,b]=await Promise.all([fetch('/api/search?ticker='+t+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),fetch('/api/search?mode=schwab_intraday&ticker='+t,{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
+ let bars=b.bars||[],cl=bars.map(z=>+z.close).filter(Number.isFinite);
+ return {ticker:t,spot:+q.last,put:w.put_wall,call:w.call_wall,bars,hull:hull(cl),vol:volState(bars)}
+}
+async function loadRadar(){
+ $('status').textContent='섹터 주도주 '+UNIVERSE.length+'개 확인 중…';$('refresh').disabled=true;data=[];
+ try{
+  let quotes={};for(let i=0;i<UNIVERSE.length;i+=5){let a=UNIVERSE.slice(i,i+5),d=await fetch('/api/search?mode=schwab_quote&symbols='+encodeURIComponent(a.join(',')),{cache:'no-store'}).then(r=>r.json());Object.assign(quotes,d.quotes||{})}
+  let done=0;const jobs=UNIVERSE.map(t=>one(t,quotes[t]||{}).then(x=>{if(Number.isFinite(x.spot))data.push(x);done++;$('status').textContent='Updating '+done+'/'+UNIVERSE.length+'…'}).catch(()=>{done++}));
+  await Promise.allSettled(jobs);render();$('status').textContent='업데이트 '+new Date().toLocaleTimeString()+' · Wall 거리순 자동 정렬';
+ }catch(e){$('status').textContent='데이터 연결 오류: '+e.message;$('board').innerHTML='<div class="empty">현재 데이터를 불러오지 못했습니다. 잠시 후 REFRESH 해주세요.</div>'}
+ finally{$('refresh').disabled=false}
+}
+async function loadMorning(){
+ try{let d=await fetch('/api/search?mode=morning_three',{cache:'no-store'}).then(r=>r.json()),a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];$('morningState').textContent=a.length?a.length+'개 후보':'관망';$('morning').innerHTML=a.length?a.map(x=>'<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||'')+'</span><p>'+(x.headline||x.observe||'가격·수급 확인')+'</p></div>').join(''):'<div class="empty">현재 기준을 충족한 Morning 3 후보가 없습니다.</div>'}catch(_){$('morningState').textContent='조회 실패';$('morning').innerHTML='<div class="empty">Morning 3 데이터를 불러오지 못했습니다.</div>'}
+}
+document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
+$('refresh').onclick=()=>{loadMorning();loadRadar()};loadMorning();loadRadar();setInterval(loadRadar,60000);
+</script></body></html>
