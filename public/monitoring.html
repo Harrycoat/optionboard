@@ -115,12 +115,32 @@ function newsSignal(x){
  return ['🚀 NEWS MOMENTUM','green'];
 }
 async function loadNewsCatch(){
- const state=$('newsState'),box=$('newsCatch'),phase=marketPhase();state.textContent=phase==='PRE15'?'PREMARKET 추적':phase==='LIVE'?'LIVE 추적':'뉴스 스캔';
+ const state=$('newsState'),box=$('newsCatch'),phase=marketPhase();
+ state.textContent=phase==='PRE15'?'PREMARKET 추적':phase==='LIVE'?'LIVE 추적':'뉴스 스캔';
  try{
   const d=await fetch('/api/search?mode=morning_three',{cache:'no-store'}).then(r=>r.json());
-  const a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];newsTickers=a.map(x=>x.ticker).filter(Boolean);
-  const tracked=await Promise.all(a.map(async x=>{try{let qd=await fetch('/api/search?mode=schwab_quote&symbols='+x.ticker,{cache:'no-store'}).then(r=>r.json()),q=(qd.quotes||{})[x.ticker]||{},y=await one(x.ticker,q);return {...x,...y}}catch(_){return x}}));
-  box.innerHTML=tracked.length?tracked.map(x=>{let s=newsSignal(x);return '<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||x.industry||sectorOf(x.ticker))+'</span><p><b>1차</b> '+(x.headline||x.catalyst||'NEWS MOMENTUM')+'</p><p class="'+s[1]+'"><b>2차</b> '+s[0]+(x.call?' · Call 
+  const a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];
+  newsTickers=a.map(x=>x.ticker).filter(Boolean);
+  const tracked=await Promise.all(a.map(async x=>{
+   try{
+    const qd=await fetch('/api/search?mode=schwab_quote&symbols='+encodeURIComponent(x.ticker),{cache:'no-store'}).then(r=>r.json());
+    const q=(qd.quotes||{})[x.ticker]||{};
+    const y=await one(x.ticker,q);
+    return {...x,...y};
+   }catch(_){return x}
+  }));
+  box.innerHTML=tracked.length?tracked.map(x=>{
+   const s=newsSignal(x);
+   const callText=x.call?' · Call $'+fmt(x.call,1):'';
+   const spotText=x.spot?' · $'+fmt(x.spot):'';
+   return '<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||x.industry||sectorOf(x.ticker))+'</span><p><b>1차</b> '+(x.headline||x.catalyst||'NEWS MOMENTUM')+'</p><p class="'+s[1]+'"><b>2차</b> '+s[0]+callText+spotText+'</p><p><b>FLOW</b> '+(x.vol||'가격·거래량 확인')+'</p></div>';
+  }).join(''):'<div class="empty">현재 뉴스와 시장 반응이 함께 확인된 후보가 없습니다.</div>';
+  $('newsTrackState').textContent=(phase==='PRE15'?'장 시작 15분 전 사전 추적 중':phase==='LIVE'?'장중 15초 추적 중':'다음 장 시작 15분 전 자동 추적')+' · '+new Date().toLocaleTimeString();
+ }catch(_){
+  state.textContent='조회 실패';
+  box.innerHTML='<div class="empty">뉴스 후보를 불러오지 못했습니다.</div>';
+ }
+}
 
 const F13=[
 [1,'INTC',1066,114,952,'AI SEMI'],[2,'MU',971,123,848,'MEMORY'],[3,'AMD',920,128,792,'AI SEMI'],[4,'MRVL',754,106,648,'AI NETWORK'],[5,'SNDK',714,91,623,'MEMORY'],[6,'AMAT',673,110,563,'SEMI EQUIPMENT'],[7,'STX',550,65,485,'MEMORY'],[8,'DELL',591,111,480,'AI COMPUTE'],[9,'LRCX',573,96,477,'SEMI EQUIPMENT'],[10,'PANW',553,123,430,'CYBER'],[11,'GLW',540,118,422,'AI NETWORK'],[12,'KLAC',492,85,407,'SEMI EQUIPMENT'],[13,'TXN',485,87,398,'AI SEMI'],[14,'CRWD',486,127,359,'CYBER'],[15,'UNH',483,142,341,'HEALTH'],[16,'—',null,null,null,'검증 대기'],[17,'—',null,null,null,'검증 대기'],[18,'—',null,null,null,'검증 대기'],[19,'—',null,null,null,'검증 대기'],[20,'—',null,null,null,'검증 대기']];
