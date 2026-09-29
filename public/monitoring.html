@@ -89,21 +89,31 @@ async function loadMorning(){
 const F13=[
 [1,'INTC',1066,114,952,'AI SEMI'],[2,'MU',971,123,848,'MEMORY'],[3,'AMD',920,128,792,'AI SEMI'],[4,'MRVL',754,106,648,'AI NETWORK'],[5,'SNDK',714,91,623,'MEMORY'],[6,'AMAT',673,110,563,'SEMI EQUIPMENT'],[7,'STX',550,65,485,'MEMORY'],[8,'DELL',591,111,480,'AI COMPUTE'],[9,'LRCX',573,96,477,'SEMI EQUIPMENT'],[10,'PANW',553,123,430,'CYBER'],[11,'GLW',540,118,422,'AI NETWORK'],[12,'KLAC',492,85,407,'SEMI EQUIPMENT'],[13,'TXN',485,87,398,'AI SEMI'],[14,'CRWD',486,127,359,'CYBER'],[15,'UNH',483,142,341,'HEALTH'],[16,'—',null,null,null,'검증 대기'],[17,'—',null,null,null,'검증 대기'],[18,'—',null,null,null,'검증 대기'],[19,'—',null,null,null,'검증 대기'],[20,'—',null,null,null,'검증 대기']];
 let F13W={};
-function render13F(){ $('f13board').innerHTML=F13.map(x=>{let w=F13W[x[1]]||{},spot=+w.spot||null,put=w.put_wall==null?null:+w.put_wall,call=w.call_wall==null?null:+w.call_wall,pd=spot&&put?Math.abs((spot-put)/spot*100):null,cd=spot&&call?Math.abs((call-spot)/spot*100):null,near=pd==null?(cd==null?'—':'CALL'):(cd==null||pd<=cd?'PUT':'CALL');return '<div class="f13row"><span class="rank">#'+x[0]+'</span><span class="ticker">'+x[1]+'</span><span>'+fmt(x[2],0)+'</span><span>'+fmt(x[3],0)+'</span><span class="'+(x[4]!=null?'green':'muted')+'">'+(x[4]==null?'—':'+'+fmt(x[4],0))+'</span><span class="green">'+(put==null?'—':'
-
+function render13F(){
+ $('f13board').innerHTML=F13.map(x=>{
+  let w=F13W[x[1]]||{},spot=+w.spot||null,put=w.put_wall==null?null:+w.put_wall,call=w.call_wall==null?null:+w.call_wall;
+  let pd=spot&&put?Math.abs((spot-put)/spot*100):null,cd=spot&&call?Math.abs((call-spot)/spot*100):null;
+  let near=pd==null?(cd==null?'—':'CALL'):(cd==null||pd<=cd?'PUT':'CALL');
+  return '<div class="f13row"><span class="rank">#'+x[0]+'</span><span class="ticker">'+x[1]+'</span><span>'+fmt(x[2],0)+'</span><span>'+fmt(x[3],0)+'</span><span class="'+(x[4]!=null?'green':'muted')+'">'+(x[4]==null?'—':'+'+fmt(x[4],0))+'</span><span class="green">'+(put==null?'—':'$'+fmt(put,1)+' / '+fmt(pd,2)+'%')+'</span><span class="red">'+(call==null?'—':'$'+fmt(call,1)+' / '+fmt(cd,2)+'%')+'</span><span class="'+(near==='PUT'?'green':near==='CALL'?'red':'muted')+'">'+near+'</span><span class="sector">'+x[5]+'</span></div>';
+ }).join('');
+}
+async function load13FWalls(){
+ render13F();
+ const tickers=F13.filter(x=>x[1]!=='—').map(x=>x[1]);
+ await Promise.allSettled(tickers.map(async t=>{
+  try{
+   const [w,q]=await Promise.all([
+    fetch('/api/search?ticker='+t+'&view=summary',{cache:'no-store'}).then(r=>r.json()),
+    fetch('/api/search?mode=schwab_quote&symbols='+t,{cache:'no-store'}).then(r=>r.json())
+   ]);
+   let qq=(q.quotes||{})[t]||{};
+   F13W[t]={...w,spot:+qq.last||+w.spot||null};
+   render13F();
+  }catch(_){}
+ }));
+}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
-$('refresh').onclick=()=>{loadMorning();loadRadar()};loadMorning();loadRadar();setInterval(loadRadar,60000);
-</script></body></html>+fmt(put,1)+' / '+fmt(pd,2)+'%')+'</span><span class="red">'+(call==null?'—':'
-
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
-document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
-$('refresh').onclick=()=>{loadMorning();loadRadar()};loadMorning();loadRadar();setInterval(loadRadar,60000);
-</script></body></html>+fmt(call,1)+' / '+fmt(cd,2)+'%')+'</span><span class="'+(near==='PUT'?'green':near==='CALL'?'red':'muted')+'">'+near+'</span><span class="sector">'+x[5]+'</span></div>'}).join('') }
-async function load13FWalls(){render13F();const tickers=F13.filter(x=>x[1]!=='—').map(x=>x[1]);await Promise.allSettled(tickers.map(async t=>{try{const [w,q]=await Promise.all([fetch('/api/search?ticker='+t+'&view=summary',{cache:'no-store'}).then(r=>r.json()),fetch('/api/search?mode=schwab_quote&symbols='+t,{cache:'no-store'}).then(r=>r.json())]);let qq=(q.quotes||{})[t]||{};F13W[t]={...w,spot:+qq.last||+w.spot||null};render13F()}catch(_){}}))}
-load13FWalls();
-
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
-document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
-$('refresh').onclick=()=>{loadMorning();loadRadar()};loadMorning();loadRadar();setInterval(loadRadar,60000);
+$('refresh').onclick=()=>{loadMorning();loadRadar()};
+render13F();load13FWalls();loadMorning();loadRadar();setInterval(loadRadar,60000);
 </script></body></html>
