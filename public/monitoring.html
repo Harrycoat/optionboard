@@ -126,5 +126,5 @@ async function load13FWalls(){
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
 $('refresh').onclick=()=>{loadMorning();loadRadar()};
-render13F();load13FWalls();loadMorning();loadRadar();setInterval(loadRadar,60000);
+render13F();load13FWalls();loadMorning();loadRadar();
 </script></body></html>
