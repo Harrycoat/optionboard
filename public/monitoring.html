@@ -71,12 +71,12 @@ function render(){
 async function one(t,q){
  const [w,b]=await Promise.all([fetch('/api/search?ticker='+t+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),fetch('/api/search?mode=schwab_intraday&ticker='+t,{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
  let bars=b.bars||[],cl=bars.map(z=>+z.close).filter(Number.isFinite);
- return {ticker:t,spot:+q.last,put:w.put_wall,call:w.call_wall,bars,hull:hull(cl),vol:volState(bars)}
+ const spot=Number(q.last)||Number(q.mark)||Number(q.bid)||Number(q.ask)||Number(w.spot)||Number(bars.at(-1)?.close); return {ticker:t,spot,put:w.put_wall,call:w.call_wall,bars,hull:hull(cl),vol:volState(bars)}
 }
 async function loadRadar(){
  $('status').textContent='섹터 주도주 '+UNIVERSE.length+'개 확인 중…';$('refresh').disabled=true;data=[];
  try{
-  let quotes={};for(let i=0;i<UNIVERSE.length;i+=5){let a=UNIVERSE.slice(i,i+5),d=await fetch('/api/search?mode=schwab_quote&symbols='+encodeURIComponent(a.join(',')),{cache:'no-store'}).then(r=>r.json());Object.assign(quotes,d.quotes||{})}
+  let quotes={};for(let i=0;i<UNIVERSE.length;i+=5){let a=UNIVERSE.slice(i,i+5);try{let d=await fetch('/api/search?mode=schwab_quote&symbols='+encodeURIComponent(a.join(',')),{cache:'no-store'}).then(r=>r.json());Object.assign(quotes,d.quotes||{})}catch(_){/* Wall summary fallback keeps radar visible */}}
   let done=0;const jobs=UNIVERSE.map(t=>one(t,quotes[t]||{}).then(x=>{if(Number.isFinite(x.spot))data.push(x);done++;$('status').textContent='Updating '+done+'/'+UNIVERSE.length+'…'}).catch(()=>{done++}));
   await Promise.allSettled(jobs);render();$('status').textContent='업데이트 '+new Date().toLocaleTimeString()+' · Wall 거리순 자동 정렬';
  }catch(e){$('status').textContent='데이터 연결 오류: '+e.message;$('board').innerHTML='<div class="empty">현재 데이터를 불러오지 못했습니다. 잠시 후 REFRESH 해주세요.</div>'}
