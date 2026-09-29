@@ -25,7 +25,7 @@
 
 <section class="card tabpage" data-page="daily"><div class="head"><h2>🔥 데일리 3</h2><span id="morningState" class="pill">조회 중</span></div><div id="morning" class="morning"><div class="empty">오늘의 후보를 확인하고 있습니다…</div></div></section>
 
-<section class="card tabpage" data-page="news" style="display:none"><div class="head"><div><h2>⚡ PREMARKET NEWS CATCH</h2><div class="sub" style="margin-top:4px">뉴스 → 테마/산업 → 관련주 → 실제 가격·거래량 반응 확인</div></div><span id="newsState" class="pill">조회 전</span></div><div id="newsCatch" class="morning"><div class="empty">프리마켓 뉴스 후보를 불러오는 중…</div></div><div class="sub" style="margin-top:10px">※ 뉴스 후보를 먼저 찾고, 실제 시장 반응이 확인되는 종목만 최대 3개 표시합니다.</div></section>
+<section class="card tabpage" data-page="news" style="display:none"><div class="head"><div><h2>⚡ PREMARKET NEWS CATCH</h2><div class="sub" style="margin-top:4px">1차 NEWS MOMENTUM → 2차 CALL WALL WATCH → REVERSAL / BREAKOUT</div></div><span id="newsState" class="pill">조회 전</span></div><div id="newsCatch" class="morning"><div class="empty">프리마켓 뉴스 후보를 불러오는 중…</div></div><div id="newsTrackState" class="sub" style="margin-top:10px">장 시작 15분 전 사전 추적 · 장중 15초 실시간 추적</div></section>
 
 <section class="card tabpage" data-page="f13" style="display:none"><div class="head"><div><h2>🏦 13F 공시 리스트 · TOP 20</h2><div class="sub" style="margin-top:4px">2026 Q2 · 신규 포지션 − 완전 청산 기준 · 기관 수 기준 (달러 유입액 아님)</div></div><span class="pill">Q2 2026</span></div>
 <div class="table"><div class="f13row header"><span>순위</span><span>종목</span><span>신규기관</span><span>청산기관</span><span>NET</span><span>Put Wall / 거리</span><span>Call Wall / 거리</span><span>가까운 Wall</span><span>분류</span></div><div id="f13board"></div></div>
@@ -97,13 +97,96 @@ async function loadRadar(){
 async function loadMorning(){
  try{let d=await fetch('/api/search?mode=morning_three',{cache:'no-store'}).then(r=>r.json()),a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];$('morningState').textContent=a.length?a.length+'개 후보':'관망';$('morning').innerHTML=a.length?a.map(x=>'<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||'')+'</span><p>'+(x.headline||x.observe||'가격·수급 확인')+'</p></div>').join(''):'<div class="empty">현재 기준을 충족한 Morning 3 후보가 없습니다.</div>'}catch(_){$('morningState').textContent='조회 실패';$('morning').innerHTML='<div class="empty">Morning 3 데이터를 불러오지 못했습니다.</div>'}
 }
+let newsTickers=[];
+function marketPhase(){
+ const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit',hour12:false,weekday:'short'}).formatToParts(new Date());
+ const o=Object.fromEntries(p.map(x=>[x.type,x.value])),m=(+o.hour)*60+(+o.minute),wd=o.weekday;
+ if(!['Mon','Tue','Wed','Thu','Fri'].includes(wd))return 'CLOSED';
+ if(m>=375&&m<390)return 'PRE15';
+ if(m>=390&&m<780)return 'LIVE';
+ return 'CLOSED';
+}
+function newsSignal(x){
+ const call=+x.call,spot=+x.spot,b=x.bars||[],r=b.slice(-6),last=r.at(-1),prev=r.at(-2);
+ const rising=last&&prev&&+last.close>+prev.close, touched=call&&r.some(z=>+z.high>=call*.998);
+ if(call&&spot>call&&rising)return ['🟢 BREAKOUT','green'];
+ if(touched&&spot<call&&!rising)return ['🔴 REVERSAL WATCH','red'];
+ if(call&&Math.abs((call-spot)/spot*100)<=1)return ['🟡 CALL WALL WATCH','gold'];
+ return ['🚀 NEWS MOMENTUM','green'];
+}
 async function loadNewsCatch(){
- const state=$('newsState'),box=$('newsCatch');state.textContent='조회 중';
+ const state=$('newsState'),box=$('newsCatch'),phase=marketPhase();state.textContent=phase==='PRE15'?'PREMARKET 추적':phase==='LIVE'?'LIVE 추적':'뉴스 스캔';
  try{
   const d=await fetch('/api/search?mode=morning_three',{cache:'no-store'}).then(r=>r.json());
-  const a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];
-  state.textContent=a.length?a.length+'개 포착':'관망';
-  box.innerHTML=a.length?a.map(x=>'<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||x.industry||'')+'</span><p><b>NEWS</b> '+(x.headline||x.catalyst||'뉴스 촉매 확인')+'</p><p><b>WHY</b> '+(x.observe||x.reason||'가격·거래량 반응 확인')+'</p></div>').join(''):'<div class="empty">현재 뉴스와 실제 시장 반응이 함께 확인된 후보가 없습니다.</div>';
+  const a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];newsTickers=a.map(x=>x.ticker).filter(Boolean);
+  const tracked=await Promise.all(a.map(async x=>{try{let qd=await fetch('/api/search?mode=schwab_quote&symbols='+x.ticker,{cache:'no-store'}).then(r=>r.json()),q=(qd.quotes||{})[x.ticker]||{},y=await one(x.ticker,q);return {...x,...y}}catch(_){return x}}));
+  box.innerHTML=tracked.length?tracked.map(x=>{let s=newsSignal(x);return '<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||x.industry||sectorOf(x.ticker))+'</span><p><b>1차</b> '+(x.headline||x.catalyst||'NEWS MOMENTUM')+'</p><p class="'+s[1]+'"><b>2차</b> '+s[0]+(x.call?' · Call 
+
+const F13=[
+[1,'INTC',1066,114,952,'AI SEMI'],[2,'MU',971,123,848,'MEMORY'],[3,'AMD',920,128,792,'AI SEMI'],[4,'MRVL',754,106,648,'AI NETWORK'],[5,'SNDK',714,91,623,'MEMORY'],[6,'AMAT',673,110,563,'SEMI EQUIPMENT'],[7,'STX',550,65,485,'MEMORY'],[8,'DELL',591,111,480,'AI COMPUTE'],[9,'LRCX',573,96,477,'SEMI EQUIPMENT'],[10,'PANW',553,123,430,'CYBER'],[11,'GLW',540,118,422,'AI NETWORK'],[12,'KLAC',492,85,407,'SEMI EQUIPMENT'],[13,'TXN',485,87,398,'AI SEMI'],[14,'CRWD',486,127,359,'CYBER'],[15,'UNH',483,142,341,'HEALTH'],[16,'—',null,null,null,'검증 대기'],[17,'—',null,null,null,'검증 대기'],[18,'—',null,null,null,'검증 대기'],[19,'—',null,null,null,'검증 대기'],[20,'—',null,null,null,'검증 대기']];
+let F13W={};
+function render13F(){
+ $('f13board').innerHTML=F13.map(x=>{
+  let w=F13W[x[1]]||{},spot=+w.spot||null,put=w.put_wall==null?null:+w.put_wall,call=w.call_wall==null?null:+w.call_wall;
+  let pd=spot&&put?Math.abs((spot-put)/spot*100):null,cd=spot&&call?Math.abs((call-spot)/spot*100):null;
+  let near=pd==null?(cd==null?'—':'CALL'):(cd==null||pd<=cd?'PUT':'CALL');
+  return '<div class="f13row"><span class="rank">#'+x[0]+'</span><span class="ticker">'+x[1]+'</span><span>'+fmt(x[2],0)+'</span><span>'+fmt(x[3],0)+'</span><span class="'+(x[4]!=null?'green':'muted')+'">'+(x[4]==null?'—':'+'+fmt(x[4],0))+'</span><span class="green">'+(put==null?'—':'$'+fmt(put,1)+' / '+fmt(pd,2)+'%')+'</span><span class="red">'+(call==null?'—':'$'+fmt(call,1)+' / '+fmt(cd,2)+'%')+'</span><span class="'+(near==='PUT'?'green':near==='CALL'?'red':'muted')+'">'+near+'</span><span class="sector">'+x[5]+'</span></div>';
+ }).join('');
+}
+async function load13FWalls(){
+ render13F();
+ const tickers=F13.filter(x=>x[1]!=='—').map(x=>x[1]);
+ await Promise.allSettled(tickers.map(async t=>{
+  try{
+   const [w,q]=await Promise.all([
+    fetch('/api/search?ticker='+t+'&view=summary',{cache:'no-store'}).then(r=>r.json()),
+    fetch('/api/search?mode=schwab_quote&symbols='+t,{cache:'no-store'}).then(r=>r.json())
+   ]);
+   let qq=(q.quotes||{})[t]||{};
+   F13W[t]={...w,spot:+qq.last||+w.spot||null};
+   render13F();
+  }catch(_){}
+ }));
+}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
+document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
+$('refresh').onclick=()=>{loadMorning();loadNewsCatch();loadRadar()};
+render13F();load13FWalls();loadMorning();loadNewsCatch();loadRadar();setInterval(loadRadar,1800000);
+setInterval(()=>{const p=marketPhase();if(p==='PRE15'||p==='LIVE')loadNewsCatch()},15000);
+</script></body></html>+fmt(x.call,1):'')+(x.spot?' · 
+
+const F13=[
+[1,'INTC',1066,114,952,'AI SEMI'],[2,'MU',971,123,848,'MEMORY'],[3,'AMD',920,128,792,'AI SEMI'],[4,'MRVL',754,106,648,'AI NETWORK'],[5,'SNDK',714,91,623,'MEMORY'],[6,'AMAT',673,110,563,'SEMI EQUIPMENT'],[7,'STX',550,65,485,'MEMORY'],[8,'DELL',591,111,480,'AI COMPUTE'],[9,'LRCX',573,96,477,'SEMI EQUIPMENT'],[10,'PANW',553,123,430,'CYBER'],[11,'GLW',540,118,422,'AI NETWORK'],[12,'KLAC',492,85,407,'SEMI EQUIPMENT'],[13,'TXN',485,87,398,'AI SEMI'],[14,'CRWD',486,127,359,'CYBER'],[15,'UNH',483,142,341,'HEALTH'],[16,'—',null,null,null,'검증 대기'],[17,'—',null,null,null,'검증 대기'],[18,'—',null,null,null,'검증 대기'],[19,'—',null,null,null,'검증 대기'],[20,'—',null,null,null,'검증 대기']];
+let F13W={};
+function render13F(){
+ $('f13board').innerHTML=F13.map(x=>{
+  let w=F13W[x[1]]||{},spot=+w.spot||null,put=w.put_wall==null?null:+w.put_wall,call=w.call_wall==null?null:+w.call_wall;
+  let pd=spot&&put?Math.abs((spot-put)/spot*100):null,cd=spot&&call?Math.abs((call-spot)/spot*100):null;
+  let near=pd==null?(cd==null?'—':'CALL'):(cd==null||pd<=cd?'PUT':'CALL');
+  return '<div class="f13row"><span class="rank">#'+x[0]+'</span><span class="ticker">'+x[1]+'</span><span>'+fmt(x[2],0)+'</span><span>'+fmt(x[3],0)+'</span><span class="'+(x[4]!=null?'green':'muted')+'">'+(x[4]==null?'—':'+'+fmt(x[4],0))+'</span><span class="green">'+(put==null?'—':'$'+fmt(put,1)+' / '+fmt(pd,2)+'%')+'</span><span class="red">'+(call==null?'—':'$'+fmt(call,1)+' / '+fmt(cd,2)+'%')+'</span><span class="'+(near==='PUT'?'green':near==='CALL'?'red':'muted')+'">'+near+'</span><span class="sector">'+x[5]+'</span></div>';
+ }).join('');
+}
+async function load13FWalls(){
+ render13F();
+ const tickers=F13.filter(x=>x[1]!=='—').map(x=>x[1]);
+ await Promise.allSettled(tickers.map(async t=>{
+  try{
+   const [w,q]=await Promise.all([
+    fetch('/api/search?ticker='+t+'&view=summary',{cache:'no-store'}).then(r=>r.json()),
+    fetch('/api/search?mode=schwab_quote&symbols='+t,{cache:'no-store'}).then(r=>r.json())
+   ]);
+   let qq=(q.quotes||{})[t]||{};
+   F13W[t]={...w,spot:+qq.last||+w.spot||null};
+   render13F();
+  }catch(_){}
+ }));
+}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
+document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
+$('refresh').onclick=()=>{loadMorning();loadNewsCatch();loadRadar()};
+render13F();load13FWalls();loadMorning();loadNewsCatch();loadRadar();setInterval(loadRadar,1800000);
+</script></body></html>+fmt(x.spot):'')+'</p><p><b>FLOW</b> '+(x.vol||'가격·거래량 확인')+'</p></div>'}).join(''):'<div class="empty">현재 뉴스와 시장 반응이 함께 확인된 후보가 없습니다.</div>';
+  $('newsTrackState').textContent=(phase==='PRE15'?'장 시작 15분 전 사전 추적 중':phase==='LIVE'?'장중 15초 추적 중':'다음 장 시작 15분 전 자동 추적')+' · '+new Date().toLocaleTimeString();
  }catch(_){state.textContent='조회 실패';box.innerHTML='<div class="empty">뉴스 후보를 불러오지 못했습니다.</div>'}
 }
 
