@@ -8,7 +8,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:24px;font-weight:900}.sub,.muted{color:var(--muted);font-size:11px}.live{color:var(--green);border:1px solid var(--green);border-radius:999px;padding:4px 7px;font-size:10px}.nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:11px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.head h2{margin:0;font-size:17px}.pill{font-size:10px;font-weight:900;border:1px solid var(--line);padding:5px 7px;border-radius:999px}.morning{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.mitem{background:#101d2c;border:1px solid var(--line);border-radius:10px;padding:12px}.mitem b{font-size:19px}.mitem p{font-size:11px;color:var(--muted);margin:6px 0 0;line-height:1.4}.filters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.filters button{border:1px solid var(--line);background:#101826;color:var(--text);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.filters button.active{background:var(--blue);color:#07101b}.status{font-size:11px;color:var(--muted)}.table{overflow-x:auto}.row{min-width:930px;display:grid;grid-template-columns:105px 80px 95px 95px 95px 90px 95px 110px 1fr;gap:8px;align-items:center;padding:10px 4px;border-top:1px solid var(--line);font-size:11px}.row.header{color:var(--muted);font-size:10px;border-top:0}.ticker{font-size:15px;font-weight:900}.sector{color:var(--blue);font-size:9px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}.signal{font-weight:900}.distance{font-weight:900}.empty{padding:24px;text-align:center;color:var(--muted)}button.refresh{background:var(--gold);border:0;border-radius:8px;padding:9px 12px;font-weight:900;cursor:pointer}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}.legend b{color:var(--text)}.f13row{min-width:760px;display:grid;grid-template-columns:55px 90px 95px 95px 95px 120px 120px 90px 1fr;gap:8px;align-items:center;padding:9px 4px;border-top:1px solid var(--line);font-size:11px}.f13row.header{color:var(--muted);font-size:10px;border-top:0}.rank{font-weight:900;color:var(--gold)}
 @media(max-width:700px){
 .wrap{padding:9px}.top{align-items:flex-start;flex-direction:column;margin-bottom:10px}.brand{font-size:18px}.brand .live{font-size:8px}.sub{font-size:9px}.nav{display:none}
-#mainTabs{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:5px;margin:8px 0 10px}#mainTabs button{padding:8px 4px;font-size:9px;white-space:normal;line-height:1.2}
+#mainTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0 10px}#mainTabs button{padding:8px 4px;font-size:9px;white-space:normal;line-height:1.2}
 .card{padding:10px;border-radius:11px}.head{align-items:flex-start}.head h2{font-size:15px}.morning{grid-template-columns:1fr}.filters{gap:4px}.filters button{padding:7px 6px;font-size:9px}.status{font-size:9px}
 .table{overflow:visible}.row.header,.f13row.header{display:none}
 .row{min-width:0;display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:7px 8px;margin:8px 0;padding:11px;border:1px solid var(--line);border-radius:10px;background:#101d2c;font-size:10px}
@@ -21,10 +21,11 @@
 </style>
 </head>
 <body><main class="wrap">
-<div class="top"><div><div class="brand">MY TRADING MONITOR <span class="live">SCHWAB LIVE</span></div><div class="sub">Daily 3 · Wall Radar · 13F Institutional List</div></div><div class="nav"><a href="/">HOME</a></div></div><div class="filters" id="mainTabs"><button class="active" data-tab="daily">데일리 3</button><button data-tab="wall">WALL RADAR · SECTOR LEADERS</button><button data-tab="f13">13F 공시 리스트</button></div>
+<div class="top"><div><div class="brand">MY TRADING MONITOR <span class="live">SCHWAB LIVE</span></div><div class="sub">Daily 3 · Wall Radar · 13F Institutional List</div></div><div class="nav"><a href="/">HOME</a></div></div><div class="filters" id="mainTabs"><button class="active" data-tab="daily">데일리 3</button><button data-tab="news">뉴스 캐치</button><button data-tab="wall">WALL RADAR · SECTOR LEADERS</button><button data-tab="f13">13F 공시 리스트</button></div>
 
 <section class="card tabpage" data-page="daily"><div class="head"><h2>🔥 데일리 3</h2><span id="morningState" class="pill">조회 중</span></div><div id="morning" class="morning"><div class="empty">오늘의 후보를 확인하고 있습니다…</div></div></section>
 
+<section class="card tabpage" data-page="news" style="display:none"><div class="head"><div><h2>⚡ PREMARKET NEWS CATCH</h2><div class="sub" style="margin-top:4px">뉴스 → 테마/산업 → 관련주 → 실제 가격·거래량 반응 확인</div></div><span id="newsState" class="pill">조회 전</span></div><div id="newsCatch" class="morning"><div class="empty">프리마켓 뉴스 후보를 불러오는 중…</div></div><div class="sub" style="margin-top:10px">※ 뉴스 후보를 먼저 찾고, 실제 시장 반응이 확인되는 종목만 최대 3개 표시합니다.</div></section>
 
 <section class="card tabpage" data-page="f13" style="display:none"><div class="head"><div><h2>🏦 13F 공시 리스트 · TOP 20</h2><div class="sub" style="margin-top:4px">2026 Q2 · 신규 포지션 − 완전 청산 기준 · 기관 수 기준 (달러 유입액 아님)</div></div><span class="pill">Q2 2026</span></div>
 <div class="table"><div class="f13row header"><span>순위</span><span>종목</span><span>신규기관</span><span>청산기관</span><span>NET</span><span>Put Wall / 거리</span><span>Call Wall / 거리</span><span>가까운 Wall</span><span>분류</span></div><div id="f13board"></div></div>
@@ -96,6 +97,15 @@ async function loadRadar(){
 async function loadMorning(){
  try{let d=await fetch('/api/search?mode=morning_three',{cache:'no-store'}).then(r=>r.json()),a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];$('morningState').textContent=a.length?a.length+'개 후보':'관망';$('morning').innerHTML=a.length?a.map(x=>'<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||'')+'</span><p>'+(x.headline||x.observe||'가격·수급 확인')+'</p></div>').join(''):'<div class="empty">현재 기준을 충족한 Morning 3 후보가 없습니다.</div>'}catch(_){$('morningState').textContent='조회 실패';$('morning').innerHTML='<div class="empty">Morning 3 데이터를 불러오지 못했습니다.</div>'}
 }
+async function loadNewsCatch(){
+ const state=$('newsState'),box=$('newsCatch');state.textContent='조회 중';
+ try{
+  const d=await fetch('/api/search?mode=morning_three',{cache:'no-store'}).then(r=>r.json());
+  const a=Array.isArray(d.candidates)?d.candidates.slice(0,3):[];
+  state.textContent=a.length?a.length+'개 포착':'관망';
+  box.innerHTML=a.length?a.map(x=>'<div class="mitem"><b>'+x.ticker+'</b><span class="sector"> · '+(x.sector||x.industry||'')+'</span><p><b>NEWS</b> '+(x.headline||x.catalyst||'뉴스 촉매 확인')+'</p><p><b>WHY</b> '+(x.observe||x.reason||'가격·거래량 반응 확인')+'</p></div>').join(''):'<div class="empty">현재 뉴스와 실제 시장 반응이 함께 확인된 후보가 없습니다.</div>';
+ }catch(_){state.textContent='조회 실패';box.innerHTML='<div class="empty">뉴스 후보를 불러오지 못했습니다.</div>'}
+}
 
 const F13=[
 [1,'INTC',1066,114,952,'AI SEMI'],[2,'MU',971,123,848,'MEMORY'],[3,'AMD',920,128,792,'AI SEMI'],[4,'MRVL',754,106,648,'AI NETWORK'],[5,'SNDK',714,91,623,'MEMORY'],[6,'AMAT',673,110,563,'SEMI EQUIPMENT'],[7,'STX',550,65,485,'MEMORY'],[8,'DELL',591,111,480,'AI COMPUTE'],[9,'LRCX',573,96,477,'SEMI EQUIPMENT'],[10,'PANW',553,123,430,'CYBER'],[11,'GLW',540,118,422,'AI NETWORK'],[12,'KLAC',492,85,407,'SEMI EQUIPMENT'],[13,'TXN',485,87,398,'AI SEMI'],[14,'CRWD',486,127,359,'CYBER'],[15,'UNH',483,142,341,'HEALTH'],[16,'—',null,null,null,'검증 대기'],[17,'—',null,null,null,'검증 대기'],[18,'—',null,null,null,'검증 대기'],[19,'—',null,null,null,'검증 대기'],[20,'—',null,null,null,'검증 대기']];
@@ -125,6 +135,6 @@ async function load13FWalls(){
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');const p=b.dataset.tab;document.querySelectorAll('.tabpage').forEach(x=>x.style.display=x.dataset.page===p?'':'none');});
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});
-$('refresh').onclick=()=>{loadMorning();loadRadar()};
-render13F();load13FWalls();loadMorning();loadRadar();setInterval(loadRadar,1800000);
+$('refresh').onclick=()=>{loadMorning();loadNewsCatch();loadRadar()};
+render13F();load13FWalls();loadMorning();loadNewsCatch();loadRadar();setInterval(loadRadar,1800000);
 </script></body></html>
