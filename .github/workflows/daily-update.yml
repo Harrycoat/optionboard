@@ -12,6 +12,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -64,4 +66,5 @@ jobs:
           git add public/oi_history/
           git add public/swing-virtual-trades.json
           git diff --cached --quiet || git commit -m "chore: daily options report update $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
           git push
