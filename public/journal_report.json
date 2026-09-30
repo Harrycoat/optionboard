@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T23:16:43.674339+00:00",
+  "generated_at": "2026-09-30T18:52:08.289338+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_return": 0,
@@ -22,15 +22,15 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 352.84,
+      "current_spot": 351.87,
       "current_gamma_flip": 285,
       "current_regime": "negative",
-      "return_pct": 0.52,
-      "unrealized_pnl": 184.0,
+      "return_pct": 0.25,
+      "unrealized_pnl": 87.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 373.19 < Hull50 375.98 (교차 시점은 더 이전)",
-        "⛔ 종가(352.84)가 150일선(379.86) 아래로 이탈"
+        "⚠️ 이미 데드크로스 상태 — Hull21 369.96 < Hull50 375.38 (교차 시점은 더 이전)",
+        "⛔ 종가(351.87)가 150일선(379.42) 아래로 이탈"
       ],
       "live_fetch_error": null
     },
@@ -43,11 +43,11 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 186.97,
+      "current_spot": 188.11,
       "current_gamma_flip": 195,
       "current_regime": "positive",
-      "return_pct": 13.11,
-      "unrealized_pnl": 2167.0,
+      "return_pct": 13.8,
+      "unrealized_pnl": 2281.0,
       "structural_status": "구조유지",
       "structural_reasons": [],
       "live_fetch_error": null
@@ -61,14 +61,14 @@
       "quantity": 50.0,
       "status": "진행중",
       "note": "풋월 334 - 350상승 확인 후 1차진입",
-      "current_spot": 355.1,
+      "current_spot": 353.635,
       "current_gamma_flip": 355,
       "current_regime": "positive",
-      "return_pct": 1.31,
-      "unrealized_pnl": 230.0,
+      "return_pct": 0.89,
+      "unrealized_pnl": 156.75,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⛔ 종가(355.1)가 150일선(377.61) 아래로 이탈"
+        "⛔ 종가(353.635)가 150일선(377.75) 아래로 이탈"
       ],
       "live_fetch_error": null
     }

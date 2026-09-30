@@ -1111,7 +1111,7 @@
   {
     "ticker": "IMPP",
     "date": "2026-09-30",
-    "spot": 5.005,
+    "spot": 5.075,
     "expiries_used": [
       "2026-10-16",
       "2026-11-20"
@@ -1142,21 +1142,21 @@
         "strike": 4,
         "call_oi": 782.0,
         "put_oi": 2809.0,
-        "call_volume": 175.0,
+        "call_volume": 187.0,
         "put_volume": 31.0
       },
       {
         "strike": 5,
         "call_oi": 3354.0,
-        "put_oi": 590.0,
-        "call_volume": 108.0,
-        "put_volume": 48.0
+        "put_oi": 638.0,
+        "call_volume": 112.0,
+        "put_volume": 45.0
       },
       {
         "strike": 6,
         "call_oi": 1569.0,
         "put_oi": 108.0,
-        "call_volume": 72.0,
+        "call_volume": 51.0,
         "put_volume": 64.0
       },
       {

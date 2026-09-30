@@ -2056,7 +2056,7 @@
   {
     "ticker": "AUPH",
     "date": "2026-09-30",
-    "spot": 16.42,
+    "spot": 16.34,
     "expiries_used": [
       "2026-10-16",
       "2026-11-20"
@@ -2085,7 +2085,7 @@
       },
       {
         "strike": 8,
-        "call_oi": 1.0,
+        "call_oi": 2.0,
         "put_oi": 0.0,
         "call_volume": 2.0,
         "put_volume": 0.0
@@ -2143,35 +2143,35 @@
         "strike": 16,
         "call_oi": 267.0,
         "put_oi": 427.0,
-        "call_volume": 7.0,
+        "call_volume": 3.0,
         "put_volume": 2.0
       },
       {
         "strike": 17,
-        "call_oi": 1125.0,
+        "call_oi": 1132.0,
         "put_oi": 198.0,
         "call_volume": 18.0,
         "put_volume": 30.0
       },
       {
         "strike": 18,
-        "call_oi": 438.0,
+        "call_oi": 462.0,
         "put_oi": 3.0,
         "call_volume": 27.0,
         "put_volume": 3.0
       },
       {
         "strike": 19,
-        "call_oi": 385.0,
+        "call_oi": 392.0,
         "put_oi": 0.0,
         "call_volume": 58.0,
         "put_volume": 0.0
       },
       {
         "strike": 20,
-        "call_oi": 7089.0,
+        "call_oi": 7069.0,
         "put_oi": 0.0,
-        "call_volume": 65.0,
+        "call_volume": 5.0,
         "put_volume": 0.0
       },
       {
