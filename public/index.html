@@ -488,9 +488,30 @@
   @media(max-width:760px){ .trade-plan-grid{ grid-template-columns:1fr; }.price-position{ padding:15px 10px; }.price-marker span{ font-size:9px; } }
   footer{ text-align:center; color: var(--text-dim); font-size:11px; padding: 30px 20px; }
   @media (max-width: 560px){
-    header{ flex-direction:column; align-items:stretch; }
-    .searchbar{ max-width:none; }
-    .header-actions{ justify-content:center; flex-wrap:wrap; gap:8px; }
+    header{
+      flex-direction:column; align-items:stretch; gap:10px;
+      padding:10px 12px 12px; position:sticky; top:0;
+    }
+    header .logo{ justify-content:center; min-height:28px; }
+    header .logo span{ display:none; }
+    .searchbar{
+      order:-1; width:100%; max-width:none; gap:7px;
+      position:relative; z-index:12;
+    }
+    .searchbar input{
+      min-width:0; width:100%; min-height:48px; padding:11px 13px;
+      font-size:16px; border-color:rgba(224,168,56,.72);
+      border-radius:9px;
+    }
+    .searchbar button{
+      flex:0 0 72px; min-height:48px; padding:10px 12px;
+      font-size:15px; border-radius:9px;
+    }
+    .header-actions{ justify-content:center; flex-wrap:wrap; gap:6px; }
+    .header-actions .home-btn,.header-actions .account-btn{ min-height:38px; padding:7px 10px; font-size:11px; }
+    .main-category-nav .main-category-inner{ justify-content:flex-start; padding:7px 10px; overflow-x:auto; }
+    .main-category-nav .home-btn{ flex:0 0 auto; }
+
     main{ padding:16px 12px 72px; }
     body.watchlist-view main{ padding-top:16px; }
     .watchlist-page-title{ margin-bottom:14px; padding-bottom:13px; }
