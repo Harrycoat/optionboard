@@ -1839,7 +1839,7 @@
   {
     "ticker": "DPRO",
     "date": "2026-10-01",
-    "spot": 5.605,
+    "spot": 5.495,
     "expiries_used": [
       "2026-10-02",
       "2026-10-09"
@@ -1905,7 +1905,7 @@
         "strike": 5,
         "call_oi": 6.0,
         "put_oi": 43.0,
-        "call_volume": 22.0,
+        "call_volume": 18.0,
         "put_volume": 7.0
       },
       {
@@ -1913,21 +1913,21 @@
         "call_oi": 183.0,
         "put_oi": 200.0,
         "call_volume": 9.0,
-        "put_volume": 66.0
+        "put_volume": 68.0
       },
       {
         "strike": 6,
         "call_oi": 200.0,
         "put_oi": 82.0,
-        "call_volume": 9.0,
-        "put_volume": 22.0
+        "call_volume": 27.0,
+        "put_volume": 26.0
       },
       {
         "strike": 6.5,
         "call_oi": 507.0,
         "put_oi": 29.0,
         "call_volume": 53.0,
-        "put_volume": 7.0
+        "put_volume": 12.0
       },
       {
         "strike": 7,
@@ -1947,7 +1947,7 @@
         "strike": 8,
         "call_oi": 4.0,
         "put_oi": 0.0,
-        "call_volume": 2.0,
+        "call_volume": 1.0,
         "put_volume": 0.0
       },
       {

@@ -2322,7 +2322,7 @@
   {
     "ticker": "KD",
     "date": "2026-10-01",
-    "spot": 12.245,
+    "spot": 12.12,
     "expiries_used": [
       "2026-10-16",
       "2026-11-20"
@@ -2375,21 +2375,21 @@
         "call_oi": 35.0,
         "put_oi": 225.0,
         "call_volume": 50.0,
-        "put_volume": 4.0
+        "put_volume": 5.0
       },
       {
         "strike": 11,
         "call_oi": 42.0,
         "put_oi": 1564.0,
         "call_volume": 12.0,
-        "put_volume": 34.0
+        "put_volume": 37.0
       },
       {
         "strike": 12,
         "call_oi": 632.0,
         "put_oi": 1295.0,
-        "call_volume": 348.0,
-        "put_volume": 200.0
+        "call_volume": 351.0,
+        "put_volume": 230.0
       },
       {
         "strike": 13,
@@ -2402,14 +2402,14 @@
         "strike": 14,
         "call_oi": 544.0,
         "put_oi": 9.0,
-        "call_volume": 70.0,
+        "call_volume": 71.0,
         "put_volume": 2.0
       },
       {
         "strike": 15,
         "call_oi": 308.0,
         "put_oi": 2.0,
-        "call_volume": 24.0,
+        "call_volume": 29.0,
         "put_volume": 2.0
       },
       {
