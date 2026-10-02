@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0d1117">
+  <title>GEX Position Manager</title>
+  <link rel="manifest" href="/position-manager/manifest.webmanifest">
+  <link rel="stylesheet" href="/position-manager/styles.css">
+</head>
+<body>
+<header>
+  <div><h1>GEX Position Manager</h1><p>TOS에서 매수 · 휴대폰에서 관리</p></div>
+  <button id="addBtn" class="primary">+ 포지션 추가</button>
+</header>
+<main>
+  <section class="summary">
+    <div><span>등록 종목</span><strong id="count">0 / 20</strong></div>
+    <div><span>액션 필요</span><strong id="actionCount">0</strong></div>
+    <div><span>시세</span><strong id="mode">SCHWAB</strong></div>
+  </section>
+  <section id="cards" class="cards"></section>
+  <div id="empty" class="empty">아직 등록된 포지션이 없습니다.<br>+ 포지션 추가를 눌러 시작하세요.</div>
+</main>
+<dialog id="positionDialog">
+<form id="positionForm">
+  <h2>포지션 추가</h2>
+  <label>Ticker<input id="ticker" maxlength="10" required placeholder="PLTR"></label>
+  <label>Shares<input id="shares" type="number" min="1" step="1" required placeholder="200"></label>
+  <label>Average Price<input id="avgPrice" type="number" min="0.01" step="0.01" required placeholder="165.00"></label>
+  <label>Call Wall<input id="callWall" type="number" min="0.01" step="0.01" required placeholder="180"></label>
+  <label>Put Wall<input id="putWall" type="number" min="0.01" step="0.01" required placeholder="170"></label>
+  <label class="check"><input id="hasCC" type="checkbox"> Covered Call 보유</label>
+  <label class="check"><input id="hasPut" type="checkbox"> Protective Put 보유</label>
+  <label class="check"><input id="hasCSP" type="checkbox"> CSP 보유</label>
+  <div class="dialog-actions"><button type="button" id="cancelBtn">취소</button><button class="primary" type="submit">저장</button></div>
+</form>
+</dialog>
+<script type="module" src="/position-manager/app.js"></script>
+</body></html>
