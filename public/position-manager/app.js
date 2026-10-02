@@ -36,7 +36,7 @@ async function fetchQuote(ticker){
     const price=Number(d.last??d.mark??d.ask??d.bid);
     if(!Number.isFinite(price))throw new Error('no realtime price');
     return {...d,price};
-  }catch(e){return{error:String(e)}}
+  }catch(e){return{error:'SCHWAB_REAUTH_REQUIRED'}}
 }
 async function fetchWall(ticker){
   try{
@@ -64,7 +64,7 @@ function render(){
   cards.innerHTML='';$('#count').textContent=`${positions.length} / ${MAX}`;let actions=0;
   positions.forEach((p,i)=>{
     const q=quotes[p.ticker]||{},w=walls[p.ticker]||{};
-    const live=Number.isFinite(q.price),fallback=Number(w.spot),price=live?q.price:(Number.isFinite(fallback)?fallback:NaN);
+    const live=Number.isFinite(q.price),price=live?q.price:NaN;
     const s=evaluate(p,price,w); if(!['HOLD','WAIT'].includes(s.code)) actions++;
     const pnl=Number.isFinite(price)?(price-p.avgPrice)*p.shares:NaN,pp=Number.isFinite(price)?pct(price,p.avgPrice):NaN;
     const cw=Number(w.call_wall),pw=Number(w.put_wall),c=dist(price,cw),u=dist(price,pw);
@@ -72,7 +72,7 @@ function render(){
     el.innerHTML=`
       <div class="row">
         <div><div class="ticker">${p.ticker}</div><div class="muted">${p.shares}주 @ $${p.avgPrice.toFixed(2)}</div></div>
-        <div style="text-align:right"><div class="price">${money(price)}</div><div class="live-badge">${live?'Schwab 실시간':'시세 연결 확인'}</div></div>
+        <div style="text-align:right"><div class="price">${money(price)}</div><div class="live-badge">${live?'Schwab 실시간':'Schwab 재인증 필요'}</div></div>
       </div>
       <div class="grid">
         <div class="metric"><span>P/L</span><strong>${Number.isFinite(pnl)?((pnl>=0?'+':'')+'$'+pnl.toFixed(0)+' ('+(pp>=0?'+':'')+pp.toFixed(2)+'%)'):'—'}</strong></div>
@@ -81,7 +81,7 @@ function render(){
         <div class="metric"><span>WALL DISTANCE</span><strong>C ${dpct(c)} · P ${dpct(u)}</strong></div>
       </div>
       <div class="row"><span class="status">${s.label}</span><button class="delete" data-i="${i}">삭제</button></div>
-      <div class="reason">${s.reason}${w.error?'<br><span class="wall-loading">⚠ Wall: '+w.error+'</span>':''}${q.error?'<br><span class="wall-loading">⚠ 실시간: '+q.error+'</span>':''}</div>`;
+      <div class="reason">${s.reason}${w.error?'<br><span class="wall-loading">⚠ Wall: '+w.error+'</span>':''}${q.error?'<br><span class="wall-loading">⚠ Schwab 실시간 연결 재인증이 필요합니다.</span>':''}</div>`;
     cards.appendChild(el);
   });
   $('#actionCount').textContent=actions;empty.style.display=positions.length?'none':'flex';
