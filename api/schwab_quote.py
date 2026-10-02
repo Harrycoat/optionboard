@@ -17,7 +17,6 @@ import requests
 
 TOKEN_URL = "https://api.schwabapi.com/v1/oauth/token"
 QUOTES_URL = "https://api.schwabapi.com/marketdata/v1/quotes"
-ALLOWED_TICKERS = {"NVDA", "AMZN"}
 
 
 def _json(handler, status, payload):
@@ -112,15 +111,8 @@ class handler(BaseHTTPRequestHandler):
         query = parse_qs(urlparse(self.path).query)
         ticker = (query.get("ticker", ["NVDA"])[0] or "NVDA").strip().upper()
 
-        if ticker not in ALLOWED_TICKERS:
-            _json(
-                self,
-                400,
-                {
-                    "error": "This test endpoint currently supports only NVDA and AMZN.",
-                    "allowed": sorted(ALLOWED_TICKERS),
-                },
-            )
+        if not ticker or len(ticker) > 10 or any(ch not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ.-" for ch in ticker):
+            _json(self, 400, {"error": "Invalid ticker."})
             return
 
         try:
