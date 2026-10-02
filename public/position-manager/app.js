@@ -43,7 +43,7 @@ function render(){
   $('#actionCount').textContent=actions;empty.style.display=positions.length?'none':'block';
   document.querySelectorAll('.delete').forEach(b=>b.onclick=()=>{positions.splice(+b.dataset.i,1);save();refresh()});
 }
-$('#addBtn').onclick=()=>{if(positions.length>=MAX)return alert('최대 20개까지 등록할 수 있습니다.');form.reset();dialog.showModal()};
+function openAdd(){if(positions.length>=MAX)return alert('최대 20개까지 등록할 수 있습니다.');form.reset();dialog.showModal()}\n$('#addBtn').onclick=openAdd;$('#fabBtn').onclick=openAdd;
 $('#cancelBtn').onclick=()=>dialog.close();
 form.onsubmit=async e=>{e.preventDefault();const ticker=$('#ticker').value.trim().toUpperCase();
   if(!/^[A-Z][A-Z.\-]{0,9}$/.test(ticker))return alert('Ticker를 확인하세요.');
