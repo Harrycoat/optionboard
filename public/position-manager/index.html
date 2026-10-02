@@ -2,9 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#0d1117">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#090d12">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="GEX Manager">
   <title>GEX Position Manager</title>
@@ -12,29 +13,33 @@
   <link rel="stylesheet" href="/position-manager/styles.css">
 </head>
 <body>
-<div class="app-shell">
-  <header class="topbar">
+<div class="phone-app">
+  <header class="phone-header">
     <div>
-      <div class="eyebrow">GEXOPTION</div>
-      <h1>Position Manager</h1>
-      <p>TOS에서 매수 · 휴대폰에서 관리</p>
+      <div class="brand">GEXOPTION</div>
+      <h1>내 포지션</h1>
+      <p>실시간 가격 · 자동 Call/Put Wall 관리</p>
     </div>
-    <button id="addBtn" class="icon-add" aria-label="포지션 추가">＋</button>
+    <button id="addBtn" class="round-add" aria-label="포지션 추가">＋</button>
   </header>
 
   <main>
-    <section class="summary">
-      <div><span>등록</span><strong id="count">0 / 20</strong></div>
+    <section class="overview">
+      <div><span>종목</span><strong id="count">0 / 20</strong></div>
       <div><span>관리 필요</span><strong id="actionCount">0</strong></div>
-      <div><span>시세</span><strong id="mode">SCHWAB</strong></div>
     </section>
+
+    <div class="source-line">
+      <span class="dot"></span>
+      <span id="mode">Schwab 실시간 + GEXOption Wall 자동</span>
+    </div>
 
     <section id="cards" class="cards"></section>
 
     <div id="empty" class="empty">
       <div class="empty-icon">＋</div>
       <strong>포지션을 추가하세요</strong>
-      <span>Ticker · 수량 · 매입가 · Call/Put Wall</span>
+      <span>Ticker · 수량 · 매입가만 입력하면 됩니다.</span>
     </div>
   </main>
 
@@ -45,19 +50,16 @@
 <form id="positionForm">
   <div class="sheet-handle"></div>
   <h2>포지션 추가</h2>
+  <p class="sheet-note">Call Wall과 Put Wall은 GEXOption에서 자동으로 가져옵니다.</p>
   <label>Ticker<input id="ticker" maxlength="10" required placeholder="PLTR" autocapitalize="characters"></label>
   <div class="two-col">
     <label>Shares<input id="shares" type="number" min="1" step="1" required placeholder="200" inputmode="numeric"></label>
     <label>Average Price<input id="avgPrice" type="number" min="0.01" step="0.01" required placeholder="165.00" inputmode="decimal"></label>
   </div>
-  <div class="two-col">
-    <label>Call Wall<input id="callWall" type="number" min="0.01" step="0.01" required placeholder="180" inputmode="decimal"></label>
-    <label>Put Wall<input id="putWall" type="number" min="0.01" step="0.01" required placeholder="170" inputmode="decimal"></label>
-  </div>
   <div class="checks">
-    <label class="check"><input id="hasCC" type="checkbox"> Covered Call</label>
-    <label class="check"><input id="hasPut" type="checkbox"> Protective Put</label>
-    <label class="check"><input id="hasCSP" type="checkbox"> CSP</label>
+    <label class="check"><input id="hasCC" type="checkbox"> Covered Call 보유</label>
+    <label class="check"><input id="hasPut" type="checkbox"> Protective Put 보유</label>
+    <label class="check"><input id="hasCSP" type="checkbox"> CSP 보유</label>
   </div>
   <div class="dialog-actions">
     <button type="button" id="cancelBtn">취소</button>
@@ -66,6 +68,6 @@
 </form>
 </dialog>
 
-<script type="module" src="/position-manager/app.js"></script>
+<script type="module" src="/position-manager/app.js?v=3"></script>
 </body>
 </html>
