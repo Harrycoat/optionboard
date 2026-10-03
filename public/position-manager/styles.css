@@ -211,3 +211,9 @@ main{padding:16px 16px 6px!important}
   .wall-distance{font-size:38px!important}
   .wall-distance::before{font-size:38px!important}
 }
+
+/* v11 - make signal text as large as ticker */
+.wall-signal{font-size:40px!important;line-height:1.05!important;font-weight:900!important}
+@media(max-width:430px){
+  .wall-signal{font-size:38px!important}
+}
