@@ -116,17 +116,21 @@ function render(){
       </div>
 
       <div class="wall-row">
-        <div class="wall-label">CALL WALL</div>
-        <div class="wall-value">${money(cw)}</div>
+        <div class="wall-main">
+          <div class="wall-label">CALL WALL</div>
+          <div class="wall-value">${money(cw)}</div>
+        </div>
         <div class="wall-distance">${dpct(c)}</div>
-        <div class="wall-signal">${callSig}</div>
+        <div class="wall-signal call-signal">${callSig}</div>
       </div>
 
       <div class="wall-row">
-        <div class="wall-label">PUT WALL</div>
-        <div class="wall-value">${money(pw)}</div>
+        <div class="wall-main">
+          <div class="wall-label">PUT WALL</div>
+          <div class="wall-value">${money(pw)}</div>
+        </div>
         <div class="wall-distance">${dpct(u)}</div>
-        <div class="wall-signal">${putSig}</div>
+        <div class="wall-signal put-signal">${putSig}</div>
       </div>
 
       <div class="hedge-line">헤지: <strong>${hedgeText(c)}</strong></div>
