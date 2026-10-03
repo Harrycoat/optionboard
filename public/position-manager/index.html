@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="GEX Manager">
   <title>GEX Position Manager</title>
   <link rel="manifest" href="/position-manager/manifest.webmanifest?v=5">
-  <link rel="stylesheet" href="/position-manager/styles.css?v=5">
+  <link rel="stylesheet" href="/position-manager/styles.css?v=6">
 </head>
 <body>
 <div class="phone-app">
@@ -24,11 +24,7 @@
   </header>
 
   <main>
-    <section class="overview">
-      <div><span>종목</span><strong id="count">0 / 20</strong></div>
-      <div><span>관리 필요</span><strong id="actionCount">0</strong></div>
-      <div><span>Wall</span><strong id="wallStatus">자동</strong></div>
-    </section>
+    <section class="overview compact-overview"><div><span>종목</span><strong id="count">0 / 20</strong></div><div><span>Wall</span><strong id="wallStatus">자동</strong></div><div><span>관리 필요</span><strong id="actionCount">0</strong></div></section>
 
     <div class="source-row">
       <div class="source-line">
@@ -75,6 +71,6 @@
 </form>
 </dialog>
 
-<script type="module" src="/position-manager/app.js?v=5"></script>
+<script type="module" src="/position-manager/app.js?v=6"></script>
 </body>
 </html>
