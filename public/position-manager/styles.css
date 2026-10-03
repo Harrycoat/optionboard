@@ -203,3 +203,11 @@ main{padding:16px 16px 6px!important}
   .wall-distance::before{font-size:12px!important}
   .wall-signal{font-size:12px!important}
 }
+
+/* v10 - make distance text as prominent as ticker */
+.wall-distance{font-size:40px!important;line-height:1.05!important;font-weight:900!important}
+.wall-distance::before{font-size:40px!important;line-height:1!important;font-weight:900!important;margin-bottom:6px!important}
+@media(max-width:430px){
+  .wall-distance{font-size:38px!important}
+  .wall-distance::before{font-size:38px!important}
+}
