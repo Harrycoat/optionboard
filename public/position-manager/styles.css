@@ -133,3 +133,65 @@ main{padding:16px 16px 6px!important}
   .signal-price .price{font-size:31px!important}
   .wall-value{font-size:30px!important}
 }
+
+/* v8 - use right side as dedicated signal column */
+.wall-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.15fr) minmax(88px,.7fr) minmax(110px,.8fr)!important;
+  gap:12px!important;
+  align-items:stretch!important;
+  padding:16px 0!important;
+}
+.wall-main{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+}
+.wall-label{margin-bottom:4px!important}
+.wall-value{font-size:30px!important}
+.wall-distance{
+  display:flex!important;
+  flex-direction:column;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  border-left:1px solid #2a3540;
+  border-right:1px solid #2a3540;
+  font-size:19px!important;
+  font-weight:800;
+  color:#f1f6fb!important;
+}
+.wall-distance::before{
+  content:"거리";
+  display:block;
+  margin-bottom:4px;
+  color:#8493a0!important;
+  font-size:12px!important;
+  font-weight:700;
+}
+.wall-signal{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:72px;
+  margin:0!important;
+  padding:10px 8px!important;
+  border-radius:14px!important;
+  font-size:17px!important;
+  line-height:1.2!important;
+  text-align:center!important;
+  border:1px solid #33404d!important;
+  background:#101821!important;
+}
+.call-signal{color:#ffbd59!important}
+.put-signal{color:#68a9ff!important}
+@media(max-width:430px){
+  .wall-row{
+    grid-template-columns:minmax(0,1.05fr) 78px 98px!important;
+    gap:8px!important;
+  }
+  .wall-value{font-size:27px!important}
+  .wall-distance{font-size:17px!important}
+  .wall-signal{font-size:15px!important;min-height:68px!important}
+}
