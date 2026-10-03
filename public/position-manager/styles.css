@@ -195,3 +195,11 @@ main{padding:16px 16px 6px!important}
   .wall-distance{font-size:17px!important}
   .wall-signal{font-size:15px!important;min-height:68px!important}
 }
+
+/* v9 - requested label sizing */
+.wall-distance::before{font-size:12px!important}
+.wall-signal{font-size:12px!important}
+@media(max-width:430px){
+  .wall-distance::before{font-size:12px!important}
+  .wall-signal{font-size:12px!important}
+}
