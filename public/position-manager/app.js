@@ -76,6 +76,19 @@ async function refresh({forceWalls=false}={}){
   }
 }
 
+function wallSignal(distance,side){
+  if(!Number.isFinite(distance)) return '대기';
+  if(distance<=1) return side==='call'?'CC 검토':'CSP 검토';
+  if(distance<=2) return 'WATCH';
+  return '대기';
+}
+function hedgeText(c){
+  if(!Number.isFinite(c)) return '실시간 시세 연결 대기';
+  if(c<=1) return '콜월 1% 근접 · 헤지 준비';
+  if(c<=2) return '콜월 접근 · 헤지 관찰';
+  return '헤지 대기';
+}
+
 function render(){
   cards.innerHTML='';
   $('#count').textContent=`${positions.length} / ${MAX}`;
@@ -84,26 +97,44 @@ function render(){
     const q=quotes[p.ticker]||{},w=walls[p.ticker]||{};
     const live=Number.isFinite(q.price),price=live?q.price:NaN;
     if(live)liveCount++;
-    if(Number.isFinite(Number(w.call_wall))&&Number.isFinite(Number(w.put_wall)))wallCount++;
-    const s=evaluate(price,w); if(!['HOLD','WAIT'].includes(s.code)) actions++;
-    const pnl=Number.isFinite(price)?(price-p.avgPrice)*p.shares:NaN,pp=Number.isFinite(price)?pct(price,p.avgPrice):NaN;
-    const cw=Number(w.call_wall),pw=Number(w.put_wall),c=dist(price,cw),u=dist(price,pw);
-    const tags=[p.hasCC?'CC 보유':'',p.hasPut?'PUT 헤지':'',p.hasCSP?'CSP 보유':''].filter(Boolean);
-    const el=document.createElement('article');el.className='card';
+    const cw=Number(w.call_wall),pw=Number(w.put_wall);
+    if(Number.isFinite(cw)&&Number.isFinite(pw))wallCount++;
+    const c=dist(price,cw),u=dist(price,pw);
+    const callSig=wallSignal(c,'call'),putSig=wallSignal(u,'put');
+    if(callSig!=='대기'||putSig!=='대기')actions++;
+    const el=document.createElement('article');el.className='card signal-card';
     el.innerHTML=`
-      <div class="row">
-        <div><div class="ticker">${p.ticker}</div><div class="muted">${p.shares}주 @ $${p.avgPrice.toFixed(2)}</div></div>
-        <div style="text-align:right"><div class="price">${money(price)}</div><div class="live-badge ${live?'':'offline'}">${live?'Schwab 실시간':'Schwab 재인증 대기'}</div></div>
+      <div class="signal-head">
+        <div>
+          <div class="signal-ticker">${p.ticker}</div>
+          <div class="muted">${p.shares}주 @ $${p.avgPrice.toFixed(2)}</div>
+        </div>
+        <div class="signal-price">
+          <div class="price">${money(price)}</div>
+          <div class="live-badge ${live?'':'offline'}">${live?'Schwab 실시간':'재인증 대기'}</div>
+        </div>
       </div>
-      ${tags.length?'<div class="position-tags">'+tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div>':''}
-      <div class="grid">
-        <div class="metric"><span>P/L</span><strong>${Number.isFinite(pnl)?((pnl>=0?'+':'')+'$'+pnl.toFixed(0)+' ('+(pp>=0?'+':'')+pp.toFixed(2)+'%)'):'—'}</strong></div>
-        <div class="metric wall-card"><div class="wall-meta"><span>CALL WALL</span><small class="wall-expiry">${w.expiry_used||''}</small></div><strong>${money(cw)}</strong><small class="wall-auto">GEXOption 자동</small></div>
-        <div class="metric wall-card"><div class="wall-meta"><span>PUT WALL</span><small class="wall-expiry">${w.expiry_used||''}</small></div><strong>${money(pw)}</strong><small class="wall-auto">GEXOption 자동</small></div>
-        <div class="metric"><span>WALL DISTANCE</span><strong>C ${dpct(c)} · P ${dpct(u)}</strong></div>
+
+      <div class="wall-row">
+        <div class="wall-label">CALL WALL</div>
+        <div class="wall-value">${money(cw)}</div>
+        <div class="wall-distance">${dpct(c)}</div>
+        <div class="wall-signal">${callSig}</div>
       </div>
-      <div class="row"><span class="status ${s.code==='WAIT'?'wait':''}">${s.label}</span><div class="card-actions"><button class="edit" data-edit="${i}">수정</button><button class="delete" data-i="${i}">삭제</button></div></div>
-      <div class="reason">${s.reason}${w.error?'<br><span class="wall-loading">⚠ Wall 연결 확인 필요</span>':''}${q.error?'<br><span class="wall-loading">⚠ Schwab 실시간은 저녁에 재인증 후 활성화됩니다.</span>':''}</div>`;
+
+      <div class="wall-row">
+        <div class="wall-label">PUT WALL</div>
+        <div class="wall-value">${money(pw)}</div>
+        <div class="wall-distance">${dpct(u)}</div>
+        <div class="wall-signal">${putSig}</div>
+      </div>
+
+      <div class="hedge-line">헤지: <strong>${hedgeText(c)}</strong></div>
+
+      <div class="simple-actions">
+        <button class="edit" data-edit="${i}">수정</button>
+        <button class="delete" data-i="${i}">삭제</button>
+      </div>`;
     cards.appendChild(el);
   });
   $('#actionCount').textContent=actions;
