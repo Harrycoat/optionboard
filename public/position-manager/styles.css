@@ -50,3 +50,23 @@ dialog{width:100vw!important;max-width:none!important}
   .fab{display:block!important}
   dialog{width:100vw!important;max-width:none!important;margin:auto 0 0 0!important;border-radius:24px 24px 0 0!important}
 }
+
+/* v6 simplified main screen */
+.compact-overview{margin-bottom:8px}
+.signal-card{padding:14px 14px 12px}
+.signal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.signal-ticker{font-size:30px;font-weight:900}
+.signal-price{text-align:right}
+.wall-row{display:grid;grid-template-columns:74px 1fr 72px 88px;gap:8px;align-items:center;padding:13px 0;border-top:1px solid #26303a}
+.wall-label{font-size:12px;color:#9aa6b2;font-weight:800}
+.wall-value{font-size:19px;font-weight:900}
+.wall-distance{font-size:13px;color:#cbd5df;text-align:center}
+.wall-signal{font-size:12px;font-weight:900;text-align:right}
+.hedge-line{margin-top:10px;padding:12px;border-radius:13px;background:#0d1319;border:1px solid #26303a;font-size:13px;font-weight:800}
+.hedge-line strong{color:#ffc857}
+.simple-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+@media(max-width:430px){
+  .wall-row{grid-template-columns:68px 1fr 64px 82px}
+  .wall-value{font-size:18px}
+  .wall-signal{font-size:11px}
+}
