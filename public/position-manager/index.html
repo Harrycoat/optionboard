@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="GEX Manager">
   <title>GEX Position Manager</title>
-  <link rel="manifest" href="/position-manager/manifest.webmanifest">
-  <link rel="stylesheet" href="/position-manager/styles.css">
+  <link rel="manifest" href="/position-manager/manifest.webmanifest?v=4">
+  <link rel="stylesheet" href="/position-manager/styles.css?v=4">
 </head>
 <body>
 <div class="phone-app">
@@ -27,12 +27,18 @@
     <section class="overview">
       <div><span>종목</span><strong id="count">0 / 20</strong></div>
       <div><span>관리 필요</span><strong id="actionCount">0</strong></div>
+      <div><span>Wall</span><strong id="wallStatus">자동</strong></div>
     </section>
 
-    <div class="source-line">
-      <span class="dot"></span>
-      <span id="mode">Schwab 실시간 + GEXOption Wall 자동</span>
+    <div class="source-row">
+      <div class="source-line">
+        <span id="sourceDot" class="dot"></span>
+        <span id="mode">Schwab 연결 대기 · GEXOption Wall 자동</span>
+      </div>
+      <button id="refreshBtn" class="refresh-btn">새로고침</button>
     </div>
+
+    <div id="updatedAt" class="updated-at">마지막 갱신 —</div>
 
     <section id="cards" class="cards"></section>
 
@@ -49,8 +55,9 @@
 <dialog id="positionDialog">
 <form id="positionForm">
   <div class="sheet-handle"></div>
-  <h2>포지션 추가</h2>
+  <h2 id="sheetTitle">포지션 추가</h2>
   <p class="sheet-note">Call Wall과 Put Wall은 GEXOption에서 자동으로 가져옵니다.</p>
+  <input id="editIndex" type="hidden" value="">
   <label>Ticker<input id="ticker" maxlength="10" required placeholder="PLTR" autocapitalize="characters"></label>
   <div class="two-col">
     <label>Shares<input id="shares" type="number" min="1" step="1" required placeholder="200" inputmode="numeric"></label>
@@ -68,6 +75,6 @@
 </form>
 </dialog>
 
-<script type="module" src="/position-manager/app.js?v=3"></script>
+<script type="module" src="/position-manager/app.js?v=4"></script>
 </body>
 </html>
