@@ -5,7 +5,7 @@
 <title>GEXOption · Private Trading Monitor</title>
 <style>
 :root{--bg:#07101b;--panel:#0d1724;--line:#223149;--text:#eef4fb;--muted:#8ea0b8;--green:#43e0a9;--red:#ff6673;--gold:#f4c34f;--blue:#62a5ff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:24px;font-weight:900}.sub,.muted{color:var(--muted);font-size:11px}.live{color:var(--green);border:1px solid var(--green);border-radius:999px;padding:4px 7px;font-size:10px}.nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:11px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.head h2{margin:0;font-size:17px}.pill{font-size:10px;font-weight:900;border:1px solid var(--line);padding:5px 7px;border-radius:999px}.morning{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.mitem{background:#101d2c;border:1px solid var(--line);border-radius:10px;padding:12px}.mitem b{font-size:19px}.mitem p{font-size:11px;color:var(--muted);margin:6px 0 0;line-height:1.4}.filters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.filters button{border:1px solid var(--line);background:#101826;color:var(--text);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.filters button.active{background:var(--blue);color:#07101b}.status{font-size:11px;color:var(--muted)}.table{overflow-x:auto}.row{min-width:930px;display:grid;grid-template-columns:105px 80px 95px 95px 95px 90px 95px 110px 1fr;gap:8px;align-items:center;padding:10px 4px;border-top:1px solid var(--line);font-size:11px}.row.header{color:var(--muted);font-size:10px;border-top:0}.ticker{font-size:15px;font-weight:900}.sector{color:var(--blue);font-size:9px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}.signal{font-weight:900}.distance{font-weight:900}.empty{padding:24px;text-align:center;color:var(--muted)}button.refresh{background:var(--gold);border:0;border-radius:8px;padding:9px 12px;font-weight:900;cursor:pointer}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}.legend b{color:var(--text)}.f13row{min-width:760px;display:grid;grid-template-columns:55px 90px 95px 95px 95px 120px 120px 90px 1fr;gap:8px;align-items:center;padding:9px 4px;border-top:1px solid var(--line);font-size:11px}.f13row.header{color:var(--muted);font-size:10px;border-top:0}.rank{font-weight:900;color:var(--gold)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans KR",sans-serif}.wrap{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.brand{font-size:24px;font-weight:900}.sub,.muted{color:var(--muted);font-size:11px}.live{color:var(--green);border:1px solid var(--green);border-radius:999px;padding:4px 7px;font-size:10px}.nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:11px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.head h2{margin:0;font-size:17px}.pill{font-size:10px;font-weight:900;border:1px solid var(--line);padding:5px 7px;border-radius:999px}.morning{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.mitem{background:#101d2c;border:1px solid var(--line);border-radius:10px;padding:12px}.mitem b{font-size:19px}.mitem p{font-size:11px;color:var(--muted);margin:6px 0 0;line-height:1.4}.filters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.filters button{border:1px solid var(--line);background:#101826;color:var(--text);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.filters button.active{background:var(--blue);color:#07101b}.status{font-size:11px;color:var(--muted)}.table{overflow-x:auto}.row{min-width:930px;display:grid;grid-template-columns:105px 80px 95px 95px 95px 90px 95px 110px 1fr 125px;gap:8px;align-items:center;padding:10px 4px;border-top:1px solid var(--line);font-size:11px}.row.header{color:var(--muted);font-size:10px;border-top:0}.ticker{font-size:15px;font-weight:900}.sector{color:var(--blue);font-size:9px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}.signal{font-weight:900}.distance{font-weight:900}.empty{padding:24px;text-align:center;color:var(--muted)}button.refresh{background:var(--gold);border:0;border-radius:8px;padding:9px 12px;font-weight:900;cursor:pointer}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}.legend b{color:var(--text)}.f13row{min-width:760px;display:grid;grid-template-columns:55px 90px 95px 95px 95px 120px 120px 90px 1fr;gap:8px;align-items:center;padding:9px 4px;border-top:1px solid var(--line);font-size:11px}.f13row.header{color:var(--muted);font-size:10px;border-top:0}.rank{font-weight:900;color:var(--gold)}
 @media(max-width:700px){
 .wrap{padding:9px}.top{align-items:flex-start;flex-direction:column;margin-bottom:10px}.brand{font-size:18px}.brand .live{font-size:8px}.sub{font-size:9px}.nav{display:none}
 #mainTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0 10px}#mainTabs button{padding:8px 4px;font-size:9px;white-space:normal;line-height:1.2}
@@ -33,7 +33,7 @@
 <section class="card tabpage" data-page="wall" style="display:none"><div class="head"><div><h2>📡 WALL RADAR · SECTOR LEADERS</h2><div class="sub" style="margin-top:4px">섹터별 대표 주도주만 감시 · 가장 가까운 Call/Put Wall 순서</div></div><button id="refresh" class="refresh">REFRESH</button></div>
 <div class="filters"><button class="active" data-filter="ALL">ALL</button><button data-filter="WATCH">🟡 WATCH ≤1%</button><button data-filter="PUT">PUT WALL</button><button data-filter="CALL">CALL WALL</button><button data-filter="HULL">HULL21</button></div>
 <div id="status" class="status">데이터 준비 중…</div>
-<div class="table"><div class="row header"><span>종목 / 섹터</span><span>현재가</span><span>Put Wall</span><span>Call Wall</span><span>가까운 Wall</span><span>거리</span><span>HULL21</span><span>거래량</span><span>상태</span></div><div id="board"><div class="empty">Wall Radar를 불러오는 중…</div></div></div>
+<div class="table"><div class="row header"><span>종목 / 섹터</span><span>현재가</span><span>Put Wall</span><span>Call Wall</span><span>가까운 Wall</span><span>거리</span><span>HULL21</span><span>거래량</span><span>상태</span><span>5M 기준봉</span></div><div id="board"><div class="empty">Wall Radar를 불러오는 중…</div></div></div>
 </section>
 <div class="card legend tabpage" data-page="wall" style="display:none"><span><b>⚪ WAIT</b> Wall에서 멀리</span><span><b>🟡 WATCH</b> Wall ±1% 접근</span><span><b>🟢 PUT BOUNCE</b> Put Wall + 상승 확인</span><span><b>🔴 CALL REJECT</b> Call Wall 거절</span><span><b>🟢 BREAKOUT</b> Call Wall 돌파</span><span><b>🔵 HULL TURN</b> HULL21 눌림 후 상승 확인</span></div>
 </main>
@@ -57,6 +57,29 @@ let data=[],filter='ALL';
 function wma(v,n){if(v.length<n)return null;let s=0,w=0;for(let i=0;i<n;i++){let k=i+1;s+=v[v.length-n+i]*k;w+=k}return s/w}
 function hull(v,n=21){let half=Math.floor(n/2),root=Math.round(Math.sqrt(n)),raw=[];for(let i=0;i<v.length;i++){let s=v.slice(0,i+1),a=wma(s,half),b=wma(s,n);raw.push(a==null||b==null?null:2*a-b)}return raw.filter(x=>x!=null).length>=root?wma(raw.filter(x=>x!=null),root):null}
 function volState(b){if(!b||b.length<2)return '—';let a=+b.at(-1).volume||0,p=+b.at(-2).volume||0;if(!p)return '—';let r=a/p;return r>1.05?'▲ 증가':r<.95?'▼ 감소':'→ 보합'}
+function setup5m(x){
+ const b=(x.bars||[]).filter(z=>Number.isFinite(+z.open)&&Number.isFinite(+z.high)&&Number.isFinite(+z.low)&&Number.isFinite(+z.close));
+ if(b.length<6)return {label:'🟡 WAIT',cls:'gold',detail:'5M 데이터 부족'};
+ const end=b.length-1,last=b[end],recent=b.slice(Math.max(0,end-9),end);
+ const avgRange=recent.reduce((s,z)=>s+(+z.high-+z.low),0)/(recent.length||1);
+ const vols=recent.filter(z=>Number.isFinite(+z.volume));
+ const avgVol=vols.length?vols.reduce((s,z)=>s+(+z.volume||0),0)/vols.length:0;
+ for(let i=Math.max(0,end-6);i<=end-2;i++){
+  const z=b[i],range=+z.high-+z.low,body=Math.abs(+z.close-+z.open);
+  const strong=range>0&&body/range>=.55&&(avgRange===0||range>=avgRange*1.15)&&(avgVol===0||!z.volume||+z.volume>=avgVol*1.05);
+  if(!strong)continue;
+  const bull=+z.close>+z.open,bear=+z.close<+z.open;
+  if(!bull&&!bear)continue;
+  const after=b.slice(i+1,end);
+  const pull=after.some(q=>bull?(+q.close<+z.close&&+q.low>=+z.low):(+q.close>+z.close&&+q.high<=+z.high));
+  if(!pull)continue;
+  if(bull&&+last.close>+z.high)return {label:'🟢 CALL SETUP',cls:'green',detail:'눌림 → 기준봉 고점 돌파'};
+  if(bear&&+last.close<+z.low)return {label:'🔴 PUT SETUP',cls:'red',detail:'반등 → 기준봉 저점 이탈'};
+  const holding=bull?+last.low>=+z.low:+last.high<=+z.high;
+  if(holding)return {label:'🟡 PULLBACK',cls:'gold',detail:bull?'양봉 기준봉 생존':'음봉 기준봉 생존'};
+ }
+ return {label:'⚪ WAIT',cls:'',detail:'기준봉 구조 없음'};
+}
 function classify(x){
  const dp=x.put==null?99:Math.abs((x.spot-x.put)/x.spot*100),dc=x.call==null?99:Math.abs((x.call-x.spot)/x.spot*100),dh=x.hull==null?99:Math.abs((x.spot-x.hull)/x.spot*100);
  x.near=dp<=dc?'PUT':'CALL';x.dist=Math.min(dp,dc);x.hdist=dh;
@@ -77,9 +100,10 @@ function render(){
  if(filter==='PUT')rows=rows.filter(x=>x.near==='PUT');
  if(filter==='CALL')rows=rows.filter(x=>x.near==='CALL');
  if(filter==='HULL')rows=rows.filter(x=>x.hdist<=1);
- rows.sort((a,b)=>a.dist-b.dist);
- $('board').innerHTML=rows.length?rows.map(x=>{let s=classify(x);return '<div class="row"><span><b class="ticker">'+x.ticker+'</b><br><span class="sector">'+sectorOf(x.ticker)+'</span></span><span><b>$'+fmt(x.spot)+'</b></span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="'+(x.near==='PUT'?'green':'red')+'">'+x.near+'</span><span class="distance '+(x.dist<=1?'gold':'')+'">'+fmt(x.dist,2)+'%</span><span>'+fmt(x.hull,2)+'<br><small>'+fmt(x.hdist,2)+'%</small></span><span>'+x.vol+'</span><span class="signal '+s[1]+'">'+s[0]+'</span></div>'}).join(''):'<div class="empty">현재 조건에 해당하는 종목이 없습니다.</div>';
-}
+ rows.forEach(x=>x.setup=setup5m(x));
+ rows.sort((a,b)=>{const rank={"🟢 CALL SETUP":0,"🔴 PUT SETUP":0,"🟡 PULLBACK":1,"🔵 HULL TURN":2,"🟡 CALL WATCH":3,"🟡 PUT WATCH":3,"⚪ WAIT":4};return (rank[a.setup.label]??5)-(rank[b.setup.label]??5)||a.dist-b.dist;});
+ $('board').innerHTML=rows.length?rows.map(x=>{let s=classify(x),u=x.setup;return '<div class="row"><span><b class="ticker">'+x.ticker+'</b><br><span class="sector">'+sectorOf(x.ticker)+'</span></span><span><b>$'+fmt(x.spot)+'</b></span><span class="green">'+(x.put==null?'—':'$'+fmt(x.put,1))+'</span><span class="red">'+(x.call==null?'—':'$'+fmt(x.call,1))+'</span><span class="'+(x.near==='PUT'?'green':'red')+'">'+x.near+'</span><span class="distance '+(x.dist<=1?'gold':'')+'">'+fmt(x.dist,2)+'%</span><span>'+fmt(x.hull,2)+'<br><small>'+fmt(x.hdist,2)+'%</small></span><span>'+x.vol+'</span><span class="signal '+s[1]+'">'+s[0]+'</span><span class="setup '+u.cls+'" title="'+u.detail+'">'+u.label+'</span></div>'}).join(''):'<div class="empty">현재 조건에 해당하는 종목이 없습니다.</div>';
+ }
 async function one(t,q){
  const [w,b]=await Promise.all([fetch('/api/search?ticker='+t+'&view=summary',{cache:'no-store'}).then(r=>r.json()).catch(()=>({})),fetch('/api/search?mode=schwab_intraday&ticker='+t,{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
  let bars=b.bars||[],cl=bars.map(z=>+z.close).filter(Number.isFinite);
