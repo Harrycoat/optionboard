@@ -1874,7 +1874,7 @@
   {
     "ticker": "KD",
     "date": "2026-10-08",
-    "spot": 11.45,
+    "spot": 11.74,
     "expiries_used": [
       "2026-10-16",
       "2026-11-20"
@@ -1911,14 +1911,14 @@
       {
         "strike": 8,
         "call_oi": 10.0,
-        "put_oi": 52.0,
+        "put_oi": 54.0,
         "call_volume": 11.0,
-        "put_volume": 3.0
+        "put_volume": 1.0
       },
       {
         "strike": 9,
         "call_oi": 3.0,
-        "put_oi": 71.0,
+        "put_oi": 73.0,
         "call_volume": 41.0,
         "put_volume": 2.0
       },
@@ -1926,34 +1926,34 @@
         "strike": 10,
         "call_oi": 91.0,
         "put_oi": 1093.0,
-        "call_volume": 50.0,
-        "put_volume": 17.0
+        "call_volume": 55.0,
+        "put_volume": 7.0
       },
       {
         "strike": 11,
-        "call_oi": 47.0,
-        "put_oi": 1784.0,
-        "call_volume": 8.0,
-        "put_volume": 117.0
+        "call_oi": 53.0,
+        "put_oi": 1786.0,
+        "call_volume": 10.0,
+        "put_volume": 22.0
       },
       {
         "strike": 12,
-        "call_oi": 897.0,
+        "call_oi": 1005.0,
         "put_oi": 1393.0,
-        "call_volume": 221.0,
-        "put_volume": 4.0
+        "call_volume": 224.0,
+        "put_volume": 23.0
       },
       {
         "strike": 13,
-        "call_oi": 849.0,
-        "put_oi": 387.0,
-        "call_volume": 10.0,
+        "call_oi": 852.0,
+        "put_oi": 378.0,
+        "call_volume": 9.0,
         "put_volume": 14.0
       },
       {
         "strike": 14,
-        "call_oi": 563.0,
-        "put_oi": 9.0,
+        "call_oi": 562.0,
+        "put_oi": 3.0,
         "call_volume": 2.0,
         "put_volume": 2.0
       },
