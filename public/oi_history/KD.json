@@ -1,150 +1,6 @@
 [
   {
     "ticker": "KD",
-    "date": "2026-09-20",
-    "spot": 12.07,
-    "expiries_used": [
-      "2026-10-16",
-      "2026-11-20"
-    ],
-    "strikes": [
-      {
-        "strike": 4,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 5,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 6,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 7,
-        "call_oi": 0.0,
-        "put_oi": 1.0,
-        "call_volume": 0.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 8,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 9,
-        "call_oi": 40.0,
-        "put_oi": 0.0,
-        "call_volume": 40.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 10,
-        "call_oi": 2.0,
-        "put_oi": 4.0,
-        "call_volume": 25.0,
-        "put_volume": 25.0
-      },
-      {
-        "strike": 11,
-        "call_oi": 1.0,
-        "put_oi": 50.0,
-        "call_volume": 13.0,
-        "put_volume": 17.0
-      },
-      {
-        "strike": 12,
-        "call_oi": 112.0,
-        "put_oi": 907.0,
-        "call_volume": 70.0,
-        "put_volume": 261.0
-      },
-      {
-        "strike": 13,
-        "call_oi": 229.0,
-        "put_oi": 245.0,
-        "call_volume": 115.0,
-        "put_volume": 85.0
-      },
-      {
-        "strike": 14,
-        "call_oi": 330.0,
-        "put_oi": 16.0,
-        "call_volume": 77.0,
-        "put_volume": 7.0
-      },
-      {
-        "strike": 15,
-        "call_oi": 251.0,
-        "put_oi": 1.0,
-        "call_volume": 75.0,
-        "put_volume": 1.0
-      },
-      {
-        "strike": 16,
-        "call_oi": 34.0,
-        "put_oi": 0.0,
-        "call_volume": 1.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 17,
-        "call_oi": 26.0,
-        "put_oi": 0.0,
-        "call_volume": 3.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 18,
-        "call_oi": 1.0,
-        "put_oi": 0.0,
-        "call_volume": 1.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 19,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 20,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 21,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      },
-      {
-        "strike": 22,
-        "call_oi": 0.0,
-        "put_oi": 0.0,
-        "call_volume": 0.0,
-        "put_volume": 0.0
-      }
-    ]
-  },
-  {
-    "ticker": "KD",
     "date": "2026-09-21",
     "spot": 12.2,
     "expiries_used": [
@@ -1874,6 +1730,150 @@
   {
     "ticker": "KD",
     "date": "2026-10-07",
+    "spot": 11.45,
+    "expiries_used": [
+      "2026-10-16",
+      "2026-11-20"
+    ],
+    "strikes": [
+      {
+        "strike": 4,
+        "call_oi": 1.0,
+        "put_oi": 0.0,
+        "call_volume": 1.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 5,
+        "call_oi": 2.0,
+        "put_oi": 0.0,
+        "call_volume": 1.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 6,
+        "call_oi": 1.0,
+        "put_oi": 0.0,
+        "call_volume": 4.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 7,
+        "call_oi": 0.0,
+        "put_oi": 1.0,
+        "call_volume": 4.0,
+        "put_volume": 1.0
+      },
+      {
+        "strike": 8,
+        "call_oi": 10.0,
+        "put_oi": 52.0,
+        "call_volume": 11.0,
+        "put_volume": 3.0
+      },
+      {
+        "strike": 9,
+        "call_oi": 3.0,
+        "put_oi": 71.0,
+        "call_volume": 41.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 10,
+        "call_oi": 91.0,
+        "put_oi": 1093.0,
+        "call_volume": 50.0,
+        "put_volume": 17.0
+      },
+      {
+        "strike": 11,
+        "call_oi": 47.0,
+        "put_oi": 1784.0,
+        "call_volume": 8.0,
+        "put_volume": 117.0
+      },
+      {
+        "strike": 12,
+        "call_oi": 897.0,
+        "put_oi": 1393.0,
+        "call_volume": 221.0,
+        "put_volume": 4.0
+      },
+      {
+        "strike": 13,
+        "call_oi": 849.0,
+        "put_oi": 387.0,
+        "call_volume": 10.0,
+        "put_volume": 14.0
+      },
+      {
+        "strike": 14,
+        "call_oi": 563.0,
+        "put_oi": 9.0,
+        "call_volume": 2.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 15,
+        "call_oi": 329.0,
+        "put_oi": 2.0,
+        "call_volume": 26.0,
+        "put_volume": 2.0
+      },
+      {
+        "strike": 16,
+        "call_oi": 42.0,
+        "put_oi": 0.0,
+        "call_volume": 10.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 17,
+        "call_oi": 28.0,
+        "put_oi": 0.0,
+        "call_volume": 3.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 18,
+        "call_oi": 1.0,
+        "put_oi": 0.0,
+        "call_volume": 1.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 19,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 20,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 21,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      },
+      {
+        "strike": 22,
+        "call_oi": 0.0,
+        "put_oi": 0.0,
+        "call_volume": 0.0,
+        "put_volume": 0.0
+      }
+    ]
+  },
+  {
+    "ticker": "KD",
+    "date": "2026-10-08",
     "spot": 11.45,
     "expiries_used": [
       "2026-10-16",
