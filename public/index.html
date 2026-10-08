@@ -1002,6 +1002,134 @@ html.gex-phone header .searchbar{display:grid!important;grid-template-columns:mi
 html.gex-phone header #tickerInput{box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:100%!important;height:46px!important;min-height:46px!important;padding:9px 12px!important;font-size:16px!important}
 html.gex-phone header #searchBtn{box-sizing:border-box!important;display:block!important;width:72px!important;min-width:72px!important;max-width:72px!important;height:46px!important;min-height:46px!important;padding:8px 4px!important;font-size:15px!important;white-space:nowrap!important}
 </style>
+
+<style>
+/* GEX MOBILE HOME V4 — consolidated phone layout */
+@media screen and (max-width: 767px){
+  html,body{width:100%!important;max-width:100vw!important;overflow-x:hidden!important}
+  body{font-size:14px!important}
+  .tape{height:28px!important;max-width:100vw!important;overflow:hidden!important}
+  .tape-track{font-size:10px!important;white-space:nowrap!important}
+
+  header{
+    position:sticky!important;top:0!important;z-index:60!important;
+    width:100%!important;max-width:100vw!important;
+    padding:9px 10px 10px!important;gap:8px!important;
+    background:rgba(10,13,18,.97)!important;
+  }
+  header .searchbar{
+    order:-10!important;display:grid!important;
+    grid-template-columns:minmax(0,1fr) 70px!important;
+    width:100%!important;max-width:100%!important;gap:7px!important;
+  }
+  header #tickerInput{
+    width:100%!important;min-width:0!important;height:44px!important;
+    padding:9px 11px!important;font-size:16px!important;border-radius:9px!important;
+  }
+  header #searchBtn{
+    width:70px!important;min-width:70px!important;height:44px!important;
+    padding:7px 4px!important;font-size:14px!important;border-radius:9px!important;
+  }
+  header .logo{order:0!important;justify-content:flex-start!important;min-height:24px!important}
+  header .logo b{font-size:14px!important}
+  header .logo span{display:none!important}
+  header .header-actions{
+    order:1!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    width:100%!important;gap:6px!important;
+  }
+  header .header-actions>*{
+    width:100%!important;min-width:0!important;min-height:36px!important;
+    padding:7px 5px!important;font-size:10px!important;justify-content:center!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+
+  .main-category-nav{
+    width:100%!important;max-width:100vw!important;overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;
+  }
+  .main-category-nav::-webkit-scrollbar{display:none!important}
+  .main-category-nav .main-category-inner{
+    width:max-content!important;max-width:none!important;justify-content:flex-start!important;
+    gap:6px!important;padding:7px 9px!important;
+  }
+  .main-category-nav .home-btn{
+    flex:0 0 auto!important;min-height:34px!important;padding:7px 9px!important;
+    font-size:10px!important;border-radius:8px!important;
+  }
+
+  main{width:100%!important;max-width:100%!important;padding:12px 10px 64px!important}
+  main>section,.member-hero,.wall-guide,.strategy-guides,.flagship-video,.ai-leader-map{
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    margin-left:auto!important;margin-right:auto!important;
+  }
+
+  .member-hero{padding:18px 14px!important;border-radius:12px!important}
+  .member-hero-inner{display:flex!important;flex-direction:column!important;gap:15px!important}
+  .member-hero-copy,.hero-m3-card{width:100%!important;max-width:100%!important;min-width:0!important}
+  .member-hero-copy h1{font-size:25px!important;line-height:1.28!important;letter-spacing:-.035em!important}
+  .member-hero-copy p{font-size:13px!important;line-height:1.65!important}
+  .member-hero-copy p br{display:none!important}
+  .member-hero-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  .member-hero-actions .member-cta{width:100%!important;min-height:44px!important;justify-content:center!important}
+  .hero-m3-card{padding:14px!important;border-radius:10px!important}
+  .member-quickstrip{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+  .member-quickstrip .qs-btn{width:100%!important;min-width:0!important;min-height:42px!important;white-space:normal!important;font-size:11px!important}
+
+  .section-title{margin:22px 0 10px!important;font-size:12px!important}
+  .watchlist-grid{grid-template-columns:1fr!important;gap:8px!important}
+  .watch-card,.card{min-width:0!important;max-width:100%!important}
+
+  .global-market-position{padding:0!important;margin:10px auto!important}
+  .ai-market-bar{padding:11px!important;border-radius:10px!important}
+  .ai-market-head{flex-direction:column!important;align-items:flex-start!important;gap:5px!important}
+  .ai-market-head h2{font-size:18px!important}
+  .ai-market-guide{white-space:normal!important;font-size:10px!important;line-height:1.45!important}
+  .ai-market-grid{grid-template-columns:1fr!important;gap:8px!important}
+  .ai-fear-score{min-height:0!important;padding:11px 12px!important}
+  .ai-fear-value{font-size:27px!important}
+  .ai-map-head{flex-direction:column!important;align-items:flex-start!important;gap:6px!important}
+  .ai-map-head h2{font-size:18px!important}
+  .ai-map-source{white-space:normal!important}
+  .ai-phase-tabs{grid-template-columns:1fr!important}
+  .ai-sector-chips{flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:4px!important}
+  .ai-sector-chip{flex:0 0 auto!important}
+
+  .ai-leader-columns{display:none!important}
+  .ai-leader-row{
+    display:grid!important;grid-template-columns:1fr!important;gap:9px!important;
+    align-items:stretch!important;margin:0 0 9px!important;padding:12px!important;
+    border:1px solid var(--line)!important;border-radius:10px!important;background:var(--panel)!important;
+  }
+  .ai-leader-symbol,.ai-row-actions{width:100%!important}
+  .ai-stage-track{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .ai-wall-rail{margin:24px 12px 24px!important}
+  .ai-row-decision{justify-self:start!important}
+  .ai-row-actions{justify-content:stretch!important;display:grid!important;grid-template-columns:1fr!important}
+  .ai-row-actions [data-ai-watch]{width:100%!important;min-height:36px!important}
+
+  .wall-cols,.sg-grid,.video-corner-layout,.experience-layout{grid-template-columns:1fr!important}
+  .wall-guide,.strategy-guides,.flagship-video{padding:15px 12px!important}
+  .wall-col,.sg-card,.video-main,.experience-panel{width:100%!important;min-width:0!important}
+  .flagship-video-frame{width:100%!important;height:auto!important;aspect-ratio:16/9!important}
+  .flagship-video-frame iframe{width:100%!important;height:100%!important}
+
+  .decision-actions-grid{grid-template-columns:1fr 1fr!important}
+  .trade-plan-grid,.ex-metrics,.ex-facts{grid-template-columns:1fr!important}
+  .paper-setup-form,.ex-plan-form{grid-template-columns:1fr!important;display:grid!important}
+  .paper-table-wrap,.table{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important}
+  .paper-table{min-width:760px!important}
+  .table .row{min-width:900px!important}
+
+  .modal-overlay{padding:8px!important}
+  .modal-box{width:100%!important;max-height:calc(100vh - 16px)!important;overflow:auto!important;padding:14px 11px!important}
+  #candleChart{height:300px!important}
+
+  footer{padding:22px 12px 30px!important;font-size:10px!important;line-height:1.6!important}
+  .scroll-top-btn{right:12px!important;bottom:14px!important;width:42px!important;height:42px!important}
+
+  img,video,iframe,canvas,svg{max-width:100%!important}
+}
+</style>
 </head>
 <body>
 <div class="tape" aria-label="시장 지표"><div class="tape-track" id="tapeTrack"></div></div>
