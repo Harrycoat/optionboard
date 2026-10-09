@@ -26,3 +26,6 @@ Preview env setup, authenticated live Massive/Wall/news checks, 100-symbol measu
 - PASS: real TOP100 page script under Node DOM fixtures: 100 retained after scanning with one data failure; ENTRY prioritization; search/status filters; embedded 30m chart and return.
 - PASS: Python compile/import; all swing HTML inline JS node --check; git diff --check.
 - NOT VERIFIED: live provider values and duration, mobile rendering, authenticated Vercel access. Local Chromium download failed (invalid/truncated archive). No claim of browser QA based on DOM fixtures.
+
+## Preview findings and routing fix
+Vercel Google login succeeded. Scan retained all 100 rows, but the private API rejected requests because radar environment credentials are not configured. This is not zero trading signals and is not a provider timing benchmark. Static HTML existed despite rewrites: the page opened without app-level authentication. Fixed by removing the five static HTML assets and embedding identical page templates in a Python module served only after server-side access checks. Preserves e7a1c47 multi-paper lab addition. Scan now stops on 401/503 instead of repeating access failures 100 times. Actual live data, mobile device rendering and app authentication remain release gates.

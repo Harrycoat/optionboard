@@ -31,10 +31,14 @@
       "maxDuration": 30
     },
     "api/swing_page.py": {
-      "includeFiles": "public/*.html"
+      "maxDuration": 10
     }
   },
   "rewrites": [
+    {
+      "source": "/swing-paper-multi.html",
+      "destination": "/api/swing_page?page=multi"
+    },
     {
       "source": "/intc-paper-lab.html",
       "destination": "/api/swing_page?page=paper"
