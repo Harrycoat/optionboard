@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · LEADER 40 Beta</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color-scheme:dark;background:#0b1321;color:#edf4ff}*{box-sizing:border-box}body{margin:0}main{max-width:980px;margin:auto;padding:17px}h1{font-size:24px;margin:5px 0}small,.muted{color:#aab9cf}header{margin-bottom:18px}.panel{border:1px solid #30435d;border-radius:15px;padding:14px;margin:12px 0;background:#152238}button,select{background:#263a5b;border:1px solid #516b90;border-radius:9px;color:white;padding:12px;font-size:15px}button:disabled{opacity:.5}button{cursor:pointer}.primary{background:#14775b;border-color:#28ac86}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex-shrink:0}#results{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:9px}.item{padding:12px;border:1px solid #385072;border-radius:12px;background:#101d30}.item b{font-size:19px}.tag{float:right;border-radius:8px;padding:3px 7px;background:#344766;font-size:12px}.positive{color:#69e5ae}.caution{color:#ffd47b}.error{color:#ff9393}.item p{margin:6px 0;font-size:13px}.item button{width:100%;padding:8px}.progress{margin:7px 0;color:#b7ccec}.notice{font-size:13px;line-height:1.65}.group{margin-bottom:12px}#detail{white-space:pre-wrap;line-height:1.65;font-size:14px}a{color:#8fcfff}input{font-size:15px}
+</style></head><body><main>
+<header><small>GEXOPTION · PERSONAL BETA · 지연 데이터</small><h1>LEADER 40 검색</h1><p class="muted">A+ / A / B / C 각 10종목 · 확정 등급 아닌 초기 관찰 목록</p></header>
+<section class="panel notice">이 화면은 기존 Massive 지연 OHLCV API를 이용한 <strong>1차 눌림목 검색</strong>입니다. EVP는 실제 체결 델타나 TOS Smooth가 아닌 봉 기반 추정치입니다. Put Wall 확인, 30분봉 Hull20 진입 검증, AI 채팅, 3회 가상매매는 별도 개발 대상입니다. 매매 신호로 사용하지 마세요.</section>
+<section class="panel"><div class="row"><button id="start" class="primary">40종목 검색 시작</button><button id="stop" disabled>중지</button><select id="grade" aria-label="등급"><option value="ALL">전체 등급</option><option>A+</option><option>A</option><option>B</option><option>C</option></select><select id="filter" aria-label="상태"><option value="ALL">전체 상태</option><option value="WATCH">눌림목 관찰</option><option value="OTHER">일반/미확인</option></select></div><div id="progress" class="progress" role="status">검색 전 · 데이터 API 인증이 필요할 수 있습니다.</div></section>
+<section id="results" aria-live="polite"></section>
+<section class="panel"><strong>선택 종목 분석</strong><div id="detail" class="muted">종목 카드의 30분봉 확인 버튼을 누르세요.</div></section>
+<footer class="notice muted">LEADER 40 목록은 초기 가설이며 실적·뉴스·섹터 검증 전입니다. 모든 값은 데이터 기준 시간을 확인하세요. 페이지를 닫으면 검색은 멈춥니다. 자동 주문/백그라운드 감시는 없습니다.</footer>
+</main><script>
+"use strict";
+const GROUPS={
+"A+":["NVDA","MSFT","GOOGL","AMZN","META","TSLA","PLTR","AVGO","GEV","TSM"],
+"A":["MU","CRDO","ANET","VRT","ETN","FIX","APP","LITE","DELL","NFLX"],
+"B":["SNDK","STX","WDC","INTC","MXL","MRVL","COHR","VIAV","CIEN","TER"],
+"C":["IREN","NBIS","CIFR","CLSK","RKLB","OKLO","SMR","RGTI","QBTS","SOUN"]};
+const universe=Object.entries(GROUPS).flatMap(([grade,symbols])=>symbols.map(symbol=>({grade,symbol})));
+const results=new Map();let running=false,cancelToken=0;const $=id=>document.getElementById(id);
+const fmt=n=>Number.isFinite(n)?n.toFixed(2):"—";
+function classify(obj){
+ const b=obj.bars;if(!Array.isArray(b)||b.length<60)return {state:"UNKNOWN",reason:"일봉 데이터 부족"};
+ const last=b[b.length-1],c=b.map(x=>x.close);const sma=(n,end=c.length)=>c.slice(end-n,end).reduce((a,v)=>a+v,0)/n;
+ const sma20=sma(20),sma50=sma(50),sma50past=sma(50,c.length-5),prior=b[b.length-2];
+ const near=Math.abs(last.close/sma20-1)<=.02||b.slice(-5).some(x=>x.low<=sma20&&x.high>=sma20);
+ const trend=last.close>sma50&&sma50>sma50past;
+ const pressure=last.evp>prior.evp&&last.evp<=.3;
+ return {state:near&&trend&&pressure?"WATCH":"WAIT",reason:[trend?"50일선 상승":"50일선 조건 미달",near?"20일선 근접":"20일선 거리 큼",pressure?"EVP 개선":"EVP 조건 미달"].join(" · "),price:last.close,sma20,evp:last.evp,asof:obj.last_bar_utc};
+}
+function card(item){const id=item.symbol;const existing=results.get(id);const d=existing?.signal;const el=document.createElement("article");el.className="item";
+const title=document.createElement("b");title.textContent=id;el.append(title);
+const tag=document.createElement("span");tag.className="tag";tag.textContent=item.grade;el.append(tag);
+const state=document.createElement("p");state.className=d?.state==="WATCH"?"positive":existing?.error?"error":"muted";
+state.textContent=existing?.error?"데이터 확인 실패":d?.state==="WATCH"?"● 눌림목 WATCH (예비)":d?.state==="WAIT"?"대기":"미검색";el.append(state);
+const info=document.createElement("p");info.textContent=existing?.error?existing.error:d?d.reason:"—";el.append(info);
+if(d?.price){const numbers=document.createElement("p");numbers.textContent="종가 $"+fmt(d.price)+" · SMA20 $"+fmt(d.sma20);el.append(numbers);}
+const button=document.createElement("button");button.textContent="30분봉 확인";button.addEventListener("click",()=>details(id));el.append(button);return el;}
+function render(){const g=$("grade").value,f=$("filter").value;const items=universe.filter(x=>g==="ALL"||x.grade===g).filter(x=>f==="ALL"||(f==="WATCH"&&results.get(x.symbol)?.signal?.state==="WATCH")||(f==="OTHER"&&results.get(x.symbol)?.signal?.state!=="WATCH"));
+items.sort((a,b)=>(results.get(b.symbol)?.signal?.state==="WATCH"?1:0)-(results.get(a.symbol)?.signal?.state==="WATCH"?1:0));
+$("results").replaceChildren(...items.map(card));}
+async function fetchChart(symbol,tf,signal){const u="/api/swing_radar_chart?ticker="+encodeURIComponent(symbol)+"&tf="+encodeURIComponent(tf);const r=await fetch(u,{signal,credentials:"same-origin",cache:"no-store"});if(r.status===401)throw Error("접근 인증 필요 (401)");if(!r.ok)throw Error("HTTP "+r.status);return r.json();}
+async function scan(){if(running)return;running=true;$("start").disabled=true;$("stop").disabled=false;results.clear();render();const token=++cancelToken;const ac=new AbortController();window.currentScan=ac;let index=0,done=0,failed=0;
+ const worker=async()=>{while(running&&token===cancelToken&&index<universe.length){const item=universe[index++];try{const data=await fetchChart(item.symbol,"1d",ac.signal);if(token!==cancelToken)return;results.set(item.symbol,{signal:classify(data)});}catch(e){if(token!==cancelToken)return;results.set(item.symbol,{error:e.name==="AbortError"?"취소됨":String(e.message||e).slice(0,75)});failed++;}done++;$("progress").textContent=done+"/40 확인 · 실패 "+failed+" · 관찰 "+[...results.values()].filter(x=>x.signal?.state==="WATCH").length;render();}};
+ try{await Promise.all(Array.from({length:3},worker));}finally{if(token===cancelToken){running=false;$("start").disabled=false;$("stop").disabled=true;$("progress").textContent+=" · 완료 (데이터 시점 확인 필수)";}}}
+async function details(symbol){const el=$("detail");el.textContent=symbol+" 30분봉 조회 중…";try{const data=await fetchChart(symbol,"30m");const b=data.bars||[],a=b[b.length-1],p=b[b.length-2];if(!a||!p)throw Error("30분봉 데이터 부족");const crossed=p.hull20!=null&&a.hull20!=null&&p.close<=p.hull20&&a.close>a.hull20;const rising=a.hull20!=null&&p.hull20!=null&&a.hull20>p.hull20;el.textContent=symbol+" · 마지막 30분봉 UTC "+data.last_bar_utc+"\n종가: $"+fmt(a.close)+" · Hull20: $"+fmt(a.hull20)+"\nHull20 상승: "+(rising?"예":"아니오")+" · 상향 교차: "+(crossed?"예":"아니오")+"\nEVP(추정): "+fmt(a.evp)+"\nPut Wall: 미확인 (별도 검증 필요)\n주의: 지연 데이터이며 실시간 매수 신호가 아닙니다.";}catch(e){el.textContent=symbol+" 조회 실패: "+String(e.message||e);}}
+$("start").addEventListener("click",scan);$("stop").addEventListener("click",()=>{running=false;cancelToken++;window.currentScan?.abort();$("start").disabled=false;$("stop").disabled=true;$("progress").textContent="사용자 중지";});$("grade").addEventListener("change",render);$("filter").addEventListener("change",render);render();
+</script></body></html>
