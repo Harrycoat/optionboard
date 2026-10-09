@@ -1,0 +1,44 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GEXOption · TOP 100 SWING WATCH</title><style>
+:root{color-scheme:dark;--bg:#08111e;--panel:#14233a;--text:#eef6ff;--sub:#a8b9ca;--border:#34465f;--gold:#f4c75c;--green:#55ddb3}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--text);margin:0;font:15px system-ui,Arial,sans-serif}main{max-width:900px;margin:auto;padding:16px}
+h1{font-size:23px;margin:14px 0 8px}a{color:#9dccff}.muted{color:var(--sub);line-height:1.55;font-size:13px}
+nav{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}nav a{padding:8px;border:1px solid var(--border);border-radius:8px;text-decoration:none}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:13px;margin:12px 0}
+.controls{display:flex;gap:8px;flex-wrap:wrap}input,select{font:inherit;min-width:0;padding:12px;background:#091728;color:var(--text);border:1px solid var(--border);border-radius:9px}input{flex:2;max-width:300px}select{flex:1;max-width:270px}
+.item{display:grid;grid-template-columns:35px 90px 1fr auto;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.item:last-child{border:0}.rank{color:var(--sub)}.sym{font-size:18px;font-weight:800}.sector{font-size:12px;color:var(--sub)}.percent{color:var(--green);font-weight:700;font-size:12px}.negative{color:#ff9c9c}
+.btn{display:inline-block;background:var(--gold);color:#15151c;font-size:12px;text-decoration:none;border-radius:8px;padding:10px 11px;font-weight:800;text-align:center}
+@media(max-width:540px){.item{grid-template-columns:27px 70px 1fr;gap:5px}.btn{grid-column:2 / span 2}.sym{font-size:16px}.sector{font-size:11px}}
+</style></head><body><main>
+<nav><a href="/swing-radar.html">섹터 스캐너</a><a href="/swing-radar-chart.html?ticker=INTC">Hull20 차트</a></nav>
+<h1>TOP 100 · SWING WATCH</h1>
+<p class="muted">2026-10-09 사용자 업로드 Barchart Weighted Alpha TOP 100 고정 목록 · 52주 수익률 별도 표시. TOP 100은 매수 신호가 아닙니다. 강세 종목을 먼저 분류한 뒤, 각 종목 차트에서 일봉 매도 둔화·Hull20 눌림·Put Wall·30분봉 진입을 직접 검증합니다.</p>
+<section class="panel"><div class="controls"><input id="q" placeholder="종목 검색 (예: INTC, MU)" autocomplete="off" aria-label="종목 검색"><select id="sector" aria-label="산업 선택"><option value="">전체 산업</option></select></div><p id="status" class="muted"></p></section>
+<section class="panel" id="list"></section>
+<script>
+'use strict';
+const raw="TXG,Medical,598.21\nSNDK,Technology,1136.41\nIOVA,Medical,561.87\nEDRY,Transportation,380.85\nERAS,Medical,535.71\nLITE,Technology,596.77\nTWST,Medical,408.33\nBUUU,Technology,419.21\nMU,Technology,433.38\nCDNA,Medical,331.30\nMRNA,Medical,683.87\nASX,Technology,292.23\nTJGC,Business Services,524.43\nPSIG,Transportation,43.01\nATEX,Technology,275.50\nHPE,Technology,174.00\nAXTI,Technology,1217.30\nDELL,Technology,269.01\nECO,Transportation,220.36\nPBF,Energy,190.88\nCOHU,Technology,229.82\nCLMT,Energy,211.28\nFET,Energy,225.84\nSAIH,Business Services,153.68\nMRVL,Technology,199.25\nRNG,Technology,185.36\nCORT,Medical,36.76\nPXS,Transportation,168.94\nPENG,Technology,232.89\nUMC,Technology,206.22\nLIND,Consumer Discretionary,193.55\nVLO,Energy,172.36\nSYRE,Medical,301.23\nILMN,Medical,180.54\nMXL,Technology,504.51\nSTX,Technology,252.17\nAP,Materials,295.71\nMPC,Energy,145.62\nFORM,Technology,268.99\nSILC,Technology,221.70\nINSW,Transportation,172.72\nVICR,Technology,406.77\nDRTS,Medical,273.13\nORKA,Medical,220.14\nOKTA,Technology,143.33\nSLS,Medical,513.72\nSMTC,Technology,164.01\nAMD,Technology,161.63\nSIF,Aerospace,221.28\nNAT,Transportation,161.16\nGRAL,Medical,97.67\nDINO,Energy,133.65\nFOSL,Retail,188.57\nGLBS,Transportation,201.72\nVIAV,Technology,258.29\nETON,Medical,171.06\nTOP,Finance,126.96\nTWLO,Technology,152.72\nKRT,Industrials,125.52\nFRO,Transportation,146.06\nPARR,Energy,135.96\nCRWD,Technology,113.49\nPLSE,Medical,172.21\nNTRA,Medical,131.56\nSSL,Energy,157.80\nMANE,Medical,\nCHRN,Technology,258.24\nDK,Energy,118.92\nTEN,Transportation,142.79\nANDG,Finance,\nTER,Technology,177.71\nVSTS,Industrials,180.76\nRLAY,Medical,166.52\nPSX,Energy,115.42\nGORO,Materials,317.29\nLPG,Transportation,113.78\nPRLD,Medical,182.14\nCIEN,Technology,168.88\nFTNT,Technology,124.21\nINTC,Technology,178.88\nLCUT,Consumer Discretionary,156.85\nMATX,Transportation,140.65\nPKOH,Materials,144.57\nIRDM,Technology,139.22\nMRX,Finance,131.44\nVSXY,Retail,178.24\nPANW,Technology,92.75\nCLYM,Medical,486.77\nHAE,Medical,136.29\nENGS,Consumer Discretionary,-55.52\nLFST,Medical,131.06\nWDC,Technology,229.18\nIMOS,Technology,269.41\nCMBT,Transportation,128.58\nFTRE,Medical,90.19\nPBR,Energy,113.59\nNTAP,Technology,94.31\nPGEN,Medical,142.79\nOPHC,Finance,115.57\nDHX,Technology,119.35";
+const rows=raw.split('\n').map((line,i)=>{const [symbol,sector,year]=line.split(',');return {rank:i+1,symbol,sector,year:year===''?null:Number(year)}});
+const cats=[...new Set(rows.map(x=>x.sector))].sort();
+const sel=document.getElementById('sector'),q=document.getElementById('q'),list=document.getElementById('list'),status=document.getElementById('status');
+for(const cat of cats){const opt=document.createElement('option');opt.value=cat;opt.textContent=cat;sel.append(opt)}
+function render(){
+ const text=q.value.trim().toUpperCase(),sector=sel.value;
+ const matches=rows.filter(x=>(!text||x.symbol.includes(text))&&(!sector||x.sector===sector));
+ status.textContent=matches.length+' / 100 종목 · 원본 Weighted Alpha 순위 유지 · 2026-10-09 스냅샷';
+ list.replaceChildren();
+ if(!matches.length){list.textContent='검색 결과가 없습니다.';return;}
+ for(const x of matches){
+  const line=document.createElement('div');line.className='item';
+  const rank=document.createElement('span');rank.className='rank';rank.textContent='#'+x.rank;
+  const symbol=document.createElement('span');symbol.className='sym';symbol.textContent=x.symbol;
+  const meta=document.createElement('div');
+  const sec=document.createElement('div');sec.className='sector';sec.textContent=x.sector;
+  const pct=document.createElement('div');pct.className='percent'+(x.year!=null&&x.year<0?' negative':'');
+  pct.textContent='52주 '+(x.year==null?'자료 없음':(x.year>0?'+':'')+x.year.toFixed(2)+'%');
+  meta.append(sec,pct);
+  const a=document.createElement('a');a.className='btn';a.href='/swing-radar-chart.html?ticker='+encodeURIComponent(x.symbol);a.textContent='Hull20 · Wall 차트 →';
+  line.append(rank,symbol,meta,a);list.append(line);
+ }
+}
+q.addEventListener('input',render);sel.addEventListener('change',render);render();
+</script></main></body></html>
