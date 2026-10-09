@@ -6,13 +6,13 @@ nav{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}nav a{padding:8px;bo
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:13px;margin:12px 0}
 .controls{display:flex;gap:8px;flex-wrap:wrap}input,select{font:inherit;min-width:0;padding:12px;background:#091728;color:var(--text);border:1px solid var(--border);border-radius:9px}input{flex:2;max-width:300px}select{flex:1;max-width:270px}
 .item{display:grid;grid-template-columns:35px 90px 1fr auto;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.item:last-child{border:0}.rank{color:var(--sub)}.sym{font-size:18px;font-weight:800}.sector{font-size:12px;color:var(--sub)}.percent{color:var(--green);font-weight:700;font-size:12px}.negative{color:#ff9c9c}
-.btn{display:inline-block;background:var(--gold);color:#15151c;font-size:12px;text-decoration:none;border-radius:8px;padding:10px 11px;font-weight:800;text-align:center}
+button{background:var(--gold);color:#10151e;border:0;border-radius:8px;padding:12px;font-weight:800;cursor:pointer}button:disabled{opacity:.45}.watch{color:var(--green);font-weight:800}.excluded{color:#ffb5a7}.btn{display:inline-block;background:var(--gold);color:#15151c;font-size:12px;text-decoration:none;border-radius:8px;padding:10px 11px;font-weight:800;text-align:center}
 @media(max-width:540px){.item{grid-template-columns:27px 70px 1fr;gap:5px}.btn{grid-column:2 / span 2}.sym{font-size:16px}.sector{font-size:11px}}
 </style></head><body><main>
 <nav><a href="/swing-radar.html">섹터 스캐너</a><a href="/swing-radar-chart.html?ticker=INTC">Hull20 차트</a></nav>
 <h1>TOP 100 · SWING WATCH</h1>
 <p class="muted">2026-10-09 사용자 업로드 Barchart Weighted Alpha TOP 100 고정 목록 · 52주 수익률 별도 표시. TOP 100은 매수 신호가 아닙니다. 강세 종목을 먼저 분류한 뒤, 각 종목 차트에서 일봉 매도 둔화·Hull20 눌림·Put Wall·30분봉 진입을 직접 검증합니다.</p>
-<section class="panel"><div class="controls"><input id="q" placeholder="종목 검색 (예: INTC, MU)" autocomplete="off" aria-label="종목 검색"><select id="sector" aria-label="산업 선택"><option value="">전체 산업</option></select></div><p id="status" class="muted"></p></section>
+<section class="panel"><div class="controls"><input id="q" placeholder="종목 검색 (예: INTC, MU)" autocomplete="off" aria-label="종목 검색"><select id="sector" aria-label="산업 선택"><option value="">전체 산업</option></select></div><p id="status" class="muted"></p><div class="controls"><button id="scan" type="button">TOP 100 눌림목 스캔 (완료 일봉)</button><select id="filter"><option value="watch">WATCH (50MA 기울기 ↑ + 20MA 접촉)</option><option value="all">전체 종목 및 제외 이유</option></select></div><p id="scan-status" class="muted">스캔 전에는 기존 TOP 100 목록이 표시됩니다. 버튼을 눌러 확인하세요.</p></section>
 <section class="panel" id="list"></section>
 <script>
 'use strict';
@@ -20,25 +20,59 @@ const raw="TXG,Medical,598.21\nSNDK,Technology,1136.41\nIOVA,Medical,561.87\nEDR
 const rows=raw.split('\n').map((line,i)=>{const [symbol,sector,year]=line.split(',');return {rank:i+1,symbol,sector,year:year===''?null:Number(year)}});
 const cats=[...new Set(rows.map(x=>x.sector))].sort();
 const sel=document.getElementById('sector'),q=document.getElementById('q'),list=document.getElementById('list'),status=document.getElementById('status');
+const scanBtn=document.getElementById('scan'),scanStatus=document.getElementById('scan-status'),filter=document.getElementById('filter');
+let snapshots=new Map(),scanned=false,failures=[];
 for(const cat of cats){const opt=document.createElement('option');opt.value=cat;opt.textContent=cat;sel.append(opt)}
 function render(){
- const text=q.value.trim().toUpperCase(),sector=sel.value;
- const matches=rows.filter(x=>(!text||x.symbol.includes(text))&&(!sector||x.sector===sector));
- status.textContent=matches.length+' / 100 종목 · 원본 Weighted Alpha 순위 유지 · 2026-10-09 스냅샷';
+ const search=q.value.trim().toUpperCase(),sector=sel.value;
+ let matches=rows.filter(x=>(!search||x.symbol.includes(search))&&(!sector||x.sector===sector));
+ if(scanned&&filter.value==='watch')matches=matches.filter(x=>snapshots.get(x.symbol)?.watch_candidate===true);
+ if(scanned)matches.sort((a,b)=>{
+   const x=snapshots.get(a.symbol)?.drawdown_52w_pct,y=snapshots.get(b.symbol)?.drawdown_52w_pct;
+   return (Number.isFinite(y)?y:-Infinity)-(Number.isFinite(x)?x:-Infinity);
+ });
+ status.textContent=matches.length+' 종목 표시 · '+(scanned?'최근 52주 고점 대비 낙폭 큰 순 · 50MA 기울기 상승 필수':'원본 Weighted Alpha 순위')+' · 2026-10-09 TOP100';
  list.replaceChildren();
- if(!matches.length){list.textContent='검색 결과가 없습니다.';return;}
+ if(!matches.length){list.textContent=scanned?'현재 기준을 충족하는 종목이 없습니다. 데이터 오류 종목도 확인하세요.':'검색 결과가 없습니다.';return;}
  for(const x of matches){
-  const line=document.createElement('div');line.className='item';
+  const stat=snapshots.get(x.symbol),line=document.createElement('div');line.className='item';
   const rank=document.createElement('span');rank.className='rank';rank.textContent='#'+x.rank;
   const symbol=document.createElement('span');symbol.className='sym';symbol.textContent=x.symbol;
   const meta=document.createElement('div');
   const sec=document.createElement('div');sec.className='sector';sec.textContent=x.sector;
-  const pct=document.createElement('div');pct.className='percent'+(x.year!=null&&x.year<0?' negative':'');
-  pct.textContent='52주 '+(x.year==null?'자료 없음':(x.year>0?'+':'')+x.year.toFixed(2)+'%');
-  meta.append(sec,pct);
-  const a=document.createElement('a');a.className='btn';a.href='/swing-radar-chart.html?ticker='+encodeURIComponent(x.symbol);a.textContent='Hull20 · Wall 차트 →';
-  line.append(rank,symbol,meta,a);list.append(line);
+  const pct=document.createElement('div');pct.className='percent';
+  pct.textContent=stat?'52주 고점 낙폭 -'+stat.drawdown_52w_pct.toFixed(2)+'%':'52주 상승 '+(x.year===null?'미확인':x.year.toFixed(2)+'%');
+  const info=document.createElement('div');info.className='sector';
+  if(stat){info.textContent=(stat.watch_candidate?'WATCH · ':'제외 · ')+
+    'SMA50 기울기 '+stat.sma50_slope_pct.toFixed(2)+'% / 5일 · SMA20 거리 '+stat.distance_sma20_pct.toFixed(2)+'% · '+stat.bar_date;
+    info.className=stat.watch_candidate?'watch':'excluded';
+  }else if(scanned){info.textContent='데이터 조회 실패 / 미확인';info.className='excluded';}
+  meta.append(sec,pct,info);
+  const link=document.createElement('a');link.className='btn';
+  link.href='/swing-radar-chart.html?ticker='+encodeURIComponent(x.symbol);link.textContent='Hull20 · Wall 차트 →';
+  line.append(rank,symbol,meta,link);list.append(line);
  }
 }
-q.addEventListener('input',render);sel.addEventListener('change',render);render();
+async function scanAll(){
+ scanBtn.disabled=true;scanned=false;snapshots=new Map();failures=[];scanStatus.textContent='완료 일봉 수집 시작…';
+ let offset=0,done=0;
+ const groups=[];for(let i=0;i<rows.length;i+=3)groups.push(rows.slice(i,i+3).map(r=>r.symbol));
+ async function worker(){
+  while(offset<groups.length){
+   const symbols=groups[offset++];let timer;
+   try{
+    const controller=new AbortController();timer=setTimeout(()=>controller.abort(),27000);
+    const response=await fetch('/api/search?mode=top100_pullback_batch&symbols='+encodeURIComponent(symbols.join(',')),{cache:'no-store',signal:controller.signal});
+    const result=await response.json();if(!response.ok||result.error||!Array.isArray(result.rows))throw Error(result.error||'Unexpected response');
+    for(const v of result.rows)snapshots.set(v.ticker,v);
+    for(const e of result.errors||[])failures.push(e.ticker+': '+e.message);
+   }catch(e){failures.push(symbols.join(',')+': '+e.message);}
+   finally{clearTimeout(timer);}
+   done+=symbols.length;scanStatus.textContent='분석 진행: '+done+'/100 · 조회 성공 '+snapshots.size+' · 오류 '+failures.length;
+  }
+ }
+ try{await Promise.all([worker(),worker(),worker()]);scanned=true;render();scanStatus.textContent='완료: '+snapshots.size+'/100 · 50MA 상승 + 20MA 접촉 WATCH '+[...snapshots.values()].filter(x=>x.watch_candidate).length+'개 · 오류 '+failures.length+(failures.length?' ('+failures.slice(0,5).join(' | ')+')':'');}
+ finally{scanBtn.disabled=false;}
+}
+scanBtn.addEventListener('click',scanAll);q.addEventListener('input',render);sel.addEventListener('change',render);filter.addEventListener('change',render);render();
 </script></main></body></html>
