@@ -75,7 +75,7 @@ async function load(withWalls){
  if(!safeTicker(sym)){$('status').textContent='올바른 종목 코드를 입력하세요.';return;}
  $('load').disabled=true;$('status').textContent='데이터 조회 중…';
  try{
- const r=await fetch('/api/swing_radar_chart?ticker='+encodeURIComponent(sym)+'&tf='+encodeURIComponent(tf)+(withWalls?'&walls=1':''),{cache:'no-store'});
+ const r=await fetch('/api/search?mode=swing_radar_chart_beta&ticker='+encodeURIComponent(sym)+'&tf='+encodeURIComponent(tf)+(withWalls?'&walls=1':''),{cache:'no-store'});
  const j=await r.json();if(!r.ok)throw Error(j.error||'API error');
  if(!latest||latest.ticker!==sym)wall=null; latest=j;if(withWalls)wall=j.wall;
  const b=j.bars.at(-1),hma=b.hull20;
