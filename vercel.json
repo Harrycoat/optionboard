@@ -32,6 +32,15 @@
     },
     "api/swing_page.py": {
       "maxDuration": 10
+    },
+    "api/sora_page.py": {
+      "maxDuration": 10
+    },
+    "api/sora_chat.py": {
+      "maxDuration": 30
+    },
+    "api/swing_radar_chart.py": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
@@ -45,7 +54,7 @@
     },
     {
       "source": "/swing-top100.html",
-      "destination": "/api/swing_page?page=top100"
+      "destination": "/api/sora_page"
     },
     {
       "source": "/swing-radar-chart.html",
