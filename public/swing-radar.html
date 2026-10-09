@@ -53,7 +53,7 @@ async function scan(){
    try{
     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),29000);
     let response;
-    try{response=await fetch('/api/swing_radar?sector='+encodeURIComponent(sym),{cache:'no-store',signal:controller.signal});}
+    try{response=await fetch('/api/search?mode=swing_radar_beta&sector='+encodeURIComponent(sym),{cache:'no-store',signal:controller.signal});}
     finally{clearTimeout(timer);}
     const data=await response.json();
     if(!response.ok||data.error)throw Error(data.detail||data.error||'HTTP '+response.status);
