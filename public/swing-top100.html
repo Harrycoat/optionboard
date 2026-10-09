@@ -12,7 +12,7 @@ button{background:var(--gold);color:#10151e;border:0;border-radius:8px;padding:1
 <nav><a href="/swing-radar.html">섹터 스캐너</a><a href="/swing-radar-chart.html?ticker=INTC">Hull20 차트</a></nav>
 <h1>TOP 100 · SWING WATCH</h1>
 <p class="muted">2026-10-09 사용자 업로드 Barchart Weighted Alpha TOP 100 고정 목록 · 52주 수익률 별도 표시. TOP 100은 매수 신호가 아닙니다. 강세 종목을 먼저 분류한 뒤, 각 종목 차트에서 일봉 매도 둔화·Hull20 눌림·Put Wall·30분봉 진입을 직접 검증합니다.</p>
-<section class="panel"><div class="controls"><input id="q" placeholder="종목 검색 (예: INTC, MU)" autocomplete="off" aria-label="종목 검색"><select id="sector" aria-label="산업 선택"><option value="">전체 산업</option></select></div><p id="status" class="muted"></p><div class="controls"><button id="scan" type="button">TOP 100 눌림목 스캔 (완료 일봉)</button><select id="filter"><option value="watch">WATCH (50MA 기울기 ↑ + 20MA 접촉)</option><option value="all">전체 종목 및 제외 이유</option></select></div><p id="scan-status" class="muted">스캔 전에는 기존 TOP 100 목록이 표시됩니다. 버튼을 눌러 확인하세요.</p></section>
+<section class="panel"><div class="controls"><input id="q" placeholder="종목 검색 (예: INTC, MU)" autocomplete="off" aria-label="종목 검색"><select id="sector" aria-label="산업 선택"><option value="">전체 산업</option></select></div><p id="status" class="muted"></p><div class="controls"><button id="scan" type="button">TOP 100 눌림목 스캔 (완료 일봉)</button><select id="filter"><option value="ready">30분봉 ENTRY 발생</option><option value="watch">눌림목 WATCH</option><option value="all">전체 종목 및 제외 이유</option></select></div><p id="scan-status" class="muted">스캔 전에는 기존 TOP 100 목록이 표시됩니다. 버튼을 눌러 확인하세요.</p></section>
 <section class="panel" id="list"></section>
 <script>
 'use strict';
@@ -21,21 +21,26 @@ const rows=raw.split('\n').map((line,i)=>{const [symbol,sector,year]=line.split(
 const cats=[...new Set(rows.map(x=>x.sector))].sort();
 const sel=document.getElementById('sector'),q=document.getElementById('q'),list=document.getElementById('list'),status=document.getElementById('status');
 const scanBtn=document.getElementById('scan'),scanStatus=document.getElementById('scan-status'),filter=document.getElementById('filter');
-let snapshots=new Map(),scanned=false,failures=[];
+let snapshots=new Map(),signals=new Map(),scanned=false,failures=[];
 for(const cat of cats){const opt=document.createElement('option');opt.value=cat;opt.textContent=cat;sel.append(opt)}
 function render(){
  const search=q.value.trim().toUpperCase(),sector=sel.value;
  let matches=rows.filter(x=>(!search||x.symbol.includes(search))&&(!sector||x.sector===sector));
  if(scanned&&filter.value==='watch')matches=matches.filter(x=>snapshots.get(x.symbol)?.watch_candidate===true);
+ if(scanned&&filter.value==='ready')matches=matches.filter(x=>snapshots.get(x.symbol)?.watch_candidate===true&&signals.get(x.symbol)?.ready===true);
  if(scanned)matches.sort((a,b)=>{
+   const sa=signals.get(a.symbol),sb=signals.get(b.symbol);
+   const ra=(sa?.ready?2:sa?.watch?1:0),rb=(sb?.ready?2:sb?.watch?1:0);
+   if(ra!==rb)return rb-ra;
+   if(sa?.ready&&sb?.ready)return Math.abs(sa.hull_distance_pct)-Math.abs(sb.hull_distance_pct);
    const x=snapshots.get(a.symbol)?.drawdown_52w_pct,y=snapshots.get(b.symbol)?.drawdown_52w_pct;
    return (Number.isFinite(y)?y:-Infinity)-(Number.isFinite(x)?x:-Infinity);
  });
  status.textContent=matches.length+' 종목 표시 · '+(scanned?'최근 52주 고점 대비 낙폭 큰 순 · 50MA 기울기 상승 필수':'원본 Weighted Alpha 순위')+' · 2026-10-09 TOP100';
  list.replaceChildren();
- if(!matches.length){list.textContent=scanned?'현재 기준을 충족하는 종목이 없습니다. 데이터 오류 종목도 확인하세요.':'검색 결과가 없습니다.';return;}
+ if(!matches.length){list.textContent=scanned?'현재 기준을 충족하는 종목이 없습니다. 지연 데이터이며 TOS 실시간 진입 상태는 별도 확인하세요.':'검색 결과가 없습니다.';return;}
  for(const x of matches){
-  const stat=snapshots.get(x.symbol),line=document.createElement('div');line.className='item';
+  const stat=snapshots.get(x.symbol),signal=signals.get(x.symbol),line=document.createElement('div');line.className='item';
   const rank=document.createElement('span');rank.className='rank';rank.textContent='#'+x.rank;
   const symbol=document.createElement('span');symbol.className='sym';symbol.textContent=x.symbol;
   const meta=document.createElement('div');
@@ -47,6 +52,13 @@ function render(){
     'SMA50 기울기 '+stat.sma50_slope_pct.toFixed(2)+'% / 5일 · SMA20 거리 '+stat.distance_sma20_pct.toFixed(2)+'% · '+stat.bar_date;
     info.className=stat.watch_candidate?'watch':'excluded';
   }else if(scanned){info.textContent='데이터 조회 실패 / 미확인';info.className='excluded';}
+  if(signal){
+    const s=document.createElement('div');
+    s.className=signal.ready?'watch':signal.watch?'watch':'sector';
+    s.textContent=signal.ready?'ENTRY 발생 (지연) · Hull20 돌파 · EVP 상승':signal.watch?'30분봉 Hull20 관찰 중':'30분봉 진입 미확인';
+    s.textContent+=' · 거리 '+signal.hull_distance_pct.toFixed(2)+'% · 봉 '+signal.bar_start_utc;
+    meta.append(s);
+  }
   meta.append(sec,pct,info);
   const link=document.createElement('a');link.className='btn';
   link.href='/swing-radar-chart.html?ticker='+encodeURIComponent(x.symbol);link.textContent='Hull20 · Wall 차트 →';
@@ -54,7 +66,7 @@ function render(){
  }
 }
 async function scanAll(){
- scanBtn.disabled=true;scanned=false;snapshots=new Map();failures=[];scanStatus.textContent='완료 일봉 수집 시작…';
+ scanBtn.disabled=true;scanned=false;snapshots=new Map();signals=new Map();failures=[];scanStatus.textContent='완료 일봉 수집 시작…';
  let offset=0,done=0;
  const groups=[];for(let i=0;i<rows.length;i+=3)groups.push(rows.slice(i,i+3).map(r=>r.symbol));
  async function worker(){
@@ -71,7 +83,27 @@ async function scanAll(){
    done+=symbols.length;scanStatus.textContent='분석 진행: '+done+'/100 · 조회 성공 '+snapshots.size+' · 오류 '+failures.length;
   }
  }
- try{await Promise.all([worker(),worker(),worker()]);scanned=true;render();scanStatus.textContent='완료: '+snapshots.size+'/100 · 50MA 상승 + 20MA 접촉 WATCH '+[...snapshots.values()].filter(x=>x.watch_candidate).length+'개 · 오류 '+failures.length+(failures.length?' ('+failures.slice(0,5).join(' | ')+')':'');}
+ try{
+ await Promise.all([worker(),worker(),worker()]);
+ const candidates=rows.filter(r=>snapshots.get(r.symbol)?.watch_candidate);
+ const batches=[];for(let i=0;i<candidates.length;i+=2)batches.push(candidates.slice(i,i+2).map(v=>v.symbol));
+ let cursor=0;
+ async function check30m(){
+  while(cursor<batches.length){
+   const tickers=batches[cursor++];const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),28000);
+   try{
+    const response=await fetch('/api/search?mode=top100_30m_entry_batch&symbols='+encodeURIComponent(tickers.join(',')),{signal:controller.signal,cache:'no-store'});
+    const json=await response.json();
+    if(!response.ok||json.error||!Array.isArray(json.rows))throw Error(json.error||'Unexpected 30m response');
+    for(const row of json.rows)signals.set(row.ticker,row);
+    for(const err of json.errors||[])failures.push(err.ticker+': '+err.message);
+   }catch(e){failures.push(tickers.join(',')+': 30m '+e.message)}
+   finally{clearTimeout(timer)}
+   scanStatus.textContent='30분봉 진입 신호 분석 '+signals.size+'/'+candidates.length;
+  }
+ }
+ await Promise.all([check30m(),check30m()]);
+ scanned=true;render();scanStatus.textContent='완료: '+snapshots.size+'/100 · 50MA 상승 + 20MA 접촉 WATCH '+[...snapshots.values()].filter(x=>x.watch_candidate).length+'개 · 30분봉 ENTRY '+[...signals.values()].filter(x=>x.ready).length+'개 · 오류 '+failures.length+(failures.length?' ('+failures.slice(0,5).join(' | ')+')':'');}
  finally{scanBtn.disabled=false;}
 }
 scanBtn.addEventListener('click',scanAll);q.addEventListener('input',render);sel.addEventListener('change',render);filter.addEventListener('change',render);render();
