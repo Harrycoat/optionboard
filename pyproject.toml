@@ -6,5 +6,3 @@ dependencies = [
     "requests",
 ]
 
-[tool.vercel]
-entrypoint = "api.search:handler"
