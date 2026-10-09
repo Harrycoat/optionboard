@@ -10,7 +10,7 @@ button{background:var(--gold);color:#10151e;border:0;border-radius:8px;padding:1
 @media(max-width:540px){.item{grid-template-columns:27px 70px 1fr;gap:5px}.btn{grid-column:2 / span 2}.sym{font-size:16px}.sector{font-size:11px}}
 .chart-panel{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow:auto;padding:10px}.chart-panel.open{display:block}.chart-toolbar{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 4px}.chart-toolbar button{padding:12px 16px}.chart-panel iframe{border:0;width:100%;height:calc(100dvh - 74px);background:var(--bg);border-radius:9px}@media(min-width:850px){.chart-panel{padding:16px max(16px,calc((100vw - 930px)/2))}}
 </style></head><body><main>
-<nav><a href="/swing-radar.html">섹터 스캐너</a><a href="/swing-radar-chart.html?ticker=INTC">Hull20 차트</a></nav>
+<nav><a href="/swing-radar.html">섹터 스캐너</a><a href="/swing-paper-multi.html">다종목 가상매매 실험</a><a href="/swing-radar-chart.html?ticker=INTC">Hull20 차트</a></nav>
 <h1>GEXOption · SWING RADAR</h1><div class="muted">TOP 100 → 30분봉 Hull20 / EVP 추정 압력 / Wall → 손절 계획 · 한 화면에서 확인</div>
 <div class="chart-panel" id="chartPanel" role="dialog" aria-label="종목 Hull20 차트">
  <div class="chart-toolbar"><button type="button" id="backToList">← TOP 100 목록</button><strong id="chartTitle">Hull20 차트</strong></div>
