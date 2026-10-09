@@ -29,14 +29,16 @@ const sectors=["XLK","XLF","XLV","XLY","XLP","XLE","XLI","XLB","XLU","XLRE","XLC
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function card(c,sector){
- const valid=Number.isFinite(c.risk_pct)&&c.risk_pct>0;
- return '<article class="card"><div class="badge">EARLY WATCH · '+esc(sector)+'</div><strong>'+esc(c.symbol)+'</strong>'+
- '<div><a href="/swing-radar-chart.html?ticker='+encodeURIComponent(c.symbol)+'">Hull20 차트 · Wall 확인 →</a></div>'+
- '<div>현재가 
- '<div>20일선 거리 '+esc(c.sma20_distance_pct)+'% · EVP '+esc(c.evp_smooth)+'</div>'+
- '<div>횡보 압축 '+(c.compression?'확인':'미확인')+' · 압력 개선 '+(c.evp_improving?'확인':'미확인')+'</div>'+
- '<div>손절 참고 $'+esc(c.stop_idea)+' · 계획 위험 '+(valid?esc(c.risk_pct)+'%':'검증 필요')+'</div>'+
- '<small>데이터 기준 '+esc(c.asof_utc)+' · '+(c.partial_daily?'일봉 미확정':'확정 일봉')+'</small></article>';
+ const risk=Number.isFinite(c.risk_pct)&&c.risk_pct>0;
+ const link='/swing-radar-chart.html?ticker='+encodeURIComponent(c.symbol);
+ return '<article class="card"><div class="badge">EARLY WATCH · '+esc(sector)+'</div>' +
+ '<strong>'+esc(c.symbol)+'</strong>' +
+ '<div><a href="'+link+'">Hull20 차트 · Wall 확인 →</a></div>' +
+ '<div>현재가 '+esc(c.price)+' · SMA20 '+esc(c.sma20)+'</div>' +
+ '<div>20일선 거리 '+esc(c.sma20_distance_pct)+'% · EVP '+esc(c.evp_smooth)+'</div>' +
+ '<div>횡보 압축 '+(c.compression?'확인':'미확인')+' · 압력 개선 '+(c.evp_improving?'확인':'미확인')+'</div>' +
+ '<div>손절 참고 '+esc(c.stop_idea)+' · 위험 '+(risk?esc(c.risk_pct)+'%':'검증 필요')+'</div>' +
+ '<small>기준 '+esc(c.asof_utc)+' · '+(c.partial_daily?'일봉 미확정':'확정 일봉')+'</small></article>';
 }
 async function scan(){
  $('scan').disabled=true;$('watch').innerHTML='<div class="empty">검색 중…</div>';
