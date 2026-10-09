@@ -1987,27 +1987,31 @@ class handler(BaseHTTPRequestHandler):
                     high20=max(highs[-20:])
                     sma20=sum(closes[-20:])/20
                     sma50=sum(closes[-50:])/50
+                    sma50_prior=sum(closes[-55:-5])/50
+                    sma50_slope_pct=(sma50/sma50_prior-1)*100 if sma50_prior else 0
+                    sma50_rising=sma50_slope_pct>0
                     dist20=(current/sma20-1)*100
                     # A historical intraday touch counts even if the daily close recovered.
                     touch20=any(lows[i]<=sum(closes[i-19:i+1])/20<=highs[i]
                         for i in range(max(19,len(closes)-5),len(closes)))
                     near20=abs(dist20)<=2
-                    watch=touch20 or near20
+                    watch=sma50_rising and (touch20 or near20)
                     out.append({"ticker":ticker,"close":round(current,3),
                         "drawdown_52w_pct":round((high52-current)/high52*100,2),
                         "drawdown_20d_pct":round((high20-current)/high20*100,2),
                         "sma20":round(sma20,3),"sma50":round(sma50,3),
+                        "sma50_rising":bool(sma50_rising),"sma50_slope_pct":round(sma50_slope_pct,3),
                         "distance_sma20_pct":round(dist20,2),
                         "touched_sma20":bool(touch20),"near_sma20":bool(near20),
                         "watch_candidate":bool(watch),
                         "bar_date":str(datetime.fromtimestamp(int(candles[-1]["t"])/1000,timezone.utc).astimezone(ZoneInfo("America/New_York")).date()),
-                        "status":"WATCH_TOUCH_20MA" if touch20 else ("WATCH_NEAR_20MA" if near20 else "NOT_READY")})
+                        "status":("WATCH_TOUCH_20MA" if touch20 else "WATCH_NEAR_20MA") if watch else ("SMA50_NOT_RISING" if not sma50_rising else "NOT_READY")})
                 except Exception as exc:
                     errors.append({"ticker":ticker,"message":str(exc)[:100]})
             self.wfile.write(json.dumps({"rows":out,"errors":errors,
                 "source":"Massive completed daily OHLCV",
                 "ranking":"52-week high-to-close drawdown, descending",
-                "note":"20MA touch/near means WATCH, not BUY; incomplete current bar excluded."},ensure_ascii=False).encode())
+                "note":"WATCH requires rising SMA50 slope over 5 sessions AND recent SMA20 touch/near; not a BUY. Current incomplete daily bar excluded."},ensure_ascii=False).encode())
             return
 
         if mode == "swing_radar_beta":
