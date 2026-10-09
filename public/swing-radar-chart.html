@@ -12,10 +12,10 @@ button.active{background:var(--hull);color:#111}.tabs{display:grid;grid-template
 .tabs button{padding:11px 2px;font-size:12px}.chart{width:100%;height:310px;display:block;touch-action:pan-y}
 #evp{height:145px}.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stat div{padding:10px;background:#0a1626;border-radius:8px}.stat b{display:block;font-size:17px;margin-top:6px}
-.warn{color:#ffd18e}.error{color:var(--dn)}a{color:#9fccff}
+.warn{color:#ffd18e}.error{color:var(--dn)}a{color:#9fccff}.navlink{display:inline-block;padding:11px 13px;border:1px solid var(--line);background:#1b3047;border-radius:9px;text-decoration:none;font-weight:750;font-size:14px}
 @media(max-width:420px){.stat{gap:4px}.stat div{padding:8px 5px}.stat b{font-size:15px}.chart{height:260px}#evp{height:125px}}
 </style></head><body><main>
-<a href="/swing-radar.html">← Sector Radar</a><h1>HULL20 · SWING CHART <span class="muted">BETA</span></h1>
+<nav class="row" aria-label="차트 이동"><a class="navlink" href="/swing-top100.html">← TOP 100 돌아가기</a><a class="navlink" href="/swing-radar.html">섹터 레이더</a></nav><h1>HULL20 · SWING CHART <span class="muted">BETA</span></h1>
 <div class="muted">일봉 매도 둔화 확인 → Put Wall 부근 WATCH → 5분봉 Hull20 회복·Smooth 확인 → 수동 진입 검토</div>
 <div class="panel">
 <div class="row"><input id="ticker" maxlength="10" placeholder="Ticker" value="INTC" autocomplete="off" aria-label="종목 티커"><button id="load">차트 조회</button></div>
