@@ -38,20 +38,25 @@ class handler(BaseHTTPRequestHandler):
     turns.append({"role":h["role"],"content":h["content"]})
   except (ValueError,TypeError,KeyError,UnicodeDecodeError,json.JSONDecodeError):
    self.reply(400,{"error":"입력 형식을 확인해 주세요."});return
-  key=os.environ.get("SORA_OPENAI_API_KEY","").strip()
-  model=os.environ.get("SORA_OPENAI_MODEL","gpt-4.1-mini").strip()
+  key=os.environ.get("SORA_GEMINI_API_KEY","").strip()
+  model=os.environ.get("SORA_GEMINI_MODEL","gemini-2.5-flash-lite").strip()
   if not key:
-   self.reply(503,{"error":"소라 AI 모델이 아직 연결되지 않았습니다. 서버 환경 변수 SORA_OPENAI_API_KEY가 필요합니다."});return
+   self.reply(503,{"error":"소라 AI 모델이 아직 연결되지 않았습니다. 서버 환경 변수 SORA_GEMINI_API_KEY가 필요합니다."});return
   if not re.fullmatch(r"[a-zA-Z0-9_.-]{2,60}",model):
    self.reply(503,{"error":"모델 설정을 확인해 주세요."});return
-  # All user-supplied data is explicitly unverified. No quotes/options claims from the LLM without tool-backed evidence.
-  messages=[{"role":"system","content":SYSTEM},{"role":"system","content":"선택 종목: "+ticker+". 이 요청에는 검증된 시세/차트가 첨부되지 않았습니다. 반드시 미확인임을 밝히고, 필요 데이터와 일반 분석 기준만 설명하세요."}]+turns+[{"role":"user","content":question}]
+  # No market data or verified wall values are provided in this initial integration.
+  context="선택 종목: "+ticker+". 검증된 시세나 차트가 이 요청에 포함되지 않았습니다. 현재 수치나 Wall을 주장하지 마세요."
+  dialogue="\\n".join(("사용자" if h["role"]=="user" else "소라")+": "+h["content"] for h in turns)
+  prompt=context+"\\n"+dialogue+"\\n사용자: "+question
   try:
-   r=requests.post("https://api.openai.com/v1/chat/completions",headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},
-      json={"model":model,"messages":messages,"max_completion_tokens":550},timeout=(4,22))
-   if r.status_code!=200:raise RuntimeError("provider status "+str(r.status_code))
-   answer=r.json()["choices"][0]["message"]["content"]
-   if not isinstance(answer,str) or not answer.strip():raise RuntimeError("empty response")
+   url="https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent"
+   r=requests.post(url,headers={"x-goog-api-key":key,"Content-Type":"application/json"},
+      json={"systemInstruction":{"parts":[{"text":SYSTEM}]},"contents":[{"role":"user","parts":[{"text":prompt}]}],
+            "generationConfig":{"maxOutputTokens":650,"temperature":0.25}},timeout=(4,22))
+   if r.status_code!=200:raise RuntimeError("provider unavailable")
+   data=r.json()
+   answer="".join(p.get("text","") for item in data.get("candidates",[])[:1] for p in item.get("content",{}).get("parts",[]) if isinstance(p,dict))
+   if not answer.strip():raise RuntimeError("empty response")
    self.reply(200,{"ticker":ticker,"answer":answer.strip(),"data_status":"UNVERIFIED","notice":"시세·옵션 Wall 데이터 미연결. 교육용 분석입니다."})
   except Exception:
    self.reply(502,{"error":"AI 응답을 받지 못했습니다. 잠시 후 다시 시도해 주세요."})
