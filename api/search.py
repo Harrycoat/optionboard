@@ -1957,6 +1957,45 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
             return
 
+        if mode == "top100_30m_entry_batch":
+            import re
+            from swing_radar_chart import aggregates, indicators
+            raw=(query.get("symbols",[""])[0]).upper()
+            symbols=[s.strip() for s in raw.split(",") if s.strip()]
+            if not symbols or len(symbols)>2 or any(not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",s) for s in symbols):
+                self.wfile.write(json.dumps({"error":"Use 1-2 valid tickers"}).encode())
+                return
+            rows=[];errors=[]
+            for ticker in symbols:
+                try:
+                    bars=indicators(aggregates(ticker,"30m"))
+                    if len(bars)<35 or any(bars[-j]["hull20"] is None for j in (1,2,3)):
+                        raise ValueError("Insufficient completed 30m bars")
+                    last,prev=bars[-1],bars[-2]
+                    h,ph=last["hull20"],prev["hull20"]
+                    slope=h-ph
+                    turned_hull=slope>0 and bars[-3]["hull20"]>=ph
+                    cross=prev["close"]<=ph and last["close"]>h
+                    near=abs(last["close"]/h-1)*100<=1.5
+                    # EVP is OHLCV candle-location proxy, NOT genuine trade-side Smooth.
+                    smooth_up=last["evp"]>prev["evp"]
+                    smooth_recent=any(bars[-i]["evp"]>bars[-i-1]["evp"] for i in (1,2,3))
+                    pullback=any(b["low"]<=b["hull20"]*1.005 for b in bars[-5:-1] if b["hull20"] is not None)
+                    ready=bool(cross and turned_hull and smooth_up and pullback)
+                    watch=bool(near and slope>0 and smooth_recent and pullback)
+                    rows.append({"ticker":ticker,"ready":ready,"watch":watch,
+                        "cross_now":cross,"hull_turned_up":turned_hull,
+                        "evp_turn_up":smooth_up,"pullback":pullback,
+                        "last_close":last["close"],"hull20":h,
+                        "hull_distance_pct":round((last["close"]/h-1)*100,2),
+                        "hull_slope_pct":round(slope/ph*100,3) if ph else None,
+                        "bar_start_utc":datetime.fromtimestamp(last["t"]/1000,timezone.utc).isoformat(),
+                        "note":"Delayed 30m completed candle; EVP proxy, NOT actual TOS Smooth."})
+                except Exception as exc:
+                    errors.append({"ticker":ticker,"message":str(exc)[:110]})
+            self.wfile.write(json.dumps({"rows":rows,"errors":errors},ensure_ascii=False).encode())
+            return
+
         if mode == "top100_pullback_batch":
             import re
             raw=(query.get("symbols",[""])[0]).upper()
