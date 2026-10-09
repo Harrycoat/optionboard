@@ -91,5 +91,12 @@ function updateWalls(){
 }
 $('load').onclick=()=>load(false);$('getwalls').onclick=()=>load(true);
 let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(draw,120)});
-const prefill=new URLSearchParams(location.search).get('ticker');if(prefill&&safeTicker(prefill.toUpperCase()))$('ticker').value=prefill.toUpperCase();
+const qs=new URLSearchParams(location.search);
+const startTf=qs.get('tf');
+if(['1d','4h','1h','30m','10m','5m'].includes(startTf)){
+ tf=startTf;document.querySelectorAll('[data-tf]').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));
+}
+const prefill=qs.get('ticker');
+if(prefill&&safeTicker(prefill.toUpperCase()))$('ticker').value=prefill.toUpperCase();
+if(prefill&&safeTicker(prefill.toUpperCase()))load(false);
 </script></body></html>
