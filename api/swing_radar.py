@@ -166,6 +166,8 @@ def process(sector):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        from swing_access import require_access
+        if not require_access(self):return
         args=parse_qs(urlparse(self.path).query)
         sector=(args.get("sector") or [""])[0].upper()
         try:

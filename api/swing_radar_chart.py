@@ -29,50 +29,83 @@ def hull20(closes):
         result.append(round(wma(available[-4:]),5) if len(available)>=4 else None)
     return result
 
-def aggregates(symbol,tf):
-    now=datetime.now(timezone.utc)
-    if tf=="1d":
-        start=(now-timedelta(days=460)).date()
-        unit,span="day",1
-    else:
-        start=(now-timedelta(days=18)).date()
-        unit,span="minute",5
-    data=_massive_get(
-        f"{MASSIVE_API_BASE}/v2/aggs/ticker/{symbol}/range/{span}/{unit}/{start}/{now.date()}",
-        {"adjusted":"true","sort":"asc","limit":50000})
-    rows=[]
-    for b in data.get("results") or []:
-        try:
-            ts=int(b["t"])
-            dt=datetime.fromtimestamp(ts/1000,timezone.utc).astimezone(ET)
-            if tf!="1d" and not ((dt.hour==9 and dt.minute>=30) or (10<=dt.hour<16)):
-                continue
-            if tf!="1d" and (dt.hour>=16 or ts+300000>now.timestamp()*1000):
-                continue
-            rows.append({"t":ts,"o":float(b["o"]),"h":float(b["h"]),
-                "l":float(b["l"]),"c":float(b["c"]),"v":float(b.get("v") or 0)})
-        except (KeyError,ValueError,TypeError):
-            continue
-    if tf=="1d":return rows[-150:]
-    duration=VALID_TF[tf]
-    if duration==5:return rows[-180:]
-    # Aggregate bars by regular-session buckets; 4h uses 09:30-13:30 and 13:30-16:00 ET.
+def session_bounds(day):
+    import exchange_calendars as xc
+    cal=xc.get_calendar("XNYS")
+    if not cal.is_session(str(day)):return None
+    return int(cal.session_open(str(day)).timestamp()*1000),int(cal.session_close(str(day)).timestamp()*1000)
+
+def expected_session(cutoff_ms):
+    day=datetime.fromtimestamp(cutoff_ms/1000,timezone.utc).astimezone(ET).date()
+    for _ in range(10):
+        bounds=session_bounds(day)
+        if bounds and bounds[0]<cutoff_ms:return day,bounds
+        day-=timedelta(days=1)
+    raise ValueError("CALENDAR_UNAVAILABLE")
+
+def resample(rows, duration, cutoff_ms):
     grouped={}
-    for b in rows:
-        dt=datetime.fromtimestamp(b["t"]/1000,timezone.utc).astimezone(ET)
-        offset=(dt.hour*60+dt.minute)-(9*60+30)
-        bucket=offset//duration
-        key=(dt.date().isoformat(),bucket)
-        grouped.setdefault(key,[]).append(b)
-    out=[]
-    for batch in grouped.values():
-        # Exclude unfinished resampled candles, not only unfinished base 5-minute bars.
-        if len(batch)<(duration//5) and len(batch)!=(390-duration*( (390-1)//duration))//5:
-            continue
-        out.append({"t":batch[0]["t"],"o":batch[0]["o"],
-            "h":max(b["h"] for b in batch),"l":min(b["l"] for b in batch),
-            "c":batch[-1]["c"],"v":sum(b["v"] for b in batch)})
-    return out[-180:]
+    for b in sorted(rows,key=lambda r:r['t']):
+        dt=datetime.fromtimestamp(b['t']/1000,timezone.utc).astimezone(ET)
+        bounds=session_bounds(dt.date())
+        if not bounds:continue
+        op,cl=bounds
+        if not op<=b['t']<cl:continue
+        start=op+((b['t']-op)//(duration*60000))*duration*60000
+        end=min(start+duration*60000,cl)
+        grouped.setdefault((start,end),{})[b['t']]=b
+    result=[]
+    for (start,end),bytime in sorted(grouped.items()):
+        batch=list(bytime.values())
+        expected=set(range(start,end,300000))
+        complete=end<=cutoff_ms
+        coverage=set(bytime)==expected
+        result.append({'t':start,'end_ms':end,'o':batch[0]['o'],'h':max(b['h'] for b in batch),
+            'l':min(b['l'] for b in batch),'c':batch[-1]['c'],'v':sum(b['v'] for b in batch),
+            'complete':complete,'coverage_ok':coverage,'expected_base_bars':len(expected),'actual_base_bars':len(batch)})
+    return result
+
+def aggregates(symbol,tf,include_partial=False):
+    now=datetime.now(timezone.utc);cutoff=int((now-timedelta(minutes=15)).timestamp()*1000)
+    start=(now-timedelta(days=460 if tf=='1d' else 30)).date()
+    unit,span=('day',1) if tf=='1d' else ('minute',5)
+    # Isolated radar requests have bounded network time; existing engine is unchanged.
+    import requests
+    from options_engine import MASSIVE_API_KEY
+    if not MASSIVE_API_KEY:raise ValueError('DATA_NOT_CONFIGURED: MASSIVE_API_KEY')
+    try:
+        response=requests.get(f"{MASSIVE_API_BASE}/v2/aggs/ticker/{symbol}/range/{span}/{unit}/{start}/{now.date()}",
+        params={'adjusted':'true','sort':'asc','limit':50000,'apiKey':MASSIVE_API_KEY},timeout=(2,8))
+    except requests.RequestException:raise ValueError('DATA_NETWORK_ERROR') from None
+    if response.status_code!=200:raise ValueError('DATA_PROVIDER_HTTP_'+str(response.status_code))
+    try:data=response.json()
+    except ValueError:raise ValueError('DATA_INVALID_JSON') from None
+    if data.get('status') not in ('OK','DELAYED'):raise ValueError('DATA_PROVIDER_ERROR')
+    if data.get('next_url'):raise ValueError('DATA_TRUNCATED: pagination required')
+    rows=[]
+    for b in data.get('results') or []:
+        row={k:float(b[k]) for k in ('o','h','l','c','v')};row['t']=int(b['t'])
+        if row['l']>row['h'] or row['c']<=0:raise ValueError('DATA_INVALID')
+        rows.append(row)
+    if tf=='1d':
+        out=[]
+        for row in rows:
+            day=datetime.fromtimestamp(row['t']/1000,timezone.utc).astimezone(ET).date()
+            bounds=session_bounds(day)
+            if bounds and bounds[1]<=cutoff:out.append(dict(row,end_ms=bounds[1],complete=True,coverage_ok=True))
+        expected,bounds=expected_session(cutoff)
+        if bounds[1]>cutoff:expected,_=expected_session(bounds[0]-1)
+        if not out or datetime.fromtimestamp(out[-1]["t"]/1000,timezone.utc).astimezone(ET).date()!=expected:raise ValueError("DATA_STALE: daily session missing")
+        return out[-300:]
+    out=resample(rows,VALID_TF[tf],cutoff)
+    completed=[b for b in out if b['complete']]
+    day,bounds=expected_session(cutoff)
+    expected_end=bounds[0]+((min(cutoff,bounds[1])-bounds[0])//(VALID_TF[tf]*60000))*VALID_TF[tf]*60000
+    if cutoff>=bounds[1]:expected_end=bounds[1]
+    if expected_end>bounds[0] and (not completed or completed[-1]['end_ms']<expected_end):raise ValueError('DATA_STALE: latest completed candle missing')
+    # Missing eligible bars can be illiquidity or an outage: never silently call it no signal.
+    if any(not b['coverage_ok'] for b in completed[-60:]):raise ValueError('DATA_GAP: incomplete 5m coverage in recent candles')
+    return (out if include_partial else completed)[-220:]
 
 def indicators(rows):
     closes=[x["c"] for x in rows]
@@ -86,12 +119,13 @@ def indicators(rows):
     smooth=[]
     val=0.0
     for i,p in enumerate(pressure):
-        norm=p/volbase
+        base=max(1,sum(b["v"] for b in rows[max(0,i-20):i])/max(1,min(i,20)))
+        norm=p/base
         val=norm if i==0 else a*norm+(1-a)*val
         smooth.append(round(val,4))
     return [{"t":b["t"],"open":b["o"],"high":b["h"],"low":b["l"],
             "close":b["c"],"volume":round(b["v"]),"hull20":hull[i],
-            "evp":smooth[i]} for i,b in enumerate(rows)]
+            "evp":smooth[i],"complete":b.get("complete",True),"coverage_ok":b.get("coverage_ok",True)} for i,b in enumerate(rows)]
 
 def get_walls(symbol):
     try:
@@ -106,6 +140,8 @@ def get_walls(symbol):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        from swing_access import require_access
+        if not require_access(self):return
         args=parse_qs(urlparse(self.path).query)
         symbol=(args.get("ticker") or [""])[0].strip().upper()
         tf=(args.get("tf") or ["1d"])[0].lower()

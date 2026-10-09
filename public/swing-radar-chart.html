@@ -16,12 +16,12 @@ button.active{background:var(--hull);color:#111}.tabs{display:grid;grid-template
 @media(max-width:420px){.stat{gap:4px}.stat div{padding:8px 5px}.stat b{font-size:15px}.chart{height:260px}#evp{height:125px}}
 </style></head><body><main>
 <nav class="row" aria-label="차트 이동"><a class="navlink" href="/swing-top100.html">← TOP 100 돌아가기</a><a class="navlink" href="/swing-radar.html">섹터 레이더</a></nav><h1>HULL20 · SWING CHART <span class="muted">BETA</span></h1>
-<div class="muted">일봉 매도 둔화 확인 → Put Wall 부근 WATCH → 5분봉 Hull20 회복·Smooth 확인 → 수동 진입 검토</div>
+<div class="muted">일봉 매도 둔화 확인 → Put Wall 부근 WATCH → 30분봉 Hull20 회복·EVP 반전 확인 → 수동 진입 검토</div>
 <div class="panel">
 <div class="row"><input id="ticker" maxlength="10" placeholder="Ticker" value="INTC" autocomplete="off" aria-label="종목 티커"><button id="load">차트 조회</button></div>
 <div class="tabs" id="tabs">
-<button data-tf="1d" class="active">일봉</button><button data-tf="4h">4H</button>
-<button data-tf="1h">1H</button><button data-tf="30m">30분</button>
+<button data-tf="1d">일봉</button><button data-tf="4h">4H</button>
+<button data-tf="1h">1H</button><button data-tf="30m" class="active">30분</button>
 <button data-tf="10m">10분</button><button data-tf="5m">5분</button></div>
 <p class="muted" id="status">종목을 입력하고 차트 조회를 누르세요.</p>
 </div>
@@ -33,13 +33,13 @@ button.active{background:var(--hull);color:#111}.tabs{display:grid;grid-template
 <canvas class="chart" id="evp" aria-label="추정 압력 Smooth와 0선"></canvas></div>
 <div class="panel"><div class="stat"><div><span class="muted">PUT WALL</span><b id="put">—</b></div><div><span class="muted">CALL WALL</span><b id="call">—</b></div><div><span class="muted">GAMMA FLIP</span><b id="flip">—</b></div></div>
 <p id="wallstatus" class="muted">월 가격은 별도 조회 후 표시합니다.</p>
-<button id="getwalls">Wall 데이터 조회</button></div>
-<div class="panel warn">실제 체결 판단은 TOS 5분봉에서 직접 하세요. Call Wall 도달 시 자동 청산하지 않고 익절/HOLD는 본인이 결정합니다. 데이터가 지연되며, Wall은 고정 지지·저항이 아닙니다. 개인용 로그인 보호가 완료되기 전에는 운영 공개 배포를 하지 않습니다.</div>
+<button id="getwalls">Wall 갱신</button></div><div class="panel"><b>진입·추가매수 위험 계획</b><div class="row"><input id="held" type="number" min="0" placeholder="기존 수량"><input id="heldStop" type="number" min="0" step="0.01" placeholder="기존 손절"><input id="addQty" type="number" min="0" placeholder="매수 수량"><input id="riskCap" type="number" min="0" placeholder="위험 한도 $"></div><p id="riskPlan" class="muted">차트 조회 후 손절 계획을 계산합니다.</p><b>기업 뉴스·공시</b><button id="context">뉴스 확인</button><div id="news" class="muted">뉴스 미확인 · 실적 일정 미확인 · 산업 뉴스 미확인</div></div>
+<div class="panel warn">실제 체결 판단은 TOS 실시간 차트에서 직접 하세요. Call Wall 도달 시 자동 청산하지 않고 익절/HOLD는 본인이 결정합니다. 데이터가 지연되며, Wall은 고정 지지·저항이 아닙니다. 개인용 로그인 보호가 완료되기 전에는 운영 공개 배포를 하지 않습니다.</div>
 </main><script>
 'use strict';
 const $=id=>document.getElementById(id);
-let tf='1d',latest=null,wall=null;
-const fmt=x=>Number.isFinite(Number(x))?'$'+Number(x).toFixed(2):'—';
+let tf='30m',latest=null,wall=null,requestId=0,controller=null;
+const fmt=x=>x!=null&&Number.isFinite(Number(x))?'$'+Number(x).toFixed(2):'—';
 const safeTicker=x=>/^[A-Z][A-Z0-9.]{0,9}$/.test(x);
 for(const b of document.querySelectorAll('[data-tf]'))b.onclick=()=>{tf=b.dataset.tf;document.querySelectorAll('[data-tf]').forEach(v=>v.classList.toggle('active',v===b));load(false)};
 function canvasSize(node){const r=node.getBoundingClientRect();const dpr=Math.min(window.devicePixelRatio||1,2);node.width=Math.max(100,Math.round(r.width*dpr));node.height=Math.max(100,Math.round(r.height*dpr));const ctx=node.getContext('2d');ctx.scale(dpr,dpr);return {ctx,w:r.width,h:r.height}}
@@ -73,23 +73,50 @@ function draw(){drawPrice();drawEvp();}
 async function load(withWalls){
  const sym=$('ticker').value.trim().toUpperCase();$('ticker').value=sym;
  if(!safeTicker(sym)){$('status').textContent='올바른 종목 코드를 입력하세요.';return;}
+ const myId=++requestId;controller?.abort();controller=new AbortController();const timer=setTimeout(()=>controller.abort(),24000);
  $('load').disabled=true;$('status').textContent='데이터 조회 중…';
  try{
- const r=await fetch('/api/search?mode=swing_radar_chart_beta&ticker='+encodeURIComponent(sym)+'&tf='+encodeURIComponent(tf)+(withWalls?'&walls=1':''),{cache:'no-store'});
- const j=await r.json();if(!r.ok)throw Error(j.error||'API error');
+ const r=await fetch('/api/search?mode=swing_radar_chart_beta&ticker='+encodeURIComponent(sym)+'&tf='+encodeURIComponent(tf)+(withWalls?'&walls=1':''),{cache:'no-store',signal:controller.signal});
+ const j=await r.json();if(!r.ok||j.error||!Array.isArray(j.bars))throw Error(j.detail||j.error||'API error');if(myId!==requestId)return;
  if(!latest||latest.ticker!==sym)wall=null; latest=j;if(withWalls)wall=j.wall;
  const b=j.bars.at(-1),hma=b.hull20;
  $('last').textContent=fmt(b.close);$('hma').textContent=fmt(hma);
  $('distance').textContent=hma?(100*(b.close/hma-1)).toFixed(2)+'%':'—';
- $('status').textContent=tf+' · 데이터 최종 봉 '+new Date(j.last_bar_utc).toLocaleString('ko-KR',{timeZone:'America/New_York'})+' (미 동부) · 지연 데이터';
- updateWalls();draw();
- }catch(e){$('status').textContent='조회 실패: '+e.message;latest=null;}finally{$('load').disabled=false;}
+ $('status').textContent=tf+' · 데이터 최종 봉 '+new Date(j.last_bar_utc).toLocaleString('ko-KR',{timeZone:'America/New_York'})+' (미 동부) · 15분 지연 · '+(j.provisional_bars?.length?'진행봉 있음: 확정 신호 제외':'완료봉만 표시');
+ updateWalls();updateRisk();draw();
+ if(!withWalls&&(!wall||wall.status==='UNAVAILABLE'))fetchWalls(sym,myId);
+ }catch(e){if(myId===requestId){$('status').textContent='조회 실패: '+e.message;latest=null;wall=null;updateWalls();for(const id of ['price','evp']){const node=$(id);node.getContext('2d').clearRect(0,0,node.width,node.height);}for(const id of ['last','hma','distance'])$(id).textContent='—';}}finally{clearTimeout(timer);if(myId===requestId)$('load').disabled=false;}
 }
 function updateWalls(){
  $('put').textContent=fmt(wall?.put_wall);$('call').textContent=fmt(wall?.call_wall);$('flip').textContent=fmt(wall?.gamma_flip);
+ const price=latest?.bars.at(-1)?.close;const dist=x=>price&&x!=null?' ('+((price/x-1)*100).toFixed(2)+'%)':'';
+ $('put').textContent+=dist(wall?.put_wall);$('call').textContent+=dist(wall?.call_wall);
  $('wallstatus').textContent=wall?.status==='UNAVAILABLE'?'Wall 데이터 조회 실패 · 미확인':wall?.asof_utc?'Wall 분석 시각 '+wall.asof_utc+' · 만기 '+(wall.expiry||'미확인'):'Wall 미조회';
 }
-$('load').onclick=()=>load(false);$('getwalls').onclick=()=>load(true);
+async function fetchWalls(sym,id){
+ const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),24000);
+ try{const r=await fetch('/api/search?ticker='+encodeURIComponent(sym)+'&view=summary',{cache:'no-store',signal:abort.signal});const j=await r.json();if(!r.ok||j.error)throw Error('Wall 조회 오류');if(id!==requestId||latest?.ticker!==sym)return;wall={put_wall:j.put_wall,call_wall:j.call_wall,gamma_flip:j.gamma_flip,asof_utc:j.generated_at,expiry:j.expiry_used};updateWalls();updateRisk();draw();}
+ catch(e){if(id===requestId){wall={status:'UNAVAILABLE'};updateWalls();updateRisk();}}finally{clearTimeout(timer);}
+}
+function updateRisk(){
+ if(!latest)return;const bars=latest.bars,price=bars.at(-1).close;
+ const stop=Math.min(...bars.slice(-5).map(b=>b.low))*.995,risk=price-stop;
+ const target=wall?.call_wall,reward=Number.isFinite(target)&&target>price?target-price:null;
+ const held=Number($('held').value),hs=Number($('heldStop').value),qty=Number($('addQty').value),cap=Number($('riskCap').value);
+ const total=held*Math.max(0,price-hs)+qty*Math.max(0,risk);
+ $('riskPlan').textContent='최근 5봉 구조 저점 아래 손절 참고 '+fmt(stop)+' · 주당 위험 '+fmt(risk)+' · Call Wall 손익비 '+(reward!=null&&risk>0?(reward/risk).toFixed(2)+'R':'미확인')+' · 추가 후 위험 '+(held>0&&hs<=0?'기존 손절 입력 필요':fmt(total))+' · '+(cap>0?(total<=cap?'한도 내':'위험 한도 초과'):'위험 한도 입력 필요')+' · 불타기는 Hull20 재눌림·EVP 재반전 확인 후 수동 판단';
+}
+for(const id of ['held','heldStop','addQty','riskCap'])$(id).oninput=updateRisk;
+$('context').onclick=async()=>{
+ const sym=$('ticker').value.trim().toUpperCase();if(!safeTicker(sym))return;
+ $('news').textContent='뉴스·공시 조회 중…';const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),24000);
+ try{const r=await fetch('/api/search?mode=swing_candidate_context&ticker='+encodeURIComponent(sym),{signal:ctl.signal,cache:'no-store'});const j=await r.json();if(!r.ok||j.error)throw Error('뉴스 조회 실패');if($('ticker').value.trim().toUpperCase()!==sym)return;$('news').replaceChildren();
+ for(const item of j.articles||[]){const a=document.createElement('a');if(!/^https?:\/\//.test(item.url||''))continue;a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=item.headline||'뉴스 원문';const p=document.createElement('p');p.append(a);$('news').append(p);}
+ const p=document.createElement('p');p.textContent=(!j.articles?.length?'뉴스 미확인 · ':'')+'실적 일정 '+j.earnings_status+' · 산업 '+j.sector_news_status+' · 공시 '+j.filings_status+' · '+j.risk_notice;$('news').append(p);
+ for(const f of j.filings||[]){const p=document.createElement('p');p.textContent=JSON.stringify(f);$('news').append(p);}
+ }catch(e){$('news').textContent='뉴스 미확인: '+e.message;}finally{clearTimeout(timer);}
+};
+$('load').onclick=()=>load(false);$('getwalls').onclick=()=>{if(latest)fetchWalls(latest.ticker,requestId)};
 let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(draw,120)});
 const qs=new URLSearchParams(location.search);
 const startTf=qs.get('tf');

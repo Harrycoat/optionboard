@@ -29,9 +29,28 @@
     },
     "api/swing_volume_heatmap.py": {
       "maxDuration": 30
+    },
+    "api/swing_page.py": {
+      "includeFiles": "public/*.html"
     }
   },
   "rewrites": [
+    {
+      "source": "/intc-paper-lab.html",
+      "destination": "/api/swing_page?page=paper"
+    },
+    {
+      "source": "/swing-top100.html",
+      "destination": "/api/swing_page?page=top100"
+    },
+    {
+      "source": "/swing-radar-chart.html",
+      "destination": "/api/swing_page?page=chart"
+    },
+    {
+      "source": "/swing-radar.html",
+      "destination": "/api/swing_page?page=sector"
+    },
     {
       "source": "/ai-leader-roadmap.html",
       "destination": "/index.html"

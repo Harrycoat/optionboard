@@ -1892,6 +1892,11 @@ class handler(BaseHTTPRequestHandler):
         mode = (query.get("mode", [""])[0]).strip()
         view = (query.get("view", [""])[0]).strip()
 
+        private_modes={'top100_30m_entry_batch','top100_pullback_batch','swing_radar_beta','swing_radar_chart_beta','swing_candidate_context'}
+        if mode in private_modes:
+            from swing_access import require_access
+            if not require_access(self):return
+
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -1957,101 +1962,59 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
             return
 
-        if mode == "top100_30m_entry_batch":
+        if mode in ('top100_30m_entry_batch','top100_pullback_batch'):
+            from swing_signals import daily_setup,intraday_setup,classify
+            from swing_radar_chart import aggregates
             import re
-            from swing_radar_chart import aggregates, indicators
-            raw=(query.get("symbols",[""])[0]).upper()
-            symbols=[s.strip() for s in raw.split(",") if s.strip()]
-            if not symbols or len(symbols)>2 or any(not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",s) for s in symbols):
-                self.wfile.write(json.dumps({"error":"Use 1-2 valid tickers"}).encode())
-                return
-            rows=[];errors=[]
-            for ticker in symbols:
-                try:
-                    bars=indicators(aggregates(ticker,"30m"))
-                    if len(bars)<35 or any(bars[-j]["hull20"] is None for j in (1,2,3)):
-                        raise ValueError("Insufficient completed 30m bars")
-                    last,prev=bars[-1],bars[-2]
-                    h,ph=last["hull20"],prev["hull20"]
-                    slope=h-ph
-                    turned_hull=slope>0 and bars[-3]["hull20"]>=ph
-                    cross=prev["close"]<=ph and last["close"]>h
-                    near=abs(last["close"]/h-1)*100<=1.5
-                    # EVP is OHLCV candle-location proxy, NOT genuine trade-side Smooth.
-                    smooth_up=last["evp"]>prev["evp"]
-                    smooth_recent=any(bars[-i]["evp"]>bars[-i-1]["evp"] for i in (1,2,3))
-                    pullback=any(b["low"]<=b["hull20"]*1.005 for b in bars[-5:-1] if b["hull20"] is not None)
-                    ready=bool(cross and turned_hull and smooth_up and pullback)
-                    watch=bool(near and slope>0 and smooth_recent and pullback)
-                    rows.append({"ticker":ticker,"ready":ready,"watch":watch,
-                        "cross_now":cross,"hull_turned_up":turned_hull,
-                        "evp_turn_up":smooth_up,"pullback":pullback,
-                        "last_close":last["close"],"hull20":h,
-                        "hull_distance_pct":round((last["close"]/h-1)*100,2),
-                        "hull_slope_pct":round(slope/ph*100,3) if ph else None,
-                        "bar_start_utc":datetime.fromtimestamp(last["t"]/1000,timezone.utc).isoformat(),
-                        "note":"Delayed 30m completed candle; EVP proxy, NOT actual TOS Smooth."})
-                except Exception as exc:
-                    errors.append({"ticker":ticker,"message":str(exc)[:110]})
-            self.wfile.write(json.dumps({"rows":rows,"errors":errors},ensure_ascii=False).encode())
+            symbols=(query.get('symbols',[''])[0]).upper().split(',')
+            if len(symbols)!=1 or not re.fullmatch(r'[A-Z][A-Z0-9.]{0,9}',symbols[0]):
+                self.wfile.write(b'{"error":"Use exactly one valid ticker per bounded request"}');return
+            ticker=symbols[0]
+            try:
+                if mode=='top100_pullback_batch':
+                    bars=aggregates(ticker,'1d');row=daily_setup(bars)
+                    row['bar_date']=datetime.fromtimestamp(bars[-1]['t']/1000,timezone.utc).astimezone(ZoneInfo('America/New_York')).date().isoformat()
+                else:
+                    from concurrent.futures import ThreadPoolExecutor
+                    with ThreadPoolExecutor(max_workers=2) as pool:
+                        daily_future=pool.submit(aggregates,ticker,'1d')
+                        intraday_future=pool.submit(aggregates,ticker,'30m',True)
+                        dailyrows=daily_future.result();d=daily_setup(dailyrows);allbars=intraday_future.result()
+                    d['bar_date']=datetime.fromtimestamp(dailyrows[-1]['t']/1000,timezone.utc).astimezone(ZoneInfo('America/New_York')).date().isoformat()
+                    completed=[b for b in allbars if b['complete']]
+                    row=intraday_setup(completed)
+                    row['status']=classify(d,row);row['daily']=d
+                    row['ready']=row['status']=='ENTRY'
+                    row['provisional']=None
+                    if allbars and not allbars[-1]['complete'] and allbars[-1]['coverage_ok']:
+                        row['provisional']=intraday_setup(allbars)
+                    expected=int((datetime.now(timezone.utc)-timedelta(minutes=15)).timestamp()*1000)
+                    from swing_radar_chart import session_bounds
+                    now_et=datetime.now(timezone.utc).astimezone(ZoneInfo('America/New_York'))
+                    bounds=session_bounds(now_et.date())
+                    if bounds and expected>=bounds[0]+1800000:
+                        last_expected=min(bounds[1],bounds[0]+((min(expected,bounds[1])-bounds[0])//1800000)*1800000)
+                        if row['bar_end_ms']<last_expected:raise ValueError('DATA_STALE: latest completed 30m candle missing')
+                if isinstance(row.get('bar_start_utc'),int):row['bar_start_utc']=datetime.fromtimestamp(row['bar_start_utc']/1000,timezone.utc).isoformat()
+                row['ticker']=ticker
+                self.wfile.write(json.dumps({'rows':[row],'errors':[],'delay_minutes':15},ensure_ascii=False).encode())
+            except Exception as exc:
+                self.wfile.write(json.dumps({'rows':[],'errors':[{'ticker':ticker,'message':str(exc)[:120]}]},ensure_ascii=False).encode())
             return
 
-        if mode == "top100_pullback_batch":
+        if mode == 'swing_candidate_context':
+            ticker=(query.get('ticker',[''])[0]).upper()
             import re
-            raw=(query.get("symbols",[""])[0]).upper()
-            symbols=[x.strip() for x in raw.split(",") if x.strip()]
-            if not symbols or len(symbols)>3 or any(not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",s) for s in symbols):
-                self.wfile.write(json.dumps({"error":"Provide 1-3 valid tickers"}).encode())
-                return
-            out=[];errors=[]
-            now_et=datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York"))
-            today=now_et.date()
-            for ticker in symbols:
-                try:
-                    data=_massive_get(
-                        f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{today-timedelta(days=450)}/{today}",
-                        {"adjusted":"true","sort":"asc","limit":500})
-                    candles=data.get("results") or []
-                    if candles:
-                        last_dt=datetime.fromtimestamp(int(candles[-1]["t"])/1000,timezone.utc).astimezone(ZoneInfo("America/New_York")).date()
-                        if last_dt==today and (now_et.hour<16 or (now_et.hour==16 and now_et.minute<15)):
-                            candles=candles[:-1]
-                    if len(candles)<55: raise ValueError("Insufficient completed daily history")
-                    closes=[float(b["c"]) for b in candles]
-                    highs=[float(b["h"]) for b in candles]
-                    lows=[float(b["l"]) for b in candles]
-                    current=closes[-1]
-                    if current<=0: raise ValueError("Invalid latest price")
-                    high52=max(highs[-252:])
-                    high20=max(highs[-20:])
-                    sma20=sum(closes[-20:])/20
-                    sma50=sum(closes[-50:])/50
-                    sma50_prior=sum(closes[-55:-5])/50
-                    sma50_slope_pct=(sma50/sma50_prior-1)*100 if sma50_prior else 0
-                    sma50_rising=sma50_slope_pct>0
-                    dist20=(current/sma20-1)*100
-                    # A historical intraday touch counts even if the daily close recovered.
-                    touch20=any(lows[i]<=sum(closes[i-19:i+1])/20<=highs[i]
-                        for i in range(max(19,len(closes)-5),len(closes)))
-                    near20=abs(dist20)<=2
-                    watch=sma50_rising and (touch20 or near20)
-                    out.append({"ticker":ticker,"close":round(current,3),
-                        "drawdown_52w_pct":round((high52-current)/high52*100,2),
-                        "drawdown_20d_pct":round((high20-current)/high20*100,2),
-                        "sma20":round(sma20,3),"sma50":round(sma50,3),
-                        "sma50_rising":bool(sma50_rising),"sma50_slope_pct":round(sma50_slope_pct,3),
-                        "distance_sma20_pct":round(dist20,2),
-                        "touched_sma20":bool(touch20),"near_sma20":bool(near20),
-                        "watch_candidate":bool(watch),
-                        "bar_date":str(datetime.fromtimestamp(int(candles[-1]["t"])/1000,timezone.utc).astimezone(ZoneInfo("America/New_York")).date()),
-                        "status":("WATCH_TOUCH_20MA" if touch20 else "WATCH_NEAR_20MA") if watch else ("SMA50_NOT_RISING" if not sma50_rising else "NOT_READY")})
-                except Exception as exc:
-                    errors.append({"ticker":ticker,"message":str(exc)[:100]})
-            self.wfile.write(json.dumps({"rows":out,"errors":errors,
-                "source":"Massive completed daily OHLCV",
-                "ranking":"52-week high-to-close drawdown, descending",
-                "note":"WATCH requires rising SMA50 slope over 5 sessions AND recent SMA20 touch/near; not a BUY. Current incomplete daily bar excluded."},ensure_ascii=False).encode())
-            return
+            if not re.fullmatch(r'[A-Z][A-Z0-9.]{0,9}',ticker):
+                self.wfile.write(b'{"error":"Invalid ticker"}');return
+            from concurrent.futures import ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                nf=pool.submit(_finnhub_company_news_checked,ticker,7)
+                ff=pool.submit(_sec_recent_filings,ticker)
+                articles,ns=nf.result();filings,fs=ff.result()
+            self.wfile.write(json.dumps({'articles':articles[:5],'news_status':ns,'filings':filings[:5],'filings_status':fs,
+                'earnings_status':'미확인','sector_news_status':'뉴스 미확인',
+                'risk_notice':'공시·뉴스 원문 확인 필요. 뉴스만으로 상승 촉매 또는 자금조달 위험을 확정하지 않음.'},ensure_ascii=False).encode());return
 
         if mode == "swing_radar_beta":
             try:
@@ -2073,14 +2036,16 @@ class handler(BaseHTTPRequestHandler):
                 tf=(query.get("tf",["1d"])[0]).strip().lower()
                 if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",ticker) or tf not in VALID_TF:
                     raise ValueError("Invalid ticker/timeframe")
-                bars=indicators(aggregates(ticker,tf))
+                allrows=aggregates(ticker,tf,True)
+                bars=indicators([b for b in allrows if b["complete"]])
                 if len(bars)<25:
                     raise ValueError("Insufficient completed bars for Hull20")
                 wall=get_walls(ticker) if query.get("walls",["0"])[0]=="1" else {"status":"NOT_REQUESTED"}
                 result={"ticker":ticker,"tf":tf,"bars":bars,"wall":wall,
                         "last_bar_utc":datetime.fromtimestamp(bars[-1]["t"]/1000,timezone.utc).isoformat(),
                         "generated_at_utc":datetime.now(timezone.utc).isoformat(),
-                        "notice":"EVP is estimated OHLCV pressure, not actual TOS Smooth."}
+                        "provisional_bars":indicators(allrows)[-1:] if allrows and not allrows[-1]["complete"] else [],
+                        "notice":"15-minute delayed EVP proxy; not TOS Smooth. HMA20 uses WMA(10/20), sqrt length 4; TOS parity unverified."}
                 self.wfile.write(json.dumps(result,ensure_ascii=False).encode())
             except Exception as exc:
                 self.wfile.write(json.dumps({"error":"Swing chart unavailable","detail":str(exc)[:160]},ensure_ascii=False).encode())
