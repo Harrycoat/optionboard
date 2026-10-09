@@ -1,0 +1,95 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEXOption · SWING CHART BETA</title>
+<style>
+:root{color-scheme:dark;--bg:#09121e;--p:#152237;--t:#edf4fc;--s:#a5b5cb;--line:#2b4158;--up:#38d59b;--dn:#ff8188;--hull:#f4c856}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:15px system-ui,sans-serif}
+main{max-width:900px;margin:auto;padding:12px}h1{font-size:23px;margin:10px 0}.muted{color:var(--s);font-size:13px;line-height:1.5}
+.panel{padding:14px;border-radius:13px;background:var(--p);border:1px solid var(--line);margin:12px 0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{min-width:0}
+input{padding:11px;max-width:150px;background:#0b1728;color:var(--t);border:1px solid var(--line);font-size:18px;border-radius:8px}
+button{border:1px solid var(--line);border-radius:8px;padding:11px;background:#22334a;color:var(--t);font-weight:700;cursor:pointer}
+button.active{background:var(--hull);color:#111}.tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:12px}
+.tabs button{padding:11px 2px;font-size:12px}.chart{width:100%;height:310px;display:block;touch-action:pan-y}
+#evp{height:145px}.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat div{padding:10px;background:#0a1626;border-radius:8px}.stat b{display:block;font-size:17px;margin-top:6px}
+.warn{color:#ffd18e}.error{color:var(--dn)}a{color:#9fccff}
+@media(max-width:420px){.stat{gap:4px}.stat div{padding:8px 5px}.stat b{font-size:15px}.chart{height:260px}#evp{height:125px}}
+</style></head><body><main>
+<a href="/swing-radar.html">← Sector Radar</a><h1>HULL20 · SWING CHART <span class="muted">BETA</span></h1>
+<div class="muted">일봉 매도 둔화 확인 → Put Wall 부근 WATCH → 5분봉 Hull20 회복·Smooth 확인 → 수동 진입 검토</div>
+<div class="panel">
+<div class="row"><input id="ticker" maxlength="10" placeholder="Ticker" value="INTC" autocomplete="off" aria-label="종목 티커"><button id="load">차트 조회</button></div>
+<div class="tabs" id="tabs">
+<button data-tf="1d" class="active">일봉</button><button data-tf="4h">4H</button>
+<button data-tf="1h">1H</button><button data-tf="30m">30분</button>
+<button data-tf="10m">10분</button><button data-tf="5m">5분</button></div>
+<p class="muted" id="status">종목을 입력하고 차트 조회를 누르세요.</p>
+</div>
+<div class="panel"><div class="stat"><div><span class="muted">현재 종가</span><b id="last">—</b></div><div><span class="muted">Hull20</span><b id="hma">—</b></div><div><span class="muted">거리</span><b id="distance">—</b></div></div>
+<canvas class="chart" id="price" aria-label="가격 캔들과 Hull20 차트"></canvas>
+<div class="muted">캔들 <span style="color:var(--up)">■</span> 상승 / <span style="color:var(--dn)">■</span> 하락 · <span style="color:var(--hull)">━</span> Hull20 · <span style="color:var(--up)">┄</span> Put Wall · <span style="color:var(--dn)">┄</span> Call Wall</div>
+</div>
+<div class="panel"><b>EVP Smooth · 0선</b><div class="muted">OHLCV 추정 압력입니다. 실제 TOS OrderFlow Smooth와 다릅니다.</div>
+<canvas class="chart" id="evp" aria-label="추정 압력 Smooth와 0선"></canvas></div>
+<div class="panel"><div class="stat"><div><span class="muted">PUT WALL</span><b id="put">—</b></div><div><span class="muted">CALL WALL</span><b id="call">—</b></div><div><span class="muted">GAMMA FLIP</span><b id="flip">—</b></div></div>
+<p id="wallstatus" class="muted">월 가격은 별도 조회 후 표시합니다.</p>
+<button id="getwalls">Wall 데이터 조회</button></div>
+<div class="panel warn">실제 체결 판단은 TOS 5분봉에서 직접 하세요. Call Wall 도달 시 자동 청산하지 않고 익절/HOLD는 본인이 결정합니다. 데이터가 지연되며, Wall은 고정 지지·저항이 아닙니다. 개인용 로그인 보호가 완료되기 전에는 운영 공개 배포를 하지 않습니다.</div>
+</main><script>
+'use strict';
+const $=id=>document.getElementById(id);
+let tf='1d',latest=null,wall=null;
+const fmt=x=>Number.isFinite(Number(x))?'$'+Number(x).toFixed(2):'—';
+const safeTicker=x=>/^[A-Z][A-Z0-9.]{0,9}$/.test(x);
+for(const b of document.querySelectorAll('[data-tf]'))b.onclick=()=>{tf=b.dataset.tf;document.querySelectorAll('[data-tf]').forEach(v=>v.classList.toggle('active',v===b));load(false)};
+function canvasSize(node){const r=node.getBoundingClientRect();const dpr=Math.min(window.devicePixelRatio||1,2);node.width=Math.max(100,Math.round(r.width*dpr));node.height=Math.max(100,Math.round(r.height*dpr));const ctx=node.getContext('2d');ctx.scale(dpr,dpr);return {ctx,w:r.width,h:r.height}}
+function drawPrice(){
+ if(!latest)return;
+ const node=$('price'),{ctx,w,h}=canvasSize(node),bars=latest.bars.slice(-65),padding={l:6,r:49,t:12,b:22};
+ const levels=bars.flatMap(b=>[b.high,b.low,b.hull20].filter(x=>x!=null));
+ for(const x of [wall?.put_wall,wall?.call_wall])if(Number.isFinite(Number(x))&&x!=null)levels.push(Number(x));
+ const lo=Math.min(...levels),hi=Math.max(...levels),span=Math.max(.01,hi-lo);
+ const y=v=>padding.t+(hi-v)/span*(h-padding.t-padding.b);
+ const plotw=w-padding.l-padding.r,x=i=>padding.l+(i+.5)*plotw/bars.length;
+ ctx.fillStyle='#0a1626';ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle='#314156';ctx.lineWidth=.6;
+ for(let i=0;i<5;i++){let py=padding.t+i*(h-padding.t-padding.b)/4;ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(w,py);ctx.stroke();ctx.fillStyle='#9fb0c3';ctx.font='10px system-ui';ctx.fillText((hi-span*i/4).toFixed(2),w-padding.r+5,py+3);}
+ let cw=Math.max(2,plotw/bars.length*.62);
+ bars.forEach((b,i)=>{let col=b.close>=b.open?'#38d59b':'#ff8188';ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x(i),y(b.high));ctx.lineTo(x(i),y(b.low));ctx.stroke();let top=Math.min(y(b.open),y(b.close));ctx.fillRect(x(i)-cw/2,top,cw,Math.max(1.3,Math.abs(y(b.open)-y(b.close))));});
+ ctx.strokeStyle='#f4c856';ctx.lineWidth=2;ctx.beginPath();let started=false;
+ bars.forEach((b,i)=>{if(b.hull20==null)return;if(!started){ctx.moveTo(x(i),y(b.hull20));started=true;}else ctx.lineTo(x(i),y(b.hull20))});ctx.stroke();
+ for(const [price,col] of [[wall?.put_wall,'#38d59b'],[wall?.call_wall,'#ff8188']]){
+ if(price==null||!Number.isFinite(Number(price)))continue;ctx.strokeStyle=col;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(0,y(price));ctx.lineTo(w-padding.r,y(price));ctx.stroke();ctx.setLineDash([]);
+ }
+}
+function drawEvp(){
+ if(!latest)return;
+ const {ctx,w,h}=canvasSize($('evp')),values=latest.bars.slice(-65).map(b=>b.evp),max=Math.max(.1,...values.map(v=>Math.abs(v)))*1.2;
+ const y=v=>h/2-v/max*(h/2-15),x=i=>5+i*(w-12)/(values.length-1);
+ ctx.fillStyle='#0a1626';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#8091a8';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(0,y(0));ctx.lineTo(w,y(0));ctx.stroke();ctx.setLineDash([]);
+ ctx.lineWidth=2.3;ctx.strokeStyle='#eab758';ctx.beginPath();values.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
+}
+function draw(){drawPrice();drawEvp();}
+async function load(withWalls){
+ const sym=$('ticker').value.trim().toUpperCase();$('ticker').value=sym;
+ if(!safeTicker(sym)){$('status').textContent='올바른 종목 코드를 입력하세요.';return;}
+ $('load').disabled=true;$('status').textContent='데이터 조회 중…';
+ try{
+ const r=await fetch('/api/swing_radar_chart?ticker='+encodeURIComponent(sym)+'&tf='+encodeURIComponent(tf)+(withWalls?'&walls=1':''),{cache:'no-store'});
+ const j=await r.json();if(!r.ok)throw Error(j.error||'API error');
+ if(!latest||latest.ticker!==sym)wall=null; latest=j;if(withWalls)wall=j.wall;
+ const b=j.bars.at(-1),hma=b.hull20;
+ $('last').textContent=fmt(b.close);$('hma').textContent=fmt(hma);
+ $('distance').textContent=hma?(100*(b.close/hma-1)).toFixed(2)+'%':'—';
+ $('status').textContent=tf+' · 데이터 최종 봉 '+new Date(j.last_bar_utc).toLocaleString('ko-KR',{timeZone:'America/New_York'})+' (미 동부) · 지연 데이터';
+ updateWalls();draw();
+ }catch(e){$('status').textContent='조회 실패: '+e.message;latest=null;}finally{$('load').disabled=false;}
+}
+function updateWalls(){
+ $('put').textContent=fmt(wall?.put_wall);$('call').textContent=fmt(wall?.call_wall);$('flip').textContent=fmt(wall?.gamma_flip);
+ $('wallstatus').textContent=wall?.status==='UNAVAILABLE'?'Wall 데이터 조회 실패 · 미확인':wall?.asof_utc?'Wall 분석 시각 '+wall.asof_utc+' · 만기 '+(wall.expiry||'미확인'):'Wall 미조회';
+}
+$('load').onclick=()=>load(false);$('getwalls').onclick=()=>load(true);
+let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(draw,120)});
+const prefill=new URLSearchParams(location.search).get('ticker');if(prefill&&safeTicker(prefill.toUpperCase()))$('ticker').value=prefill.toUpperCase();
+</script></body></html>
