@@ -1957,6 +1957,59 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
             return
 
+        if mode == "top100_pullback_batch":
+            import re
+            raw=(query.get("symbols",[""])[0]).upper()
+            symbols=[x.strip() for x in raw.split(",") if x.strip()]
+            if not symbols or len(symbols)>3 or any(not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",s) for s in symbols):
+                self.wfile.write(json.dumps({"error":"Provide 1-3 valid tickers"}).encode())
+                return
+            out=[];errors=[]
+            now_et=datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York"))
+            today=now_et.date()
+            for ticker in symbols:
+                try:
+                    data=_massive_get(
+                        f"{MASSIVE_API_BASE}/v2/aggs/ticker/{ticker}/range/1/day/{today-timedelta(days=450)}/{today}",
+                        {"adjusted":"true","sort":"asc","limit":500})
+                    candles=data.get("results") or []
+                    if candles:
+                        last_dt=datetime.fromtimestamp(int(candles[-1]["t"])/1000,timezone.utc).astimezone(ZoneInfo("America/New_York")).date()
+                        if last_dt==today and (now_et.hour<16 or (now_et.hour==16 and now_et.minute<15)):
+                            candles=candles[:-1]
+                    if len(candles)<55: raise ValueError("Insufficient completed daily history")
+                    closes=[float(b["c"]) for b in candles]
+                    highs=[float(b["h"]) for b in candles]
+                    lows=[float(b["l"]) for b in candles]
+                    current=closes[-1]
+                    if current<=0: raise ValueError("Invalid latest price")
+                    high52=max(highs[-252:])
+                    high20=max(highs[-20:])
+                    sma20=sum(closes[-20:])/20
+                    sma50=sum(closes[-50:])/50
+                    dist20=(current/sma20-1)*100
+                    # A historical intraday touch counts even if the daily close recovered.
+                    touch20=any(lows[i]<=sum(closes[i-19:i+1])/20<=highs[i]
+                        for i in range(max(19,len(closes)-5),len(closes)))
+                    near20=abs(dist20)<=2
+                    watch=touch20 or near20
+                    out.append({"ticker":ticker,"close":round(current,3),
+                        "drawdown_52w_pct":round((high52-current)/high52*100,2),
+                        "drawdown_20d_pct":round((high20-current)/high20*100,2),
+                        "sma20":round(sma20,3),"sma50":round(sma50,3),
+                        "distance_sma20_pct":round(dist20,2),
+                        "touched_sma20":bool(touch20),"near_sma20":bool(near20),
+                        "watch_candidate":bool(watch),
+                        "bar_date":str(datetime.fromtimestamp(int(candles[-1]["t"])/1000,timezone.utc).astimezone(ZoneInfo("America/New_York")).date()),
+                        "status":"WATCH_TOUCH_20MA" if touch20 else ("WATCH_NEAR_20MA" if near20 else "NOT_READY")})
+                except Exception as exc:
+                    errors.append({"ticker":ticker,"message":str(exc)[:100]})
+            self.wfile.write(json.dumps({"rows":out,"errors":errors,
+                "source":"Massive completed daily OHLCV",
+                "ranking":"52-week high-to-close drawdown, descending",
+                "note":"20MA touch/near means WATCH, not BUY; incomplete current bar excluded."},ensure_ascii=False).encode())
+            return
+
         if mode == "swing_radar_beta":
             try:
                 from swing_radar import SECTORS, process
