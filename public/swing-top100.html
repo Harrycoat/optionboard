@@ -8,9 +8,14 @@ nav{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}nav a{padding:8px;bo
 .item{display:grid;grid-template-columns:35px 90px 1fr auto;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.item:last-child{border:0}.rank{color:var(--sub)}.sym{font-size:18px;font-weight:800}.sector{font-size:12px;color:var(--sub)}.percent{color:var(--green);font-weight:700;font-size:12px}.negative{color:#ff9c9c}
 button{background:var(--gold);color:#10151e;border:0;border-radius:8px;padding:12px;font-weight:800;cursor:pointer}button:disabled{opacity:.45}.watch{color:var(--green);font-weight:800}.excluded{color:#ffb5a7}.btn{display:inline-block;background:var(--gold);color:#15151c;font-size:12px;text-decoration:none;border-radius:8px;padding:10px 11px;font-weight:800;text-align:center}
 @media(max-width:540px){.item{grid-template-columns:27px 70px 1fr;gap:5px}.btn{grid-column:2 / span 2}.sym{font-size:16px}.sector{font-size:11px}}
+.chart-panel{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow:auto;padding:10px}.chart-panel.open{display:block}.chart-toolbar{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 4px}.chart-toolbar button{padding:12px 16px}.chart-panel iframe{border:0;width:100%;height:calc(100dvh - 74px);background:var(--bg);border-radius:9px}@media(min-width:850px){.chart-panel{padding:16px max(16px,calc((100vw - 930px)/2))}}
 </style></head><body><main>
 <nav><a href="/swing-radar.html">섹터 스캐너</a><a href="/swing-radar-chart.html?ticker=INTC">Hull20 차트</a></nav>
-<h1>TOP 100 · SWING WATCH</h1>
+<h1>GEXOption · SWING RADAR</h1><div class="muted">TOP 100 → 30분봉 Hull20 / Smooth / Wall → 손절 계획 · 한 화면에서 확인</div>
+<div class="chart-panel" id="chartPanel" role="dialog" aria-label="종목 Hull20 차트">
+ <div class="chart-toolbar"><button type="button" id="backToList">← TOP 100 목록</button><strong id="chartTitle">Hull20 차트</strong></div>
+ <iframe id="chartFrame" title="종목별 Hull20 차트" loading="lazy"></iframe>
+</div>
 <p class="muted">2026-10-09 사용자 업로드 Barchart Weighted Alpha TOP 100 고정 목록 · 52주 수익률 별도 표시. TOP 100은 매수 신호가 아닙니다. 강세 종목을 먼저 분류한 뒤, 각 종목 차트에서 일봉 매도 둔화·Hull20 눌림·Put Wall·30분봉 진입을 직접 검증합니다.</p>
 <section class="panel"><div class="controls"><input id="q" placeholder="종목 검색 (예: INTC, MU)" autocomplete="off" aria-label="종목 검색"><select id="sector" aria-label="산업 선택"><option value="">전체 산업</option></select></div><p id="status" class="muted"></p><div class="controls"><button id="scan" type="button">TOP 100 눌림목 스캔 (완료 일봉)</button><select id="filter"><option value="all">전체 TOP 100 · 30분 Hull20 근접순</option><option value="watch">일봉 눌림 WATCH만</option><option value="ready">30분 ENTRY만</option></select></div><p id="scan-status" class="muted">스캔 전에는 기존 TOP 100 목록이 표시됩니다. 버튼을 눌러 확인하세요.</p></section>
 <section class="panel" id="list"></section>
@@ -59,7 +64,8 @@ function render(){
   }
   meta.append(sec,pct,info);
   const link=document.createElement('a');link.className='btn';
-  link.href='/swing-radar-chart.html?ticker='+encodeURIComponent(x.symbol);link.textContent='Hull20 · Wall 차트 →';
+  link.href='/swing-radar-chart.html?ticker='+encodeURIComponent(x.symbol)+'&tf=30m';link.textContent='30분 Hull20 차트 →';
+  link.addEventListener('click',event=>{event.preventDefault();showChart(x.symbol);});
   line.append(rank,symbol,meta,link);list.append(line);
  }
 }
@@ -104,5 +110,24 @@ async function scanAll(){
  scanned=true;render();scanStatus.textContent='완료: '+snapshots.size+'/100 · 50MA 상승 + 20MA 접촉 WATCH '+[...snapshots.values()].filter(x=>x.watch_candidate).length+'개 · 30분봉 데이터 '+signals.size+'/100 · ENTRY '+[...signals.values()].filter(x=>x.ready).length+'개 · 오류 '+failures.length+(failures.length?' ('+failures.slice(0,5).join(' | ')+')':'');}
  finally{scanBtn.disabled=false;}
 }
+const chartPanel=document.getElementById('chartPanel');
+const chartFrame=document.getElementById('chartFrame');
+const chartTitle=document.getElementById('chartTitle');
+let chartOpened=false;
+function showChart(symbol){
+ chartOpened=true;
+ chartTitle.textContent=symbol+' · 30분봉 Hull20';
+ chartFrame.src='/swing-radar-chart.html?ticker='+encodeURIComponent(symbol)+'&tf=30m';
+ chartPanel.classList.add('open');
+ document.body.style.overflow='hidden';
+ if(location.hash!=='#chart')history.pushState({chart:true},'',location.pathname+location.search+'#chart');
+}
+function hideChart(fromHistory=false){
+ chartOpened=false;chartPanel.classList.remove('open');chartFrame.removeAttribute('src');
+ document.body.style.overflow='';
+ if(!fromHistory&&location.hash==='#chart')history.replaceState(null,'',location.pathname+location.search);
+}
+document.getElementById('backToList').addEventListener('click',()=>hideChart());
+window.addEventListener('popstate',()=>{if(chartOpened)hideChart(true)});
 scanBtn.addEventListener('click',scanAll);q.addEventListener('input',render);sel.addEventListener('change',render);filter.addEventListener('change',render);render();
 </script></main></body></html>
