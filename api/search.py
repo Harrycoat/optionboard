@@ -1957,6 +1957,39 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
             return
 
+        if mode == "swing_radar_beta":
+            try:
+                from swing_radar import SECTORS, process
+                sector=(query.get("sector",[""])[0]).strip().upper()
+                if sector not in SECTORS:
+                    raise ValueError("Invalid sector")
+                result=process(sector)
+                self.wfile.write(json.dumps(result,ensure_ascii=False).encode())
+            except Exception as exc:
+                self.wfile.write(json.dumps({"error":"Swing radar data unavailable","detail":str(exc)[:160]},ensure_ascii=False).encode())
+            return
+
+        if mode == "swing_radar_chart_beta":
+            try:
+                from swing_radar_chart import aggregates, indicators, get_walls, VALID_TF
+                import re
+                ticker=(query.get("ticker",[""])[0]).strip().upper()
+                tf=(query.get("tf",["1d"])[0]).strip().lower()
+                if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",ticker) or tf not in VALID_TF:
+                    raise ValueError("Invalid ticker/timeframe")
+                bars=indicators(aggregates(ticker,tf))
+                if len(bars)<25:
+                    raise ValueError("Insufficient completed bars for Hull20")
+                wall=get_walls(ticker) if query.get("walls",["0"])[0]=="1" else {"status":"NOT_REQUESTED"}
+                result={"ticker":ticker,"tf":tf,"bars":bars,"wall":wall,
+                        "last_bar_utc":datetime.fromtimestamp(bars[-1]["t"]/1000,timezone.utc).isoformat(),
+                        "generated_at_utc":datetime.now(timezone.utc).isoformat(),
+                        "notice":"EVP is estimated OHLCV pressure, not actual TOS Smooth."}
+                self.wfile.write(json.dumps(result,ensure_ascii=False).encode())
+            except Exception as exc:
+                self.wfile.write(json.dumps({"error":"Swing chart unavailable","detail":str(exc)[:160]},ensure_ascii=False).encode())
+            return
+
         if mode == "sector_rotation_scan":
             try:
                 top_n = int((query.get("top_n", ["2"])[0]))
