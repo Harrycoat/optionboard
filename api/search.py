@@ -1892,6 +1892,11 @@ class handler(BaseHTTPRequestHandler):
         mode = (query.get("mode", [""])[0]).strip()
         view = (query.get("view", [""])[0]).strip()
 
+        private_modes={'top100_30m_entry_batch','top100_pullback_batch','swing_radar_beta','swing_radar_chart_beta','swing_candidate_context'}
+        if mode in private_modes:
+            from swing_access import require_access
+            if not require_access(self):return
+
         self.send_response(200)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -1955,6 +1960,95 @@ class handler(BaseHTTPRequestHandler):
                 }, ensure_ascii=False).encode())
             except Exception as e:
                 self.wfile.write(json.dumps({"error": str(e), "ticker": ticker}, ensure_ascii=False).encode())
+            return
+
+        if mode in ('top100_30m_entry_batch','top100_pullback_batch'):
+            from swing_signals import daily_setup,intraday_setup,classify
+            from swing_radar_chart import aggregates
+            import re
+            symbols=(query.get('symbols',[''])[0]).upper().split(',')
+            if len(symbols)!=1 or not re.fullmatch(r'[A-Z][A-Z0-9.]{0,9}',symbols[0]):
+                self.wfile.write(b'{"error":"Use exactly one valid ticker per bounded request"}');return
+            ticker=symbols[0]
+            try:
+                if mode=='top100_pullback_batch':
+                    bars=aggregates(ticker,'1d');row=daily_setup(bars)
+                    row['bar_date']=datetime.fromtimestamp(bars[-1]['t']/1000,timezone.utc).astimezone(ZoneInfo('America/New_York')).date().isoformat()
+                else:
+                    from concurrent.futures import ThreadPoolExecutor
+                    with ThreadPoolExecutor(max_workers=2) as pool:
+                        daily_future=pool.submit(aggregates,ticker,'1d')
+                        intraday_future=pool.submit(aggregates,ticker,'30m',True)
+                        dailyrows=daily_future.result();d=daily_setup(dailyrows);allbars=intraday_future.result()
+                    d['bar_date']=datetime.fromtimestamp(dailyrows[-1]['t']/1000,timezone.utc).astimezone(ZoneInfo('America/New_York')).date().isoformat()
+                    completed=[b for b in allbars if b['complete']]
+                    row=intraday_setup(completed)
+                    row['status']=classify(d,row);row['daily']=d
+                    row['ready']=row['status']=='ENTRY'
+                    row['provisional']=None
+                    if allbars and not allbars[-1]['complete'] and allbars[-1]['coverage_ok']:
+                        row['provisional']=intraday_setup(allbars)
+                    expected=int((datetime.now(timezone.utc)-timedelta(minutes=15)).timestamp()*1000)
+                    from swing_radar_chart import session_bounds
+                    now_et=datetime.now(timezone.utc).astimezone(ZoneInfo('America/New_York'))
+                    bounds=session_bounds(now_et.date())
+                    if bounds and expected>=bounds[0]+1800000:
+                        last_expected=min(bounds[1],bounds[0]+((min(expected,bounds[1])-bounds[0])//1800000)*1800000)
+                        if row['bar_end_ms']<last_expected:raise ValueError('DATA_STALE: latest completed 30m candle missing')
+                if isinstance(row.get('bar_start_utc'),int):row['bar_start_utc']=datetime.fromtimestamp(row['bar_start_utc']/1000,timezone.utc).isoformat()
+                row['ticker']=ticker
+                self.wfile.write(json.dumps({'rows':[row],'errors':[],'delay_minutes':15},ensure_ascii=False).encode())
+            except Exception as exc:
+                self.wfile.write(json.dumps({'rows':[],'errors':[{'ticker':ticker,'message':str(exc)[:120]}]},ensure_ascii=False).encode())
+            return
+
+        if mode == 'swing_candidate_context':
+            ticker=(query.get('ticker',[''])[0]).upper()
+            import re
+            if not re.fullmatch(r'[A-Z][A-Z0-9.]{0,9}',ticker):
+                self.wfile.write(b'{"error":"Invalid ticker"}');return
+            from concurrent.futures import ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                nf=pool.submit(_finnhub_company_news_checked,ticker,7)
+                ff=pool.submit(_sec_recent_filings,ticker)
+                articles,ns=nf.result();filings,fs=ff.result()
+            self.wfile.write(json.dumps({'articles':articles[:5],'news_status':ns,'filings':filings[:5],'filings_status':fs,
+                'earnings_status':'미확인','sector_news_status':'뉴스 미확인',
+                'risk_notice':'공시·뉴스 원문 확인 필요. 뉴스만으로 상승 촉매 또는 자금조달 위험을 확정하지 않음.'},ensure_ascii=False).encode());return
+
+        if mode == "swing_radar_beta":
+            try:
+                from swing_radar import SECTORS, process
+                sector=(query.get("sector",[""])[0]).strip().upper()
+                if sector not in SECTORS:
+                    raise ValueError("Invalid sector")
+                result=process(sector)
+                self.wfile.write(json.dumps(result,ensure_ascii=False).encode())
+            except Exception as exc:
+                self.wfile.write(json.dumps({"error":"Swing radar data unavailable","detail":str(exc)[:160]},ensure_ascii=False).encode())
+            return
+
+        if mode == "swing_radar_chart_beta":
+            try:
+                from swing_radar_chart import aggregates, indicators, get_walls, VALID_TF
+                import re
+                ticker=(query.get("ticker",[""])[0]).strip().upper()
+                tf=(query.get("tf",["1d"])[0]).strip().lower()
+                if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",ticker) or tf not in VALID_TF:
+                    raise ValueError("Invalid ticker/timeframe")
+                allrows=aggregates(ticker,tf,True)
+                bars=indicators([b for b in allrows if b["complete"]])
+                if len(bars)<25:
+                    raise ValueError("Insufficient completed bars for Hull20")
+                wall=get_walls(ticker) if query.get("walls",["0"])[0]=="1" else {"status":"NOT_REQUESTED"}
+                result={"ticker":ticker,"tf":tf,"bars":bars,"wall":wall,
+                        "last_bar_utc":datetime.fromtimestamp(bars[-1]["t"]/1000,timezone.utc).isoformat(),
+                        "generated_at_utc":datetime.now(timezone.utc).isoformat(),
+                        "provisional_bars":indicators(allrows)[-1:] if allrows and not allrows[-1]["complete"] else [],
+                        "notice":"15-minute delayed EVP proxy; not TOS Smooth. HMA20 uses WMA(10/20), sqrt length 4; TOS parity unverified."}
+                self.wfile.write(json.dumps(result,ensure_ascii=False).encode())
+            except Exception as exc:
+                self.wfile.write(json.dumps({"error":"Swing chart unavailable","detail":str(exc)[:160]},ensure_ascii=False).encode())
             return
 
         if mode == "sector_rotation_scan":
