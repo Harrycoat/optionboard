@@ -55,12 +55,12 @@ R10 미확정 공식·시간·지표·계약 조건은 단정 금지.""",
 }
 
 GUIDED_CASE = {
-    "id": "core-v0.1-smooth-unknown-01",
+    "id": "foundation-v0.1-smooth-unknown-01",
     "kind": "SYNTHETIC",
     "timeframe": "30m",
     "source": "가상 사례, 실제 시장 데이터 아님",
     "facts": "가상 종목: 일봉 사전 조건 충족, 30분봉 Hull21 밴드 재진입, Put Wall 지지, 매수세 53, Smooth 방향 미확인.",
-    "rubric": "진입 조건 충족을 단정할 수 없다. Smooth가 미확인이므로 대기하고 Smooth 전환을 확인해야 한다. 매수세 53은 >50 조건만 충족한다.",
+    "rubric": "이 사례에서 Smooth가 미확인이므로 진입 충족을 단정하지 않는다. VF-0.2의 최종 Hull21 밴드 순서도 별도로 학습한다.",
 }
 GUIDED_SYSTEM = """교육 모드입니다. 한국어 또는 영어로, 답변의 주 언어를 따릅니다.
 메인 교육 기준은 소유자 승인 VF-0.2입니다. 기초 눌림목 v0.1 자료도 보존하되 규칙 충돌 시 VF-0.2를 따릅니다. 이는 실제 매매 검증 또는 주문 승인이 아닙니다.
@@ -190,7 +190,7 @@ class handler(BaseHTTPRequestHandler):
                 "unavailable": ["완료봉", "현재가", "거래량", "Hull21 밴드", "TOS Smooth", "매수세", "Put Wall", "Call Wall"],
                 "failure_kind": code,
             }
-        context = json.dumps({"market": market, "intro_lesson": LESSON, "core_criteria": VF02, "intro_archive": CORE_CRITERIA, "guided_case": GUIDED_CASE if mode == "learn" else None}, ensure_ascii=False, separators=(",", ":"))
+        context = json.dumps({"market": market, "intro_lesson": LESSON, "core_criteria": VF02, "guided_case": GUIDED_CASE if mode == "learn" else None}, ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
         prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + ("\nIf no previous conversation: present the FIRST question ONLY, no answer. Otherwise assess the student answer against guided rubric and provide one new synthetic case." if mode == "learn" else "")
