@@ -163,6 +163,9 @@ class handler(BaseHTTPRequestHandler):
             if r.status_code == 429:
                 self.reply(429, {"error": "AI 사용량 한도에 도달했습니다. 잠시 뒤 다시 요청하세요.", "kind": "MODEL_RATE_LIMIT"})
                 return
+            if r.status_code == 404:
+                self.reply(502, {"error": "현재 설정된 Gemini 모델을 사용할 수 없습니다 (404). 모델 접근 권한 또는 모델 이름을 확인해 주세요. 기존 API 키를 공개하거나 교체하지 마세요.", "kind": "MODEL_NOT_AVAILABLE", "model": model})
+                return
             if r.status_code != 200:
                 self.reply(502, {"error": "AI 모델 제공자 응답 오류 (" + str(r.status_code) + ").", "kind": "MODEL_PROVIDER_ERROR"})
                 return
