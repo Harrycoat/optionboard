@@ -1,67 +1,156 @@
-"""Private Sora analysis chat beta. No order execution or cross-tenant data."""
+"""Private educational Sora chat: server-verified delayed OHLCV and one versioned lesson."""
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
-import json,os,re,sys
+from datetime import datetime, timezone
+import json, os, re, sys
 import requests
-sys.path.insert(0,os.path.dirname(__file__))
+
+sys.path.insert(0, os.path.dirname(__file__))
 from swing_access import require_access
 
-SYSTEM = """당신은 GEXOption의 주식 분석 상담사 소라입니다. 한국어로 간결하고 친절하게 설명하세요.
-목적은 교육과 시장 분석이며 개인화된 매수/매도 지시나 주문은 하지 않습니다.
-SWING: 일봉부터 분석합니다. 일봉 20일선 기울기가 하락이면 상승 추세 눌림목으로 분류하지 않습니다.
-상승 기울기와 눌림이 확인되면 30분봉 Hull20 기울기, 가격 안착, 봉 마감, 거래량을 점검합니다.
-CORE HEDGE: 보유 주식은 별도 관리하며 Call Wall 저항 및 5분봉 Hull20 하향 이탈과 매도세로 풋 헤지의 가능성과 보험 비용을 설명합니다. 5분봉 Hull20 회복 시 풋 청산 조건을 분석합니다.
-Put Wall이나 Call Wall은 실제 옵션 데이터가 확인되지 않으면 미확인이라 답하세요. 차트 수치가 없으면 가격, Hull, 거래량, Smooth를 꾸며내지 마세요.
-EVP는 OHLCV에서 계산한 추정치일 뿐 TOS Net Delta/Smooth가 아닙니다.
-상승/하락과 헤지 효과는 보장되지 않습니다. 사용자 제공 사례는 현재 실시간 사실로 취급하지 마세요.
-선택한 종목이 바뀌면 다른 종목 대화를 섞지 마세요. 분석 근거와 미확인 정보를 구분하세요.
+LESSON = {
+    "title": "눌림목의 세 단계: 멈춤 → 저점 유지 확인 → 재상승",
+    "version": "2026-10-10.v1",
+    "source": "GEXOption 볼륨 발자국 트레이딩 교육 초안 (검증 필요)",
+    "text": (
+        "1. 멈춤: 이전 하락이 둔화하며 기준봉을 식별한다. 기준봉 정의와 확정은 실전 차트에서 확인한다. "
+        "2. 확인: 다음 봉이 기준봉 저점을 지키는지 관찰한다. 저점 유지 만으로는 매수 신호가 아니다. "
+        "3. 재상승: 다음 봉이 앞 기준봉 고점을 돌파하는지, 완료봉인지 확인한다. "
+        "돌파 실패 또는 기준 저점 이탈 시 시나리오가 무효가 될 수 있다. "
+        "손절 위치는 기준봉/확인봉의 실제 저점과 위험 한도를 종합해 결정하며 자동 주문하지 않는다. "
+        "Smooth 상승은 수급 확인의 보조 조건이지만 이 앱에서는 TOS 원본 Smooth가 제공되지 않는다. "
+        "EVP 추정 지표는 TOS Net Delta/Smooth로 대체할 수 없다. "
+        "확정되지 않은 수치 공식, 성공률 및 수익률을 단정하지 않는다."
+    ),
+}
+
+SYSTEM = """당신은 GEXOption의 교육용 주식 분석 선생님 '소라'입니다. 한국어로 설명합니다.
+사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다.
+서버가 제공한 봉 데이터와 교육 자료만 사실 근거로 사용합니다.
+TradingView 내장 차트와 서버의 지연 봉 데이터는 반드시 같은 시점이 아닙니다.
+봉 시간은 시작 시각이고, 실시간 현재가가 아니라 마지막 완료봉 종가입니다.
+데이터가 없거나 오래되면 가격·거래량·Smooth·GEX Call/Put Wall을 추측하지 않습니다.
+EVP는 추정 지표이며 TOS Net Delta/Smooth와 동등하지 않습니다.
+'성립 조건', '실패 조건', '확인되지 않은 사실'을 구별합니다.
+교육 자료에 없는 정확한 공식·승률은 모른다고 답합니다.
+답변에는 종목, 시간봉, 최신 봉 시작(UTC)과 데이터 상태, 참고 교육자료 제목 및 버전을 표시합니다.
 """
 
+def market_context(ticker, tf):
+    # Server-side acquisition prevents users from supplying invented chart figures.
+    from swing_radar_chart import VALID_TF, aggregates, indicators
+    if tf not in VALID_TF:
+        raise ValueError("UNSUPPORTED_TIMEFRAME")
+    rows = aggregates(ticker, tf, True)
+    done = [r for r in rows if r.get("complete") and r.get("coverage_ok", True)]
+    bars = indicators(done)
+    if not bars:
+        raise ValueError("NO_COMPLETED_BARS")
+    safe = []
+    for b in bars[-12:]:
+        row = {k: b.get(k) for k in ("t", "o", "h", "l", "c", "v", "hull20", "evp") if b.get(k) is not None}
+        safe.append(row)
+    last = safe[-1]
+    stamp = datetime.fromtimestamp(last["t"] / 1000, timezone.utc)
+    age_minutes = max(0, (datetime.now(timezone.utc) - stamp).total_seconds() / 60)
+    return {
+        "ticker": ticker, "tf": tf, "bars": safe,
+        "last_bar_utc": stamp.isoformat(),
+        "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
+        "timezone": "America/New_York (차트 기준), UTC (전달시각)",
+        "price_label": "마지막 완료봉 종가 (실시간 현재가 아님)",
+        "data_status": "STALE" if age_minutes > (4320 if tf == "1d" else 120) else "DELAYED",
+        "source": "Massive 15분 지연 OHLCV 집계",
+        "unavailable": ["실시간 현재가", "TOS Smooth", "TOS Net Delta", "Call Wall", "Put Wall"],
+    }
+
 class handler(BaseHTTPRequestHandler):
- def do_POST(self):
-  if urlparse(self.path).path!="/api/sora_chat":
-   self.send_error(404);return
-  if not require_access(self):return
-  limit=12000
-  try:
-   n=int(self.headers.get("Content-Length","0"))
-   if n<1 or n>limit:raise ValueError("invalid request size")
-   req=json.loads(self.rfile.read(n))
-   ticker=str(req.get("ticker","")).upper()
-   question=req.get("message")
-   if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}",ticker) or not isinstance(question,str) or not 1<=len(question.strip())<=1200:raise ValueError("invalid ticker or question")
-   history=req.get("history",[])
-   if not isinstance(history,list) or len(history)>8:raise ValueError("invalid history")
-   turns=[]
-   for h in history:
-    if not isinstance(h,dict) or h.get("role") not in ("user","assistant") or not isinstance(h.get("content"),str) or len(h["content"])>1200:raise ValueError("invalid history turn")
-    turns.append({"role":h["role"],"content":h["content"]})
-  except (ValueError,TypeError,KeyError,UnicodeDecodeError,json.JSONDecodeError):
-   self.reply(400,{"error":"입력 형식을 확인해 주세요."});return
-  key=os.environ.get("SORA_GEMINI_API_KEY","").strip()
-  model=os.environ.get("SORA_GEMINI_MODEL","gemini-2.5-flash-lite").strip()
-  if not key:
-   self.reply(503,{"error":"소라 AI 모델이 아직 연결되지 않았습니다. 서버 환경 변수 SORA_GEMINI_API_KEY가 필요합니다."});return
-  if not re.fullmatch(r"[a-zA-Z0-9_.-]{2,60}",model):
-   self.reply(503,{"error":"모델 설정을 확인해 주세요."});return
-  # No market data or verified wall values are provided in this initial integration.
-  context="선택 종목: "+ticker+". 검증된 시세나 차트가 이 요청에 포함되지 않았습니다. 현재 수치나 Wall을 주장하지 마세요."
-  dialogue="\\n".join(("사용자" if h["role"]=="user" else "소라")+": "+h["content"] for h in turns)
-  prompt=context+"\\n"+dialogue+"\\n사용자: "+question
-  try:
-   url="https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent"
-   r=requests.post(url,headers={"x-goog-api-key":key,"Content-Type":"application/json"},
-      json={"systemInstruction":{"parts":[{"text":SYSTEM}]},"contents":[{"role":"user","parts":[{"text":prompt}]}],
-            "generationConfig":{"maxOutputTokens":650,"temperature":0.25}},timeout=(4,22))
-   if r.status_code!=200:raise RuntimeError("provider unavailable")
-   data=r.json()
-   answer="".join(p.get("text","") for item in data.get("candidates",[])[:1] for p in item.get("content",{}).get("parts",[]) if isinstance(p,dict))
-   if not answer.strip():raise RuntimeError("empty response")
-   self.reply(200,{"ticker":ticker,"answer":answer.strip(),"data_status":"UNVERIFIED","notice":"시세·옵션 Wall 데이터 미연결. 교육용 분석입니다."})
-  except Exception:
-   self.reply(502,{"error":"AI 응답을 받지 못했습니다. 잠시 후 다시 시도해 주세요."})
- def reply(self,code,obj):
-  b=json.dumps(obj,ensure_ascii=False).encode("utf-8")
-  self.send_response(code);self.send_header("Content-Type","application/json; charset=utf-8")
-  self.send_header("Cache-Control","no-store");self.send_header("X-Content-Type-Options","nosniff")
-  self.end_headers();self.wfile.write(b)
+    def do_POST(self):
+        if urlparse(self.path).path != "/api/sora_chat":
+            self.send_error(404)
+            return
+        if not require_access(self):
+            return
+        try:
+            n = int(self.headers.get("Content-Length", "0"))
+            if not 1 <= n <= 12000:
+                raise ValueError("SIZE")
+            req = json.loads(self.rfile.read(n))
+            ticker = str(req.get("ticker", "")).upper()
+            tf = str(req.get("tf", "")).lower()
+            question = req.get("message")
+            if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}", ticker):
+                raise ValueError("TICKER")
+            if tf not in ("1d", "30m", "15m", "5m"):
+                raise ValueError("TF")
+            if not isinstance(question, str) or not 1 <= len(question.strip()) <= 1200:
+                raise ValueError("QUESTION")
+            history = req.get("history", [])
+            if not isinstance(history, list) or len(history) > 8:
+                raise ValueError("HISTORY")
+            turns = []
+            for h in history:
+                if not isinstance(h, dict) or h.get("role") not in ("user", "assistant") or not isinstance(h.get("content"), str) or len(h["content"]) > 1200:
+                    raise ValueError("HISTORY_TURN")
+                turns.append({"role": h["role"], "content": h["content"]})
+        except (ValueError, TypeError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
+            self.reply(400, {"error": "종목·시간봉·질문 형식을 확인해 주세요.", "kind": "INVALID_INPUT"})
+            return
+        key = os.getenv("SORA_GEMINI_API_KEY", "").strip()
+        model = os.getenv("SORA_GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
+        if not key:
+            self.reply(503, {"error": "AI 서버 설정이 없습니다. SORA_GEMINI_API_KEY를 서버에서 확인해 주세요.", "kind": "MODEL_NOT_CONFIGURED"})
+            return
+        if not re.fullmatch(r"[a-zA-Z0-9_.-]{2,60}", model):
+            self.reply(503, {"error": "AI 모델 설정이 올바르지 않습니다.", "kind": "MODEL_INVALID"})
+            return
+        try:
+            market = market_context(ticker, tf)
+        except Exception:
+            self.reply(503, {"error": ticker + " " + tf + " 완료봉 데이터를 확인하지 못했습니다. 제공자 연결·인증·지연을 점검하세요.", "kind": "MARKET_DATA_UNAVAILABLE", "ticker": ticker, "tf": tf})
+            return
+        context = json.dumps({"market": market, "lesson": LESSON}, ensure_ascii=False, separators=(",", ":"))
+        dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
+        prompt = "검증한 맥락: " + context + "\n이전 대화:\n" + dialogue + "\n사용자 질문: " + question
+        url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
+        try:
+            r = requests.post(
+                url, headers={"x-goog-api-key": key, "Content-Type": "application/json"},
+                json={"systemInstruction": {"parts": [{"text": SYSTEM}]},
+                      "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                      "generationConfig": {"maxOutputTokens": 900, "temperature": 0.2}},
+                timeout=(4, 22),
+            )
+            if r.status_code in (401, 403):
+                self.reply(502, {"error": "AI 모델 인증 또는 권한 오류입니다.", "kind": "MODEL_AUTH"})
+                return
+            if r.status_code == 429:
+                self.reply(429, {"error": "AI 사용량 한도에 도달했습니다. 잠시 뒤 다시 요청하세요.", "kind": "MODEL_RATE_LIMIT"})
+                return
+            if r.status_code != 200:
+                self.reply(502, {"error": "AI 모델 제공자 응답 오류 (" + str(r.status_code) + ").", "kind": "MODEL_PROVIDER_ERROR"})
+                return
+            result = r.json()
+            answer = "".join(p.get("text", "") for item in result.get("candidates", [])[:1] for p in item.get("content", {}).get("parts", []) if isinstance(p, dict)).strip()
+            if not answer:
+                self.reply(502, {"error": "AI에서 빈 답변이 반환됐습니다.", "kind": "MODEL_EMPTY"})
+                return
+            self.reply(200, {"ticker": ticker, "tf": tf, "answer": answer,
+                             "market": {k: market[k] for k in ("ticker", "tf", "last_bar_utc", "retrieved_at_utc", "timezone", "price_label", "data_status", "source")},
+                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}})
+        except requests.exceptions.Timeout:
+            self.reply(504, {"error": "AI 응답 시간이 초과되었습니다.", "kind": "MODEL_TIMEOUT"})
+        except requests.exceptions.RequestException:
+            self.reply(502, {"error": "AI 제공자 네트워크 연결에 실패했습니다.", "kind": "MODEL_NETWORK"})
+        except (ValueError, TypeError, KeyError):
+            self.reply(502, {"error": "AI 응답 형식을 해석하지 못했습니다.", "kind": "MODEL_FORMAT"})
+
+    def reply(self, code, payload):
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
