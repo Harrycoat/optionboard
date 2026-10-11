@@ -36,6 +36,26 @@ CORE_CRITERIA = {
     "note": "미확정 계산식, 장악 범위, 손절/옵션 계약 선택을 임의로 확정하지 않음. Hull20과 EVP는 Hull21 밴드와 TOS Smooth가 아님."
 }
 
+GUIDED_CASE = {
+    "id": "core-v0.1-smooth-unknown-01",
+    "kind": "SYNTHETIC",
+    "timeframe": "30m",
+    "source": "가상 사례, 실제 시장 데이터 아님",
+    "facts": "가상 종목: 일봉 사전 조건 충족, 30분봉 Hull21 밴드 재진입, Put Wall 지지, 매수세 53, Smooth 방향 미확인.",
+    "rubric": "진입 조건 충족을 단정할 수 없다. Smooth가 미확인이므로 대기하고 Smooth 전환을 확인해야 한다. 매수세 53은 >50 조건만 충족한다.",
+}
+GUIDED_SYSTEM = """교육 모드입니다. 한국어 또는 영어로, 답변의 주 언어를 따릅니다.
+교육 기준은 검토 초안 v0.1이며 승인된 실거래 신호가 아닙니다.
+단 한 문제씩 진행합니다. 첫 문제에는 정답을 말하지 말고 짧은 개념 소개와 가상 사례,
+'진입 / 대기 / 조건 무효 중 무엇이며 확인된 조건과 빠진 조건은?' 질문만 하세요.
+다음 학습자 답변에는 근거 중심으로 '맞게 본 점 / 놓친 조건 / 아직 모르는 정보 / 다음에 볼 것'
+네 부분을 제공하고, 마지막에 수치가 조금 다른 새 가상 사례 문제를 하나만 내세요.
+수치와 사실은 제공된 사례에 한정하며, 가격 결과로 판단을 사후 정당화하지 마세요.
+Smooth, RS, 매수세, Put Wall 및 Hull21 밴드의 산식을 발명하지 마세요.
+보호 풋은 매수이고 비용과 손실 위험이 있습니다.
+실제 데이터, 캔들 기준시각과 AI가 볼 수 없는 차트 내용은 확인했다고 말하지 마세요.
+"""
+
 SYSTEM = """당신은 GEXOption의 교육용 주식 분석 선생님 '소라'입니다. 사용자가 선택한 응답 언어에 따라 한국어 또는 영어로 설명합니다.
 사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다.
 서버가 제공한 봉 데이터와 교육 자료만 사실 근거로 사용합니다. 메인 교육기준은 초안 v0.1로, 아직 승인된 매매 규칙이 아닙니다. 스윙은 30분봉, 단타는 5분봉이며 50일 이동평균은 일봉입니다. Hull20을 Hull21 밴드로 혼동하지 마세요. 제공 자료가 없는 조건은 충족/미충족 판정 대신 확인 불가로 분류합니다.
@@ -100,6 +120,9 @@ class handler(BaseHTTPRequestHandler):
             language = str(req.get("language", "auto")).lower()
             if language not in ("auto", "ko", "en"):
                 raise ValueError("LANGUAGE")
+            mode = str(req.get("mode", "chart")).lower()
+            if mode not in ("chart", "learn"):
+                raise ValueError("MODE")
             history = req.get("history", [])
             if not isinstance(history, list) or len(history) > 8:
                 raise ValueError("HISTORY")
@@ -120,7 +143,12 @@ class handler(BaseHTTPRequestHandler):
             self.reply(503, {"error": "AI 모델 설정이 올바르지 않습니다.", "kind": "MODEL_INVALID"})
             return
         try:
-            market = market_context(ticker, tf)
+            market = market_context(ticker, tf) if mode == "chart" else {
+                "ticker": "SYNTHETIC", "tf": "30m", "bars": [], "last_bar_utc": None,
+                "retrieved_at_utc": None, "timezone": "N/A",
+                "price_label": "가상 사례", "data_status": "SYNTHETIC",
+                "source": "교육용 가상 사례", "unavailable": ["실제 시세 및 모든 실제 지표"]
+            }
         except Exception as exc:
             # Do not expose provider credentials or response bodies.
             reason = str(exc).split(":", 1)[0]
@@ -144,15 +172,15 @@ class handler(BaseHTTPRequestHandler):
                 "unavailable": ["완료봉", "현재가", "거래량", "Hull21 밴드", "TOS Smooth", "매수세", "Put Wall", "Call Wall"],
                 "failure_kind": code,
             }
-        context = json.dumps({"market": market, "intro_lesson": LESSON, "core_criteria": CORE_CRITERIA}, ensure_ascii=False, separators=(",", ":"))
+        context = json.dumps({"market": market, "intro_lesson": LESSON, "core_criteria": CORE_CRITERIA, "guided_case": GUIDED_CASE if mode == "learn" else None}, ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
-        prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question
+        prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + ("\nIf no previous conversation: present the FIRST question ONLY, no answer. Otherwise assess the student answer against guided rubric and provide one new synthetic case." if mode == "learn" else "")
         url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
         try:
             r = requests.post(
                 url, headers={"x-goog-api-key": key, "Content-Type": "application/json"},
-                json={"systemInstruction": {"parts": [{"text": SYSTEM}]},
+                json={"systemInstruction": {"parts": [{"text": SYSTEM + ("\\n" + GUIDED_SYSTEM if mode == "learn" else "")}]},
                       "contents": [{"role": "user", "parts": [{"text": prompt}]}],
                       "generationConfig": {"maxOutputTokens": 900, "temperature": 0.2}},
                 timeout=(4, 22),
@@ -176,7 +204,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": answer,
                              "market": {k: market[k] for k in ("ticker", "tf", "last_bar_utc", "retrieved_at_utc", "timezone", "price_label", "data_status", "source")},
-                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}, "core_criteria": {"title": CORE_CRITERIA["title"], "version": CORE_CRITERIA["version"], "status": CORE_CRITERIA["status"]}, "language": language})
+                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}, "core_criteria": {"title": CORE_CRITERIA["title"], "version": CORE_CRITERIA["version"], "status": CORE_CRITERIA["status"]}, "language": language, "mode": mode, "case_id": GUIDED_CASE["id"] if mode == "learn" else None})
         except requests.exceptions.Timeout:
             self.reply(504, {"error": "AI 응답 시간이 초과되었습니다.", "kind": "MODEL_TIMEOUT"})
         except requests.exceptions.RequestException:
