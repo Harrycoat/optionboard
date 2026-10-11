@@ -71,10 +71,10 @@ R04, Hull21, SMA50, 진입/대기/무효 질문, AMZN 등 실제 선택 종목�
 이 수업은 VF-0.2 R01에 관한 것이며 장중 시세 판정이 아니다."""
 GUIDED_SYSTEM = """교육 모드입니다. 한국어 또는 영어로, 답변의 주 언어를 따릅니다.
 메인 교육 기준은 소유자 승인 VF-0.2입니다. 기초 눌림목 v0.1 자료도 보존하되 규칙 충돌 시 VF-0.2를 따릅니다. 이는 실제 매매 검증 또는 주문 승인이 아닙니다.
-단 한 문제씩 진행합니다. 첫 문제에는 정답을 말하지 말고 짧은 개념 소개와 가상 사례,
-'진입 / 대기 / 조건 무효 중 무엇이며 확인된 조건과 빠진 조건은?' 질문만 하세요.
-다음 학습자 답변에는 근거 중심으로 '맞게 본 점 / 놓친 조건 / 아직 모르는 정보 / 다음에 볼 것'
-네 부분을 제공하고, 마지막에 수치가 조금 다른 새 가상 사례 문제를 하나만 내세요.
+사용자가 명시적으로 연습 문제를 요청할 때만 가상 사례와 질문 한 개를 제시합니다.
+개념 질문에는 질문만 간단히 답하고 수업이나 퀴즈를 덧붙이지 않습니다.
+사용자가 특정 규칙을 요청하면 그 규칙만 다룹니다. R01 수업에서 진입/대기/무효를 묻지 마세요.
+답변을 평가할 때는 현재 질문 및 학습 단계에 맞는 짧은 피드백만 제공합니다.
 수치와 사실은 제공된 사례에 한정하며, 가격 결과로 판단을 사후 정당화하지 마세요.
 Smooth, RS, 매수세, Put Wall 및 Hull21 밴드의 산식을 발명하지 마세요.
 보호 풋은 매수이고 비용과 손실 위험이 있습니다.
@@ -90,7 +90,8 @@ TradingView 내장 차트와 서버의 지연 봉 데이터는 반드시 같은 
 EVP는 추정 지표이며 TOS Net Delta/Smooth와 동등하지 않습니다.
 '성립 조건', '실패 조건', '확인되지 않은 사실'을 구별합니다.
 교육 자료에 없는 정확한 공식·승률은 모른다고 답합니다. 시장 데이터 상태가 UNAVAILABLE이면 현재 충족/미충족을 판정하지 않고 전부 확인 불가로 처리하되, 교육용 원리 설명은 계속합니다. TradingView 차트 화면을 직접 읽었다고 말하지 않습니다.
-답변에는 종목, 시간봉, 최신 봉 시작(UTC)과 데이터 상태, 참고 교육자료 제목 및 버전을 표시합니다.
+차트·시세의 구체적 분석을 요청한 경우에만 종목/시간봉/데이터 상태를 표시하고, 일반 대화나 가상 연습에는 붙이지 않습니다.
+매 답변마다 자기소개, 고정 면책 문구, 자동 수업 및 퀴즈를 반복하지 마세요.
 """
 
 def market_context(ticker, tf):
@@ -214,19 +215,21 @@ class handler(BaseHTTPRequestHandler):
                 "unavailable": ["완료봉", "현재가", "거래량", "Hull21 밴드", "TOS Smooth", "매수세", "Put Wall", "Call Wall"],
                 "failure_kind": code,
             }
+        wants_practice = bool(re.search(r"연습|문제|퀴즈|수업 시작|학습 시작|practice|quiz", question, re.I))
         context = json.dumps(
-            {"market": market, "core_criteria": VF02,
-             "selected_lesson": {"rule_id": "R01", "first_case": R01_FIRST} if rule_id == "R01" else ({"intro_lesson": LESSON, "guided_case": GUIDED_CASE} if mode == "learn" else None)},
+            {"market": market if mode == "chart" else {"data_status": "SYNTHETIC", "source": "학습용; 실제 종목·시세 없음"},
+             "core_criteria": VF02,
+             "selected_lesson": {"rule_id": "R01", "first_case": R01_FIRST} if rule_id == "R01" and wants_practice else None},
             ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
-        prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + ("\nIf no previous conversation: present the FIRST question ONLY, no answer. Otherwise assess the student answer against guided rubric and provide one new synthetic case." if mode == "learn" else "")
-        if rule_id == "R01":
-            prompt += "\\nCURRENT LESSON R01 ONLY. " + R01_RULE
-            if not turns:
-                prompt += "\\nStart with EXACTLY ONE synthetic case question based on: " + R01_FIRST + "\\nDo NOT disclose the answer."
+        prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + "\nAnswer only what the user asks. Never insert an unsolicited lesson, greeting, disclaimer or quiz. Default to 2-5 short lines."
+        if rule_id == "R01" and wants_practice:
+            prompt += "\nCURRENT LESSON R01 ONLY. " + R01_RULE
+            if not turns or not any(re.search(r"연습|문제|퀴즈", h["content"]) for h in turns if h["role"] == "user"):
+                prompt += "\nStart with EXACTLY ONE synthetic case question based on: " + R01_FIRST + "\nDo NOT disclose the answer."
             else:
-                prompt += "\\nFollow the learner's answer, without switching to entry strategy. Do not reveal the full answer before learner attempts a correction."
+                prompt += "\nFollow the learner's answer, without switching to entry strategy. Do not reveal the full answer before learner attempts a correction."
         url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
         try:
             r = requests.post(
