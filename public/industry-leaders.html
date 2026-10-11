@@ -27,7 +27,7 @@ header{position:sticky;top:0;z-index:10;border-bottom:1px solid var(--line);back
 <header><div class="header-inner"><div class="brand"><b>GEX Option</b> · 산업별 주도주</div><a class="top-link" href="/">← 메인으로</a></div></header>
 <main class="wrap">
   <div class="hero">
-    <div><div class="eyebrow">U.S. MARKET · 11 SECTORS</div><h1>🏭 산업별 주도주</h1><p>미국시장을 11개 주요 산업으로 나누어 대표 주도주의 현재가와 이번 주 Put Wall·Call Wall을 비교합니다. AI 발전단계가 아닌 시장 전체 산업 분류입니다.</p></div>
+    <div><div class="eyebrow">U.S. MARKET · 11 SECTORS</div><h1>🏭 산업별 주도주</h1><p>미국시장을 11개 주요 산업으로 나누어 대표 주도주의 현재가와 이번 주 Put Wall·Call Wall을 비교합니다. 공식 11개 섹터와 별도로 AI 유전공학 연구 테마를 제공합니다. 테마는 공식 섹터가 아닙니다.</p></div>
     <div class="market-pill"><small>현재 시장 · CNN Fear &amp; Greed</small><b id="marketSentiment">불러오는 중...</b></div>
   </div>
   <div class="principle">산업의 방향을 먼저 확인하고, 그 안에서 강한 주도주를 선택합니다. <b>Put Wall에서는 진입 기회를, Call Wall에서는 수익 보호 시점을 확인합니다.</b></div>
@@ -51,6 +51,8 @@ const SECTORS=[
  {id:'energy',name:'에너지',en:'Energy',etf:'XLE',desc:'석유·가스·LNG·에너지 서비스',stocks:[['XOM','Exxon Mobil'],['CVX','Chevron'],['COP','ConocoPhillips'],['FANG','Diamondback Energy'],['LNG','Cheniere Energy']]},
  {id:'utilities',name:'유틸리티',en:'Utilities',etf:'XLU',desc:'전력·원자력·가스 유틸리티',stocks:[['NEE','NextEra Energy'],['VST','Vistra'],['CEG','Constellation Energy'],['SO','Southern Company'],['DUK','Duke Energy']]},
  {id:'materials',name:'소재',en:'Materials',etf:'XLB',desc:'산업가스·구리·금·철강·건자재',stocks:[['LIN','Linde'],['FCX','Freeport-McMoRan'],['NEM','Newmont'],['NUE','Nucor'],['MLM','Martin Marietta']]},
+ // Thematic watchlist — NOT a 12th official GICS sector. Constituents are research candidates, not confirmed ARKG holdings.
+ {id:'ai-genomics',name:'AI 유전공학',en:'AI Genomics · Theme',etf:'ARKG',desc:'AI 유전공학 테마 관심종목: DNA 시퀀싱·유전자 편집·AI 신약개발·정밀의료. 미국 공식 11개 섹터 중 헬스케어 등에 속하는 교차 산업 테마이며, 종목은 연구 후보이지 ARKG 보유 확인이나 투자 추천이 아닙니다.',stocks:[['CRSP','CRISPR Therapeutics'],['BEAM','Beam Therapeutics'],['RXRX','Recursion'],['TEM','Tempus AI'],['ILMN','Illumina'],['TXG','10x Genomics'],['NTRA','Natera'],['SDGR','Schrödinger']]},
  {id:'realestate',name:'부동산',en:'Real Estate',etf:'XLRE',desc:'데이터센터·물류·통신·헬스케어 리츠',stocks:[['WELL','Welltower'],['PLD','Prologis'],['AMT','American Tower'],['EQIX','Equinix'],['DLR','Digital Realty']]}
 ];
 let active='technology',requestId=0;const cache=new Map();
