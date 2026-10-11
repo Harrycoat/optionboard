@@ -159,8 +159,20 @@ class handler(BaseHTTPRequestHandler):
                     "generated_at_utc":datetime.now(timezone.utc).isoformat(),
                     "wall":get_walls(symbol) if walls else {"status":"NOT_REQUESTED"},
                     "notice":"EVP is estimated, not actual TOS Smooth. Entry decisions require real-time TOS confirmation."}
-            except Exception:
-                status,body=503,{"error":"Price data unavailable or incomplete"}
+            except Exception as exc:
+                # Public-safe failure categories; never expose provider request, secrets or traceback.
+                msg=str(exc)
+                if "DATA_NOT_CONFIGURED" in msg: code="DATA_NOT_CONFIGURED"
+                elif "DATA_STALE" in msg: code="DATA_STALE"
+                elif "DATA_GAP" in msg: code="DATA_GAP"
+                elif "DATA_TRUNCATED" in msg: code="DATA_TRUNCATED"
+                elif "DATA_NETWORK_ERROR" in msg: code="DATA_NETWORK_ERROR"
+                elif "DATA_PROVIDER_HTTP_429" in msg: code="DATA_RATE_LIMIT"
+                elif "DATA_PROVIDER_HTTP_" in msg: code="DATA_PROVIDER_HTTP_ERROR"
+                elif "DATA_PROVIDER" in msg: code="DATA_PROVIDER_ERROR"
+                elif "Not enough completed candles" in msg: code="DATA_INSUFFICIENT"
+                else: code="DATA_UNAVAILABLE"
+                status,body=503,{"error":"Price data unavailable or incomplete","error_code":code,"data_status":"UNAVAILABLE"}
         payload=json.dumps(body,ensure_ascii=False,allow_nan=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type","application/json; charset=utf-8")
