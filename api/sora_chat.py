@@ -160,6 +160,22 @@ class handler(BaseHTTPRequestHandler):
         except (ValueError, TypeError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
             self.reply(400, {"error": "종목·시간봉·질문 형식을 확인해 주세요.", "kind": "INVALID_INPUT"})
             return
+        # A standalone greeting is not a request to start the default lesson.
+        # Respond deterministically before contacting the model or market provider.
+        greeting = re.sub(r"[\\s!?.,。！？~～ㅎㅎㅋ😊🙂👋]+", "", question.strip().lower())
+        greetings = {"안녕", "안녕하세요", "하이", "반가워", "반갑습니다", "hi", "hello", "hey"}
+        if greeting in greetings:
+            reply = "안녕하세요! 😊" if language != "en" and greeting not in {"hi", "hello", "hey"} else "Hello! 😊"
+            market = {"ticker": "SYNTHETIC" if mode == "learn" else ticker,
+                      "tf": "30m" if mode == "learn" else tf,
+                      "last_bar_utc": None, "retrieved_at_utc": None,
+                      "timezone": "N/A", "price_label": "미조회",
+                      "data_status": "NOT_REQUESTED", "source": "인사말 — 시세 조회 없음"}
+            self.reply(200, {"ticker": ticker, "tf": tf, "answer": reply,
+                             "market": market, "lesson": {"title": "인사", "version": "v1"},
+                             "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]},
+                             "language": language, "mode": mode, "case_id": None})
+            return
         key = os.getenv("SORA_GEMINI_API_KEY", "").strip()
         model = os.getenv("SORA_GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
         if not key:
