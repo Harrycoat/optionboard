@@ -234,9 +234,9 @@ class handler(BaseHTTPRequestHandler):
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
         prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + "\nAnswer only what the user asks. Never insert an unsolicited lesson, greeting, disclaimer or quiz. Default to 2-5 short lines."
         if rule_id == "R01" and wants_practice:
-            prompt += "\\nThe active R01 exercise persists across the learner's replies. This turn is a learner answer if the prior assistant gave a synthetic R01 question."
+            prompt += "\nThe active R01 exercise persists across the learner's replies. This turn is a learner answer if the prior assistant gave a synthetic R01 question."
             if turns and turns[-1]["role"] == "assistant":
-                prompt += ("\\nIf the student's answer is wrong or asserts that reduced buying automatically means selling pressure, do NOT reveal the conclusion, label or full explanation. "
+                prompt += ("\nIf the student's answer is wrong or asserts that reduced buying automatically means selling pressure, do NOT reveal the conclusion, label or full explanation. "
                            "Give ONE concise observation-based hint about whether the measured selling pressure changed and ask ONE short question. WAIT. "
                            "If uncertain, ask a clarifying question rather than declaring correctness. "
                            "Only after the student tries again can you explain and give brief feedback. "
