@@ -44,7 +44,7 @@ TradingView 내장 차트와 서버의 지연 봉 데이터는 반드시 같은 
 데이터가 없거나 오래되면 가격·거래량·Smooth·GEX Call/Put Wall을 추측하지 않습니다.
 EVP는 추정 지표이며 TOS Net Delta/Smooth와 동등하지 않습니다.
 '성립 조건', '실패 조건', '확인되지 않은 사실'을 구별합니다.
-교육 자료에 없는 정확한 공식·승률은 모른다고 답합니다.
+교육 자료에 없는 정확한 공식·승률은 모른다고 답합니다. 시장 데이터 상태가 UNAVAILABLE이면 현재 충족/미충족을 판정하지 않고 전부 확인 불가로 처리하되, 교육용 원리 설명은 계속합니다. TradingView 차트 화면을 직접 읽었다고 말하지 않습니다.
 답변에는 종목, 시간봉, 최신 봉 시작(UTC)과 데이터 상태, 참고 교육자료 제목 및 버전을 표시합니다.
 """
 
@@ -121,9 +121,29 @@ class handler(BaseHTTPRequestHandler):
             return
         try:
             market = market_context(ticker, tf)
-        except Exception:
-            self.reply(503, {"error": ticker + " " + tf + " 완료봉 데이터를 확인하지 못했습니다. 제공자 연결·인증·지연을 점검하세요.", "kind": "MARKET_DATA_UNAVAILABLE", "ticker": ticker, "tf": tf})
-            return
+        except Exception as exc:
+            # Do not expose provider credentials or response bodies.
+            reason = str(exc).split(":", 1)[0]
+            allowed = {
+                "DATA_NOT_CONFIGURED", "DATA_NETWORK_ERROR", "DATA_INVALID_JSON",
+                "DATA_PROVIDER_ERROR", "DATA_TRUNCATED", "DATA_INVALID",
+                "DATA_STALE", "DATA_GAP", "NO_COMPLETED_BARS",
+                "CALENDAR_UNAVAILABLE",
+            }
+            if reason.startswith("DATA_PROVIDER_HTTP_") and re.fullmatch(r"DATA_PROVIDER_HTTP_[0-9]{3}", reason):
+                code = reason
+            else:
+                code = reason if reason in allowed else "DATA_UNKNOWN_ERROR"
+            market = {
+                "ticker": ticker, "tf": tf, "bars": [],
+                "last_bar_utc": None,
+                "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
+                "timezone": "America/New_York",
+                "price_label": "조회 불가", "data_status": "UNAVAILABLE",
+                "source": "Massive OHLCV 조회 실패 (" + code + ")",
+                "unavailable": ["완료봉", "현재가", "거래량", "Hull21 밴드", "TOS Smooth", "매수세", "Put Wall", "Call Wall"],
+                "failure_kind": code,
+            }
         context = json.dumps({"market": market, "intro_lesson": LESSON, "core_criteria": CORE_CRITERIA}, ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
