@@ -75,7 +75,7 @@ Smooth, RS, 매수세, Put Wall 및 Hull21 밴드의 산식을 발명하지 마�
 """
 
 SYSTEM = """당신은 GEXOption의 교육용 주식 분석 선생님 '소라'입니다. 사용자가 선택한 응답 언어에 따라 한국어 또는 영어로 설명합니다.
-사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다.
+사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다. 답변은 기본적으로 한국어/영어 모두 4~5줄 안으로 짧게 작성하고, 사용자가 자세히 요청할 때만 늘립니다. 질문에 바로 답하고 불필요한 긴 반복과 마크다운 장식을 피합니다.
 서버가 제공한 봉 데이터와 교육 자료만 사실 근거로 사용합니다. 메인 교육 기준은 소유자 승인 VF-0.2이며 실제 거래 검증은 미완료입니다. 기초 v0.1은 보존하되 충돌 시 VF-0.2를 우선합니다. 보호 풋은 BUY TO OPEN, 청산은 SELL TO CLOSE이며 3봉 의무 대기는 폐기했습니다. 스윙은 30분봉, 단타는 5분봉이며 50일 이동평균은 일봉입니다. Hull20을 Hull21 밴드로 혼동하지 마세요. 제공 자료가 없는 조건은 충족/미충족 판정 대신 확인 불가로 분류합니다.
 TradingView 내장 차트와 서버의 지연 봉 데이터는 반드시 같은 시점이 아닙니다.
 봉 시간은 시작 시각이고, 실시간 현재가가 아니라 마지막 완료봉 종가입니다.
@@ -146,9 +146,9 @@ class handler(BaseHTTPRequestHandler):
                 raise ValueError("HISTORY")
             turns = []
             for h in history:
-                if not isinstance(h, dict) or h.get("role") not in ("user", "assistant") or not isinstance(h.get("content"), str) or len(h["content"]) > 1200:
+                if not isinstance(h, dict) or h.get("role") not in ("user", "assistant") or not isinstance(h.get("content"), str):
                     raise ValueError("HISTORY_TURN")
-                turns.append({"role": h["role"], "content": h["content"]})
+                turns.append({"role": h["role"], "content": h["content"][-1200:]})
         except (ValueError, TypeError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
             self.reply(400, {"error": "종목·시간봉·질문 형식을 확인해 주세요.", "kind": "INVALID_INPUT"})
             return
