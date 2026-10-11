@@ -62,6 +62,13 @@ GUIDED_CASE = {
     "facts": "가상 종목: 일봉 사전 조건 충족, 30분봉 Hull21 밴드 재진입, Put Wall 지지, 매수세 53, Smooth 방향 미확인.",
     "rubric": "이 사례에서 Smooth가 미확인이므로 진입 충족을 단정하지 않는다. VF-0.2의 최종 Hull21 밴드 순서도 별도로 학습한다.",
 }
+R01_FIRST = """가상 사례 (R01, SYNTHETIC): 매수 우위는 유지되지만 증가 속도가 감소하고 있습니다. 매도 우위로의 전환은 아직 관찰되지 않았습니다.
+질문: 이것은 매수세 둔화인가요, 매도세 발생인가요? 이유는 무엇인가요?"""
+R01_RULE = """VF-0.2 R01 전용 수업. 첫 응답은 지정된 가상 사례와 질문 한 개만 제시하고 정답·힌트·판정을 노출하지 않는다.
+R04, Hull21, SMA50, 진입/대기/무효 질문, AMZN 등 실제 선택 종목을 절대 섞지 않는다.
+학생 답변이 들어오면 맞는 부분을 확인하고, 오답에는 정답 대신 짧은 힌트와 재질문을 제시한다.
+재답변이 나온 다음에만 2~5줄 피드백 후 새로운 가상 사례 하나로 재시험한다.
+이 수업은 VF-0.2 R01에 관한 것이며 장중 시세 판정이 아니다."""
 GUIDED_SYSTEM = """교육 모드입니다. 한국어 또는 영어로, 답변의 주 언어를 따릅니다.
 메인 교육 기준은 소유자 승인 VF-0.2입니다. 기초 눌림목 v0.1 자료도 보존하되 규칙 충돌 시 VF-0.2를 따릅니다. 이는 실제 매매 검증 또는 주문 승인이 아닙니다.
 단 한 문제씩 진행합니다. 첫 문제에는 정답을 말하지 말고 짧은 개념 소개와 가상 사례,
@@ -141,6 +148,7 @@ class handler(BaseHTTPRequestHandler):
             mode = str(req.get("mode", "chart")).lower()
             if mode not in ("chart", "learn"):
                 raise ValueError("MODE")
+            rule_id = "R01" if mode == "learn" and re.search(r"(?i)\\bR01\\b|매수세\\s*둔화|매도세\\s*발생|buying\\s+pressure\\s+weakening|selling\\s+pressure\\s+emerg", question) else None
             history = req.get("history", [])
             if not isinstance(history, list) or len(history) > 8:
                 raise ValueError("HISTORY")
@@ -190,10 +198,19 @@ class handler(BaseHTTPRequestHandler):
                 "unavailable": ["완료봉", "현재가", "거래량", "Hull21 밴드", "TOS Smooth", "매수세", "Put Wall", "Call Wall"],
                 "failure_kind": code,
             }
-        context = json.dumps({"market": market, "intro_lesson": LESSON, "core_criteria": VF02, "guided_case": GUIDED_CASE if mode == "learn" else None}, ensure_ascii=False, separators=(",", ":"))
+        context = json.dumps(
+            {"market": market, "core_criteria": VF02,
+             "selected_lesson": {"rule_id": "R01", "first_case": R01_FIRST} if rule_id == "R01" else ({"intro_lesson": LESSON, "guided_case": GUIDED_CASE} if mode == "learn" else None)},
+            ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
         prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + ("\nIf no previous conversation: present the FIRST question ONLY, no answer. Otherwise assess the student answer against guided rubric and provide one new synthetic case." if mode == "learn" else "")
+        if rule_id == "R01":
+            prompt += "\\nCURRENT LESSON R01 ONLY. " + R01_RULE
+            if not turns:
+                prompt += "\\nStart with EXACTLY ONE synthetic case question based on: " + R01_FIRST + "\\nDo NOT disclose the answer."
+            else:
+                prompt += "\\nFollow the learner's answer, without switching to entry strategy. Do not reveal the full answer before learner attempts a correction."
         url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
         try:
             r = requests.post(
@@ -222,7 +239,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": answer,
                              "market": {k: market[k] for k in ("ticker", "tf", "last_bar_utc", "retrieved_at_utc", "timezone", "price_label", "data_status", "source")},
-                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}, "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]}, "language": language, "mode": mode, "case_id": GUIDED_CASE["id"] if mode == "learn" else None})
+                             "lesson": {"title": "VF-0.2 R01 수급 순환" if rule_id == "R01" else LESSON["title"], "version": "VF-0.2" if rule_id == "R01" else LESSON["version"]}, "rule_id": rule_id, "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]}, "language": language, "mode": mode, "case_id": "vf02-r01-first" if rule_id == "R01" else (GUIDED_CASE["id"] if mode == "learn" else None)})
         except requests.exceptions.Timeout:
             self.reply(504, {"error": "AI 응답 시간이 초과되었습니다.", "kind": "MODEL_TIMEOUT"})
         except requests.exceptions.RequestException:
