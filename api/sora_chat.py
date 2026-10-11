@@ -24,7 +24,7 @@ LESSON = {
     ),
 }
 
-SYSTEM = """당신은 GEXOption의 교육용 주식 분석 선생님 '소라'입니다. 한국어로 설명합니다.
+SYSTEM = """당신은 GEXOption의 교육용 주식 분석 선생님 '소라'입니다. 사용자가 선택한 응답 언어에 따라 한국어 또는 영어로 설명합니다.
 사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다.
 서버가 제공한 봉 데이터와 교육 자료만 사실 근거로 사용합니다.
 TradingView 내장 차트와 서버의 지연 봉 데이터는 반드시 같은 시점이 아닙니다.
@@ -85,6 +85,9 @@ class handler(BaseHTTPRequestHandler):
                 raise ValueError("TF")
             if not isinstance(question, str) or not 1 <= len(question.strip()) <= 1200:
                 raise ValueError("QUESTION")
+            language = str(req.get("language", "auto")).lower()
+            if language not in ("auto", "ko", "en"):
+                raise ValueError("LANGUAGE")
             history = req.get("history", [])
             if not isinstance(history, list) or len(history) > 8:
                 raise ValueError("HISTORY")
@@ -111,7 +114,8 @@ class handler(BaseHTTPRequestHandler):
             return
         context = json.dumps({"market": market, "lesson": LESSON}, ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
-        prompt = "검증한 맥락: " + context + "\n이전 대화:\n" + dialogue + "\n사용자 질문: " + question
+        language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
+        prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question
         url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
         try:
             r = requests.post(
@@ -137,7 +141,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": answer,
                              "market": {k: market[k] for k in ("ticker", "tf", "last_bar_utc", "retrieved_at_utc", "timezone", "price_label", "data_status", "source")},
-                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}})
+                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}, "language": language})
         except requests.exceptions.Timeout:
             self.reply(504, {"error": "AI 응답 시간이 초과되었습니다.", "kind": "MODEL_TIMEOUT"})
         except requests.exceptions.RequestException:
