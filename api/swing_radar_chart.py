@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from options_engine import MASSIVE_API_BASE, _massive_get, analyze_ticker
 
 ET = ZoneInfo("America/New_York")
-VALID_TF = {"5m": 5, "10m": 10, "30m": 30, "1h": 60, "4h": 240, "1d": None}
+VALID_TF = {"5m": 5, "15m": 15, "10m": 10, "30m": 30, "1h": 60, "4h": 240, "1d": None}
 
 def wma(vals):
     n=len(vals)
