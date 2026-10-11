@@ -281,6 +281,13 @@ class handler(BaseHTTPRequestHandler):
             if not answer:
                 self.reply(502, {"error": "AI에서 빈 답변이 반환됐습니다.", "kind": "MODEL_EMPTY"})
                 return
+            # Mandatory source-independent notice for specific-stock / chart analysis.
+            # Do not repeat it for simple greetings or synthetic teaching drills.
+            is_stock_query = bool(re.search(r"(?i)\\b" + re.escape(ticker) + r"\\b|현재가|매수해|매도해|콜월|풋월|종목 분석|주가|차트 분석", question))
+            if mode == "chart" or is_stock_query:
+                notice = "본 자료는 교육 및 정보 제공을 목적으로 하며, 투자 권유는 아닙니다. 최종 투자 판단과 책임은 투자자 본인에게 있습니다."
+                if notice not in answer:
+                    answer = answer.rstrip() + "\\n\\n" + notice
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": answer,
                              "market": {k: market[k] for k in ("ticker", "tf", "last_bar_utc", "retrieved_at_utc", "timezone", "price_label", "data_status", "source")},
                              "lesson": {"title": "VF-0.2 R01 수급 순환" if rule_id == "R01" else LESSON["title"], "version": "VF-0.2" if rule_id == "R01" else LESSON["version"]}, "rule_id": rule_id, "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]}, "language": language, "mode": mode, "case_id": "vf02-r01-first" if rule_id == "R01" else (GUIDED_CASE["id"] if mode == "learn" else None)})
