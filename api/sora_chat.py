@@ -158,6 +158,15 @@ class handler(BaseHTTPRequestHandler):
                 if not isinstance(h, dict) or h.get("role") not in ("user", "assistant") or not isinstance(h.get("content"), str):
                     raise ValueError("HISTORY_TURN")
                 turns.append({"role": h["role"], "content": h["content"][-1200:]})
+            # Follow-up student answers often omit "R01". Recover the current
+            # exercise from the recent user/assistant turns, not just this message.
+            active_r01_drill = mode == "learn" and any(
+                re.search(r"(?i)\bR01\b", t["content"]) and
+                re.search(r"연습|문제|퀴즈|practice|quiz", t["content"], re.I)
+                for t in turns if t["role"] == "user"
+            )
+            if active_r01_drill:
+                rule_id = "R01"
         except (ValueError, TypeError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
             self.reply(400, {"error": "종목·시간봉·질문 형식을 확인해 주세요.", "kind": "INVALID_INPUT"})
             return
@@ -215,7 +224,7 @@ class handler(BaseHTTPRequestHandler):
                 "unavailable": ["완료봉", "현재가", "거래량", "Hull21 밴드", "TOS Smooth", "매수세", "Put Wall", "Call Wall"],
                 "failure_kind": code,
             }
-        wants_practice = bool(re.search(r"연습|문제|퀴즈|수업 시작|학습 시작|practice|quiz", question, re.I))
+        wants_practice = bool(re.search(r"연습|문제|퀴즈|수업 시작|학습 시작|practice|quiz", question, re.I)) or active_r01_drill
         context = json.dumps(
             {"market": market if mode == "chart" else {"data_status": "SYNTHETIC", "source": "학습용; 실제 종목·시세 없음"},
              "core_criteria": VF02,
@@ -225,11 +234,19 @@ class handler(BaseHTTPRequestHandler):
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
         prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + "\nAnswer only what the user asks. Never insert an unsolicited lesson, greeting, disclaimer or quiz. Default to 2-5 short lines."
         if rule_id == "R01" and wants_practice:
+            prompt += "\\nThe active R01 exercise persists across the learner's replies. This turn is a learner answer if the prior assistant gave a synthetic R01 question."
+            if turns and turns[-1]["role"] == "assistant":
+                prompt += ("\\nIf the student's answer is wrong or asserts that reduced buying automatically means selling pressure, do NOT reveal the conclusion, label or full explanation. "
+                           "Give ONE concise observation-based hint about whether the measured selling pressure changed and ask ONE short question. WAIT. "
+                           "If uncertain, ask a clarifying question rather than declaring correctness. "
+                           "Only after the student tries again can you explain and give brief feedback. "
+                           "No greetings, no R04, no entry decision.")
+
             prompt += "\nCURRENT LESSON R01 ONLY. " + R01_RULE
             if not turns or not any(re.search(r"연습|문제|퀴즈", h["content"]) for h in turns if h["role"] == "user"):
                 prompt += "\nStart with EXACTLY ONE synthetic case question based on: " + R01_FIRST + "\nDo NOT disclose the answer."
             else:
-                prompt += "\nFollow the learner's answer, without switching to entry strategy. Do not reveal the full answer before learner attempts a correction."
+                prompt += "\nStay with R01. Do not switch to entry strategy."
         url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
         try:
             r = requests.post(
