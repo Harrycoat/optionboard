@@ -148,7 +148,7 @@ class handler(BaseHTTPRequestHandler):
             mode = str(req.get("mode", "chart")).lower()
             if mode not in ("chart", "learn"):
                 raise ValueError("MODE")
-            rule_id = "R01" if mode == "learn" and re.search(r"(?i)\\bR01\\b|매수세\\s*둔화|매도세\\s*발생|buying\\s+pressure\\s+weakening|selling\\s+pressure\\s+emerg", question) else None
+            rule_id = "R01" if mode == "learn" and re.search(r"(?i)\bR01\b|매수세\s*둔화|매도세\s*발생|buying\s+pressure\s+weakening|selling\s+pressure\s+emerg", question) else None
             history = req.get("history", [])
             if not isinstance(history, list) or len(history) > 8:
                 raise ValueError("HISTORY")
