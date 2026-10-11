@@ -104,9 +104,15 @@ def market_context(ticker, tf):
     bars = indicators(done)
     if not bars:
         raise ValueError("NO_COMPLETED_BARS")
+    # indicators() returns descriptive OHLCV keys; previous short keys silently
+    # dropped ALL OHLCV values from Gemini's historical chart context.
     safe = []
-    for b in bars[-12:]:
-        row = {k: b.get(k) for k in ("t", "o", "h", "l", "c", "v", "hull20", "evp") if b.get(k) is not None}
+    for bar in bars[-60:]:
+        row = {key: bar.get(key) for key in
+               ("t", "open", "high", "low", "close", "volume", "hull20", "evp")
+               if bar.get(key) is not None}
+        if not all(key in row for key in ("t", "open", "high", "low", "close", "volume")):
+            raise ValueError("DATA_INCOMPLETE")
         safe.append(row)
     last = safe[-1]
     stamp = datetime.fromtimestamp(last["t"] / 1000, timezone.utc)
@@ -120,6 +126,8 @@ def market_context(ticker, tf):
         "data_status": "STALE" if age_minutes > (4320 if tf == "1d" else 120) else "DELAYED",
         "source": "Massive 15분 지연 OHLCV 집계",
         "unavailable": ["실시간 현재가", "TOS Smooth", "TOS Net Delta", "Call Wall", "Put Wall"],
+        "available_fields": ["open", "high", "low", "close", "volume", "hull20", "evp_estimate"],
+        "bars_sent": len(safe),
     }
 
 class handler(BaseHTTPRequestHandler):
@@ -207,7 +215,7 @@ class handler(BaseHTTPRequestHandler):
             allowed = {
                 "DATA_NOT_CONFIGURED", "DATA_NETWORK_ERROR", "DATA_INVALID_JSON",
                 "DATA_PROVIDER_ERROR", "DATA_TRUNCATED", "DATA_INVALID",
-                "DATA_STALE", "DATA_GAP", "NO_COMPLETED_BARS",
+                "DATA_STALE", "DATA_GAP", "DATA_INCOMPLETE", "NO_COMPLETED_BARS",
                 "CALENDAR_UNAVAILABLE",
             }
             if reason.startswith("DATA_PROVIDER_HTTP_") and re.fullmatch(r"DATA_PROVIDER_HTTP_[0-9]{3}", reason):
