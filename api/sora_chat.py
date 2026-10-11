@@ -24,9 +24,21 @@ LESSON = {
     ),
 }
 
+CORE_CRITERIA = {
+    "title": "소라 핵심 교육 기준 초안",
+    "version": "v0.1",
+    "status": "DRAFT_NOT_APPROVED",
+    "reference": "docs/sora-core-education-v0.1.md",
+    "candidate": "상대강도 약 90(지표 미정), 상승하는 일봉 50MA 위, 선행 상승 후 눌림",
+    "stock_entry": "스윙 30m/단타 5m: Hull21 밴드 재진입 → Put Wall 지지, 매수세 > 50, Smooth 상방 전환을 각각 확인",
+    "protective_put": "Call Wall 저항, 매수세 < 50, Smooth 하방 전환, 마지막 상승봉 정체 → 음봉 장악 → 다음 음봉 Hull21 밴드 진입",
+    "unavailable_in_current_feed": ["상대강도 공식", "일봉 50MA 기울기 판정", "Hull21 밴드", "매수세", "TOS Smooth", "Put Wall", "Call Wall", "옵션 체인과 실제 보호 풋 손익"],
+    "note": "미확정 계산식, 장악 범위, 손절/옵션 계약 선택을 임의로 확정하지 않음. Hull20과 EVP는 Hull21 밴드와 TOS Smooth가 아님."
+}
+
 SYSTEM = """당신은 GEXOption의 교육용 주식 분석 선생님 '소라'입니다. 사용자가 선택한 응답 언어에 따라 한국어 또는 영어로 설명합니다.
 사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다.
-서버가 제공한 봉 데이터와 교육 자료만 사실 근거로 사용합니다.
+서버가 제공한 봉 데이터와 교육 자료만 사실 근거로 사용합니다. 메인 교육기준은 초안 v0.1로, 아직 승인된 매매 규칙이 아닙니다. 스윙은 30분봉, 단타는 5분봉이며 50일 이동평균은 일봉입니다. Hull20을 Hull21 밴드로 혼동하지 마세요. 제공 자료가 없는 조건은 충족/미충족 판정 대신 확인 불가로 분류합니다.
 TradingView 내장 차트와 서버의 지연 봉 데이터는 반드시 같은 시점이 아닙니다.
 봉 시간은 시작 시각이고, 실시간 현재가가 아니라 마지막 완료봉 종가입니다.
 데이터가 없거나 오래되면 가격·거래량·Smooth·GEX Call/Put Wall을 추측하지 않습니다.
@@ -112,7 +124,7 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             self.reply(503, {"error": ticker + " " + tf + " 완료봉 데이터를 확인하지 못했습니다. 제공자 연결·인증·지연을 점검하세요.", "kind": "MARKET_DATA_UNAVAILABLE", "ticker": ticker, "tf": tf})
             return
-        context = json.dumps({"market": market, "lesson": LESSON}, ensure_ascii=False, separators=(",", ":"))
+        context = json.dumps({"market": market, "intro_lesson": LESSON, "core_criteria": CORE_CRITERIA}, ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
         prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question
@@ -141,7 +153,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": answer,
                              "market": {k: market[k] for k in ("ticker", "tf", "last_bar_utc", "retrieved_at_utc", "timezone", "price_label", "data_status", "source")},
-                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}, "language": language})
+                             "lesson": {"title": LESSON["title"], "version": LESSON["version"]}, "core_criteria": {"title": CORE_CRITERIA["title"], "version": CORE_CRITERIA["version"], "status": CORE_CRITERIA["status"]}, "language": language})
         except requests.exceptions.Timeout:
             self.reply(504, {"error": "AI 응답 시간이 초과되었습니다.", "kind": "MODEL_TIMEOUT"})
         except requests.exceptions.RequestException:
