@@ -213,6 +213,28 @@ class handler(BaseHTTPRequestHandler):
                              "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]},
                              "language": language, "mode": mode, "requested_mode": requested_mode, "case_id": None})
             return
+        # R01 instructional guard: on an identifiable first wrong answer,
+        # return only a hint + one retry question, without relying on Gemini compliance.
+        prior_cases = [t for t in turns if t["role"] == "assistant" and
+                       ("가상 사례" in t["content"] or ("매수세" in t["content"] and "질문" in t["content"]))]
+        wrong_r01 = bool(re.search(
+            r"매수세.{0,35}(?:감소|줄|하락|떨어|둔화).{0,45}매도세.{0,18}(?:발생|생겼|시작|증가)|"
+            r"매도세.{0,18}(?:발생|생겼|시작).{0,45}매수세.{0,35}(?:감소|줄|하락|떨어|둔화)",
+            question))
+        if mode == "learn" and active_r01_drill and len(prior_cases) == 1 and wrong_r01:
+            hint = ("매수세가 약해진 점은 잘 보셨어요. 😊 "
+                    "사례에서 매도세 수치도 이전보다 증가했나요?")
+            self.reply(200, {"ticker": ticker, "tf": tf, "answer": hint,
+                             "market": {"ticker": "SYNTHETIC", "tf": "30m",
+                                        "last_bar_utc": None, "retrieved_at_utc": None,
+                                        "timezone": "N/A", "price_label": "학습용 가상 사례",
+                                        "data_status": "SYNTHETIC", "source": "교육용 사례"},
+                             "lesson": {"title": "VF-0.2 R01 수급 순환", "version": "VF-0.2"},
+                             "rule_id": "R01", "core_criteria": {
+                                 "title": VF02["title"], "version": VF02["version"],
+                                 "status": VF02["status"]},
+                             "language": language, "mode": mode, "case_id": "vf02-r01-hint"})
+            return
         key = os.getenv("SORA_GEMINI_API_KEY", "").strip()
         model = os.getenv("SORA_GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
         if not key:
