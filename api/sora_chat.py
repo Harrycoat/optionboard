@@ -94,6 +94,28 @@ EVP는 추정 지표이며 TOS Net Delta/Smooth와 동등하지 않습니다.
 매 답변마다 자기소개, 고정 면책 문구, 자동 수업 및 퀴즈를 반복하지 마세요.
 """
 
+def qa_example_for(question):
+    """Optional concise reference answer; never a substitute for verified market data."""
+    try:
+        from pathlib import Path
+        qa_file = Path(__file__).resolve().parent.parent / "docs" / "sora-conversation-qa-100-20261011.md"
+        content = qa_file.read_text(encoding="utf-8")
+        needle = " ".join(question.casefold().split()).strip("?!., ~")
+        if len(needle) < 3:
+            return ""
+        lines = content.splitlines()
+        for i, line in enumerate(lines):
+            if "**Q:** " not in line or i + 1 >= len(lines):
+                continue
+            sample = line.split("**Q:** ", 1)[1]
+            normalized = " ".join(sample.casefold().split()).strip("?!., ~")
+            if normalized == needle and "**A:** " in lines[i + 1]:
+                return lines[i + 1].split("**A:** ", 1)[1].strip()
+    except (OSError, ValueError):
+        return ""
+    return ""
+
+
 def market_context(ticker, tf):
     # Server-side acquisition prevents users from supplying invented chart figures.
     try:
@@ -288,6 +310,9 @@ class handler(BaseHTTPRequestHandler):
                   "Do not introduce yourself or repeat generic disclaimers. "
                   "Do not add a scenario, lesson, quiz or follow-up question unless explicitly asked. "
                   "Only use observations available in the supplied context; do not invent measurements.")
+        reference_answer = qa_example_for(question)
+        if reference_answer and not wants_practice:
+            prompt += "\\nApproved training example (conceptual only, not verified market data): " + reference_answer
         if rule_id == "R01" and wants_practice:
             prompt += "\nACTIVE RULE: VF-0.2 R01 ONLY. Do not ask about buying, entry, Hull21 or R04."
             drill_replies = [
