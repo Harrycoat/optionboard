@@ -309,7 +309,7 @@ class handler(BaseHTTPRequestHandler):
                                  "status": VF02["status"]},
                              "language": language, "mode": mode, "case_id": "vf02-r01-hint"})
             return
-        provider = os.getenv("SORA_AI_PROVIDER", "gemini").strip().lower()
+        provider = os.getenv("SORA_AI_PROVIDER", "openai").strip().lower()
         if provider not in ("gemini", "openai"):
             self.reply(503, {"error": "AI 제공자 설정이 올바르지 않습니다.", "kind": "MODEL_PROVIDER_INVALID"})
             return
@@ -325,8 +325,16 @@ class handler(BaseHTTPRequestHandler):
         if not re.fullmatch(r"[a-zA-Z0-9_.-]{2,60}", model):
             self.reply(503, {"error": "AI 모델 설정이 올바르지 않습니다.", "kind": "MODEL_INVALID"})
             return
+        # Conceptual educational questions do not need a slow market-data request.
+        # Reserve the separate OHLCV lookup for explicit historical/current
+        # ticker analysis; do not treat an ordinary chart concept as live analysis.
+        asks_market_data = bool(re.search(
+            r"(?i)(?:현재|오늘|지금|실제|과거|최근|실시간).{0,40}(?:종목|주가|가격|시세|차트|봉|거래량|콜월|풋월|call wall|put wall)|"
+            r"(?:종목|주가|가격|시세|차트|봉|거래량|콜월|풋월).{0,40}(?:현재|오늘|지금|실제|과거|최근|실시간)|"
+            r"\\b(?:AMZN|NVDA|TSLA|SPY|QQQ|AAPL|MSFT)\\b.{0,32}(?:분석|상태|30분봉|일봉|5분봉)",
+            question))
         try:
-            market = market_context(ticker, tf) if mode == "chart" else {
+            market = market_context(ticker, tf) if mode == "chart" and asks_market_data else {
                 "ticker": "SYNTHETIC", "tf": "30m", "bars": [], "last_bar_utc": None,
                 "retrieved_at_utc": None, "timezone": "N/A",
                 "price_label": "가상 사례", "data_status": "SYNTHETIC",
