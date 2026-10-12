@@ -116,6 +116,34 @@ def qa_example_for(question):
     return ""
 
 
+def context_training_example(question, turns):
+    """Read-only nearby dialogue guidance. Never claims live data."""
+    try:
+        from pathlib import Path
+        doc = (Path(__file__).resolve().parent.parent / "docs" /
+               "sora-context-conversation-20-20261011.md").read_text(encoding="utf-8")
+        latest_user = next((str(t.get("content", "")) for t in reversed(turns)
+                            if t.get("role") == "user"), "")
+        if not latest_user:
+            return ""
+        norm = lambda value: re.sub(r"[\\s?!.,~]+", "", value.casefold())
+        sections = doc.split("## ")[1:]
+        for section in sections:
+            fields = {}
+            for line in section.splitlines():
+                if line.startswith("- 이전 학생 질문: "):
+                    fields["before"] = line.split(": ", 1)[1]
+                elif line.startswith("- 학생 후속 질문: "):
+                    fields["after"] = line.split(": ", 1)[1]
+                elif line.startswith("- 권장 소라 답변: "):
+                    fields["answer"] = line.split(": ", 1)[1]
+            if fields.get("answer") and norm(fields.get("after", "")) == norm(question) and norm(fields.get("before", "")) == norm(latest_user):
+                return fields["answer"]
+    except (OSError, ValueError):
+        pass
+    return ""
+
+
 def market_context(ticker, tf):
     # Server-side acquisition prevents users from supplying invented chart figures.
     try:
@@ -310,6 +338,9 @@ class handler(BaseHTTPRequestHandler):
                   "Do not introduce yourself or repeat generic disclaimers. "
                   "Do not add a scenario, lesson, quiz or follow-up question unless explicitly asked. "
                   "Only use observations available in the supplied context; do not invent measurements.")
+        context_example = context_training_example(question, turns)
+        if context_example and not wants_practice:
+            prompt += "\\nContext-linked teaching example (illustrative; do not claim observed market data): " + context_example
         reference_answer = qa_example_for(question)
         if reference_answer and not wants_practice:
             prompt += "\\nApproved training example (conceptual only, not verified market data): " + reference_answer
