@@ -322,6 +322,12 @@ class handler(BaseHTTPRequestHandler):
         if not key:
             self.reply(503, {"error": "선택한 AI 제공자의 서버 API 키가 없습니다.", "kind": "MODEL_NOT_CONFIGURED"})
             return
+        # Avoid requests.InvalidHeader without leaking credential values.
+        if provider == "openai" and (not key.isascii() or
+                                     any(ord(ch) < 33 or ord(ch) == 127 for ch in key) or
+                                     not key.startswith("sk-")):
+            self.reply(503, {"error": "OPENAI_API_KEY 형식이 올바르지 않습니다. Vercel에 원본 키 한 줄만 다시 입력해 주세요.", "kind": "MODEL_KEY_FORMAT"})
+            return
         if not re.fullmatch(r"[a-zA-Z0-9_.-]{2,60}", model):
             self.reply(503, {"error": "AI 모델 설정이 올바르지 않습니다.", "kind": "MODEL_INVALID"})
             return
