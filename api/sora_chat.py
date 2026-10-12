@@ -461,8 +461,18 @@ class handler(BaseHTTPRequestHandler):
             self.reply(502, {"error": "AI 서버와 연결할 수 없습니다.", "kind": "MODEL_CONNECTION"})
         except requests.exceptions.TooManyRedirects:
             self.reply(502, {"error": "AI 서버 요청이 과도하게 리디렉션되었습니다.", "kind": "MODEL_REDIRECT"})
-        except requests.exceptions.RequestException:
-            self.reply(502, {"error": "AI 제공자 요청을 완료하지 못했습니다.", "kind": "MODEL_NETWORK"})
+        except requests.exceptions.RequestException as exc:
+            # Exception class only: never expose URL, headers, API key or response body.
+            error_class = type(exc).__name__
+            safe_classes = {"ChunkedEncodingError", "ContentDecodingError",
+                            "InvalidURL", "InvalidHeader", "MissingSchema",
+                            "InvalidSchema", "HTTPError", "RequestException"}
+            self.reply(502, {
+                "error": "AI 제공자 요청을 완료하지 못했습니다.",
+                "kind": "MODEL_NETWORK",
+                "diagnostic": error_class if error_class in safe_classes else "OTHER_REQUEST_EXCEPTION",
+                "provider": provider
+            })
         except (ValueError, TypeError, KeyError):
             self.reply(502, {"error": "AI 응답 형식을 해석하지 못했습니다.", "kind": "MODEL_FORMAT"})
 
