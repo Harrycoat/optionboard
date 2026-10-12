@@ -270,8 +270,8 @@ class handler(BaseHTTPRequestHandler):
             return
         # Deterministic R01 exercise start in either UI mode.
         # Do not let Gemini explain the answer before the learner responds.
-        r01_start = bool(re.search(r"(?i)\\bR01\\b|매수세\\s*둔화|매도세\\s*발생", question)) and bool(
-            re.search(r"문제|퀴즈|연습|수업\\s*시작|practice|quiz", question, re.I))
+        r01_start = bool(re.search(r"(?i)\bR01\b|매수세\s*둔화|매도세\s*발생", question)) and bool(
+            re.search(r"문제|퀴즈|연습|수업\s*시작|practice|quiz", question, re.I))
         if r01_start:
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": R01_FIRST,
                 "market": {"ticker": "SYNTHETIC", "tf": "30m",
