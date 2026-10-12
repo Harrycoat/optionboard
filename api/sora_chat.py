@@ -248,6 +248,7 @@ class handler(BaseHTTPRequestHandler):
             )
             if active_r01_drill:
                 rule_id = "R01"
+                mode = "learn"  # Follow-up answers stay in the synthetic lesson.
         except (ValueError, TypeError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
             self.reply(400, {"error": "종목·시간봉·질문 형식을 확인해 주세요.", "kind": "INVALID_INPUT"})
             return
