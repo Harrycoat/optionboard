@@ -241,7 +241,7 @@ class handler(BaseHTTPRequestHandler):
                 turns.append({"role": h["role"], "content": h["content"][-1200:]})
             # Follow-up student answers often omit "R01". Recover the current
             # exercise from the recent user/assistant turns, not just this message.
-            active_r01_drill = mode == "learn" and any(
+            active_r01_drill = any(
                 re.search(r"(?i)\bR01\b", t["content"]) and
                 re.search(r"연습|문제|퀴즈|practice|quiz", t["content"], re.I)
                 for t in turns if t["role"] == "user"
@@ -267,6 +267,22 @@ class handler(BaseHTTPRequestHandler):
                              "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]},
                              "language": language, "mode": mode, "requested_mode": requested_mode, "case_id": None})
             return
+        # Deterministic R01 exercise start in either UI mode.
+        # Do not let Gemini explain the answer before the learner responds.
+        r01_start = bool(re.search(r"(?i)\\bR01\\b|매수세\\s*둔화|매도세\\s*발생", question)) and bool(
+            re.search(r"문제|퀴즈|연습|수업\\s*시작|practice|quiz", question, re.I))
+        if r01_start:
+            self.reply(200, {"ticker": ticker, "tf": tf, "answer": R01_FIRST,
+                "market": {"ticker": "SYNTHETIC", "tf": "30m",
+                           "last_bar_utc": None, "retrieved_at_utc": None,
+                           "timezone": "N/A", "price_label": "학습용 가상 사례",
+                           "data_status": "SYNTHETIC", "source": "교육용 사례"},
+                "lesson": {"title": "VF-0.2 R01 수급 순환", "version": "VF-0.2"},
+                "rule_id": "R01", "core_criteria": {
+                    "title": VF02["title"], "version": VF02["version"],
+                    "status": VF02["status"]},
+                "language": language, "mode": "learn", "case_id": "vf02-r01-first"})
+            return
         # R01 instructional guard: on an identifiable first wrong answer,
         # return only a hint + one retry question, without relying on Gemini compliance.
         prior_cases = [t for t in turns if t["role"] == "assistant" and
@@ -275,7 +291,7 @@ class handler(BaseHTTPRequestHandler):
             r"매수세.{0,35}(?:감소|줄|하락|떨어|둔화).{0,45}매도세.{0,18}(?:발생|생겼|시작|증가)|"
             r"매도세.{0,18}(?:발생|생겼|시작).{0,45}매수세.{0,35}(?:감소|줄|하락|떨어|둔화)",
             question))
-        if mode == "learn" and active_r01_drill and len(prior_cases) == 1 and wrong_r01:
+        if active_r01_drill and len(prior_cases) == 1 and wrong_r01:
             hint = ("매수세가 약해진 점은 잘 보셨어요. 😊 "
                     "사례에서 매도세 수치도 이전보다 증가했나요?")
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": hint,
