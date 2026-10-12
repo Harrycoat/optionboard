@@ -384,6 +384,24 @@ class handler(BaseHTTPRequestHandler):
                   "Do not introduce yourself or repeat generic disclaimers. "
                   "Do not add a scenario, lesson, quiz or follow-up question unless explicitly asked. "
                   "Only use observations available in the supplied context; do not invent measurements.")
+        image_request = bool(re.search(
+            r"(?i)(?:그림|이미지|인포그래픽|시각화|포스터|image|illustrat).{0,55}(?:만들|보여|그려|스크립트|프롬프트|설명|생성|prompt)?|"
+            r"(?:만들|보여|그려|생성).{0,30}(?:그림|이미지|차트|image)", question))
+        if image_request:
+            prompt += (
+                "\nIMAGE EDUCATION REQUEST: Respond with a fully copyable, detailed Korean "
+                "image-generation prompt based on the current question and prior conversation. "
+                "Keep any short introduction outside the prompt. Include a clear title, 16:9 "
+                "layout, candles where relevant, volume as the first key signal, selling versus "
+                "buying pressure, separate conceptual Smooth panel, Put/Call Wall as applicable, "
+                "and Hull21 band if relevant. Follow VF-0.2 order precisely; do not fabricate "
+                "original TOS indicator formulas, real price levels, ticker charts or Wall numbers. "
+                "Label the whole image '교육용 가상 사례'. Provide an explicit standalone Markdown "
+                "link [ChatGPT 이미지 생성](https://chatgpt.com/images) following the prompt. "
+                "Say that the Sora chat does not yet render generated images internally; "
+                "do NOT pretend an image was already generated. No unsolicited quiz. "
+                "The full prompt may exceed the usual 2-5 line limit."
+            )
         context_example = context_training_example(question, turns)
         if context_example and not wants_practice:
             prompt += "\nContext-linked teaching example (illustrative; do not claim observed market data): " + context_example
