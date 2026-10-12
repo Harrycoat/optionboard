@@ -30,16 +30,30 @@ def hull20(closes):
         result.append(round(wma(available[-4:]),5) if len(available)>=4 else None)
     return result
 
-@lru_cache(maxsize=512)
-def session_bounds(day):
+@lru_cache(maxsize=1)
+def _nyse_calendar():
+    # Construct exchange calendar ONCE per warm instance, not once per daily bar.
     try:
         import exchange_calendars as xc
-        cal=xc.get_calendar("XNYS")
-        key=str(day)
-        if not cal.is_session(key):return None
-        return int(cal.session_open(key).timestamp()*1000),int(cal.session_close(key).timestamp()*1000)
+    except (ImportError, ModuleNotFoundError):
+        raise ValueError("DATA_CALENDAR_DEPENDENCY") from None
+    try:
+        return xc.get_calendar("XNYS")
     except Exception:
-        raise ValueError("DATA_CALENDAR_FAILURE") from None
+        raise ValueError("DATA_CALENDAR_INIT") from None
+
+@lru_cache(maxsize=512)
+def session_bounds(day):
+    cal=_nyse_calendar()
+    key=str(day)
+    try:
+        if not cal.is_session(key):
+            return None
+        start=cal.session_open(key)
+        end=cal.session_close(key)
+        return int(start.timestamp()*1000),int(end.timestamp()*1000)
+    except Exception:
+        raise ValueError("DATA_CALENDAR_SESSION") from None
 
 def expected_session(cutoff_ms):
     day=datetime.fromtimestamp(cutoff_ms/1000,timezone.utc).astimezone(ET).date()
