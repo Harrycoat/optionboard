@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+from functools import lru_cache
 import json
 import os
 import re
@@ -29,11 +30,16 @@ def hull20(closes):
         result.append(round(wma(available[-4:]),5) if len(available)>=4 else None)
     return result
 
+@lru_cache(maxsize=512)
 def session_bounds(day):
-    import exchange_calendars as xc
-    cal=xc.get_calendar("XNYS")
-    if not cal.is_session(str(day)):return None
-    return int(cal.session_open(str(day)).timestamp()*1000),int(cal.session_close(str(day)).timestamp()*1000)
+    try:
+        import exchange_calendars as xc
+        cal=xc.get_calendar("XNYS")
+        key=str(day)
+        if not cal.is_session(key):return None
+        return int(cal.session_open(key).timestamp()*1000),int(cal.session_close(key).timestamp()*1000)
+    except Exception:
+        raise ValueError("DATA_CALENDAR_FAILURE") from None
 
 def expected_session(cutoff_ms):
     day=datetime.fromtimestamp(cutoff_ms/1000,timezone.utc).astimezone(ET).date()
@@ -83,10 +89,13 @@ def aggregates(symbol,tf,include_partial=False):
     if data.get('status') not in ('OK','DELAYED'):raise ValueError('DATA_PROVIDER_ERROR')
     if data.get('next_url'):raise ValueError('DATA_TRUNCATED: pagination required')
     rows=[]
-    for b in data.get('results') or []:
-        row={k:float(b[k]) for k in ('o','h','l','c','v')};row['t']=int(b['t'])
-        if row['l']>row['h'] or row['c']<=0:raise ValueError('DATA_INVALID')
-        rows.append(row)
+    try:
+        for b in data.get('results') or []:
+            row={k:float(b[k]) for k in ('o','h','l','c','v')};row['t']=int(b['t'])
+            if row['l']>row['h'] or row['c']<=0:raise ValueError('DATA_INVALID')
+            rows.append(row)
+    except (TypeError, KeyError, OverflowError):
+        raise ValueError("DATA_PARSE_FAILURE") from None
     if tf=='1d':
         out=[]
         for row in rows:
@@ -97,7 +106,12 @@ def aggregates(symbol,tf,include_partial=False):
         if bounds[1]>cutoff:expected,_=expected_session(bounds[0]-1)
         if not out or datetime.fromtimestamp(out[-1]["t"]/1000,timezone.utc).astimezone(ET).date()!=expected:raise ValueError("DATA_STALE: daily session missing")
         return out[-300:]
-    out=resample(rows,VALID_TF[tf],cutoff)
+    try:
+        out=resample(rows,VALID_TF[tf],cutoff)
+    except ValueError:
+        raise
+    except Exception:
+        raise ValueError("DATA_RESAMPLE_FAILURE") from None
     completed=[b for b in out if b['complete']]
     day,bounds=expected_session(cutoff)
     expected_end=bounds[0]+((min(cutoff,bounds[1])-bounds[0])//(VALID_TF[tf]*60000))*VALID_TF[tf]*60000
