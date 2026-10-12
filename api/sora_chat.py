@@ -340,10 +340,10 @@ class handler(BaseHTTPRequestHandler):
                   "Only use observations available in the supplied context; do not invent measurements.")
         context_example = context_training_example(question, turns)
         if context_example and not wants_practice:
-            prompt += "\\nContext-linked teaching example (illustrative; do not claim observed market data): " + context_example
+            prompt += "\nContext-linked teaching example (illustrative; do not claim observed market data): " + context_example
         reference_answer = qa_example_for(question)
         if reference_answer and not wants_practice:
-            prompt += "\\nApproved training example (conceptual only, not verified market data): " + reference_answer
+            prompt += "\nApproved training example (conceptual only, not verified market data): " + reference_answer
         if rule_id == "R01" and wants_practice:
             prompt += "\nACTIVE RULE: VF-0.2 R01 ONLY. Do not ask about buying, entry, Hull21 or R04."
             drill_replies = [
