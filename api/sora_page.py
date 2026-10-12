@@ -13,25 +13,7 @@ HTML = "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta nam
  $(\"question\").value=\"볼륨 발자국 1단계 시장 분석을 배우고 싶어. 시장을 확인하는 법을 설명하고, 내가 차트를 보고 답할 질문 하나만 해줘.\";
  $(\"question\").focus();
 }
-function startStrategyLesson(name, description, question){
- $("mode").value="learn"; $("tf").value="1d";
- cancelChat(); indexChart=null; updateIndexButtons(); updateChart(); paintChat();
- add("assistant",name+"\n"+description+"\n\n기존 종목 목록에서 종목을 선택하고 일봉부터 살펴보세요. 소라는 TradingView 화면 자체를 직접 읽지 못하므로 실제 수치는 검증된 데이터로만 판단합니다.");
- $("question").value=question; $("question").focus();
-}
-function startTrendCourse(){
- startStrategyLesson("추세추종 · Stage 1~4",
- "시장 분석 → 주봉 추세 → 주도주 찾기 → FTD 확인 → Stage 1 전환 후보(20일선 돌파·거래량) → Stage 2 상승 → Stage 3 횡보 및 약화 → Stage 4 하락. 20일선 이탈은 익절 검토, 50일선 이탈은 청산 검토 기준입니다.",
- "추세추종: 시장과 주봉을 보고 Stage 1~4 주도주를 찾는 방법부터 설명하고 한 문제씩 진행해 줘.");
-}
-function startMinerviniCourse(){
- startStrategyLesson("미너비니 SEPA · VCP",
- "시장과 주도주 → 일봉 50·150·200일선 및 RS·52주 위치 → 상승하는 200일선과 Stage 2 추세 → VCP 수축·거래량 감소 → 피벗·고점 돌파 → 실패 돌파·위험 관리.",
- "미너비니 SEPA와 VCP: Trend Template 후보를 찾는 방법과 실제 차트에서 확인할 항목을 알려주고 한 문제씩 진행해 줘.");
-}
-document.getElementById("startTrend").addEventListener("click",startTrendCourse);
-document.getElementById("startMinervini").addEventListener("click",startMinerviniCourse);
-function startContestPreview(){
+function startStrategyLesson(name, description, question){\n $(\"mode\").value=\"learn\"; $(\"tf\").value=\"1d\";\n cancelChat(); indexChart=null; updateIndexButtons(); updateChart(); paintChat();\n add(\"assistant\",name+\"\\n\"+description+\"\\n\\n기존 종목 목록에서 종목을 선택하고 일봉부터 살펴보세요. 소라는 TradingView 화면 자체를 직접 읽지 못하므로 실제 수치는 검증된 데이터로만 판단합니다.\");\n $(\"question\").value=question; $(\"question\").focus();\n}\nfunction startTrendCourse(){\n startStrategyLesson(\"추세추종 · Stage 1~4\",\n \"시장 분석 → 주봉 추세 → 주도주 찾기 → FTD 확인 → Stage 1 전환 후보(20일선 돌파·거래량) → Stage 2 상승 → Stage 3 횡보 및 약화 → Stage 4 하락. 20일선 이탈은 익절 검토, 50일선 이탈은 청산 검토 기준입니다.\",\n \"추세추종: 시장과 주봉을 보고 Stage 1~4 주도주를 찾는 방법부터 설명하고 한 문제씩 진행해 줘.\");\n}\nfunction startMinerviniCourse(){\n startStrategyLesson(\"미너비니 SEPA · VCP\",\n \"시장과 주도주 → 일봉 50·150·200일선 및 RS·52주 위치 → 상승하는 200일선과 Stage 2 추세 → VCP 수축·거래량 감소 → 피벗·고점 돌파 → 실패 돌파·위험 관리.\",\n \"미너비니 SEPA와 VCP: Trend Template 후보를 찾는 방법과 실제 차트에서 확인할 항목을 알려주고 한 문제씩 진행해 줘.\");\n}\ndocument.getElementById(\"startTrend\").addEventListener(\"click\",startTrendCourse);\ndocument.getElementById(\"startMinervini\").addEventListener(\"click\",startMinerviniCourse);\nfunction startContestPreview(){
  add(\"assistant\",\"가상대회 · 시작 자금 $100,000 (개발 중)\\n현재는 참가 및 모의 주문 기록 기능이 아직 연결되지 않았어요. 실제 가상 계좌·성적표가 생성된 것은 아닙니다. 향후 종목 선택 → 가상 주문 → 매매일지 → 성적표 순서로 연습하게 됩니다. 먼저 볼륨 발자국 과정을 시작해 주세요.\");
 }
 document.getElementById(\"startVolume\").addEventListener(\"click\",startVolumeCourse);
