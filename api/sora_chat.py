@@ -96,12 +96,23 @@ EVP는 추정 지표이며 TOS Net Delta/Smooth와 동등하지 않습니다.
 
 def market_context(ticker, tf):
     # Server-side acquisition prevents users from supplying invented chart figures.
-    from swing_radar_chart import VALID_TF, aggregates, indicators
+    try:
+        from swing_radar_chart import VALID_TF, aggregates, indicators
+    except Exception:
+        raise ValueError("DATA_IMPORT_FAILURE") from None
     if tf not in VALID_TF:
         raise ValueError("UNSUPPORTED_TIMEFRAME")
-    rows = aggregates(ticker, tf, True)
+    try:
+        rows = aggregates(ticker, tf, True)
+    except ValueError:
+        raise
+    except Exception:
+        raise ValueError("DATA_AGGREGATION_FAILURE") from None
     done = [r for r in rows if r.get("complete") and r.get("coverage_ok", True)]
-    bars = indicators(done)
+    try:
+        bars = indicators(done)
+    except Exception:
+        raise ValueError("DATA_INDICATOR_FAILURE") from None
     if not bars:
         raise ValueError("NO_COMPLETED_BARS")
     # indicators() returns descriptive OHLCV keys; previous short keys silently
@@ -216,7 +227,8 @@ class handler(BaseHTTPRequestHandler):
                 "DATA_NOT_CONFIGURED", "DATA_NETWORK_ERROR", "DATA_INVALID_JSON",
                 "DATA_PROVIDER_ERROR", "DATA_TRUNCATED", "DATA_INVALID",
                 "DATA_STALE", "DATA_GAP", "DATA_INCOMPLETE", "NO_COMPLETED_BARS",
-                "CALENDAR_UNAVAILABLE",
+                "CALENDAR_UNAVAILABLE", "DATA_IMPORT_FAILURE",
+                "DATA_AGGREGATION_FAILURE", "DATA_INDICATOR_FAILURE",
             }
             if reason.startswith("DATA_PROVIDER_HTTP_") and re.fullmatch(r"DATA_PROVIDER_HTTP_[0-9]{3}", reason):
                 code = reason
