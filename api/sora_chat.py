@@ -95,22 +95,26 @@ EVP는 추정 지표이며 TOS Net Delta/Smooth와 동등하지 않습니다.
 """
 
 def qa_example_for(question):
-    """Optional concise reference answer; never a substitute for verified market data."""
+    """Look up an approved conceptual example; never claim live market data."""
     try:
         from pathlib import Path
-        qa_file = Path(__file__).resolve().parent.parent / "docs" / "sora-conversation-qa-100-20261011.md"
-        content = qa_file.read_text(encoding="utf-8")
+        root = Path(__file__).resolve().parent.parent / "docs"
         needle = " ".join(question.casefold().split()).strip("?!., ~")
         if len(needle) < 3:
             return ""
-        lines = content.splitlines()
-        for i, line in enumerate(lines):
-            if "**Q:** " not in line or i + 1 >= len(lines):
-                continue
-            sample = line.split("**Q:** ", 1)[1]
-            normalized = " ".join(sample.casefold().split()).strip("?!., ~")
-            if normalized == needle and "**A:** " in lines[i + 1]:
-                return lines[i + 1].split("**A:** ", 1)[1].strip()
+        for filename in ("sora-dialogue-training-800-20261012.md",
+                         "sora-conversation-qa-100-20261011.md"):
+            lines = (root / filename).read_text(encoding="utf-8").splitlines()
+            for i, line in enumerate(lines):
+                if "**Q:** " not in line:
+                    continue
+                sample = line.split("**Q:** ", 1)[1]
+                normalized = " ".join(sample.casefold().split()).strip("?!., ~")
+                if normalized != needle:
+                    continue
+                # Training records always have the answer on the next line.
+                if i + 1 < len(lines) and "**A:** " in lines[i + 1]:
+                    return lines[i + 1].split("**A:** ", 1)[1].strip()
     except (OSError, ValueError):
         return ""
     return ""
