@@ -270,9 +270,12 @@ class handler(BaseHTTPRequestHandler):
             return
         # Deterministic R01 exercise start in either UI mode.
         # Do not let Gemini explain the answer before the learner responds.
+        no_quiz = bool(re.search(
+            r"(?i)(?:퀴즈|문제|연습).{0,12}(?:내지\\s*마|하지\\s*마|필요\\s*없|원치\\s*않|말아|싫어)|"
+            r"(?:no|don't|do not)\\s+(?:quiz|practice|questions)", question))
         r01_start = bool(re.search(r"(?i)\bR01\b|매수세\s*둔화|매도세\s*발생", question)) and bool(
             re.search(r"문제|퀴즈|연습|수업\s*시작|practice|quiz", question, re.I))
-        if r01_start:
+        if r01_start and not no_quiz:
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": R01_FIRST,
                 "market": {"ticker": "SYNTHETIC", "tf": "30m",
                            "last_bar_utc": None, "retrieved_at_utc": None,
@@ -353,7 +356,7 @@ class handler(BaseHTTPRequestHandler):
                 "unavailable": ["완료봉", "현재가", "거래량", "Hull21 밴드", "TOS Smooth", "매수세", "Put Wall", "Call Wall"],
                 "failure_kind": code,
             }
-        wants_practice = bool(re.search(r"연습|문제|퀴즈|수업 시작|학습 시작|practice|quiz", question, re.I)) or active_r01_drill
+        wants_practice = (bool(re.search(r"연습|문제|퀴즈|수업 시작|학습 시작|practice|quiz", question, re.I)) or active_r01_drill) and not no_quiz
         context = json.dumps(
             {"market": market if mode == "chart" else {"data_status": "SYNTHETIC", "source": "학습용; 실제 종목·시세 없음"},
              "core_criteria": VF02,
