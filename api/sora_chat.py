@@ -168,6 +168,14 @@ class handler(BaseHTTPRequestHandler):
             mode = str(req.get("mode", "chart")).lower()
             if mode not in ("chart", "learn"):
                 raise ValueError("MODE")
+            # An explicit request for real historical bars must not silently use
+            # synthetic teaching mode. Route this request to server-verified data.
+            explicit_chart_request = bool(re.search(
+                r"(?i)(?:실제|과거|최근|완료된).{0,30}(?:봉|차트|데이터)|(?:봉|차트|데이터).{0,30}(?:실제|과거|최근)|(?:AMZN|NVDA|TSLA|SPY|QQQ).{0,25}(?:분석|봉)",
+                question))
+            requested_mode = mode
+            if mode == "learn" and explicit_chart_request:
+                mode = "chart"
             rule_id = "R01" if mode == "learn" and re.search(r"(?i)\bR01\b|매수세\s*둔화|매도세\s*발생|buying\s+pressure\s+weakening|selling\s+pressure\s+emerg", question) else None
             history = req.get("history", [])
             if not isinstance(history, list) or len(history) > 8:
@@ -203,7 +211,7 @@ class handler(BaseHTTPRequestHandler):
             self.reply(200, {"ticker": ticker, "tf": tf, "answer": reply,
                              "market": market, "lesson": {"title": "인사", "version": "v1"},
                              "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]},
-                             "language": language, "mode": mode, "case_id": None})
+                             "language": language, "mode": mode, "requested_mode": requested_mode, "case_id": None})
             return
         key = os.getenv("SORA_GEMINI_API_KEY", "").strip()
         model = os.getenv("SORA_GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
