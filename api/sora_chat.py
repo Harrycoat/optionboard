@@ -260,21 +260,31 @@ class handler(BaseHTTPRequestHandler):
             ensure_ascii=False, separators=(",", ":"))
         dialogue = "\n".join(("사용자" if h["role"] == "user" else "소라") + ": " + h["content"] for h in turns)
         language_instruction = {"ko": "Respond in Korean.", "en": "Respond in English.", "auto": "Reply in the predominant language of the latest user question (Korean or English)."}[language]
-        prompt = language_instruction + "\nVerified context: " + context + "\nConversation:\n" + dialogue + "\nUser question: " + question + "\nAnswer only what the user asks. Never insert an unsolicited lesson, greeting, disclaimer or quiz. Default to 2-5 short lines."
+        prompt = (language_instruction + "\nVerified context: " + context +
+                  "\nConversation:\n" + dialogue + "\nUser question: " + question +
+                  "\nAnswer the specific question directly in 2-5 short lines. "
+                  "Do not introduce yourself or repeat generic disclaimers. "
+                  "Do not add a scenario, lesson, quiz or follow-up question unless explicitly asked. "
+                  "Only use observations available in the supplied context; do not invent measurements.")
         if rule_id == "R01" and wants_practice:
-            prompt += "\nThe active R01 exercise persists across the learner's replies. This turn is a learner answer if the prior assistant gave a synthetic R01 question."
-            if turns and turns[-1]["role"] == "assistant":
-                prompt += ("\nIf the student's answer is wrong or asserts that reduced buying automatically means selling pressure, do NOT reveal the conclusion, label or full explanation. "
-                           "Give ONE concise observation-based hint about whether the measured selling pressure changed and ask ONE short question. WAIT. "
-                           "If uncertain, ask a clarifying question rather than declaring correctness. "
-                           "Only after the student tries again can you explain and give brief feedback. "
-                           "No greetings, no R04, no entry decision.")
-
-            prompt += "\nCURRENT LESSON R01 ONLY. " + R01_RULE
-            if not turns or not any(re.search(r"연습|문제|퀴즈", h["content"]) for h in turns if h["role"] == "user"):
-                prompt += "\nStart with EXACTLY ONE synthetic case question based on: " + R01_FIRST + "\nDo NOT disclose the answer."
+            prompt += "\nACTIVE RULE: VF-0.2 R01 ONLY. Do not ask about buying, entry, Hull21 or R04."
+            drill_replies = [
+                t for t in turns if t["role"] == "assistant"
+                and ("가상 사례" in t["content"] or "매수세" in t["content"])
+            ]
+            if not drill_replies:
+                prompt += ("\nPresent one short SYNTHETIC example of buying pressure weakening "
+                           "without proof of increasing selling pressure. Ask exactly one question "
+                           "that distinguishes the two. Wait. Do not disclose the answer.")
+            elif len(drill_replies) == 1:
+                prompt += ("\nThis is the student's FIRST attempt at the R01 drill. "
+                           "When it is wrong, give only one observation-based HINT about the "
+                           "selling-pressure measurement, then ask one short retry question. "
+                           "Do NOT state the correct label or explain the full answer. Wait. "
+                           "If correct, give short confirmation without an unsolicited new quiz.")
             else:
-                prompt += "\nStay with R01. Do not switch to entry strategy."
+                prompt += ("\nThis is a follow-up attempt. Give concise feedback based only on "
+                           "the student's actual answer. Do not start a new scenario unless requested.")
         url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
         try:
             r = requests.post(
