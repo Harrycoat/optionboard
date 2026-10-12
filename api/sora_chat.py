@@ -455,8 +455,14 @@ class handler(BaseHTTPRequestHandler):
                              "lesson": {"title": "VF-0.2 R01 수급 순환" if rule_id == "R01" else LESSON["title"], "version": "VF-0.2" if rule_id == "R01" else LESSON["version"]}, "rule_id": rule_id, "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]}, "language": language, "mode": mode, "case_id": "vf02-r01-first" if rule_id == "R01" else (GUIDED_CASE["id"] if mode == "learn" else None)})
         except requests.exceptions.Timeout:
             self.reply(504, {"error": "AI 응답 시간이 초과되었습니다.", "kind": "MODEL_TIMEOUT"})
+        except requests.exceptions.SSLError:
+            self.reply(502, {"error": "AI 서버 TLS 연결에 실패했습니다.", "kind": "MODEL_TLS"})
+        except requests.exceptions.ConnectionError:
+            self.reply(502, {"error": "AI 서버와 연결할 수 없습니다.", "kind": "MODEL_CONNECTION"})
+        except requests.exceptions.TooManyRedirects:
+            self.reply(502, {"error": "AI 서버 요청이 과도하게 리디렉션되었습니다.", "kind": "MODEL_REDIRECT"})
         except requests.exceptions.RequestException:
-            self.reply(502, {"error": "AI 제공자 네트워크 연결에 실패했습니다.", "kind": "MODEL_NETWORK"})
+            self.reply(502, {"error": "AI 제공자 요청을 완료하지 못했습니다.", "kind": "MODEL_NETWORK"})
         except (ValueError, TypeError, KeyError):
             self.reply(502, {"error": "AI 응답 형식을 해석하지 못했습니다.", "kind": "MODEL_FORMAT"})
 
