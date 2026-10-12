@@ -306,10 +306,18 @@ class handler(BaseHTTPRequestHandler):
                                  "status": VF02["status"]},
                              "language": language, "mode": mode, "case_id": "vf02-r01-hint"})
             return
-        key = os.getenv("SORA_GEMINI_API_KEY", "").strip()
-        model = os.getenv("SORA_GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
+        provider = os.getenv("SORA_AI_PROVIDER", "gemini").strip().lower()
+        if provider not in ("gemini", "openai"):
+            self.reply(503, {"error": "AI 제공자 설정이 올바르지 않습니다.", "kind": "MODEL_PROVIDER_INVALID"})
+            return
+        if provider == "openai":
+            key = os.getenv("OPENAI_API_KEY", "").strip()
+            model = os.getenv("SORA_OPENAI_MODEL", "gpt-5-mini").strip()
+        else:
+            key = os.getenv("SORA_GEMINI_API_KEY", "").strip()
+            model = os.getenv("SORA_GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
         if not key:
-            self.reply(503, {"error": "AI 서버 설정이 없습니다. SORA_GEMINI_API_KEY를 서버에서 확인해 주세요.", "kind": "MODEL_NOT_CONFIGURED"})
+            self.reply(503, {"error": "선택한 AI 제공자의 서버 API 키가 없습니다.", "kind": "MODEL_NOT_CONFIGURED"})
             return
         if not re.fullmatch(r"[a-zA-Z0-9_.-]{2,60}", model):
             self.reply(503, {"error": "AI 모델 설정이 올바르지 않습니다.", "kind": "MODEL_INVALID"})
@@ -384,15 +392,23 @@ class handler(BaseHTTPRequestHandler):
             else:
                 prompt += ("\nThis is a follow-up attempt. Give concise feedback based only on "
                            "the student's actual answer. Do not start a new scenario unless requested.")
-        url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
         try:
-            r = requests.post(
-                url, headers={"x-goog-api-key": key, "Content-Type": "application/json"},
-                json={"systemInstruction": {"parts": [{"text": SYSTEM + ("\\n" + GUIDED_SYSTEM if mode == "learn" else "")}]},
-                      "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-                      "generationConfig": {"maxOutputTokens": 900, "temperature": 0.2}},
-                timeout=(4, 22),
-            )
+            system_text = SYSTEM + ("\n" + GUIDED_SYSTEM if mode == "learn" else "")
+            if provider == "openai":
+                r = requests.post(
+                    "https://api.openai.com/v1/responses",
+                    headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+                    json={"model": model, "instructions": system_text,
+                          "input": prompt, "max_output_tokens": 1200, "store": False},
+                    timeout=(4, 22))
+            else:
+                url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
+                r = requests.post(
+                    url, headers={"x-goog-api-key": key, "Content-Type": "application/json"},
+                    json={"systemInstruction": {"parts": [{"text": system_text}]},
+                          "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                          "generationConfig": {"maxOutputTokens": 900, "temperature": 0.2}},
+                    timeout=(4, 22))
             if r.status_code in (401, 403):
                 self.reply(502, {"error": "AI 모델 인증 또는 권한 오류입니다.", "kind": "MODEL_AUTH"})
                 return
@@ -406,7 +422,13 @@ class handler(BaseHTTPRequestHandler):
                 self.reply(502, {"error": "AI 모델 제공자 응답 오류 (" + str(r.status_code) + ").", "kind": "MODEL_PROVIDER_ERROR"})
                 return
             result = r.json()
-            answer = "".join(p.get("text", "") for item in result.get("candidates", [])[:1] for p in item.get("content", {}).get("parts", []) if isinstance(p, dict)).strip()
+            if provider == "openai":
+                answer = "".join(part.get("text", "") for item in result.get("output", [])
+                                 if item.get("type") == "message"
+                                 for part in item.get("content", [])
+                                 if part.get("type") == "output_text").strip()
+            else:
+                answer = "".join(p.get("text", "") for item in result.get("candidates", [])[:1] for p in item.get("content", {}).get("parts", []) if isinstance(p, dict)).strip()
             if not answer:
                 self.reply(502, {"error": "AI에서 빈 답변이 반환됐습니다.", "kind": "MODEL_EMPTY"})
                 return
