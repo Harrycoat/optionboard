@@ -113,12 +113,13 @@ def aggregates(symbol,tf,include_partial=False):
     if tf=='1d':
         out=[]
         for row in rows:
-            day=datetime.fromtimestamp(row['t']/1000,timezone.utc).astimezone(ET).date()
+            # Massive daily aggregate timestamps represent the UTC trading-date label, not an ET intraday instant.
+            day=datetime.fromtimestamp(row['t']/1000,timezone.utc).date()
             bounds=session_bounds(day)
             if bounds and bounds[1]<=cutoff:out.append(dict(row,end_ms=bounds[1],complete=True,coverage_ok=True))
         expected,bounds=expected_session(cutoff)
         if bounds[1]>cutoff:expected,_=expected_session(bounds[0]-1)
-        if not out or datetime.fromtimestamp(out[-1]["t"]/1000,timezone.utc).astimezone(ET).date()!=expected:raise ValueError("DATA_STALE: daily session missing")
+        if not out or datetime.fromtimestamp(out[-1]["t"]/1000,timezone.utc).date()!=expected:raise ValueError("DATA_STALE: daily session missing")
         return out[-300:]
     try:
         out=resample(rows,VALID_TF[tf],cutoff)
@@ -194,6 +195,7 @@ class handler(BaseHTTPRequestHandler):
                 elif "DATA_STALE" in msg: code="DATA_STALE"
                 elif "DATA_GAP" in msg: code="DATA_GAP"
                 elif "DATA_TRUNCATED" in msg: code="DATA_TRUNCATED"
+                elif "DATA_CALENDAR" in msg or "CALENDAR_UNAVAILABLE" in msg: code="DATA_CALENDAR_ERROR"
                 elif "DATA_NETWORK_ERROR" in msg: code="DATA_NETWORK_ERROR"
                 elif "DATA_PROVIDER_HTTP_429" in msg: code="DATA_RATE_LIMIT"
                 elif "DATA_PROVIDER_HTTP_" in msg: code="DATA_PROVIDER_HTTP_ERROR"
