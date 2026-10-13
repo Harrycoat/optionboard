@@ -1,10 +1,10 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GEXOption · 포트폴리오 데모</title><style>
 *{box-sizing:border-box}body{font:15px system-ui,sans-serif;background:#f6f9fb;color:#173248;margin:0}header{background:white;border-bottom:1px solid #d8e3e9;padding:16px}header a{color:#087a72}main{max-width:1100px;margin:22px auto;padding:0 16px}h1{font-size:25px}.panel{background:white;padding:20px;border:1px solid #dbe5ed;border-radius:13px;margin-bottom:16px}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}label{display:block;font-size:12px;margin-bottom:5px}input{width:100%;padding:11px;border-radius:7px;border:1px solid #bacbd6;font:inherit}button{padding:10px 14px;border:0;border-radius:8px;background:#0e766e;color:white;font-weight:700;cursor:pointer}.secondary{background:#edf2f6;color:#173248}.danger{background:#f8dfe1;color:#a62c38}.notice{background:#fff5db;padding:12px;border-radius:9px;margin:14px 0;color:#73551a}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}.metric{background:white;border:1px solid #dde7ee;padding:15px;border-radius:10px}.metric b{display:block;font-size:22px;margin-top:7px}.heat{display:flex;flex-wrap:wrap;gap:6px;min-height:150px}.tile{flex:var(--share) 1 110px;min-width:108px;min-height:110px;padding:10px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}.up{background:#c9ead9}.down{background:#f4d5d9}.tile small{font-size:12px}table{border-collapse:collapse;width:100%;min-width:600px}th,td{border-bottom:1px solid #e4ebef;padding:10px;text-align:right}th:first-child,td:first-child{text-align:left}.scroll{overflow-x:auto}.muted{color:#667788;font-size:13px}@media(max-width:750px){.form,.cols{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:1fr}}@media(max-width:480px){.form,.cols{grid-template-columns:1fr}}
 </style></head><body><header><a href="/swing-top100.html">← SORA AI 돌아가기</a></header><main><h1>나의 포트폴리오</h1><p>GEXOption 포트폴리오 구성 · 개발용 시험 화면</p><div class="notice">개발용 데모입니다. 입력 내용은 이 브라우저에만 임시 저장되며 다른 기기와 동기화되지 않습니다. 공유 PC에서는 실계좌 정보를 입력하지 마세요. 회원 공개·서버 저장 기능은 연결되지 않았습니다.</div>
-<section class="panel"><h2>보유 종목 추가</h2><form id="form" class="form"><div><label for="ticker">티커</label><input id="ticker" placeholder="NVDA" required maxlength="10" pattern="[A-Za-z][A-Za-z0-9.]{0,9}"></div><div><label for="qty">주식 수</label><input id="qty" type="number" min="0.0001" step="any" required></div><div><label for="cost">평균 매입가 ($)</label><input id="cost" type="number" min="0.01" step="any" required></div><div><label for="price">현재 평가가 ($, 직접 입력)</label><input id="price" type="number" min="0.01" step="any" required></div><div><label for="bucket">CORE / SWING</label><input id="bucket" maxlength="20" value="CORE"></div><div style="align-self:end"><button type="submit">종목 추가</button></div></form><p class="muted">현재가는 자동 시세가 아닙니다. 모든 계산은 직접 입력한 가격을 사용합니다.</p><p class="muted" id="saveNote">브라우저 임시 저장 활성화 · 같은 브라우저에서 새로고침 시 복원됩니다.</p></section>
+<section class="panel"><h2>보유 종목 추가</h2><form id="form" class="form"><div><label for="ticker">티커</label><input id="ticker" placeholder="NVDA" required maxlength="10" pattern="[A-Za-z][A-Za-z0-9.]{0,9}"></div><div><label for="qty">주식 수</label><input id="qty" type="number" min="0.0001" step="any" required></div><div><label for="cost">평균 매입가 ($)</label><input id="cost" type="number" min="0.01" step="any" required></div><div><label for="price">현재 평가가 ($, 수동 예비값)</label><input id="price" type="number" min="0.01" step="any" required></div><div><label for="bucket">CORE / SWING</label><input id="bucket" maxlength="20" value="CORE"></div><div style="align-self:end"><button type="submit">종목 추가</button></div></form><p class="muted">Massive 15분 지연 5분봉의 최신 종가를 자동 조회합니다. 조회 실패 시 수동 평가가를 유지합니다.</p><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:8px 0"><button type="button" id="refreshQuotes">15분 지연 시세 새로고침</button><span class="muted" id="quoteStatus">자동 조회 준비 · 5분마다 재조회 · 실시간 아님</span></div><p class="muted" id="saveNote">브라우저 임시 저장 활성화 · 같은 브라우저에서 새로고침 시 복원됩니다.</p></section>
 <div class="metrics"><div class="metric">총 평가금액<b id="total">$0.00</b></div><div class="metric">평가손익<b id="pnl">$0.00</b></div><div class="metric">매입가 대비 수익률<b id="pct">0.00%</b></div></div>
 <div class="cols"><section class="panel"><h2>Allocation 히트맵</h2><div class="heat" id="heat">종목을 추가해 주세요.</div><p class="muted">칸 넓이는 보유 비중의 대략적 표현, 색상은 평가손익 방향입니다.</p></section><section class="panel"><h2>Performance</h2><p>기간별 수익률 그래프는 거래·입출금·과거 평가액이 저장되어야 정확히 만들 수 있습니다.</p><p class="muted">이 화면에는 확인되지 않은 과거 수익률을 표시하지 않습니다.</p><button class="secondary" id="reset" type="button">시험 데이터 초기화</button></section></div>
-<section class="panel"><h2>보유 종목 목록</h2><div class="scroll"><table><thead><tr><th>종목</th><th>수량</th><th>매입가</th><th>평가가</th><th>비중</th><th>손익</th><th>작업</th></tr></thead><tbody id="rows"></tbody></table></div></section></main>
+<section class="panel"><h2>보유 종목 목록</h2><div class="scroll"><table><thead><tr><th>종목</th><th>수량</th><th>매입가</th><th>평가가 / 데이터 시각</th><th>비중</th><th>손익</th><th>작업</th></tr></thead><tbody id="rows"></tbody></table></div></section></main>
 <script>
 const STORAGE_KEY="gexoption_portfolio_demo_v1";
 const holdings=[],$=x=>document.getElementById(x),fmt=x=>x.toLocaleString("en-US",{style:"currency",currency:"USD"}),pct=x=>(x>=0?"+":"")+x.toFixed(2)+"%";
@@ -17,7 +17,7 @@ function restoreLocal(){
   if(!Array.isArray(saved))return;
   for(const h of saved.slice(0,100)){
    if(!h||!(/^[A-Z][A-Z0-9.]{0,9}$/).test(h.ticker)||![h.qty,h.cost,h.price].every(v=>typeof v==="number"&&Number.isFinite(v)&&v>0))continue;
-   holdings.push({ticker:h.ticker,qty:h.qty,cost:h.cost,price:h.price,bucket:typeof h.bucket==="string"?h.bucket.slice(0,20):"CORE"});
+   holdings.push({ticker:h.ticker,qty:h.qty,cost:h.cost,price:h.price,bucket:typeof h.bucket==="string"?h.bucket.slice(0,20):"CORE",quoteTime:typeof h.quoteTime==="number"?h.quoteTime:null,quoteSource:h.quoteSource==="delayed"?"delayed":"manual"});
   }
  }catch(e){$("saveNote").textContent="저장 데이터가 올바르지 않아 불러오지 않았습니다."}
 }
@@ -29,12 +29,40 @@ function render(){
  if(!holdings.length){rows.textContent="등록된 종목이 없습니다.";heat.textContent="종목을 추가해 주세요.";return}
  holdings.forEach((x,i)=>{
  const tr=document.createElement("tr");const current=x.qty*x.price,profit=x.qty*(x.price-x.cost);
- [x.ticker+" · "+x.bucket,String(x.qty),fmt(x.cost),fmt(x.price),pct(value?current/value*100:0),fmt(profit)].forEach(t=>{const td=document.createElement("td");td.textContent=t;tr.append(td)});
+ [x.ticker+" · "+x.bucket,String(x.qty),fmt(x.cost),fmt(x.price)+(x.quoteSource==="delayed"&&x.quoteTime?" · 지연 5분봉 "+new Date(x.quoteTime).toLocaleString("en-US",{timeZone:"America/New_York",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):" · 수동"),pct(value?current/value*100:0),fmt(profit)].forEach(t=>{const td=document.createElement("td");td.textContent=t;tr.append(td)});
  const cell=document.createElement("td"),button=document.createElement("button");button.className="danger";button.textContent="삭제";button.onclick=()=>{holdings.splice(i,1);render()};cell.append(button);tr.append(cell);rows.append(tr);
  const tile=document.createElement("div");tile.className="tile "+(profit>=0?"up":"down");tile.style.setProperty("--share",String(Math.max(1,Math.round(value?current/value*100:1))));
  const strong=document.createElement("strong");strong.textContent=x.ticker;const desc=document.createElement("small");desc.textContent=pct(x.cost?(x.price-x.cost)/x.cost*100:0)+" · 비중 "+(value?current/value*100:0).toFixed(1)+"%";tile.append(strong,desc);heat.append(tile)
  })
 }
-$("form").addEventListener("submit",e=>{e.preventDefault();const ticker=$("ticker").value.trim().toUpperCase(),qty=Number($("qty").value),cost=Number($("cost").value),price=Number($("price").value);if(!/^[A-Z][A-Z0-9.]{0,9}$/.test(ticker)||![qty,cost,price].every(x=>Number.isFinite(x)&&x>0))return;holdings.push({ticker,qty,cost,price,bucket:$("bucket").value.trim().toUpperCase()||"CORE"});e.target.reset();$("bucket").value="CORE";render()});
-$("reset").onclick=()=>{if(confirm("이 브라우저의 시험용 포트폴리오를 모두 삭제할까요?")){holdings.length=0;render()}};restoreLocal();render();
+$("form").addEventListener("submit",e=>{e.preventDefault();const ticker=$("ticker").value.trim().toUpperCase(),qty=Number($("qty").value),cost=Number($("cost").value),price=Number($("price").value);if(!/^[A-Z][A-Z0-9.]{0,9}$/.test(ticker)||![qty,cost,price].every(x=>Number.isFinite(x)&&x>0))return;holdings.push({ticker,qty,cost,price,bucket:$("bucket").value.trim().toUpperCase()||"CORE",quoteTime:null,quoteSource:"manual"});e.target.reset();$("bucket").value="CORE";render();refreshQuotes()});
+$("reset").onclick=()=>{if(confirm("이 브라우저의 시험용 포트폴리오를 모두 삭제할까요?")){holdings.length=0;render()}};let fetching=false;
+async function refreshQuotes(){
+ if(fetching||!holdings.length)return;
+ fetching=true;$("refreshQuotes").disabled=true;
+ const symbols=[...new Set(holdings.map(h=>h.ticker))];
+ $("quoteStatus").textContent="Massive 지연 시세 조회 중 · "+symbols.length+"종목";
+ let success=0,failed=0;const errors=[];
+ for(const symbol of symbols){
+  try{
+   const res=await fetch("/api/search?mode=massive_intraday&ticker="+encodeURIComponent(symbol),{cache:"no-store",credentials:"same-origin"});
+   if(!res.ok)throw Error("HTTP "+res.status);
+   const data=await res.json();
+   if(data.error||data.realtime!==false||Number(data.delay_minutes)!==15)throw Error("지연 시세 확인 불가");
+   const bars=Array.isArray(data.bars)?data.bars:[];
+   const latest=bars[bars.length-1];
+   const time=Number(latest?.time),price=Number(latest?.close);
+   if(!Number.isFinite(price)||price<=0||!Number.isFinite(time)||time<=0||time>Date.now())throw Error("유효한 봉 없음");
+   for(const h of holdings.filter(x=>x.ticker===symbol)){h.price=price;h.quoteTime=time;h.quoteSource="delayed"}
+   success++;
+  }catch(err){failed++;errors.push(symbol+" "+String(err.message||"조회 실패"))}
+ }
+ fetching=false;$("refreshQuotes").disabled=false;render();
+ const suffix=errors.length?" · 실패: "+errors.slice(0,3).join(", "):"";
+ $("quoteStatus").textContent="15분 지연 시세 "+success+"종목 갱신 · 실패 "+failed+"종목 · "+new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})+" 조회"+suffix;
+}
+$("refreshQuotes").addEventListener("click",refreshQuotes);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshQuotes()});
+setInterval(()=>{if(!document.hidden)refreshQuotes()},300000);
+restoreLocal();render();refreshQuotes();
 </script></body></html>
