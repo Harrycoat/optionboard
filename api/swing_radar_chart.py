@@ -111,15 +111,21 @@ def aggregates(symbol,tf,include_partial=False):
     except (TypeError, KeyError, OverflowError):
         raise ValueError("DATA_PARSE_FAILURE") from None
     if tf=='1d':
+        # Daily Massive aggregate timestamp denotes the UTC trading date. Do not
+        # depend on exchange_calendars here; it may be unavailable on Preview.
+        # Exclude the current ET date because its daily candle can be incomplete.
+        today_et=now.astimezone(ET).date()
         out=[]
         for row in rows:
-            # Massive daily aggregate timestamps represent the UTC trading-date label, not an ET intraday instant.
-            day=datetime.fromtimestamp(row['t']/1000,timezone.utc).date()
-            bounds=session_bounds(day)
-            if bounds and bounds[1]<=cutoff:out.append(dict(row,end_ms=bounds[1],complete=True,coverage_ok=True))
-        expected,bounds=expected_session(cutoff)
-        if bounds[1]>cutoff:expected,_=expected_session(bounds[0]-1)
-        if not out or datetime.fromtimestamp(out[-1]["t"]/1000,timezone.utc).date()!=expected:raise ValueError("DATA_STALE: daily session missing")
+            trading_date=datetime.fromtimestamp(row['t']/1000,timezone.utc).date()
+            if trading_date>=today_et:
+                continue
+            out.append(dict(row,complete=True,coverage_ok=True))
+        if not out:
+            raise ValueError("DATA_INSUFFICIENT: no completed daily bars")
+        last_date=datetime.fromtimestamp(out[-1]['t']/1000,timezone.utc).date()
+        if (today_et-last_date).days>7:
+            raise ValueError("DATA_STALE: latest completed daily bar too old")
         return out[-300:]
     try:
         out=resample(rows,VALID_TF[tf],cutoff)
