@@ -166,7 +166,8 @@ def get_walls(symbol):
     try:
         obj=analyze_ticker(symbol,skip_stage=True)
         return {"put_wall":obj.get("put_wall"),"call_wall":obj.get("call_wall"),
-                "gamma_flip":obj.get("gamma_flip"),"asof_utc":obj.get("generated_at"),
+                "gamma_flip":obj.get("gamma_flip"),"max_pain":obj.get("max_pain"),
+                "expiry_used":obj.get("expiry_used"),"asof_utc":obj.get("generated_at"),
                 "expiry":obj.get("expiry_used"),"source":"GEXOption Massive options analysis",
                 "stale_underlying":obj.get("is_stale_price")}
     except Exception:
