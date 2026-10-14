@@ -8,6 +8,7 @@ _ALLOWED = {
     "earnings_scan", "config", "schwabquote", "filings",
     "swing_volume_heatmap", "swing_page", "sora_page", "sora_chat",
     "swing_radar_chart", "swing_radar", "oi_change",
+    "sora_admin_paper_buy", "sora_entry_status",
 }
 
 class handler(BaseHTTPRequestHandler):
