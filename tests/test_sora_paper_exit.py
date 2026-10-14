@@ -13,10 +13,10 @@ def bars(last=90):
 class PaperExits(unittest.TestCase):
  def test_half_and_full(self):
   p=[{"ticker":"NVDA","quantity":101}]
-  a=plan_exit(p,bars(103))
+  a=plan_exit(p,bars(110))
   self.assertEqual(a["decisions"],[])
-  half=plan_exit(p,bars(101))
-  self.assertEqual(half["decisions"][0]["exit_stage"],"SMA50_FULL" if 101<sum(b["c"] for b in bars(101)[-50:])/50 else "SMA20_HALF")
+  result=plan_exit(p,bars(90))
+  self.assertEqual(result["decisions"][0]["exit_stage"],"SMA50_FULL")
  def test_half_then_full(self):
   data=bars(105)
   # Explicitly construct a close below 20MA, but above the 50MA.
