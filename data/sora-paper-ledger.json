@@ -16,7 +16,21 @@
       "mode": "PAPER",
       "fill_time_utc": "2026-10-14T18:32:38.619822+00:00",
       "sequence": 1
+    },
+    {
+      "ticker": "TSLA",
+      "fill_price": 365,
+      "quantity": 100,
+      "entry_stage": "50MA_SECOND",
+      "reason": "50일선 매도세 둔화 풋월365\n30일봉 스무스 반등신호 및 매수세 유입",
+      "request_id": "core-150fdbb9-975e-4d8e-9080-a29de672ad8e",
+      "side": "BUY",
+      "bucket": "CORE",
+      "source": "ADMIN",
+      "mode": "PAPER",
+      "fill_time_utc": "2026-10-14T19:23:52.330195+00:00",
+      "sequence": 2
     }
   ],
-  "cash": 77900
+  "cash": 41400
 }
