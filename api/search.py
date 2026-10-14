@@ -2273,7 +2273,7 @@ class handler(BaseHTTPRequestHandler):
                 keep = {
                     "ticker", "spot", "is_stale_price", "price_change_pct",
                     "expiry_used", "generated_at", "call_wall", "put_wall",
-                    "gamma_flip", "net_gex_total", "regime",
+                    "gamma_flip", "max_pain", "max_oi_wall", "net_gex_total", "regime",
                 }
                 result = {key: value for key, value in result.items() if key in keep}
                 result["_summary"] = True
