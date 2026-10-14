@@ -435,7 +435,7 @@ class handler(BaseHTTPRequestHandler):
                     headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
                     json={"model": model, "instructions": system_text,
                           "input": prompt, "max_output_tokens": 1200, "store": False},
-                    timeout=(4, 22))
+                    timeout=(3, 12))
             else:
                 url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent"
                 r = requests.post(
@@ -443,7 +443,7 @@ class handler(BaseHTTPRequestHandler):
                     json={"systemInstruction": {"parts": [{"text": system_text}]},
                           "contents": [{"role": "user", "parts": [{"text": prompt}]}],
                           "generationConfig": {"maxOutputTokens": 900, "temperature": 0.2}},
-                    timeout=(4, 22))
+                    timeout=(3, 12))
             if r.status_code in (401, 403):
                 self.reply(502, {"error": "AI 모델 인증 또는 권한 오류입니다.", "kind": "MODEL_AUTH"})
                 return
@@ -478,7 +478,7 @@ class handler(BaseHTTPRequestHandler):
                              "market": {k: market[k] for k in ("ticker", "tf", "last_bar_utc", "retrieved_at_utc", "timezone", "price_label", "data_status", "source")},
                              "lesson": {"title": "VF-0.2 R01 수급 순환" if rule_id == "R01" else LESSON["title"], "version": "VF-0.2" if rule_id == "R01" else LESSON["version"]}, "rule_id": rule_id, "core_criteria": {"title": VF02["title"], "version": VF02["version"], "status": VF02["status"]}, "language": language, "mode": mode, "case_id": "vf02-r01-first" if rule_id == "R01" else (GUIDED_CASE["id"] if mode == "learn" else None)})
         except requests.exceptions.Timeout:
-            self.reply(504, {"error": "AI 응답 시간이 초과되었습니다.", "kind": "MODEL_TIMEOUT"})
+            self.reply(504, {"error": "AI 응답이 지연되어 중단했습니다. 잠시 후 다시 질문해 주세요.", "kind": "MODEL_TIMEOUT"})
         except requests.exceptions.SSLError:
             self.reply(502, {"error": "AI 서버 TLS 연결에 실패했습니다.", "kind": "MODEL_TLS"})
         except requests.exceptions.ConnectionError:
