@@ -9,15 +9,15 @@ from sora_robots import evaluate_all
 class handler(BaseHTTPRequestHandler):
  def do_GET(self):
   try:
-   # Configuration is committed source control, not a trading ledger.
-   path=os.path.abspath(os.path.join(os.path.dirname(__file__),"..","public","data","sora-accounts-30.json"))
-   with open(path,encoding="utf-8") as f:config=json.load(f)
+   # 30 identifiers are deterministic; avoid filesystem reliance in Vercel serverless.
+   # Strategy mapping is defined in sora_robots.py, and trades remain separate.
+   config={"accounts":[{"id":f"SORA-{i:02d}"} for i in range(1,31)]}
    result=evaluate_all(config)
    result["status"]="WAITING_FOR_VERIFIED_SIGNALS"
    result["message"]="30개 독립 전략 판정기가 준비됐습니다. 데이터 입력·스케줄·체결 저장 미연결. 자동 가상매수 0건."
    self.reply(200,result)
-  except Exception:
-   self.reply(503,{"status":"UNAVAILABLE","message":"로봇 설정 읽기 실패. 자동매매 실행 없음."})
+  except Exception as exc:
+   self.reply(503,{"status":"UNAVAILABLE","message":"로봇 엔진 초기화 실패. 자동매매 실행 없음.","error_type":type(exc).__name__})
  def reply(self,code,payload):
   body=json.dumps(payload,ensure_ascii=False).encode()
   self.send_response(code);self.send_header("Content-Type","application/json; charset=utf-8")
