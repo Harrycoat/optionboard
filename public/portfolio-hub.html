@@ -17,7 +17,20 @@ function render(){
  const live=a.id==="SORA-01"?publicLedger:null;const totalHold=live?new Set(live.trades.map(t=>t.ticker)).size:a.positions.length;const cash=live?live.cash:a.cash;
  for(const line of [a.name+" · "+a.strategy,"계좌 설계: "+(a.strategyDescription||"설명 준비 중"),"참고 전략: "+(a.strategyReference||"자체 전략"),"계좌 상태: "+(live&&live.trade_count?"관리자 가상매수 기록 "+live.trade_count+"건":(a.id==="SORA-01"&&ledgerError?"거래장부 조회 실패 (보유 0건으로 단정할 수 없음)":"매수 신호 대기")),"가상현금: "+cash.toLocaleString("en-US",{style:"currency",currency:"USD"}),"보유 종목: "+totalHold+" / 12","가상 수익률: 현재 시세 평가 미연결 (N/A)"]){const el=document.createElement("p");el.textContent=line;d.append(el)}
  if(live&&live.trades.length){const sums=new Map();for(const t of live.trades){const v=sums.get(t.ticker)||{quantity:0,cost:0,orders:[]};v.quantity+=t.quantity;v.cost+=t.quantity*t.fill_price;v.orders.push(t);sums.set(t.ticker,v)}
- for(const [ticker,v] of sums){const sec=document.createElement("div");sec.className="slot";const strong=document.createElement("strong");strong.textContent=ticker+" · CORE 가상보유";const summary=document.createElement("small");summary.textContent=v.quantity+"주 / 평균매수가 $"+(v.cost/v.quantity).toFixed(2);sec.append(strong,summary);for(const t of v.orders){const line=document.createElement("p");line.className="muted";line.textContent=(t.source==="ADMIN"?"관리자 입력":"AI")+" · "+(t.entry_stage==="50MA_SECOND"?"50일선 2차":t.entry_stage==="20MA_FIRST"?"20일선 1차":"기타")+" · $"+t.fill_price+" × "+t.quantity+"주 · "+t.fill_time_utc;sec.append(line);if(t.reason){const why=document.createElement("p");why.className="muted";why.textContent="매수 근거: "+t.reason;sec.append(why)}}p.append(sec)}}
+ for(const [ticker,v] of sums){
+ const sec=document.createElement("details");sec.className="slot";sec.style.textAlign="left";sec.style.cursor="pointer";
+ const head=document.createElement("summary");head.style.listStyle="none";head.style.cursor="pointer";
+ const strong=document.createElement("strong");strong.textContent="종목: "+ticker;
+ const basic=document.createElement("small");basic.style.display="block";basic.style.color="#183247";
+ basic.textContent="매수가: $"+(v.cost/v.quantity).toFixed(2)+" · 수량: "+v.quantity+"주";
+ const reason=document.createElement("small");reason.style.display="block";reason.style.marginTop="6px";reason.textContent="매수 이유: "+v.orders.map(t=>t.reason||"미기록").join(" / ");
+ const tap=document.createElement("small");tap.style.display="block";tap.style.marginTop="7px";tap.textContent="자세히 보기 ▾";
+ head.append(strong,basic,reason,tap);sec.append(head);
+ const detail=document.createElement("div");detail.style.borderTop="1px solid #dce9ee";detail.style.marginTop="10px";detail.style.paddingTop="10px";
+ const invested=document.createElement("p");invested.className="muted";invested.textContent="가상 매수금액: $"+v.cost.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});detail.append(invested);
+ for(const t of v.orders){const line=document.createElement("p");line.className="muted";const stage=t.entry_stage==="50MA_SECOND"?"50일선 2차":t.entry_stage==="20MA_FIRST"?"20일선 1차":"기타";line.textContent=(t.source==="ADMIN"?"관리자 가상매수":"AI 가상매수")+" · "+stage+" · $"+t.fill_price+" × "+t.quantity+"주 · "+(t.fill_time_utc||"시각 미기록");detail.append(line)}
+ const noPnl=document.createElement("p");noPnl.className="muted";noPnl.textContent="평가손익: 시세 미연결 (N/A)";detail.append(noPnl);sec.append(detail);p.append(sec)}
+}
  for(let i=(live?new Set(live.trades.map(t=>t.ticker)).size:0);i<12;i++){const slot=document.createElement("div");slot.className="slot";const title=document.createElement("strong");title.textContent=i<2?"CORE "+(i+1):"SECTOR "+(i-1);const sub=document.createElement("small");sub.textContent="매수 대기";slot.append(title,sub);p.append(slot)}
 }
 document.getElementById("more").onclick=()=>{expanded=!expanded;render()};
