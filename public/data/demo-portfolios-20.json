@@ -1,0 +1,2627 @@
+{
+  "version": "simulation-v1",
+  "asOf": "2026-10-13",
+  "note": "All holdings, purchase prices, simulated marks and returns are fictional. Not real member portfolios, historical prices or investment performance.",
+  "portfolios": [
+    {
+      "id": "SIM-001",
+      "nickname": "GEX 모의투자 01",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "NVDA",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 5,
+          "entryPrice": 38,
+          "simulatedReturnPct": 0.81,
+          "simulatedMark": 38.31,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MSFT",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 40,
+          "entryPrice": 69.23,
+          "simulatedReturnPct": -10.84,
+          "simulatedMark": 61.73,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMD",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 100.46,
+          "simulatedReturnPct": -16.3,
+          "simulatedMark": 84.09,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WDC",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 131.69,
+          "simulatedReturnPct": -11.1,
+          "simulatedMark": 117.07,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 162.92,
+          "simulatedReturnPct": 0.5,
+          "simulatedMark": 163.73,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ORCL",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 194.15,
+          "simulatedReturnPct": 8.98,
+          "simulatedMark": 211.58,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "JPM",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 225.38,
+          "simulatedReturnPct": 7.38,
+          "simulatedMark": 242.01,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ISRG",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 255,
+          "simulatedReturnPct": -2.98,
+          "simulatedMark": 247.4,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 286.23,
+          "simulatedReturnPct": -13.61,
+          "simulatedMark": 247.27,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VST",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 317.46,
+          "simulatedReturnPct": -15.78,
+          "simulatedMark": 267.36,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NFLX",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 348.69,
+          "simulatedReturnPct": -7.71,
+          "simulatedMark": 321.81,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HD",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 379.92,
+          "simulatedReturnPct": 3.97,
+          "simulatedMark": 395,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 135022.3,
+      "totalValue": 128314.15,
+      "returnPct": -4.97
+    },
+    {
+      "id": "SIM-002",
+      "nickname": "GEX 모의투자 02",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "AMZN",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 60,
+          "entryPrice": 55.23,
+          "simulatedReturnPct": -13.72,
+          "simulatedMark": 47.65,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 95,
+          "entryPrice": 86.46,
+          "simulatedReturnPct": -10,
+          "simulatedMark": 77.81,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSM",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 117.69,
+          "simulatedReturnPct": 6.82,
+          "simulatedMark": 125.72,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "STX",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 148.92,
+          "simulatedReturnPct": 8.48,
+          "simulatedMark": 161.55,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CEG",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 180.15,
+          "simulatedReturnPct": -7.8,
+          "simulatedMark": 166.1,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PLTR",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 211.38,
+          "simulatedReturnPct": -14.68,
+          "simulatedMark": 180.35,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GS",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 241,
+          "simulatedReturnPct": -0.6,
+          "simulatedMark": 239.55,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRTX",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 272.23,
+          "simulatedReturnPct": 10.79,
+          "simulatedMark": 301.6,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 303.46,
+          "simulatedReturnPct": 0.36,
+          "simulatedMark": 304.55,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "XOM",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 334.69,
+          "simulatedReturnPct": -14.37,
+          "simulatedMark": 286.6,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "META",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 365.92,
+          "simulatedReturnPct": -8.65,
+          "simulatedMark": 334.27,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WMT",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 397.15,
+          "simulatedReturnPct": 7.91,
+          "simulatedMark": 428.56,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 174086.85,
+      "totalValue": 174118.55,
+      "returnPct": 0.02
+    },
+    {
+      "id": "SIM-003",
+      "nickname": "GEX 모의투자 03",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "GOOGL",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 115,
+          "entryPrice": 72.46,
+          "simulatedReturnPct": -8.9,
+          "simulatedMark": 66.01,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "META",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 35,
+          "entryPrice": 103.69,
+          "simulatedReturnPct": 11.18,
+          "simulatedMark": 115.28,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MU",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 134.92,
+          "simulatedReturnPct": -0.78,
+          "simulatedMark": 133.87,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 166.15,
+          "simulatedReturnPct": -13.58,
+          "simulatedMark": 143.59,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRT",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 197.38,
+          "simulatedReturnPct": 6.17,
+          "simulatedMark": 209.56,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CRM",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 227,
+          "simulatedReturnPct": 6.95,
+          "simulatedMark": 242.78,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "BAC",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 258.23,
+          "simulatedReturnPct": -13.27,
+          "simulatedMark": 223.96,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "UNH",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 289.46,
+          "simulatedReturnPct": -1.74,
+          "simulatedMark": 284.42,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CAT",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 320.69,
+          "simulatedReturnPct": 11.46,
+          "simulatedMark": 357.44,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CVX",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 351.92,
+          "simulatedReturnPct": -8.1,
+          "simulatedMark": 323.41,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NFLX",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 383.15,
+          "simulatedReturnPct": -9.4,
+          "simulatedMark": 347.13,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PG",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 414.38,
+          "simulatedReturnPct": 10.96,
+          "simulatedMark": 459.8,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 150719.1,
+      "totalValue": 146911.6,
+      "returnPct": -2.53
+    },
+    {
+      "id": "SIM-004",
+      "nickname": "GEX 모의투자 04",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "AVGO",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 55,
+          "entryPrice": 89.69,
+          "simulatedReturnPct": 9.02,
+          "simulatedMark": 97.78,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMZN",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 90,
+          "entryPrice": 120.92,
+          "simulatedReturnPct": 0.32,
+          "simulatedMark": 121.31,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMD",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 152.15,
+          "simulatedReturnPct": -9.47,
+          "simulatedMark": 137.74,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 183.38,
+          "simulatedReturnPct": 12.99,
+          "simulatedMark": 207.2,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GEV",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 213,
+          "simulatedReturnPct": -8.79,
+          "simulatedMark": 194.28,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NOW",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 244.23,
+          "simulatedReturnPct": -0.64,
+          "simulatedMark": 242.67,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HOOD",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 275.46,
+          "simulatedReturnPct": 9.69,
+          "simulatedMark": 302.15,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "LLY",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 306.69,
+          "simulatedReturnPct": -12.98,
+          "simulatedMark": 266.88,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 337.92,
+          "simulatedReturnPct": 8.55,
+          "simulatedMark": 366.81,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COP",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 369.15,
+          "simulatedReturnPct": 0.97,
+          "simulatedMark": 372.73,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DIS",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 400.38,
+          "simulatedReturnPct": -9.9,
+          "simulatedMark": 360.74,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSLA",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 430,
+          "simulatedReturnPct": 12.95,
+          "simulatedMark": 485.69,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 211408.35,
+      "totalValue": 215321.75,
+      "returnPct": 1.85
+    },
+    {
+      "id": "SIM-005",
+      "nickname": "GEX 모의투자 05",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "MSFT",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 110,
+          "entryPrice": 106.92,
+          "simulatedReturnPct": 11.78,
+          "simulatedMark": 119.52,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 30,
+          "entryPrice": 138.15,
+          "simulatedReturnPct": -11.38,
+          "simulatedMark": 122.43,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMD",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 169.38,
+          "simulatedReturnPct": 14.09,
+          "simulatedMark": 193.25,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WDC",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 199,
+          "simulatedReturnPct": -11.07,
+          "simulatedMark": 176.97,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 230.23,
+          "simulatedReturnPct": 11.21,
+          "simulatedMark": 256.04,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ORCL",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 261.46,
+          "simulatedReturnPct": -5.9,
+          "simulatedMark": 246.03,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "JPM",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 292.69,
+          "simulatedReturnPct": 4.28,
+          "simulatedMark": 305.22,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ISRG",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 323.92,
+          "simulatedReturnPct": 2.07,
+          "simulatedMark": 330.63,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 355.15,
+          "simulatedReturnPct": -3.91,
+          "simulatedMark": 341.26,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VST",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 386.38,
+          "simulatedReturnPct": 9.65,
+          "simulatedMark": 423.67,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NFLX",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 416,
+          "simulatedReturnPct": -10.11,
+          "simulatedMark": 373.94,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HD",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 447.23,
+          "simulatedReturnPct": 13.81,
+          "simulatedMark": 508.99,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 205766.8,
+      "totalValue": 206574.95,
+      "returnPct": 0.39
+    },
+    {
+      "id": "SIM-006",
+      "nickname": "GEX 모의투자 06",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "NVDA",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 50,
+          "entryPrice": 124.15,
+          "simulatedReturnPct": -3.4,
+          "simulatedMark": 119.93,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GOOGL",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 85,
+          "entryPrice": 155.38,
+          "simulatedReturnPct": 9.47,
+          "simulatedMark": 170.09,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSM",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 185,
+          "simulatedReturnPct": -6.59,
+          "simulatedMark": 172.81,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "STX",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 216.23,
+          "simulatedReturnPct": 12.31,
+          "simulatedMark": 242.85,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CEG",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 247.46,
+          "simulatedReturnPct": -9,
+          "simulatedMark": 225.19,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PLTR",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 278.69,
+          "simulatedReturnPct": 14.26,
+          "simulatedMark": 318.43,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GS",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 309.92,
+          "simulatedReturnPct": -10.44,
+          "simulatedMark": 277.56,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRTX",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 341.15,
+          "simulatedReturnPct": 15.15,
+          "simulatedMark": 392.83,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 372.38,
+          "simulatedReturnPct": -10.78,
+          "simulatedMark": 332.24,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "XOM",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 402,
+          "simulatedReturnPct": 14.91,
+          "simulatedMark": 461.94,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "META",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 433.23,
+          "simulatedReturnPct": -9.97,
+          "simulatedMark": 390.04,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WMT",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 464.46,
+          "simulatedReturnPct": 13.57,
+          "simulatedMark": 527.49,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 220583.8,
+      "totalValue": 228198.6,
+      "returnPct": 3.45
+    },
+    {
+      "id": "SIM-007",
+      "nickname": "GEX 모의투자 07",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "META",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 105,
+          "entryPrice": 141.38,
+          "simulatedReturnPct": -9.18,
+          "simulatedMark": 128.4,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MSFT",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 25,
+          "entryPrice": 171,
+          "simulatedReturnPct": 11.35,
+          "simulatedMark": 190.41,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MU",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 202.23,
+          "simulatedReturnPct": 2.66,
+          "simulatedMark": 207.61,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 233.46,
+          "simulatedReturnPct": -3.7,
+          "simulatedMark": 224.82,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRT",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 264.69,
+          "simulatedReturnPct": 15.36,
+          "simulatedMark": 305.35,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CRM",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 295.92,
+          "simulatedReturnPct": -9.34,
+          "simulatedMark": 268.28,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "BAC",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 327.15,
+          "simulatedReturnPct": 11.85,
+          "simulatedMark": 365.92,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "UNH",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 358.38,
+          "simulatedReturnPct": 2.01,
+          "simulatedMark": 365.58,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CAT",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 388,
+          "simulatedReturnPct": -3.15,
+          "simulatedMark": 375.78,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CVX",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 419.23,
+          "simulatedReturnPct": 15.1,
+          "simulatedMark": 482.53,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GOOGL",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 450.46,
+          "simulatedReturnPct": -9.48,
+          "simulatedMark": 407.76,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PG",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 41.69,
+          "simulatedReturnPct": 12.32,
+          "simulatedMark": 46.83,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 199561.95,
+      "totalValue": 200461.55,
+      "returnPct": 0.45
+    },
+    {
+      "id": "SIM-008",
+      "nickname": "GEX 모의투자 08",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 45,
+          "entryPrice": 157,
+          "simulatedReturnPct": -1.7,
+          "simulatedMark": 154.33,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMZN",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 80,
+          "entryPrice": 188.23,
+          "simulatedReturnPct": -15.47,
+          "simulatedMark": 159.11,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AVGO",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 219.46,
+          "simulatedReturnPct": 6.39,
+          "simulatedMark": 233.48,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 250.69,
+          "simulatedReturnPct": -0.12,
+          "simulatedMark": 250.39,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GEV",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 281.92,
+          "simulatedReturnPct": -15.94,
+          "simulatedMark": 236.98,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NOW",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 313.15,
+          "simulatedReturnPct": 5.25,
+          "simulatedMark": 329.59,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HOOD",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 344.38,
+          "simulatedReturnPct": 1.41,
+          "simulatedMark": 349.24,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "LLY",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 374,
+          "simulatedReturnPct": -16.22,
+          "simulatedMark": 313.34,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 405.23,
+          "simulatedReturnPct": 3.97,
+          "simulatedMark": 421.32,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COP",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 436.46,
+          "simulatedReturnPct": 2.87,
+          "simulatedMark": 448.99,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DIS",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 467.69,
+          "simulatedReturnPct": -16.3,
+          "simulatedMark": 391.46,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSLA",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 58.92,
+          "simulatedReturnPct": 2.59,
+          "simulatedMark": 60.45,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 213236.55,
+      "totalValue": 205485.95,
+      "returnPct": -3.63
+    },
+    {
+      "id": "SIM-009",
+      "nickname": "GEX 모의투자 09",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "AVGO",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 100,
+          "entryPrice": 174.23,
+          "simulatedReturnPct": 10.79,
+          "simulatedMark": 193.03,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NVDA",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 20,
+          "entryPrice": 205.46,
+          "simulatedReturnPct": -2.84,
+          "simulatedMark": 199.62,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMD",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 236.69,
+          "simulatedReturnPct": -15.18,
+          "simulatedMark": 200.76,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WDC",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 267.92,
+          "simulatedReturnPct": -1.23,
+          "simulatedMark": 264.62,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 299.15,
+          "simulatedReturnPct": 10.75,
+          "simulatedMark": 331.31,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ORCL",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 330.38,
+          "simulatedReturnPct": -3.49,
+          "simulatedMark": 318.85,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "JPM",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 360,
+          "simulatedReturnPct": -15.12,
+          "simulatedMark": 305.57,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ISRG",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 391.23,
+          "simulatedReturnPct": -0.59,
+          "simulatedMark": 388.92,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 422.46,
+          "simulatedReturnPct": 10.68,
+          "simulatedMark": 467.58,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VST",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 453.69,
+          "simulatedReturnPct": -4.13,
+          "simulatedMark": 434.95,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NFLX",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 44.92,
+          "simulatedReturnPct": -15.03,
+          "simulatedMark": 38.17,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HD",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 76.15,
+          "simulatedReturnPct": 0.04,
+          "simulatedMark": 76.18,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 203477.75,
+      "totalValue": 197709.9,
+      "returnPct": -2.83
+    },
+    {
+      "id": "SIM-010",
+      "nickname": "GEX 모의투자 10",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "GOOGL",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 40,
+          "entryPrice": 191.46,
+          "simulatedReturnPct": 1.46,
+          "simulatedMark": 194.26,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 75,
+          "entryPrice": 222.69,
+          "simulatedReturnPct": 11.46,
+          "simulatedMark": 248.21,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSM",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 253.92,
+          "simulatedReturnPct": 7.45,
+          "simulatedMark": 272.84,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "STX",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 285.15,
+          "simulatedReturnPct": -6.11,
+          "simulatedMark": 267.73,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CEG",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 316.38,
+          "simulatedReturnPct": -14.08,
+          "simulatedMark": 271.83,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PLTR",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 346,
+          "simulatedReturnPct": -7.55,
+          "simulatedMark": 319.88,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GS",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 377.23,
+          "simulatedReturnPct": 6.17,
+          "simulatedMark": 400.51,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRTX",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 408.46,
+          "simulatedReturnPct": 11.78,
+          "simulatedMark": 456.58,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 439.69,
+          "simulatedReturnPct": 3.01,
+          "simulatedMark": 452.92,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "XOM",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 470.92,
+          "simulatedReturnPct": -10.35,
+          "simulatedMark": 422.18,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "META",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 62.15,
+          "simulatedReturnPct": -13.38,
+          "simulatedMark": 53.83,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WMT",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 93.38,
+          "simulatedReturnPct": -2.7,
+          "simulatedMark": 90.86,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 200568.9,
+      "totalValue": 201885.25,
+      "returnPct": 0.66
+    },
+    {
+      "id": "SIM-011",
+      "nickname": "GEX 모의투자 11",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "NVDA",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 95,
+          "entryPrice": 208.69,
+          "simulatedReturnPct": -12.17,
+          "simulatedMark": 183.29,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MSFT",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 15,
+          "entryPrice": 239.92,
+          "simulatedReturnPct": -7,
+          "simulatedMark": 223.13,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MU",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 271.15,
+          "simulatedReturnPct": 0.97,
+          "simulatedMark": 273.78,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 302.38,
+          "simulatedReturnPct": 8.55,
+          "simulatedMark": 328.23,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRT",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 332,
+          "simulatedReturnPct": 12.71,
+          "simulatedMark": 374.2,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CRM",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 363.23,
+          "simulatedReturnPct": 11.8,
+          "simulatedMark": 406.09,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "BAC",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 394.46,
+          "simulatedReturnPct": 6.17,
+          "simulatedMark": 418.8,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "UNH",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 425.69,
+          "simulatedReturnPct": -1.93,
+          "simulatedMark": 417.47,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CAT",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 456.92,
+          "simulatedReturnPct": -9.25,
+          "simulatedMark": 414.65,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CVX",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 48.15,
+          "simulatedReturnPct": -12.88,
+          "simulatedMark": 41.95,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GOOGL",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 79.38,
+          "simulatedReturnPct": -11.36,
+          "simulatedMark": 70.36,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PG",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 109,
+          "simulatedReturnPct": -5.3,
+          "simulatedMark": 103.22,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 182239.1,
+      "totalValue": 182061,
+      "returnPct": -0.1
+    },
+    {
+      "id": "SIM-012",
+      "nickname": "GEX 모의투자 12",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "AMZN",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 35,
+          "entryPrice": 225.92,
+          "simulatedReturnPct": -5.35,
+          "simulatedMark": 213.83,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 70,
+          "entryPrice": 257.15,
+          "simulatedReturnPct": -7.2,
+          "simulatedMark": 238.64,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AVGO",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 288.38,
+          "simulatedReturnPct": -8.8,
+          "simulatedMark": 263,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 318,
+          "simulatedReturnPct": -10.11,
+          "simulatedMark": 285.85,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GEV",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 349.23,
+          "simulatedReturnPct": -11.07,
+          "simulatedMark": 310.57,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NOW",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 380.46,
+          "simulatedReturnPct": -11.68,
+          "simulatedMark": 336.02,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HOOD",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 411.69,
+          "simulatedReturnPct": -11.9,
+          "simulatedMark": 362.7,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "LLY",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 442.92,
+          "simulatedReturnPct": -11.73,
+          "simulatedMark": 390.97,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 474.15,
+          "simulatedReturnPct": -11.18,
+          "simulatedMark": 421.14,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COP",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 65.38,
+          "simulatedReturnPct": -10.26,
+          "simulatedMark": 58.67,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DIS",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 95,
+          "simulatedReturnPct": -9,
+          "simulatedMark": 86.45,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSLA",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 126.23,
+          "simulatedReturnPct": -7.44,
+          "simulatedMark": 116.84,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 203453.35,
+      "totalValue": 182806.45,
+      "returnPct": -10.15
+    },
+    {
+      "id": "SIM-013",
+      "nickname": "GEX 모의투자 13",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "GOOGL",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 90,
+          "entryPrice": 243.15,
+          "simulatedReturnPct": 12.31,
+          "simulatedMark": 273.08,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "META",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 10,
+          "entryPrice": 274.38,
+          "simulatedReturnPct": 14.26,
+          "simulatedMark": 313.51,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMD",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 304,
+          "simulatedReturnPct": 15.15,
+          "simulatedMark": 350.06,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WDC",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 335.23,
+          "simulatedReturnPct": 14.91,
+          "simulatedMark": 385.21,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 366.46,
+          "simulatedReturnPct": 13.57,
+          "simulatedMark": 416.19,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ORCL",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 397.69,
+          "simulatedReturnPct": 11.22,
+          "simulatedMark": 442.31,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "JPM",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 428.92,
+          "simulatedReturnPct": 8.09,
+          "simulatedMark": 463.62,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ISRG",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 460.15,
+          "simulatedReturnPct": 4.44,
+          "simulatedMark": 480.58,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 51.38,
+          "simulatedReturnPct": 0.6,
+          "simulatedMark": 51.69,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VST",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 81,
+          "simulatedReturnPct": -3.1,
+          "simulatedMark": 78.49,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NFLX",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 112.23,
+          "simulatedReturnPct": -6.34,
+          "simulatedMark": 105.11,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HD",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 143.46,
+          "simulatedReturnPct": -8.84,
+          "simulatedMark": 130.78,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 218486.15,
+      "totalValue": 238487.6,
+      "returnPct": 9.15
+    },
+    {
+      "id": "SIM-014",
+      "nickname": "GEX 모의투자 14",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "AVGO",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 30,
+          "entryPrice": 260.38,
+          "simulatedReturnPct": 12.99,
+          "simulatedMark": 294.2,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMZN",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 65,
+          "entryPrice": 290,
+          "simulatedReturnPct": 4.27,
+          "simulatedMark": 302.38,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSM",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 321.23,
+          "simulatedReturnPct": -5,
+          "simulatedMark": 305.17,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "STX",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 352.46,
+          "simulatedReturnPct": -9.62,
+          "simulatedMark": 318.55,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CEG",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 383.69,
+          "simulatedReturnPct": -7.01,
+          "simulatedMark": 356.79,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PLTR",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 414.92,
+          "simulatedReturnPct": 1.37,
+          "simulatedMark": 420.6,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GS",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 446.15,
+          "simulatedReturnPct": 10.83,
+          "simulatedMark": 494.47,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRTX",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 477.38,
+          "simulatedReturnPct": 16.08,
+          "simulatedMark": 554.14,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 67,
+          "simulatedReturnPct": 14.17,
+          "simulatedMark": 76.49,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "XOM",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 98.23,
+          "simulatedReturnPct": 6.18,
+          "simulatedMark": 104.3,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "META",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 129.46,
+          "simulatedReturnPct": -3.43,
+          "simulatedMark": 125.02,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WMT",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 160.69,
+          "simulatedReturnPct": -9.26,
+          "simulatedMark": 145.81,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 182658.8,
+      "totalValue": 185423.25,
+      "returnPct": 1.51
+    },
+    {
+      "id": "SIM-015",
+      "nickname": "GEX 모의투자 15",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "MSFT",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 85,
+          "entryPrice": 276,
+          "simulatedReturnPct": -10.3,
+          "simulatedMark": 247.57,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 5,
+          "entryPrice": 307.23,
+          "simulatedReturnPct": -15.94,
+          "simulatedMark": 258.26,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MU",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 338.46,
+          "simulatedReturnPct": -4.59,
+          "simulatedMark": 322.92,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 369.69,
+          "simulatedReturnPct": 8.5,
+          "simulatedMark": 401.11,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRT",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 400.92,
+          "simulatedReturnPct": 5.72,
+          "simulatedMark": 423.85,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CRM",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 432.15,
+          "simulatedReturnPct": -9.18,
+          "simulatedMark": 392.48,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "BAC",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 463.38,
+          "simulatedReturnPct": -16.18,
+          "simulatedMark": 388.41,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "UNH",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 53,
+          "simulatedReturnPct": -5.86,
+          "simulatedMark": 49.89,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CAT",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 84.23,
+          "simulatedReturnPct": 7.9,
+          "simulatedMark": 90.88,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CVX",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 115.46,
+          "simulatedReturnPct": 6.6,
+          "simulatedMark": 123.08,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GOOGL",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 146.69,
+          "simulatedReturnPct": -8.01,
+          "simulatedMark": 134.94,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PG",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 177.92,
+          "simulatedReturnPct": -16.29,
+          "simulatedMark": 148.94,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 181762.9,
+      "totalValue": 176189.35,
+      "returnPct": -3.07
+    },
+    {
+      "id": "SIM-016",
+      "nickname": "GEX 모의투자 16",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "NVDA",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 25,
+          "entryPrice": 293.23,
+          "simulatedReturnPct": -14.13,
+          "simulatedMark": 251.8,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GOOGL",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 60,
+          "entryPrice": 324.46,
+          "simulatedReturnPct": 4.53,
+          "simulatedMark": 339.16,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AVGO",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 355.69,
+          "simulatedReturnPct": 7.91,
+          "simulatedMark": 383.83,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 386.92,
+          "simulatedReturnPct": -11.67,
+          "simulatedMark": 341.77,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GEV",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 418.15,
+          "simulatedReturnPct": -9.74,
+          "simulatedMark": 377.42,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NOW",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 449.38,
+          "simulatedReturnPct": 9.31,
+          "simulatedMark": 491.22,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HOOD",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 39,
+          "simulatedReturnPct": 2.22,
+          "simulatedMark": 39.87,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "LLY",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 70.23,
+          "simulatedReturnPct": -14.91,
+          "simulatedMark": 59.76,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 101.46,
+          "simulatedReturnPct": -3.17,
+          "simulatedMark": 98.24,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COP",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 132.69,
+          "simulatedReturnPct": 10.78,
+          "simulatedMark": 146.99,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DIS",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 163.92,
+          "simulatedReturnPct": -4.75,
+          "simulatedMark": 156.13,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSLA",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 195.15,
+          "simulatedReturnPct": -14.48,
+          "simulatedMark": 166.89,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 168309.45,
+      "totalValue": 170518.1,
+      "returnPct": 1.31
+    },
+    {
+      "id": "SIM-017",
+      "nickname": "GEX 모의투자 17",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "META",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 80,
+          "entryPrice": 310.46,
+          "simulatedReturnPct": 2.08,
+          "simulatedMark": 316.92,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MSFT",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 115,
+          "entryPrice": 341.69,
+          "simulatedReturnPct": 7.45,
+          "simulatedMark": 367.15,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMD",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 372.92,
+          "simulatedReturnPct": -14.02,
+          "simulatedMark": 320.64,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WDC",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 404.15,
+          "simulatedReturnPct": 5.07,
+          "simulatedMark": 424.64,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 435.38,
+          "simulatedReturnPct": 4.79,
+          "simulatedMark": 456.23,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ORCL",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 465,
+          "simulatedReturnPct": -13.98,
+          "simulatedMark": 399.99,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "JPM",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 56.23,
+          "simulatedReturnPct": 7.68,
+          "simulatedMark": 60.55,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ISRG",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 95,
+          "entryPrice": 87.46,
+          "simulatedReturnPct": 1.78,
+          "simulatedMark": 89.02,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 15,
+          "entryPrice": 118.69,
+          "simulatedReturnPct": -13.16,
+          "simulatedMark": 103.07,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VST",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 50,
+          "entryPrice": 149.92,
+          "simulatedReturnPct": 9.76,
+          "simulatedMark": 164.55,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NFLX",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 181.15,
+          "simulatedReturnPct": -1.42,
+          "simulatedMark": 178.58,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HD",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 212.38,
+          "simulatedReturnPct": -11.6,
+          "simulatedMark": 187.74,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 200232.25,
+      "totalValue": 204408.4,
+      "returnPct": 2.09
+    },
+    {
+      "id": "SIM-018",
+      "nickname": "GEX 모의투자 18",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 20,
+          "entryPrice": 327.69,
+          "simulatedReturnPct": 12.95,
+          "simulatedMark": 370.13,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AMZN",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 55,
+          "entryPrice": 358.92,
+          "simulatedReturnPct": -11.93,
+          "simulatedMark": 316.1,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSM",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 390.15,
+          "simulatedReturnPct": 8.05,
+          "simulatedMark": 421.56,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "STX",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 421.38,
+          "simulatedReturnPct": -2.24,
+          "simulatedMark": 411.94,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CEG",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 451,
+          "simulatedReturnPct": -4.11,
+          "simulatedMark": 432.46,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PLTR",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 42.23,
+          "simulatedReturnPct": 9.47,
+          "simulatedMark": 46.23,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GS",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 73.46,
+          "simulatedReturnPct": -12.57,
+          "simulatedMark": 64.23,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRTX",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 35,
+          "entryPrice": 104.69,
+          "simulatedReturnPct": 12.64,
+          "simulatedMark": 117.92,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "ETN",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 70,
+          "entryPrice": 135.92,
+          "simulatedReturnPct": -9.69,
+          "simulatedMark": 122.75,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "XOM",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 105,
+          "entryPrice": 167.15,
+          "simulatedReturnPct": 4.41,
+          "simulatedMark": 174.52,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "META",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 25,
+          "entryPrice": 198.38,
+          "simulatedReturnPct": 1.93,
+          "simulatedMark": 202.21,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "WMT",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 60,
+          "entryPrice": 228,
+          "simulatedReturnPct": -7.8,
+          "simulatedMark": 210.22,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 147111.8,
+      "totalValue": 146106.2,
+      "returnPct": -0.68
+    },
+    {
+      "id": "SIM-019",
+      "nickname": "GEX 모의투자 19",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "AVGO",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 75,
+          "entryPrice": 344.92,
+          "simulatedReturnPct": 2.07,
+          "simulatedMark": 352.06,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NVDA",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 110,
+          "entryPrice": 376.15,
+          "simulatedReturnPct": -0.19,
+          "simulatedMark": 375.44,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "MU",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 407.38,
+          "simulatedReturnPct": 2.71,
+          "simulatedMark": 418.42,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 437,
+          "simulatedReturnPct": -0.83,
+          "simulatedMark": 433.37,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "VRT",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 468.23,
+          "simulatedReturnPct": 3.34,
+          "simulatedMark": 483.87,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CRM",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 59.46,
+          "simulatedReturnPct": -1.46,
+          "simulatedMark": 58.59,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "BAC",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 90.69,
+          "simulatedReturnPct": 3.98,
+          "simulatedMark": 94.3,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "UNH",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 90,
+          "entryPrice": 121.92,
+          "simulatedReturnPct": -2.09,
+          "simulatedMark": 119.37,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CAT",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 10,
+          "entryPrice": 153.15,
+          "simulatedReturnPct": 4.6,
+          "simulatedMark": 160.19,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "CVX",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 45,
+          "entryPrice": 184.38,
+          "simulatedReturnPct": -2.71,
+          "simulatedMark": 179.38,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GOOGL",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 80,
+          "entryPrice": 214,
+          "simulatedReturnPct": 5.22,
+          "simulatedMark": 225.17,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "PG",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 115,
+          "entryPrice": 245.23,
+          "simulatedReturnPct": -3.32,
+          "simulatedMark": 237.09,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 226994.9,
+      "totalValue": 228866.1,
+      "returnPct": 0.82
+    },
+    {
+      "id": "SIM-020",
+      "nickname": "GEX 모의투자 20",
+      "startDate": "2026-08-13",
+      "simulation": true,
+      "holdings": [
+        {
+          "ticker": "GOOGL",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 15,
+          "entryPrice": 362.15,
+          "simulatedReturnPct": -10.44,
+          "simulatedMark": 324.34,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COST",
+          "sector": "CORE",
+          "type": "CORE",
+          "quantity": 50,
+          "entryPrice": 393.38,
+          "simulatedReturnPct": 14.91,
+          "simulatedMark": 452.03,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "AVGO",
+          "sector": "AI 반도체",
+          "type": "SECTOR",
+          "quantity": 85,
+          "entryPrice": 423,
+          "simulatedReturnPct": -8.11,
+          "simulatedMark": 388.69,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "SNDK",
+          "sector": "메모리",
+          "type": "SECTOR",
+          "quantity": 5,
+          "entryPrice": 454.23,
+          "simulatedReturnPct": 8.09,
+          "simulatedMark": 490.98,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GEV",
+          "sector": "AI 전력",
+          "type": "SECTOR",
+          "quantity": 40,
+          "entryPrice": 45.46,
+          "simulatedReturnPct": 1.87,
+          "simulatedMark": 46.31,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "NOW",
+          "sector": "소프트웨어",
+          "type": "SECTOR",
+          "quantity": 75,
+          "entryPrice": 76.69,
+          "simulatedReturnPct": -3.1,
+          "simulatedMark": 74.31,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "HOOD",
+          "sector": "금융",
+          "type": "SECTOR",
+          "quantity": 110,
+          "entryPrice": 107.92,
+          "simulatedReturnPct": 12.1,
+          "simulatedMark": 120.98,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "LLY",
+          "sector": "헬스케어",
+          "type": "SECTOR",
+          "quantity": 30,
+          "entryPrice": 139.15,
+          "simulatedReturnPct": -10.36,
+          "simulatedMark": 124.73,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "GE",
+          "sector": "산업재",
+          "type": "SECTOR",
+          "quantity": 65,
+          "entryPrice": 170.38,
+          "simulatedReturnPct": 14.98,
+          "simulatedMark": 195.9,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "COP",
+          "sector": "에너지",
+          "type": "SECTOR",
+          "quantity": 100,
+          "entryPrice": 200,
+          "simulatedReturnPct": -8.3,
+          "simulatedMark": 183.4,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "DIS",
+          "sector": "커뮤니케이션",
+          "type": "SECTOR",
+          "quantity": 20,
+          "entryPrice": 231.23,
+          "simulatedReturnPct": 8.38,
+          "simulatedMark": 250.61,
+          "entryDate": "2026-08-13"
+        },
+        {
+          "ticker": "TSLA",
+          "sector": "소비재",
+          "type": "SECTOR",
+          "quantity": 55,
+          "entryPrice": 262.46,
+          "simulatedReturnPct": 1.55,
+          "simulatedMark": 266.53,
+          "entryDate": "2026-08-13"
+        }
+      ],
+      "totalCost": 137077.85,
+      "totalValue": 138180.35,
+      "returnPct": 0.8
+    }
+  ]
+}
