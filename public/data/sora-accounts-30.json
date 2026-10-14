@@ -1,17 +1,23 @@
 {
   "version": "sora-accounts-v1",
   "mode": "SIMULATION_ONLY",
-  "note": "30 EMPTY simulated accounts. No stock purchases, historical returns, or AI analysis have occurred. Legacy 20 fictitious portfolio demo is not used.",
+  "note": "30 EMPTY simulated accounts. NVDA AMZN PLTR are required CORE candidates, not purchased holdings; no market trades or historical performance exist.",
   "rules": {
     "eligibleIndices": [
       "S&P 500",
       "Nasdaq 100"
     ],
     "maxPositions": 12,
-    "coreTarget": 2,
-    "sectorTarget": 10,
+    "coreTarget": 3,
+    "sectorTarget": 9,
     "permitCash": true,
-    "firstTradeOnlyAfterVerifiedSignal": true
+    "firstTradeOnlyAfterVerifiedSignal": true,
+    "requiredCoreCandidates": [
+      "NVDA",
+      "AMZN",
+      "PLTR"
+    ],
+    "buyOnlyOnValidatedEntry": true
   },
   "accounts": [
     {
