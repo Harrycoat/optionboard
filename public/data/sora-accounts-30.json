@@ -15,7 +15,8 @@
     "requiredCoreCandidates": [
       "NVDA",
       "AMZN",
-      "PLTR"
+      "PLTR",
+      "TSLA"
     ],
     "buyOnlyOnValidatedEntry": true
   },
@@ -31,7 +32,7 @@
       "createdDate": "2026-10-13",
       "performancePct": null,
       "analysis": null,
-      "strategyDescription": "NVDA·AMZN·PLTR 후보를 중심으로 장기 보유형 CORE만 구성. 매수 조건 미충족 시 현금 대기.",
+      "strategyDescription": "NVDA·AMZN·PLTR·TSLA 후보를 중심으로 장기 보유형 CORE만 구성. 매수 조건 미충족 시 현금 대기.",
       "strategyReference": "성장주 장기 보유",
       "strategyStatus": "DESIGN_ONLY"
     },
