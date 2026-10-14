@@ -18,7 +18,8 @@ def _stamp(x):
  except (ValueError,AttributeError):raise ValueError("INVALID_TIME") from None
 
 def plan_exit(positions, bars, prior_sales=()):
- """Use only last verified completed daily close, not a live/incomplete bar."""
+ """Use only last verified completed daily close, not a live/incomplete bar. One ticker per evaluation."""
+ if len(positions)!=1:raise ValueError("SINGLE_TICKER_EVALUATION_ONLY")
  if len(bars)<51 or any(not b.get("complete") or not _positive(b.get("c")) for b in bars[-51:]):
   raise ValueError("COMPLETED_DAILY_BARS_REQUIRED")
  closes=[b["c"] for b in bars]
