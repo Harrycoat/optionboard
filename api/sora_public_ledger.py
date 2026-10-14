@@ -2,7 +2,9 @@
 from http.server import BaseHTTPRequestHandler
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError
-import os,json,base64
+import os,json,base64,sys
+sys.path.insert(0,os.path.dirname(__file__))
+from sora_paper_ledger_replay import confirm_balance
 from datetime import datetime
 
 REPO="Harrycoat/optionboard"
@@ -20,18 +22,20 @@ class handler(BaseHTTPRequestHandler):
    with urlopen(req,timeout=8) as res:doc=json.loads(res.read())
    ledger=json.loads(base64.b64decode(doc["content"]))
    assert ledger["account_id"]=="SORA-01" and isinstance(ledger["trades"],list)
-   buys=[]
+   state=confirm_balance(ledger)
+   # Public presentation contains no credentials or request IDs.
+   events=[]
    for t in ledger["trades"]:
-    if t.get("mode")!="PAPER" or t.get("side")!="BUY":continue
-    ticker=t.get("ticker");price=t.get("fill_price");qty=t.get("quantity")
-    if not isinstance(ticker,str) or not isinstance(qty,int) or not isinstance(price,(int,float)):raise ValueError("BAD_TRADE")
-    buys.append({"ticker":ticker,"quantity":qty,"fill_price":price,"entry_stage":t.get("entry_stage"),
-       "source":t.get("source"),"reason":t.get("reason"),"fill_time_utc":t.get("fill_time_utc")})
-   spent=round(sum(t["quantity"]*t["fill_price"] for t in buys),2)
-   cash=round(float(ledger["initial_cash"])-spent,2)
-   if cash<0 or abs(cash-float(ledger.get("cash",cash)))>0.01:raise ValueError("BAD_CASH")
+    if t.get("mode")!="PAPER":continue
+    events.append({"ticker":t.get("ticker"),"quantity":t.get("quantity"),
+      "fill_price":t.get("fill_price"),"entry_stage":t.get("entry_stage"),
+      "exit_stage":t.get("exit_stage"),"side":t.get("side"),
+      "source":t.get("source"),"reason":t.get("reason"),
+      "fill_time_utc":t.get("fill_time_utc")})
    out={"account_id":"SORA-01","mode":"PAPER","initial_cash":ledger["initial_cash"],
-      "cash":cash,"trade_count":len(buys),"trades":buys,"price_status":"NO_LIVE_VALUATION"}
+      "cash":state["cash"],"trade_count":len(events),"trades":events,
+      "positions":state["positions"],"realized_pnl":state["realized_pnl"],
+      "price_status":"NO_LIVE_VALUATION"}
    self.respond(200,out)
   except Exception:
    self.respond(503,{"error":"LEDGER_TEMPORARILY_UNAVAILABLE"})
