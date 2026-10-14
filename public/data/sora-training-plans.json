@@ -1,0 +1,270 @@
+{
+  "version": "sora-training-plans-v1",
+  "createdAt": "2026-10-13",
+  "status": "PLANNED_NOT_TRADED",
+  "description": "Ten analysis training plan slots, not live holdings or analyzed picks. Simulated returns and backdated prices are forbidden.",
+  "maxAccounts": 20,
+  "dailyNewAccounts": 3,
+  "initialPlans": [
+    {
+      "id": "SORA-TRAIN-01",
+      "name": "성장주 20MA 눌림",
+      "method": "성장주 및 AI 섹터에서 20MA 접근·저점 유지 후보",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-02",
+      "name": "성장주 50MA 눌림",
+      "method": "중기 50MA 눌림과 거래량 회복",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-03",
+      "name": "반도체 선도주",
+      "method": "SMH 구성 관련 주도주 눌림 및 가격 추세",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-04",
+      "name": "메모리 HBM",
+      "method": "DRAM 연관 선도주 20MA/50MA 접근",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-05",
+      "name": "AI 전력 인프라",
+      "method": "전력·산업재 강세 업종 중 눌림",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-06",
+      "name": "소프트웨어 성장",
+      "method": "소프트웨어 상대강도와 건전한 조정",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-07",
+      "name": "금융 섹터",
+      "method": "XLF 주도주 정배열 중 거래량 감소 눌림",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-08",
+      "name": "헬스케어",
+      "method": "XLV 주도주와 실적 확인",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-09",
+      "name": "미너비니 스윙",
+      "method": "정배열·직전 스윙 피벗·거래량",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    },
+    {
+      "id": "SORA-TRAIN-10",
+      "name": "GEX Wall + 눌림",
+      "method": "기존 Massive 지연 Wall과 SMA20/50 눌림 동시 확인",
+      "accountStatus": "AWAITING_MARKET_DATA_AND_SORA_REVIEW",
+      "coreSlots": 2,
+      "sectorSlots": 10,
+      "positions": [],
+      "transactions": [],
+      "equityHistory": [],
+      "performanceStatus": "N/A",
+      "rules": {
+        "entry": "completed daily 20MA/50MA pullback, falling pullback volume then renewed volume and trend confirmation",
+        "price": "verified as-of historical quote only, no fictional fills",
+        "risk": "no live orders",
+        "analysisRequired": [
+          "sector strength",
+          "ticker rationale",
+          "trend",
+          "volume",
+          "SMA20/50 proximity",
+          "as_of",
+          "source"
+        ]
+      }
+    }
+  ]
+}
