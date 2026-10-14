@@ -65,4 +65,4 @@ $("refreshQuotes").addEventListener("click",refreshQuotes);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshQuotes()});
 setInterval(()=>{if(!document.hidden)refreshQuotes()},300000);
 restoreLocal();render();refreshQuotes();
-const langSelect=document.getElementById("language");langSelect.addEventListener("change",()=>{const v=langSelect.value;document.getElementById("mottoKo").style.display=v==="en"?"none":"block";document.getElementById("mottoEn").style.display=v==="ko"?"none":"block"});</script></body></html>
+// Both official GEXOption slogans are always visible, regardless of language preference.</script></body></html>
