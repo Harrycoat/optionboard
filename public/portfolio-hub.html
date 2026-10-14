@@ -1,8 +1,54 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GEXOption · 투자자 포트폴리오</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f7fafb;color:#183247;font:15px system-ui,sans-serif}header{background:white;border-bottom:1px solid #dce7e8;padding:15px}.top{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}a{color:#116e66;text-decoration:none}h1{font-size:20px;margin:0}main{max-width:1100px;margin:0 auto;padding:14px}.motto{background:#eaf7f0;border:1px solid #b9e1cd;padding:20px;text-align:center;border-radius:12px;margin:8px 0 18px}.motto strong{font-size:clamp(17px,2vw,24px);color:#0d5246}.motto p{margin:5px 0;color:#276b5a;font-weight:700}.layout{display:grid;grid-template-columns:55% 45%;gap:14px;padding-right:14px}.panel{background:white;border:1px solid #d9e3e9;border-radius:12px;padding:16px;min-height:320px}.muted{color:#68798b;font-size:13px}button{padding:9px 13px;border:1px solid #b8d6d0;border-radius:7px;background:#eef8f4;color:#116255;cursor:pointer;font-weight:700}.panel h2{font-size:18px;margin:0 0 12px}.empty{padding:30px 15px;text-align:center;border:1px dashed #c4d6de;border-radius:10px;background:#fbfdfe}.box{background:#f1f6f9;border-radius:8px;padding:13px;margin-bottom:8px}.heat{display:grid;grid-template-columns:1fr 1fr;gap:5px}.tile{padding:20px 5px;background:#e9f1f5;border-radius:7px;text-align:center}.notes{font-size:13px;line-height:1.5}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}@media(max-width:720px){.layout,.bottom{grid-template-columns:1fr;padding:0}} </style></head><body>
+*{box-sizing:border-box}body{margin:0;background:#f7fafb;color:#183247;font:15px system-ui,sans-serif}header{background:white;border-bottom:1px solid #dce7e8;padding:15px}.top{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}a{color:#116e66;text-decoration:none}h1{font-size:20px;margin:0}main{max-width:1100px;margin:0 auto;padding:14px}.motto{background:#eaf7f0;border:1px solid #b9e1cd;padding:20px;text-align:center;border-radius:12px;margin:8px 0 18px}.motto strong{font-size:clamp(17px,2vw,24px);color:#0d5246}.motto p{margin:5px 0;color:#276b5a;font-weight:700}.layout{display:grid;grid-template-columns:55% 45%;gap:14px;padding-right:14px}.panel{background:white;border:1px solid #d9e3e9;border-radius:12px;padding:16px;min-height:320px}.muted{color:#68798b;font-size:13px}button{padding:9px 13px;border:1px solid #b8d6d0;border-radius:7px;background:#eef8f4;color:#116255;cursor:pointer;font-weight:700}.panel h2{font-size:18px;margin:0 0 12px}.empty{padding:30px 15px;text-align:center;border:1px dashed #c4d6de;border-radius:10px;background:#fbfdfe}.box{background:#f1f6f9;border-radius:8px;padding:13px;margin-bottom:8px}.heat{display:grid;grid-template-columns:1fr 1fr;gap:5px}.tile{padding:20px 5px;background:#e9f1f5;border-radius:7px;text-align:center}.notes{font-size:13px;line-height:1.5}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}@media(max-width:720px){.layout,.bottom{grid-template-columns:1fr;padding:0}} .investor{display:flex;justify-content:space-between;gap:12px;width:100%;margin:5px 0;padding:12px;text-align:left;background:#f3f8fa;color:#183247;border:1px solid #dde8ed}.investor.active{border:2px solid #188c73;background:#e9f7f2}.investor small{display:block;color:#68798b}.pos{color:#128060}.neg{color:#c44850}.holding{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #e3e9ed;padding:7px 3px;font-size:13px}.heat{grid-template-columns:repeat(3,minmax(0,1fr))}.heat .tile{padding:12px 5px;min-height:75px}.tile.positive{background:#cbefdc}.tile.negative{background:#f4d9de}.tile strong{display:block}.tile small{display:block;font-size:10px}.error{border:1px solid #e8bfbd;padding:14px;color:#9e3636;border-radius:8px}</style></head><body>
 <header><div class="top"><h1>GEXOption · 투자자 포트폴리오</h1><nav><a href="/swing-top100.html">시장 분석</a>　<a href="/portfolio-demo.html">나의 포트폴리오</a></nav></div></header>
 <main><div class="motto"><strong>시장을 먼저 보고, 주도주를 선택하고, 패턴을 기다린 뒤, 확인된 수급에 따라 대응한다.</strong><p>Read the Market. Choose the Leaders. Wait for the Setup. Act on Confirmed Order Flow.</p></div>
-<div class="layout"><section class="panel"><h2>투자자 포트폴리오 TOP 10</h2><p class="muted">공개 동의와 검증된 성과가 있는 회원만 순위에 표시될 예정입니다.</p><div class="empty"><strong>아직 공개된 회원 포트폴리오가 없습니다.</strong><p class="muted">회원 로그인·서버 저장·공개 동의 기능 연결 전입니다. 실제 투자자나 수익률을 만들어 표시하지 않습니다.</p></div><div style="margin-top:13px"><button id="more" type="button">11위 이후 더 보기 ▾</button><p id="moreText" class="muted" hidden>추가 공개 포트폴리오가 없습니다.</p></div></section>
-<section class="panel"><h2>포트폴리오 미리보기</h2><div class="box"><strong>선택된 투자자 없음</strong><p class="muted">투자자 목록에서 회원을 선택하면 성과와 히트맵이 표시됩니다.</p></div><h3>Performance</h3><div class="empty muted">검증된 기간별 수익률 기록 없음</div><h3>Allocation</h3><div class="heat"><div class="tile">보유 종목 N/A</div><div class="tile">비중 N/A</div></div><p class="notes">공개되지 않은 계좌 정보와 매입가는 표시하지 않습니다.</p></section></div>
+<div class="layout"><section class="panel"><h2>모의투자 포트폴리오 TOP 10</h2>
+<p class="muted">운영자가 관리하는 가상 포트폴리오 20개 · 매수 시작일 2026-08-13</p>
+<div id="portfolioList"><p class="muted">가상 포트폴리오를 불러오는 중…</p></div><div style="margin-top:13px"><button id="more" type="button">11위 이후 더 보기 ▾</button></div></section>
+<section class="panel"><h2>선택한 모의투자 포트폴리오</h2><div id="portfolioDetail" class="box">왼쪽 포트폴리오를 선택하세요.</div>
+<h3>Allocation 히트맵</h3><div id="portfolioHeat" class="heat"></div>
+<h3>보유 종목 (CORE 2 + 섹터 10)</h3><div id="portfolioHoldings" style="max-height:440px;overflow:auto"></div>
+<p class="notes">이 화면의 매수가·평가가·수익률은 전부 시뮬레이션 수치입니다. 실제 과거 주가나 검증된 투자 성과가 아닙니다.</p>
+</section></div>
 <div class="bottom"><section class="panel"><h2>나의 포트폴리오</h2><p>보유 종목과 매수·매도 기록을 입력하고 히트맵을 시험할 수 있어요.</p><a href="/portfolio-demo.html"><button type="button">포트폴리오 만들기 →</button></a></section><section class="panel"><h2>오늘의 시장</h2><p class="muted">ETF 섹터별 주도주와 Wall 정보를 확인하세요. 포트폴리오 성과와 실시간 시세는 아직 별도로 검증해야 합니다.</p><a href="/swing-top100.html"><button type="button">시장 분석 열기 →</button></a></section></div></main>
-<script>document.getElementById("more").onclick=()=>{const p=document.getElementById("moreText");p.hidden=!p.hidden;document.getElementById("more").textContent=p.hidden?"11위 이후 더 보기 ▾":"접기 ▴"};</script></body></html>
+<script>
+let list=[],current=null,expanded=false;
+const money=n=>Number(n).toLocaleString("en-US",{style:"currency",currency:"USD"});
+const percent=n=>(n>=0?"+":"")+Number(n).toFixed(2)+"%";
+function render(){
+ const outer=document.getElementById("portfolioList");outer.replaceChildren();
+ const shown=expanded?list:list.slice(0,10);
+ for(const [index,p] of shown.entries()){
+  const btn=document.createElement("button");btn.className="investor"+(current===p.id?" active":"");btn.type="button";
+  const left=document.createElement("span"),name=document.createElement("strong"),subtitle=document.createElement("small");
+  name.textContent=(index+1)+". "+p.nickname;subtitle.textContent="CORE 2 · 섹터 10 · "+p.startDate;
+  left.append(name,subtitle);
+  const result=document.createElement("strong");result.className=p.returnPct>=0?"pos":"neg";result.textContent=percent(p.returnPct);
+  btn.append(left,result);btn.onclick=()=>{current=p.id;render()};outer.append(btn);
+ }
+ document.getElementById("more").textContent=expanded?"TOP 10만 보기 ▴":"나머지 10개 더 보기 ▾";
+ const selected=list.find(p=>p.id===current),detail=document.getElementById("portfolioDetail"),heat=document.getElementById("portfolioHeat"),holdings=document.getElementById("portfolioHoldings");
+ detail.replaceChildren();heat.replaceChildren();holdings.replaceChildren();
+ if(!selected){detail.textContent="모의투자 포트폴리오를 선택하세요.";return}
+ const title=document.createElement("h3");title.textContent=selected.nickname;detail.append(title);
+ for(const label of ["시작일 "+selected.startDate,"가상 평가금액 "+money(selected.totalValue),"가상 수익률 "+percent(selected.returnPct),"실제 매매·시세 자료 아님"]){
+  const p=document.createElement("p");p.textContent=label;detail.append(p)
+ }
+ const total=selected.holdings.reduce((v,x)=>v+x.quantity*x.simulatedMark,0);
+ for(const h of selected.holdings){
+  const tile=document.createElement("div");tile.className="tile "+(h.simulatedReturnPct>=0?"positive":"negative");
+  const weight=h.quantity*h.simulatedMark/total*100;
+  tile.innerHTML="";
+  const symbol=document.createElement("strong");symbol.textContent=h.ticker;const detail=document.createElement("small");detail.textContent=h.type+" · "+weight.toFixed(1)+"% · "+percent(h.simulatedReturnPct);
+  tile.append(symbol,detail);heat.append(tile);
+  const row=document.createElement("div");row.className="holding";
+  const l=document.createElement("span"),r=document.createElement("span");l.textContent=h.ticker+" · "+h.sector;r.textContent=money(h.quantity*h.simulatedMark)+" · "+percent(h.simulatedReturnPct);
+  r.className=h.simulatedReturnPct>=0?"pos":"neg";row.append(l,r);holdings.append(row)
+ }
+}
+document.getElementById("more").onclick=()=>{expanded=!expanded;render()};
+fetch("/data/demo-portfolios-20.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("데이터 "+r.status);return r.json()}).then(data=>{
+ if(!data||data.version!=="simulation-v1"||!Array.isArray(data.portfolios)||data.portfolios.length!==20)throw Error("가상 데이터 형식 오류");
+ list=[...data.portfolios].sort((a,b)=>b.returnPct-a.returnPct);current=list[0].id;render()
+}).catch(e=>{const el=document.getElementById("portfolioList");el.className="error";el.textContent="데이터를 불러오지 못했습니다: "+e.message;document.getElementById("more").disabled=true});
+</script></body></html>
