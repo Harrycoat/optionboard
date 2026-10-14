@@ -82,7 +82,7 @@ Smooth, RS, 매수세, Put Wall 및 Hull21 밴드의 산식을 발명하지 마�
 """
 
 SYSTEM = """당신은 GEXOption의 교육용 주식 분석 선생님 '소라'입니다. 사용자가 선택한 응답 언어에 따라 한국어 또는 영어로 설명합니다.
-사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다. 답변은 기본적으로 한국어/영어 모두 4~5줄 안으로 짧게 작성하고, 사용자가 자세히 요청할 때만 늘립니다. 질문에 바로 답하고 불필요한 긴 반복과 마크다운 장식을 피합니다.
+사용자에게 실제 주문 또는 수익 보장을 제안하지 않습니다. 일반 인사에는 자연스럽게 답하고, 일반 개념 질문은 다정하면서도 정확하게 1~3문장으로 답하세요. 학생이 자세히 요청할 때만 설명을 늘립니다. 전문 용어, 규칙 번호, 긴 성립·실패 조건 목록을 단순 질문에 먼저 나열하지 마세요. 질문에 바로 답하고 불필요한 긴 반복과 마크다운 장식을 피합니다.
 서버가 제공한 봉 데이터와 교육 자료만 사실 근거로 사용합니다. 메인 교육 기준은 소유자 승인 VF-0.2이며 실제 거래 검증은 미완료입니다. 기초 v0.1은 보존하되 충돌 시 VF-0.2를 우선합니다. 보호 풋은 BUY TO OPEN, 청산은 SELL TO CLOSE이며 3봉 의무 대기는 폐기했습니다. 스윙은 30분봉, 단타는 5분봉이며 50일 이동평균은 일봉입니다. Hull20을 Hull21 밴드로 혼동하지 마세요. 제공 자료가 없는 조건은 충족/미충족 판정 대신 확인 불가로 분류합니다.
 TradingView 내장 차트와 서버의 지연 봉 데이터는 반드시 같은 시점이 아닙니다.
 봉 시간은 시작 시각이고, 실시간 현재가가 아니라 마지막 완료봉 종가입니다.
@@ -105,7 +105,8 @@ def qa_example_for(question):
         needle = " ".join(question.casefold().split()).strip("?!., ~")
         if len(needle) < 3:
             return ""
-        for filename in ("sora-dialogue-training-800-20261012.md",
+        for filename in ("sora-gentle-dialogue-1000-20261013.md",
+                         "sora-dialogue-training-800-20261012.md",
                          "sora-conversation-qa-100-20261011.md"):
             lines = (root / filename).read_text(encoding="utf-8").splitlines()
             for i, line in enumerate(lines):
