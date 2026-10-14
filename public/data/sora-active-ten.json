@@ -1,0 +1,113 @@
+{
+  "version": "sora-active-ten-v1",
+  "mode": "SIMULATION_ONLY",
+  "initialCashPerAccount": 100000,
+  "activeAccountIds": [
+    "SORA-01",
+    "SORA-02",
+    "SORA-03",
+    "SORA-04",
+    "SORA-05",
+    "SORA-06",
+    "SORA-07",
+    "SORA-08",
+    "SORA-09",
+    "SORA-10"
+  ],
+  "archivedAccountIds": [
+    "SORA-11",
+    "SORA-12",
+    "SORA-13",
+    "SORA-14",
+    "SORA-15",
+    "SORA-16",
+    "SORA-17",
+    "SORA-18",
+    "SORA-19",
+    "SORA-20",
+    "SORA-21",
+    "SORA-22",
+    "SORA-23",
+    "SORA-24",
+    "SORA-25",
+    "SORA-26",
+    "SORA-27",
+    "SORA-28",
+    "SORA-29",
+    "SORA-30"
+  ],
+  "preserveExistingLedger": true,
+  "notes": "Experiment-only selection. Existing 30-account config, SORA-01 ledger, and SORA-29/30 original DCA configs stay untouched. Strategy assignment requires signal and execution tests.",
+  "robots": [
+    {
+      "id": "SORA-01",
+      "strategyCode": "CORE_MANAGER_AI",
+      "strategy": "CORE 장기투자 · 관리자 + AI 공동운용",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-02",
+      "strategyCode": "CORE80_SWING20",
+      "strategy": "CORE 80% + SWING 20%",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-03",
+      "strategyCode": "BIGTECH_20_50_DCA",
+      "strategy": "빅테크 일봉 20/50일선 분할매수",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-04",
+      "strategyCode": "GROWTH_50MA",
+      "strategy": "성장주 50일선 눌림목",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-05",
+      "strategyCode": "HULL21_SMOOTH",
+      "strategy": "Hull21 재진입 + 검증된 Smooth",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-06",
+      "strategyCode": "VCP_PIVOT",
+      "strategy": "주도주 VCP/전고점 돌파",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-07",
+      "strategyCode": "SECTOR_ROTATION",
+      "strategy": "강한 섹터 로테이션 + 주도주",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-08",
+      "strategyCode": "GEX_WALL",
+      "strategy": "GEX Call/Put Wall 반전",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-09",
+      "strategyCode": "QLD_QQQ_SMA50_DCA",
+      "strategy": "QQQ 50일선 기준 QLD 분할매수",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    },
+    {
+      "id": "SORA-10",
+      "strategyCode": "TQQQ_QQQ_SMA200_DCA",
+      "strategy": "QQQ 200일선 기준 TQQQ 분할매수",
+      "simulationOnly": true,
+      "autoTradingEnabled": false
+    }
+  ]
+}
