@@ -41,7 +41,7 @@ def execute_paper_buy(state, order, *, allowed_symbols):
     positions=target.setdefault("positions",[])
     if any(p.get("ticker")==ticker for p in positions):raise ValueError("ALREADY_OWNED")
     if len(positions)>=out.get("rules",{}).get("maxPositions",12):raise ValueError("MAX_POSITIONS")
-    core=ticker in ("NVDA","AMZN","PLTR","TSLA")
+    core=ticker in ("NVDA","AMZN","PLTR","TSLA","AAPL","META","MSFT","COST")
     if core and sum(p.get("bucket")=="CORE" for p in positions)>=3:raise ValueError("CORE_LIMIT")
     if not core and sum(p.get("bucket")=="SWING" for p in positions)>=9:raise ValueError("SWING_LIMIT")
     cash=target.get("cash",0)
