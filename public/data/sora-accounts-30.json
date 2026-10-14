@@ -1,7 +1,7 @@
 {
   "version": "sora-accounts-v1",
   "mode": "SIMULATION_ONLY",
-  "note": "30 EMPTY simulated accounts. NVDA AMZN PLTR are required CORE candidates, not purchased holdings; no market trades or historical performance exist.",
+  "note": "30 SORA simulation accounts. SORA-30 is a QLD ETF DCA special strategy with no buys; 29 others remain unfilled. No actual paper execution persistence.",
   "rules": {
     "eligibleIndices": [
       "S&P 500",
@@ -370,15 +370,34 @@
     },
     {
       "id": "SORA-30",
-      "name": "SORA 30",
-      "strategy": "Hull21 재진입·Smooth",
+      "name": "SORA 30 · QLD DCA",
+      "strategy": "QQQ 일봉 SMA50 터치 → QLD 10회 분할매수",
       "status": "WAITING",
       "cash": 100000,
       "positions": [],
       "trades": [],
       "createdDate": "2026-10-13",
       "performancePct": null,
-      "analysis": null
+      "analysis": null,
+      "strategyType": "ETF_DCA",
+      "dca": {
+        "triggerSymbol": "QQQ",
+        "triggerTimeframe": "1d",
+        "triggerMA": "SMA50",
+        "triggerRule": "completed daily bar low <= SMA50 and high >= SMA50; require 50 completed sessions and timestamp",
+        "tradeSymbol": "QLD",
+        "assetType": "LEVERAGED_ETF",
+        "exceptionToEquityUniverse": true,
+        "splitCount": 10,
+        "completedBuys": 0,
+        "trancheAllocationPct": 10,
+        "allocationBase": "dedicated DCA budget not yet confirmed",
+        "budgetUSD": null,
+        "subsequentTrancheRules": "PENDING_OWNER_APPROVAL",
+        "noAutoBuyUntilRulesVerified": true,
+        "orderMode": "PAPER_ONLY",
+        "notes": "QQQ 50MA 터치만으로 최초 관찰; 1차 체결은 실제 지연 데이터 및 승인된 DCA 예산·체결 규칙 확인 후 기록. QLD is a daily-reset 2x leveraged ETF, not S&P 500/Nasdaq100 constituent equity."
+      }
     }
   ]
 }
