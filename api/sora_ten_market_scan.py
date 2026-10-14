@@ -46,6 +46,7 @@ class handler(BaseHTTPRequestHandler):
           "feed_errors":failures,"paper_orders_executed":0,
           "status":"OK" if features else "DATA_UNAVAILABLE",
           "candidates":rank_watch(evaluations,40),
+          "discovery_watch":[{"ticker":t,"near20":f["near20"],"near50":f["near50"],"sma50_rising":f["sma50_rising"],"status":"WATCH" if f["sma50_rising"] and (f["near20"] or f["near50"]) else "NO_SETUP","order_permission":"BLOCKED_UNTIL_VERIFIED"} for t,f in sorted(features.items())],
           "technical_snapshots":{t:{"close":round(f["price"],4),
              "sma20":round(f["sma20"],4),"sma50":round(f["sma50"],4),
              "sma50_rising":f["sma50_rising"],"near20":f["near20"],
