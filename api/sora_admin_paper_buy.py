@@ -55,7 +55,8 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers();self.wfile.write(data)
     def do_GET(self):
         if not auth(self.headers):
-            self.send_response(401);self.send_header("WWW-Authenticate",'Basic realm="SORA Paper Admin"');self.send_header("Cache-Control","no-store");self.end_headers();return
+            # JSON-only 401: fetch() must never trigger a browser-native Basic Auth prompt.
+            self.respond(401,{"error":"ADMIN_AUTH_REQUIRED","message":"Check Preview variables and credentials. No browser popup is required."});return
         try:
             x=github("GET",PATH);ledger=json.loads(base64.b64decode(x["content"]))
             self.respond(200,ledger)
