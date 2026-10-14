@@ -5,7 +5,7 @@ An authenticated admin server and durable ledger are required before enabling.
 from datetime import datetime
 from math import isfinite
 
-CORE_SYMBOLS=frozenset(("NVDA","AMZN","PLTR","TSLA"))
+CORE_SYMBOLS=frozenset(("NVDA","AMZN","PLTR","TSLA","AAPL","META","MSFT","COST"))
 def validate_admin_core_buy(record):
     if record.get("source")!="ADMIN" or record.get("mode")!="PAPER":
         raise ValueError("PAPER_ADMIN_ONLY")
