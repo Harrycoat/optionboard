@@ -4,9 +4,19 @@
 <section class="panel"><h2>보유 종목 추가</h2><form id="form" class="form"><div><label for="ticker">티커</label><input id="ticker" placeholder="NVDA" required maxlength="10" pattern="[A-Za-z][A-Za-z0-9.]{0,9}"></div><div><label for="qty">주식 수</label><input id="qty" type="number" min="0.0001" step="any" required></div><div><label for="cost">평균 매입가 ($)</label><input id="cost" type="number" min="0.01" step="any" required></div><div><label for="price">현재 평가가 ($, 수동 예비값)</label><input id="price" type="number" min="0.01" step="any" required></div><div><label for="bucket">CORE / SWING</label><input id="bucket" maxlength="20" value="CORE"></div><div style="align-self:end"><button type="submit">종목 추가</button></div></form><p class="muted">Massive 15분 지연 5분봉의 최신 종가를 자동 조회합니다. 조회 실패 시 수동 평가가를 유지합니다.</p><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:8px 0"><button type="button" id="refreshQuotes">15분 지연 시세 새로고침</button><span class="muted" id="quoteStatus">자동 조회 준비 · 5분마다 재조회 · 실시간 아님</span></div><p class="muted" id="saveNote">브라우저 임시 저장 활성화 · 같은 브라우저에서 새로고침 시 복원됩니다.</p></section>
 <div class="metrics"><div class="metric">총 평가금액<b id="total">$0.00</b></div><div class="metric">평가손익<b id="pnl">$0.00</b></div><div class="metric">매입가 대비 수익률<b id="pct">0.00%</b></div></div>
 <div class="cols"><section class="panel"><h2>Allocation 히트맵</h2><div class="heat" id="heat">종목을 추가해 주세요.</div><p class="muted">칸 넓이는 보유 비중의 대략적 표현, 색상은 평가손익 방향입니다.</p></section><section class="panel"><h2>Performance</h2><p>기간별 수익률 그래프는 거래·입출금·과거 평가액이 저장되어야 정확히 만들 수 있습니다.</p><p class="muted">이 화면에는 확인되지 않은 과거 수익률을 표시하지 않습니다.</p><button class="secondary" id="reset" type="button">시험 데이터 초기화</button></section></div>
-<section class="panel"><h2>보유 종목 목록</h2><div class="scroll"><table><thead><tr><th>종목</th><th>수량</th><th>매입가</th><th>평가가 / 데이터 시각</th><th>비중</th><th>손익</th><th>작업</th></tr></thead><tbody id="rows"></tbody></table></div></section></main>
+<section class="panel"><h2>보유 종목 목록</h2><div class="scroll"><table><thead><tr><th>종목</th><th>수량</th><th>매입가</th><th>평가가 / 데이터 시각</th><th>비중</th><th>손익</th><th>작업</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="panel"><h2>Trading Activity · 매수/매도 기록</h2><p class="muted">시험용 거래 기록은 이 브라우저에만 보관됩니다. 기존에 직접 추가한 보유분은 별도로 유지됩니다. 매도할 때는 등록 수량 이내로만 처리됩니다.</p>
+<form id="tradeForm" class="form">
+<div><label for="tradeTicker">티커</label><input id="tradeTicker" required placeholder="NVDA" maxlength="10"></div>
+<div><label for="tradeSide">구분</label><select id="tradeSide" style="width:100%;padding:11px;border:1px solid #bacbd6;border-radius:7px"><option value="BUY">매수</option><option value="SELL">매도</option></select></div>
+<div><label for="tradeQty">수량</label><input id="tradeQty" type="number" step="any" min="0.0001" required></div>
+<div><label for="tradePrice">체결가 ($)</label><input id="tradePrice" type="number" step="any" min="0.01" required></div>
+<div><label for="tradeMemo">매매 이유 (선택)</label><input id="tradeMemo" maxlength="120" placeholder="눌림목 지지 확인"></div>
+<div style="align-self:end"><button type="submit">거래 기록하기</button></div>
+</form><p class="muted" id="tradeMessage"></p><div class="scroll"><table><thead><tr><th>시각</th><th>종목</th><th>구분</th><th>수량</th><th>체결가</th><th>실현손익 (평균단가)</th><th>메모</th></tr></thead><tbody id="tradeRows"></tbody></table></div></section>
+</main>
 <script>
-const STORAGE_KEY="gexoption_portfolio_demo_v1";
+const STORAGE_KEY="gexoption_portfolio_demo_v1";\nconst LEDGER_KEY="gexoption_portfolio_trades_demo_v1";\nconst ledger=[];
 const holdings=[],$=x=>document.getElementById(x),fmt=x=>x.toLocaleString("en-US",{style:"currency",currency:"USD"}),pct=x=>(x>=0?"+":"")+x.toFixed(2)+"%";
 function saveLocal(){
  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(holdings));}catch(e){$("saveNote").textContent="브라우저 저장이 차단되어 있습니다. 현재 화면에서만 유지됩니다."}
@@ -21,8 +31,18 @@ function restoreLocal(){
   }
  }catch(e){$("saveNote").textContent="저장 데이터가 올바르지 않아 불러오지 않았습니다."}
 }
+function saveLedger(){try{localStorage.setItem(LEDGER_KEY,JSON.stringify(ledger))}catch(e){$("tradeMessage").textContent="거래 기록 브라우저 저장 실패"}}
+function restoreLedger(){try{const rows=JSON.parse(localStorage.getItem(LEDGER_KEY)||"[]");if(Array.isArray(rows))rows.slice(0,500).forEach(t=>{if(t&&/^[A-Z][A-Z0-9.]{0,9}$/.test(t.ticker)&&["BUY","SELL"].includes(t.side)&&Number.isFinite(t.qty)&&t.qty>0&&Number.isFinite(t.price)&&t.price>0)ledger.push(t)})}catch(e){}}
+function renderLedger(){
+ const root=$("tradeRows");root.replaceChildren();
+ if(!ledger.length){root.textContent="기록 없음";return}
+ for(const t of [...ledger].reverse()){
+  const tr=document.createElement("tr");
+  [new Date(t.time).toLocaleString("en-US"),t.ticker,t.side,String(t.qty),fmt(t.price),t.realized===null?"—":fmt(t.realized),t.memo||"—"].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td)});root.append(tr)
+ }
+}
 function render(){
- saveLocal();
+ saveLocal();renderLedger();
  const value=holdings.reduce((s,x)=>s+x.qty*x.price,0),cost=holdings.reduce((s,x)=>s+x.qty*x.cost,0),gain=value-cost;
  $("total").textContent=fmt(value);$("pnl").textContent=fmt(gain);$("pct").textContent=cost?pct(gain/cost*100):"0.00%";
  const rows=$("rows"),heat=$("heat");rows.replaceChildren();heat.replaceChildren();
@@ -36,7 +56,7 @@ function render(){
  })
 }
 $("form").addEventListener("submit",e=>{e.preventDefault();const ticker=$("ticker").value.trim().toUpperCase(),qty=Number($("qty").value),cost=Number($("cost").value),price=Number($("price").value);if(!/^[A-Z][A-Z0-9.]{0,9}$/.test(ticker)||![qty,cost,price].every(x=>Number.isFinite(x)&&x>0))return;holdings.push({ticker,qty,cost,price,bucket:$("bucket").value.trim().toUpperCase()||"CORE",quoteTime:null,quoteSource:"manual"});e.target.reset();$("bucket").value="CORE";render();refreshQuotes()});
-$("reset").onclick=()=>{if(confirm("이 브라우저의 시험용 포트폴리오를 모두 삭제할까요?")){holdings.length=0;render()}};let fetching=false;
+$("reset").onclick=()=>{if(confirm("이 브라우저의 시험용 포트폴리오를 모두 삭제할까요?")){holdings.length=0;ledger.length=0;saveLedger();render()}};let fetching=false;
 async function refreshQuotes(){
  if(fetching||!holdings.length)return;
  fetching=true;$("refreshQuotes").disabled=true;
@@ -64,5 +84,19 @@ async function refreshQuotes(){
 $("refreshQuotes").addEventListener("click",refreshQuotes);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshQuotes()});
 setInterval(()=>{if(!document.hidden)refreshQuotes()},300000);
-restoreLocal();render();refreshQuotes();
+restoreLocal();restoreLedger();render();refreshQuotes();$("tradeForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const ticker=$("tradeTicker").value.trim().toUpperCase(),side=$("tradeSide").value,qty=Number($("tradeQty").value),price=Number($("tradePrice").value),memo=$("tradeMemo").value.trim();
+ if(!/^[A-Z][A-Z0-9.]{0,9}$/.test(ticker)||![qty,price].every(x=>Number.isFinite(x)&&x>0))return;
+ const h=holdings.find(x=>x.ticker===ticker);
+ if(side==="SELL"&&(!h||h.qty+1e-9<qty)){$("tradeMessage").textContent="매도 가능한 보유 수량이 부족합니다.";return}
+ let realized=null;
+ if(side==="BUY"){
+  if(h){h.cost=(h.cost*h.qty+price*qty)/(h.qty+qty);h.qty+=qty}
+  else holdings.push({ticker,qty,cost:price,price,bucket:"CORE",quoteTime:null,quoteSource:"manual"});
+ }else{realized=(price-h.cost)*qty;h.qty-=qty;if(h.qty<1e-8)holdings.splice(holdings.indexOf(h),1)}
+ ledger.push({ticker,side,qty,price,realized,memo,time:new Date().toISOString()});
+ saveLedger();render();e.target.reset();$("tradeMessage").textContent="거래 기록 저장됨 (브라우저 전용)";refreshQuotes();
+});
+
 // Both official GEXOption slogans are always visible, regardless of language preference.</script></body></html>
