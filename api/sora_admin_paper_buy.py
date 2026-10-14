@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 REPO="Harrycoat/optionboard"
 BRANCH="feature/sora-pullback-20-50-20261013"
 PATH="data/sora-paper-ledger.json"
-CORE={"NVDA","AMZN","PLTR"}
+CORE={"NVDA","AMZN","PLTR","TSLA"}
 def auth(h):
     user=os.getenv("SORA_ADMIN_USER","")
     pw_hash=os.getenv("SORA_ADMIN_PASSWORD_SHA256","")
