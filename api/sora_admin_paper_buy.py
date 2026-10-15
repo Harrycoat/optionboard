@@ -8,7 +8,7 @@ from urllib.error import HTTPError,URLError
 from datetime import datetime,timezone
 import os,json,base64,hashlib,hmac,re
 from urllib.parse import urlparse,parse_qs
-from sora_paper_ledger_replay import confirm_balance
+from api.sora_paper_ledger_replay import confirm_balance
 
 REPO="Harrycoat/optionboard"
 BRANCH="feature/sora-pullback-20-50-20261013"
