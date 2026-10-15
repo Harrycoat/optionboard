@@ -8,7 +8,7 @@ _ALLOWED = {
     "earnings_scan", "config", "schwabquote", "filings",
     "swing_volume_heatmap", "swing_page", "sora_page", "sora_chat",
     "swing_radar_chart", "swing_radar", "oi_change",
-    "sora_admin_paper_buy", "sora_admin_auth", "sora_entry_status", "sora_public_ledger", "sora_portfolio_quotes", "sora_robots_status", "sora_ten_status", "sora_ten_market_scan",
+    "sora_admin_paper_buy", "sora_admin_auth", "sora_entry_status", "sora_public_ledger", "sora_portfolio_quotes", "sora_robots_status", "sora_ten_status", "sora_ten_market_scan", "sora_minervini_scan",
 }
 
 class handler(BaseHTTPRequestHandler):
