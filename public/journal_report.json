@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T22:42:42.255430+00:00",
+  "generated_at": "2026-10-15T18:04:52.502863+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_return": 0,
@@ -22,14 +22,14 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 367.16,
-      "current_gamma_flip": 275,
+      "current_spot": 361.56,
+      "current_gamma_flip": 85,
       "current_regime": "negative",
-      "return_pct": 4.6,
-      "unrealized_pnl": 1616.0,
+      "return_pct": 3.01,
+      "unrealized_pnl": 1056.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⛔ 종가(367.16)가 150일선(377.57) 아래로 이탈"
+        "⛔ 종가(361.56)가 150일선(377.34) 아래로 이탈"
       ],
       "live_fetch_error": null
     },
@@ -42,11 +42,11 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 200.97,
-      "current_gamma_flip": 207.5,
+      "current_spot": 200.19,
+      "current_gamma_flip": 205,
       "current_regime": "positive",
-      "return_pct": 21.58,
-      "unrealized_pnl": 3567.0,
+      "return_pct": 21.11,
+      "unrealized_pnl": 3489.0,
       "structural_status": "구조유지",
       "structural_reasons": [],
       "live_fetch_error": null
@@ -60,14 +60,14 @@
       "quantity": 50.0,
       "status": "진행중",
       "note": "풋월 334 - 350상승 확인 후 1차진입",
-      "current_spot": 346.25,
-      "current_gamma_flip": 440,
+      "current_spot": 339.41,
+      "current_gamma_flip": 195,
       "current_regime": "negative",
-      "return_pct": -1.21,
-      "unrealized_pnl": -212.5,
+      "return_pct": -3.16,
+      "unrealized_pnl": -554.5,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⛔ 종가(346.25)가 150일선(379.8) 아래로 이탈"
+        "⛔ 종가(339.41)가 150일선(379.82) 아래로 이탈"
       ],
       "live_fetch_error": null
     }
