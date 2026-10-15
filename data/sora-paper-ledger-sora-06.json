@@ -2,7 +2,7 @@
   "version": 1,
   "account_id": "SORA-06",
   "initial_cash": 100000,
-  "cash": 66000.0,
+  "cash": 32000.0,
   "trades": [
     {
       "account_id": "SORA-06",
@@ -18,6 +18,21 @@
       "mode": "PAPER",
       "fill_time_utc": "2026-10-15T16:36:27.674888+00:00",
       "sequence": 1
+    },
+    {
+      "account_id": "SORA-06",
+      "ticker": "AAPL",
+      "fill_price": 340,
+      "quantity": 100,
+      "entry_stage": "MANUAL_OTHER",
+      "reason": "340 전고점 돌파매수",
+      "request_id": "core-a716780a-cc16-48ae-b2f7-0950f037f063",
+      "side": "BUY",
+      "bucket": "CORE",
+      "source": "ADMIN",
+      "mode": "PAPER",
+      "fill_time_utc": "2026-10-15T16:38:59.776113+00:00",
+      "sequence": 2
     }
   ]
 }
