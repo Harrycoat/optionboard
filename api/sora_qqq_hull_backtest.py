@@ -28,6 +28,20 @@ def hma21(prices):
   out.append(wma(good,5) if len(good)==5 and all(v is not None for v in good) else None)
  return out
 
+def count_hull_color_flips(closes):
+ """Count HMA21 slope state transitions only, not price candle colors."""
+ values=hma21(closes)
+ prior=None;up=down=0
+ for i in range(1,len(values)):
+  if values[i] is None or values[i-1] is None:continue
+  current=1 if values[i]>values[i-1] else (-1 if values[i]<values[i-1] else 0)
+  if not current:continue
+  if prior is not None and current!=prior:
+   if current>0:up+=1
+   else:down+=1
+  prior=current
+ return up,down
+
 def tally(rows):
  daily={};total_buys=0;total_sells=0
  days={}
@@ -44,7 +58,8 @@ def tally(rows):
    # Approximation: close crosses HMA21 between two completed 2m bars.
    if closes[i-1]<=h[i-1] and closes[i]>h[i]:buys+=1
    if closes[i-1]>=h[i-1] and closes[i]<h[i]:sells+=1
-  daily[day]={"bars":len(bars),"up_crosses":buys,"down_crosses":sells}
+  color_up,color_down=count_hull_color_flips(closes)
+  daily[day]={"bars":len(bars),"up_crosses":buys,"down_crosses":sells,"hull_green_turns":color_up,"hull_red_turns":color_down}
   total_buys+=buys;total_sells+=sells
  return {"days":daily,"up_crosses":total_buys,"down_crosses":total_sells,
          "roundtrips_not_inferred":True}
@@ -74,9 +89,14 @@ class handler(BaseHTTPRequestHandler):
       "indicator":"HMA21_SINGLE_LINE_PROXY_NOT_TOS_HULL_BAND",
       "model":"n/2=10, sqrt(n)=5 rounded WMA","asof_utc":now.isoformat(),
       "days":subset,"day_count":len(subset),
+      "green_turns":sum(v["hull_green_turns"] for v in subset.values()),
+      "red_turns":sum(v["hull_red_turns"] for v in subset.values()),
+      "avg_green_turns_per_day":round(sum(v["hull_green_turns"] for v in subset.values())/len(subset),2) if subset else None,
+      "avg_red_turns_per_day":round(sum(v["hull_red_turns"] for v in subset.values())/len(subset),2) if subset else None,
       "up_crosses":sum(v["up_crosses"] for v in subset.values()),
       "down_crosses":sum(v["down_crosses"] for v in subset.values()),
       "limitations":["Intrabar 1-second flips are not countable from 2m candles.",
+       "Green/red turns mean HMA21 slope changes at 2-minute closes, not TOS custom band state.",
        "Not the exact TOS Hull21 band. Band definition is required.",
        "Crosses are not net profitable trades or matched round trips.",
        "2-minute historical availability depends on Massive entitlement."]}
