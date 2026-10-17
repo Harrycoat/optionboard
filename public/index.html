@@ -1129,9 +1129,20 @@ html.gex-phone header #searchBtn{box-sizing:border-box!important;display:block!i
 
   img,video,iframe,canvas,svg{max-width:100%!important}
 }
+
+/* SORA three-section navigation: above banner and ticker search */
+.sora-top-sections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px max(16px,calc((100% - 1100px)/2));background:#0c121b;border-bottom:1px solid var(--line)}
+.sora-top-sections a{display:flex;align-items:center;justify-content:center;gap:9px;min-height:55px;padding:12px 8px;border:1px solid rgba(224,168,56,.42);border-radius:10px;background:#151d29;color:#f0f4f8;text-decoration:none;font-size:16px;font-weight:800;text-align:center;transition:border-color .15s,background .15s}
+.sora-top-sections a:hover,.sora-top-sections a:focus-visible{border-color:var(--gold);background:#202b3b}
+@media(max-width:600px){.sora-top-sections{gap:5px;padding:8px 7px}.sora-top-sections a{gap:4px;flex-direction:column;min-height:64px;font-size:12px;padding:9px 3px}}
 </style>
 </head>
 <body>
+<nav id="soraTopSections" class="sora-top-sections" aria-label="SORA AI 주요 서비스">
+  <a href="/education-study.html"><span aria-hidden="true">🎓</span><span>매매 교육</span></a>
+  <a href="/portfolio-hub.html"><span aria-hidden="true">📊</span><span>AI 가상 포트폴리오</span></a>
+  <a href="/education.html"><span aria-hidden="true">📖</span><span>옵션 기초</span></a>
+</nav>
 <div class="tape" aria-label="시장 지표"><div class="tape-track" id="tapeTrack"></div></div>
 <header>
   <div class="logo">
