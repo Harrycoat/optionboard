@@ -7,6 +7,7 @@ import requests
 
 sys.path.insert(0, os.path.dirname(__file__))
 from swing_access import require_access
+from sora_training_retrieval import training_examples
 
 LESSON = {
     "title": "눌림목의 세 단계: 멈춤 → 저점 유지 확인 → 재상승",
@@ -250,9 +251,18 @@ class handler(BaseHTTPRequestHandler):
                 re.search(r"연습|문제|퀴즈|practice|quiz", t["content"], re.I)
                 for t in turns if t["role"] == "user"
             )
-            if active_r01_drill:
+            # Explicit topic changes override a previous R01 practice session.
+            new_topic = bool(re.search(
+                r"(?i)추천해|스캐너|오늘\\s*(?:시장|주식장)|편하게\\s*(?:이야기|얘기)|"
+                r"교육.{0,10}(?:끝|그만)|새로운\\s*질문", question))
+            if active_r01_drill and not new_topic:
                 rule_id = "R01"
-                mode = "learn"  # Follow-up answers stay in the synthetic lesson.
+                mode = "learn"
+            elif new_topic:
+                active_r01_drill = False
+                rule_id = None
+                if not explicit_chart_request:
+                    mode = "chart"
         except (ValueError, TypeError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
             self.reply(400, {"error": "종목·시간봉·질문 형식을 확인해 주세요.", "kind": "INVALID_INPUT"})
             return
@@ -409,6 +419,11 @@ class handler(BaseHTTPRequestHandler):
         context_example = context_training_example(question, turns)
         if context_example and not wants_practice:
             prompt += "\nContext-linked teaching example (illustrative; do not claim observed market data): " + context_example
+        # Optional local references: no file means previous behavior.
+        relevant_training = training_examples(question, limit=2)
+        if relevant_training and not wants_practice:
+            prompt += ("\nRelevant example answers (not live facts): " +
+                       json.dumps(relevant_training, ensure_ascii=False))
         reference_answer = qa_example_for(question)
         if reference_answer and not wants_practice:
             prompt += "\nApproved training example (conceptual only, not verified market data): " + reference_answer
