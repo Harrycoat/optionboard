@@ -253,8 +253,8 @@ class handler(BaseHTTPRequestHandler):
             )
             # Explicit topic changes override a previous R01 practice session.
             new_topic = bool(re.search(
-                r"(?i)추천해|스캐너|오늘\\s*(?:시장|주식장)|편하게\\s*(?:이야기|얘기)|"
-                r"교육.{0,10}(?:끝|그만)|새로운\\s*질문", question))
+                r"(?i)추천해|스캐너|오늘\s*(?:시장|주식장)|편하게\s*(?:이야기|얘기)|"
+                r"교육.{0,10}(?:끝|그만)|새로운\s*질문", question))
             if active_r01_drill and not new_topic:
                 rule_id = "R01"
                 mode = "learn"
