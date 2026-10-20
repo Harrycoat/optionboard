@@ -2574,7 +2574,7 @@
   {
     "ticker": "TW",
     "date": "2026-10-20",
-    "spot": 114.7,
+    "spot": 119.16,
     "expiries_used": [
       "2026-11-20",
       "2026-12-18"
@@ -2660,36 +2660,36 @@
       {
         "strike": 110,
         "call_oi": 302.0,
-        "put_oi": 3.0,
-        "call_volume": 4.0,
+        "put_oi": 5.0,
+        "call_volume": 3.0,
         "put_volume": 2.0
       },
       {
         "strike": 115,
-        "call_oi": 52.0,
+        "call_oi": 53.0,
         "put_oi": 1.0,
         "call_volume": 8.0,
         "put_volume": 1.0
       },
       {
         "strike": 120,
-        "call_oi": 786.0,
+        "call_oi": 790.0,
         "put_oi": 0.0,
-        "call_volume": 5.0,
-        "put_volume": 0.0
+        "call_volume": 54.0,
+        "put_volume": 38.0
       },
       {
         "strike": 125,
         "call_oi": 3.0,
         "put_oi": 0.0,
-        "call_volume": 2.0,
-        "put_volume": 0.0
+        "call_volume": 5018.0,
+        "put_volume": 1.0
       },
       {
         "strike": 130,
         "call_oi": 11.0,
         "put_oi": 0.0,
-        "call_volume": 10.0,
+        "call_volume": 18.0,
         "put_volume": 0.0
       },
       {
