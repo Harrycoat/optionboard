@@ -1186,7 +1186,6 @@ html.gex-phone header #searchBtn{box-sizing:border-box!important;display:block!i
     <div class="member-hero-copy">
       <h1 id="memberHeroTitle">주식으로 수익내고,<br><em>옵션으로 관리하세요</em></h1>
       <p>기관이 알려주는 지지 Put Wall과 저항 Call Wall을 따라<br>아침엔 3종목 추천, 장중엔 벽 확인, 저녁엔 복기합니다. 하루의 트레이딩을 하나로 이어드립니다.</p>
-      <div class="member-hero-actions"><a class="member-cta" href="#morning3Section" style="text-decoration:none; display:inline-block;">☀️ 오늘의 Morning 3 보기</a></div>
     </div>
   </div>
   <div class="member-benefits"><div class="member-benefit"><div class="member-benefit-icon">★</div><div><b>관심종목 저장</b><span>PC와 휴대전화에서 동일하게 확인</span></div></div><div class="member-benefit"><div class="member-benefit-icon">▥</div><div><b>핵심 가격 자동 표시</b><span>Put Wall · Call Wall · Gamma Flip</span></div></div><div class="member-benefit"><div class="member-benefit-icon">↻</div><div><b>매일 업데이트</b><span>시장 국면과 관심종목 변화를 빠르게 확인</span></div></div></div>
@@ -1337,106 +1336,6 @@ html.gex-phone header #searchBtn{box-sizing:border-box!important;display:block!i
   <div id="journalSummary"></div>
   <div id="journalOpenTrades"><div class="leader-empty">불러오는 중...</div></div>
 </div>
-<section id="morning3Section">
-  <div class="section-title">☀️ 오늘의 Morning 3</div>
-  <p style="color:var(--text-dim); font-size:14px; margin-bottom:12px; line-height:1.65;">매일 아침 선정된 종목을 시가에 가상 매수, 당일 종가에 전량 매도합니다. 이긴 날도 진 날도 바로 아래 저녁 복기에서 그대로 공개합니다.</p>
-  <div class="updated-note" id="m3SectionNote">불러오는 중...</div>
-  <div id="m3SectionBoard"><div class="leader-empty">불러오는 중...</div></div>
-  <div style="margin-top:10px;"><a href="https://morning.gexoption.com/" style="font-size:14.5px; font-weight:700; color:#e0a838;">Morning 3 자세히 보기 →</a></div>
-</section>
-<script>
-(function(){
-  var noteEl = document.getElementById('m3SectionNote');
-  var boardEl = document.getElementById('m3SectionBoard');
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  fetch('/morning-today.json', {cache:'no-store'})
-    .then(function(r){ if(!r.ok) throw new Error('no data'); return r.json(); })
-    .then(function(d){
-      var picks = d.picks || [];
-      if(noteEl){
-        try { noteEl.textContent = '선정 시각: ' + new Date(d.generated_at).toLocaleString('ko-KR',{timeZone:'America/Los_Angeles'}); }
-        catch(e){ noteEl.textContent = ''; }
-      }
-      if(!picks.length){ boardEl.innerHTML = '<div class="leader-empty">오늘의 선정 종목이 없습니다.</div>'; return; }
-      boardEl.innerHTML = picks.map(function(pk){
-        var gap = (Number(pk.gap_pct) >= 0 ? '+' : '') + Number(pk.gap_pct).toFixed(2) + '%';
-        var gapColor = Number(pk.gap_pct) >= 0 ? 'var(--up)' : 'var(--down)';
-        return '<div class="leader-card" data-ticker="' + esc(pk.ticker) + '">' +
-          '<span class="leader-ticker">' + esc(pk.ticker) + '</span>' +
-          '<span class="mono" style="color:var(--text-dim); font-size:15px; font-weight:700;">$' + Number(pk.spot).toFixed(2) + '</span>' +
-          '<span class="mono" style="font-size:13.5px; font-weight:700; color:' + gapColor + ';">' + gap + '</span>' +
-          '<span class="mono" style="font-size:13.5px; color:var(--text-dim);">Put <b style="color:#55e6b5;">' + esc(pk.put_wall) + '</b> / Call <b style="color:#ff8b90;">' + esc(pk.call_wall) + '</b></span>' +
-          '<span style="font-size:14px; color:var(--text-dim); flex:1; min-width:200px; line-height:1.5;">' + esc(pk.reason) + '</span>' +
-          '</div>';
-      }).join('');
-      boardEl.querySelectorAll('.leader-card[data-ticker]').forEach(function(card){
-        card.addEventListener('click', function(){ searchTicker(card.dataset.ticker); });
-      });
-    })
-    .catch(function(){
-      if(noteEl) noteEl.textContent = '';
-      boardEl.innerHTML = '<div class="leader-empty">오늘의 Morning 3를 불러오지 못했습니다.</div>';
-    });
-})();
-</script>
-<section id="eveningReviewSection">
-  <div class="section-title">🌙 저녁 복기 — Morning 3 가상 트랙레코드</div>
-  <p style="color:var(--text-dim); font-size:12.5px; margin-bottom:12px; line-height:1.6;">매일 아침 Morning 3 3종목을 시가에 가상 매수, 당일 종가에 전량 매도한 데일리 트레이딩 기록입니다. 실제 매매가 아니며, 이긴 날도 진 날도 그대로 공개합니다.</p>
-  <div class="updated-note" id="paperUpdatedNote">불러오는 중...</div>
-  <div id="paperStats"></div>
-  <div id="paperToday"></div>
-</section>
-<script>
-(function(){
-  var noteEl = document.getElementById('paperUpdatedNote');
-  fetch('/paper/track-record.json', {cache:'no-store'})
-    .then(function(r){ if(!r.ok) throw new Error('no record'); return r.json(); })
-    .then(render)
-    .catch(function(){
-      if(noteEl) noteEl.textContent = '아직 기록이 없습니다. 첫 복기는 오늘 장 마감 후 업데이트됩니다.';
-    });
-  function render(rec){
-    var stats = rec.stats || {};
-    var days = stats.days || 0;
-    var winRate = days ? Math.round((stats.wins / days) * 100) : 0;
-    var tot = stats.total_return_pct || 0;
-    var totColor = tot >= 0 ? 'var(--up)' : 'var(--down)';
-    if(noteEl && rec.updated_at){
-      try {
-        var d = new Date(rec.updated_at);
-        noteEl.textContent = '업데이트: ' + d.toLocaleString('ko-KR', {timeZone:'America/Los_Angeles'});
-      } catch(e){ noteEl.textContent = ''; }
-    }
-    var hist = rec.history || [];
-    var last = hist[hist.length - 1];
-    var html = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">' +
-      statBox('누적 일수', days + '일') +
-      statBox('승 / 패', (stats.wins||0) + ' / ' + (stats.losses||0)) +
-      statBox('승률', winRate + '%') +
-      '<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:110px;"><div style="font-size:11px;color:var(--text-dim);">누적 수익률</div><div style="font-size:19px;font-weight:700;color:' + totColor + ';">' + (tot>=0?'+':'') + tot.toFixed(2) + '%</div></div>' +
-      '</div>';
-    document.getElementById('paperStats').innerHTML = html;
-    if(last && last.picks){
-      var rows = last.picks.map(function(p){
-        var c = p.return_pct >= 0 ? 'var(--up)' : 'var(--down)';
-        var s = p.return_pct >= 0 ? '+' : '';
-        return '<tr><td><b>' + p.ticker + '</b></td><td class="mono">$' + p.open.toFixed(2) + '</td><td class="mono">$' + p.close.toFixed(2) + '</td><td class="mono" style="color:' + c + ';font-weight:700;">' + s + p.return_pct.toFixed(2) + '%</td></tr>';
-      }).join('');
-      var dc = last.day_return_pct >= 0 ? 'var(--up)' : 'var(--down)';
-      var ds = last.day_return_pct >= 0 ? '+' : '';
-      document.getElementById('paperToday').innerHTML =
-        '<div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">최근 복기 (' + last.date + ') — 당일 결과 <b class="mono" style="color:' + dc + ';">' + ds + last.day_return_pct.toFixed(2) + '%</b></div>' +
-        '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:420px;">' +
-        '<tr style="color:var(--text-dim);font-size:12px;"><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">종목</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">시가 (매수)</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">종가 (매도)</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);">수익률</th></tr>' +
-        rows + '</table></div>' +
-        '<div style="margin-top:10px;font-size:13px;"><a href="/column" style="color:var(--gold);text-decoration:none;">복기 칼럼 전체 보기 →</a></div>';
-    }
-  }
-  function statBox(k, v){
-    return '<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:110px;"><div style="font-size:11px;color:var(--text-dim);">' + k + '</div><div style="font-size:19px;font-weight:700;">' + v + '</div></div>';
-  }
-})();
-</script>
   <div id="detailSection" style="display:none;">
     <div class="section-title">상세 분석</div>
     <button class="decision-close-btn" id="decisionCloseBtn" type="button" style="display:none;">상세 분석 닫기 ↑</button>
