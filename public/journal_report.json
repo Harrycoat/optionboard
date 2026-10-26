@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T19:40:09.210177+00:00",
+  "generated_at": "2026-10-26T23:34:22.726481+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_return": 0,
@@ -22,14 +22,14 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 394.355,
-      "current_gamma_flip": 372.5,
+      "current_spot": 391.62,
+      "current_gamma_flip": 392.5,
       "current_regime": "positive",
-      "return_pct": 12.35,
-      "unrealized_pnl": 4335.5,
+      "return_pct": 11.57,
+      "unrealized_pnl": 4062.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 373.96 < Hull50 375.01 (교차 시점은 더 이전)"
+        "⚠️ 이미 데드크로스 상태 — Hull21 373.71 < Hull50 374.93 (교차 시점은 더 이전)"
       ],
       "live_fetch_error": null
     },
@@ -42,14 +42,14 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 199.52,
+      "current_spot": 198.84,
       "current_gamma_flip": 200,
       "current_regime": "positive",
-      "return_pct": 20.7,
-      "unrealized_pnl": 3422.0,
+      "return_pct": 20.29,
+      "unrealized_pnl": 3354.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 197.22 < Hull50 202.82 (교차 시점은 더 이전)"
+        "⚠️ 이미 데드크로스 상태 — Hull21 197.16 < Hull50 202.8 (교차 시점은 더 이전)"
       ],
       "live_fetch_error": null
     },
@@ -62,15 +62,15 @@
       "quantity": 50.0,
       "status": "진행중",
       "note": "풋월 334 - 350상승 확인 후 1차진입",
-      "current_spot": 330.805,
-      "current_gamma_flip": 330,
+      "current_spot": 329.17,
+      "current_gamma_flip": 332.5,
       "current_regime": "positive",
-      "return_pct": -5.62,
-      "unrealized_pnl": -984.75,
+      "return_pct": -6.09,
+      "unrealized_pnl": -1066.5,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 324.86 < Hull50 342.68 (교차 시점은 더 이전)",
-        "⛔ 종가(330.805)가 150일선(380.34) 아래로 이탈"
+        "⚠️ 이미 데드크로스 상태 — Hull21 324.72 < Hull50 342.64 (교차 시점은 더 이전)",
+        "⛔ 종가(329.17)가 150일선(380.33) 아래로 이탈"
       ],
       "live_fetch_error": null
     }
