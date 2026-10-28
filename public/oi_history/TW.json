@@ -2378,7 +2378,7 @@
   {
     "ticker": "TW",
     "date": "2026-10-28",
-    "spot": 119.67,
+    "spot": 118.82,
     "expiries_used": [
       "2026-11-20",
       "2026-12-18"
@@ -2435,7 +2435,7 @@
       },
       {
         "strike": 90,
-        "call_oi": 2.0,
+        "call_oi": 1.0,
         "put_oi": 1.0,
         "call_volume": 2.0,
         "put_volume": 1.0
@@ -2443,7 +2443,7 @@
       {
         "strike": 95,
         "call_oi": 0.0,
-        "put_oi": 5.0,
+        "put_oi": 2.0,
         "call_volume": 0.0,
         "put_volume": 3.0
       },
@@ -2452,7 +2452,7 @@
         "call_oi": 20.0,
         "put_oi": 3.0,
         "call_volume": 1.0,
-        "put_volume": 1.0
+        "put_volume": 270.0
       },
       {
         "strike": 105,
@@ -2464,29 +2464,29 @@
       {
         "strike": 110,
         "call_oi": 304.0,
-        "put_oi": 17.0,
+        "put_oi": 16.0,
         "call_volume": 2.0,
         "put_volume": 4.0
       },
       {
         "strike": 115,
         "call_oi": 52.0,
-        "put_oi": 13.0,
-        "call_volume": 2.0,
-        "put_volume": 1.0
+        "put_oi": 14.0,
+        "call_volume": 3.0,
+        "put_volume": 273.0
       },
       {
         "strike": 120,
         "call_oi": 832.0,
         "put_oi": 61.0,
         "call_volume": 4.0,
-        "put_volume": 61.0
+        "put_volume": 56.0
       },
       {
         "strike": 125,
         "call_oi": 5226.0,
         "put_oi": 2.0,
-        "call_volume": 92.0,
+        "call_volume": 533.0,
         "put_volume": 2.0
       },
       {
@@ -2500,7 +2500,7 @@
         "strike": 135,
         "call_oi": 5.0,
         "put_oi": 0.0,
-        "call_volume": 5.0,
+        "call_volume": 271.0,
         "put_volume": 0.0
       },
       {

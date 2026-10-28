@@ -2259,7 +2259,7 @@
   {
     "ticker": "DPRO",
     "date": "2026-10-28",
-    "spot": 3.72,
+    "spot": 3.615,
     "expiries_used": [
       "2026-10-30",
       "2026-11-06"
@@ -2267,21 +2267,21 @@
     "strikes": [
       {
         "strike": 1,
-        "call_oi": 300.0,
+        "call_oi": 201.0,
         "put_oi": 0.0,
-        "call_volume": 297.0,
+        "call_volume": 2.0,
         "put_volume": 0.0
       },
       {
         "strike": 1.5,
-        "call_oi": 296.0,
+        "call_oi": 197.0,
         "put_oi": 0.0,
         "call_volume": 296.0,
         "put_volume": 0.0
       },
       {
         "strike": 2,
-        "call_oi": 1.0,
+        "call_oi": 3.0,
         "put_oi": 0.0,
         "call_volume": 3.0,
         "put_volume": 0.0
@@ -2290,28 +2290,28 @@
         "strike": 2.5,
         "call_oi": 0.0,
         "put_oi": 0.0,
-        "call_volume": 0.0,
+        "call_volume": 3.0,
         "put_volume": 0.0
       },
       {
         "strike": 3,
         "call_oi": 0.0,
-        "put_oi": 2.0,
+        "put_oi": 3.0,
         "call_volume": 0.0,
         "put_volume": 2.0
       },
       {
         "strike": 3.5,
-        "call_oi": 106.0,
-        "put_oi": 2.0,
+        "call_oi": 107.0,
+        "put_oi": 3.0,
         "call_volume": 3.0,
         "put_volume": 3.0
       },
       {
         "strike": 4,
-        "call_oi": 404.0,
+        "call_oi": 421.0,
         "put_oi": 17.0,
-        "call_volume": 76.0,
+        "call_volume": 56.0,
         "put_volume": 10.0
       },
       {
@@ -2326,21 +2326,21 @@
         "call_oi": 110.0,
         "put_oi": 173.0,
         "call_volume": 11.0,
-        "put_volume": 7.0
+        "put_volume": 3.0
       },
       {
         "strike": 5.5,
         "call_oi": 4.0,
         "put_oi": 0.0,
         "call_volume": 4.0,
-        "put_volume": 0.0
+        "put_volume": 10.0
       },
       {
         "strike": 6,
         "call_oi": 191.0,
         "put_oi": 143.0,
         "call_volume": 23.0,
-        "put_volume": 42.0
+        "put_volume": 45.0
       },
       {
         "strike": 6.5,
@@ -2375,14 +2375,14 @@
         "call_oi": 0.0,
         "put_oi": 0.0,
         "call_volume": 0.0,
-        "put_volume": 0.0
+        "put_volume": 8.0
       },
       {
         "strike": 9,
         "call_oi": 42.0,
         "put_oi": 0.0,
         "call_volume": 43.0,
-        "put_volume": 0.0
+        "put_volume": 8.0
       },
       {
         "strike": 10,

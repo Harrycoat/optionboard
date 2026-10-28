@@ -1692,7 +1692,7 @@
   {
     "ticker": "QTWO",
     "date": "2026-10-28",
-    "spot": 68.13,
+    "spot": 67.245,
     "expiries_used": [
       "2026-11-20",
       "2026-12-18"
@@ -1737,7 +1737,7 @@
         "strike": 45,
         "call_oi": 7.0,
         "put_oi": 24.0,
-        "call_volume": 1.0,
+        "call_volume": 2.0,
         "put_volume": 6.0
       },
       {
@@ -1752,21 +1752,21 @@
         "call_oi": 7.0,
         "put_oi": 32.0,
         "call_volume": 1.0,
-        "put_volume": 8.0
+        "put_volume": 5.0
       },
       {
         "strike": 60,
         "call_oi": 31.0,
         "put_oi": 12.0,
-        "call_volume": 3.0,
+        "call_volume": 2.0,
         "put_volume": 11.0
       },
       {
         "strike": 65,
         "call_oi": 52.0,
-        "put_oi": 51.0,
+        "put_oi": 52.0,
         "call_volume": 1.0,
-        "put_volume": 1.0
+        "put_volume": 2.0
       },
       {
         "strike": 70,
@@ -1777,28 +1777,28 @@
       },
       {
         "strike": 75,
-        "call_oi": 76.0,
+        "call_oi": 77.0,
         "put_oi": 18.0,
-        "call_volume": 2.0,
+        "call_volume": 3.0,
         "put_volume": 18.0
       },
       {
         "strike": 80,
         "call_oi": 6.0,
         "put_oi": 0.0,
-        "call_volume": 1.0,
+        "call_volume": 2.0,
         "put_volume": 0.0
       },
       {
         "strike": 85,
-        "call_oi": 9.0,
+        "call_oi": 13.0,
         "put_oi": 0.0,
         "call_volume": 4.0,
         "put_volume": 0.0
       },
       {
         "strike": 90,
-        "call_oi": 4.0,
+        "call_oi": 5.0,
         "put_oi": 0.0,
         "call_volume": 1.0,
         "put_volume": 0.0
