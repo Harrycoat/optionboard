@@ -2238,7 +2238,7 @@
   {
     "ticker": "ITRI",
     "date": "2026-10-30",
-    "spot": 94.69,
+    "spot": 94.895,
     "expiries_used": [
       "2026-11-20",
       "2026-12-18"
@@ -2267,7 +2267,7 @@
       },
       {
         "strike": 60,
-        "call_oi": 13.0,
+        "call_oi": 11.0,
         "put_oi": 11.0,
         "call_volume": 8.0,
         "put_volume": 5.0
@@ -2282,9 +2282,9 @@
       {
         "strike": 70,
         "call_oi": 15.0,
-        "put_oi": 120.0,
+        "put_oi": 118.0,
         "call_volume": 4.0,
-        "put_volume": 7.0
+        "put_volume": 9.0
       },
       {
         "strike": 75,
@@ -2303,34 +2303,34 @@
       {
         "strike": 85,
         "call_oi": 113.0,
-        "put_oi": 61.0,
-        "call_volume": 13.0,
+        "put_oi": 56.0,
+        "call_volume": 20.0,
         "put_volume": 6.0
       },
       {
         "strike": 90,
-        "call_oi": 185.0,
-        "put_oi": 30.0,
-        "call_volume": 14.0,
-        "put_volume": 435.0
+        "call_oi": 184.0,
+        "put_oi": 283.0,
+        "call_volume": 2.0,
+        "put_volume": 3.0
       },
       {
         "strike": 95,
-        "call_oi": 148.0,
+        "call_oi": 179.0,
         "put_oi": 114.0,
         "call_volume": 37.0,
-        "put_volume": 12.0
+        "put_volume": 67.0
       },
       {
         "strike": 100,
-        "call_oi": 988.0,
-        "put_oi": 124.0,
+        "call_oi": 990.0,
+        "put_oi": 127.0,
         "call_volume": 11.0,
         "put_volume": 6.0
       },
       {
         "strike": 105,
-        "call_oi": 322.0,
+        "call_oi": 321.0,
         "put_oi": 14.0,
         "call_volume": 13.0,
         "put_volume": 5.0
@@ -2344,7 +2344,7 @@
       },
       {
         "strike": 115,
-        "call_oi": 1422.0,
+        "call_oi": 1655.0,
         "put_oi": 2.0,
         "call_volume": 411.0,
         "put_volume": 4.0

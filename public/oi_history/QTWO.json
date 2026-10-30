@@ -1692,7 +1692,7 @@
   {
     "ticker": "QTWO",
     "date": "2026-10-30",
-    "spot": 65.28,
+    "spot": 66.54,
     "expiries_used": [
       "2026-11-20",
       "2026-12-18"
@@ -1750,7 +1750,7 @@
       {
         "strike": 55,
         "call_oi": 7.0,
-        "put_oi": 32.0,
+        "put_oi": 27.0,
         "call_volume": 1.0,
         "put_volume": 7.0
       },
@@ -1763,21 +1763,21 @@
       },
       {
         "strike": 65,
-        "call_oi": 52.0,
-        "put_oi": 53.0,
+        "call_oi": 53.0,
+        "put_oi": 52.0,
         "call_volume": 1.0,
         "put_volume": 4.0
       },
       {
         "strike": 70,
-        "call_oi": 122.0,
-        "put_oi": 0.0,
-        "call_volume": 101.0,
+        "call_oi": 129.0,
+        "put_oi": 3.0,
+        "call_volume": 51.0,
         "put_volume": 3.0
       },
       {
         "strike": 75,
-        "call_oi": 79.0,
+        "call_oi": 76.0,
         "put_oi": 18.0,
         "call_volume": 3.0,
         "put_volume": 18.0
