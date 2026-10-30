@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T18:55:49.000060+00:00",
+  "generated_at": "2026-10-30T23:24:51.908657+00:00",
   "summary": {
     "total_closed_trades": 0,
     "total_with_return": 0,
@@ -22,11 +22,11 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 395.285,
+      "current_spot": 399.81,
       "current_gamma_flip": 395,
       "current_regime": "positive",
-      "return_pct": 12.62,
-      "unrealized_pnl": 4428.5,
+      "return_pct": 13.91,
+      "unrealized_pnl": 4881.0,
       "structural_status": "구조유지",
       "structural_reasons": [],
       "live_fetch_error": null
@@ -40,14 +40,14 @@
       "quantity": 100.0,
       "status": "진행중",
       "note": "풋월 반등 확인 후 진입",
-      "current_spot": 184.835,
-      "current_gamma_flip": 60,
+      "current_spot": 184.11,
+      "current_gamma_flip": 50,
       "current_regime": "negative",
-      "return_pct": 11.82,
-      "unrealized_pnl": 1953.5,
+      "return_pct": 11.38,
+      "unrealized_pnl": 1881.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 195.37 < Hull50 202.58 (교차 시점은 더 이전)"
+        "⚠️ 이미 데드크로스 상태 — Hull21 195.3 < Hull50 202.55 (교차 시점은 더 이전)"
       ],
       "live_fetch_error": null
     },
@@ -60,15 +60,15 @@
       "quantity": 50.0,
       "status": "진행중",
       "note": "풋월 334 - 350상승 확인 후 1차진입",
-      "current_spot": 320.49,
-      "current_gamma_flip": 495,
+      "current_spot": 326.08,
+      "current_gamma_flip": 215,
       "current_regime": "negative",
-      "return_pct": -8.56,
-      "unrealized_pnl": -1500.5,
+      "return_pct": -6.97,
+      "unrealized_pnl": -1221.0,
       "structural_status": "청산신호",
       "structural_reasons": [
-        "⚠️ 이미 데드크로스 상태 — Hull21 329.3 < Hull50 337.25 (교차 시점은 더 이전)",
-        "⛔ 종가(320.49)가 150일선(381.08) 아래로 이탈"
+        "⚠️ 이미 데드크로스 상태 — Hull21 329.81 < Hull50 337.41 (교차 시점은 더 이전)",
+        "⛔ 종가(326.08)가 150일선(381.12) 아래로 이탈"
       ],
       "live_fetch_error": null
     }
