@@ -1,40 +1,37 @@
 {
   "functions": {
-    "api/search.py": {
-      "maxDuration": 30
-    },
-    "api/candles.py": {
-      "maxDuration": 30
-    },
-    "api/bars.py": {
-      "maxDuration": 30
-    },
-    "api/call_wall_monitor.py": {
-      "maxDuration": 30
-    },
-    "api/schwab_quote.py": {
-      "maxDuration": 30
-    },
-    "api/earnings_scan.py": {
-      "maxDuration": 30
-    },
-    "api/config.py": {
-      "maxDuration": 10
-    },
-    "api/schwabquote.py": {
-      "maxDuration": 30
-    },
-    "api/filings.py": {
-      "maxDuration": 30
-    },
-    "api/swing_volume_heatmap.py": {
+    "api/index.py": {
       "maxDuration": 30
     }
   },
   "rewrites": [
     {
+      "source": "/swing-paper-multi.html",
+      "destination": "/api/index?__route=swing_page&page=multi"
+    },
+    {
+      "source": "/intc-paper-lab.html",
+      "destination": "/api/index?__route=swing_page&page=paper"
+    },
+    {
+      "source": "/swing-top100.html",
+      "destination": "/api/index?__route=sora_page"
+    },
+    {
+      "source": "/swing-radar-chart.html",
+      "destination": "/api/index?__route=swing_page&page=chart"
+    },
+    {
+      "source": "/swing-radar.html",
+      "destination": "/api/index?__route=swing_page&page=sector"
+    },
+    {
       "source": "/ai-leader-roadmap.html",
       "destination": "/index.html"
+    },
+    {
+      "source": "/api/:route",
+      "destination": "/api/index?__route=:route"
     }
   ],
   "redirects": [
